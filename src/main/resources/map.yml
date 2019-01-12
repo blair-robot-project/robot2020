@@ -359,7 +359,7 @@ buttons:
                 subsystem:
                   pusher
       action: WHEN_PRESSED
-  #Stabby push
+  #Stabby pull
   -   button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': hatchPuller
