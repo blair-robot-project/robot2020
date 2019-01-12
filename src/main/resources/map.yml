@@ -121,8 +121,8 @@ logger:
                   rightMaster
             piston:
               '@id': driveShifter
-              forward: 4
-              reverse: 5
+              forward: 0
+              reverse: 1
             startingGear: LOW
     - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad:
         '@id': oi
@@ -302,3 +302,60 @@ buttons:
             org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
               drive
       action: WHEN_PRESSED
+  -   button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': hatchMechanismsButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              driverGamepad
+          buttonNumber: 3
+      command:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+          '@id': hatchOut
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+              '@id': hatchOutSubsystem
+              piston:
+                '@id': hatchOutPiston
+                module: 0
+                forward: 2
+                reverse: 3
+      action: WHEN_PRESSED
+  -   button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': hatchPusher
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              driverGamepad
+          buttonNumber: 4
+      command:
+        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+          '@id': hatchRetractCommandSequence
+          commandList:
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+                '@id': hatchPusherOut
+                subsystem:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                    '@id': pusher
+                    piston:
+                      '@id': pusherPiston
+                      module: 0
+                      forward: 4
+                      reverse: 5
+            - org.usfirst.frc.team449.robot.commands.general,MappedWaitCommand:
+                '@id': delay
+                timeout: 0.1
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+                '@id': hatchIn
+                subsystem:
+                  hatchPusherOut
+            - org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand:
+                '@id': delay2
+                timeout: 0.5
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+                '@id': pusherIn
+                subsystem:
+                  pusher
+      action: WHEN_PRESSED
+
+
