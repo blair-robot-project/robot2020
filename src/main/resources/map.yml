@@ -7,7 +7,7 @@ logger:
   loggables:
     - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
         '@id': PDP
-        canID: 4
+        canID: 0
         voltagePerCurrentLinReg:
           bufferSize: 250
           rSquaredThreshhold: 0.75
@@ -54,12 +54,12 @@ logger:
                 kP: 0.3
                 feedForwardComponent:
                   org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                    #kAFwd: 0.19423682134
-                    #kVFwd: 0.65106152446
-                    #interceptVoltageFwd: 0.986742
-                    #kARev: 0.20714931484
-                    #kVRev: 0.63105309
-                    #interceptVoltageRev: 0.894144\
+                    kAFwd: 0.19423682134
+                    kVFwd: 0.65106152446
+                    interceptVoltageFwd: 0.986742
+                    kARev: 0.20714931484
+                    kVRev: 0.63105309
+                    interceptVoltageRev: 0.894144
             minNumPointsInBottomBuffer: 10
             updaterProcessPeriodSecs: 0.005
             statusFrameRatesMillis: !!map
@@ -204,14 +204,14 @@ logger:
         navX
     - org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
         '@id': defaultDriveCommand
-        #kP: 0.0075
-        #kI: 0.0
-        #kD: 0.03
+        kP: 0.0035
+        kI: 0.0
+        kD: 0.015
         absoluteTolerance: 0
         deadband: 2
         maxAngularVelToEnterLoop: 15
         inverted: false
-        #highGearAngularCoefficient: 2
+        highGearAngularCoefficient: 2
         rampComponent:
           org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent:
             maxChangePerSecond: 3
@@ -226,12 +226,12 @@ logger:
             oi
         autoshiftComponent:
           '@id': autoshiftComponent
-          upshiftSpeed: 5.5
-          downshiftSpeed: 3
+          upshiftSpeed: 4
+          downshiftSpeed: 2.7
           upshiftDebouncer:
             '@id': upshiftDebouncer
             bufferTimeSeconds: 0.06
-          #upshiftFwdThresh: 0.4
+          upshiftFwdThresh: 0.4
 defaultCommands:
   - subsystem:
       org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
@@ -268,220 +268,220 @@ updater:
       - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
           PDP
 buttons:
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.dPadButton:
+          '@id': forceLowGear
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              '@id': mechanismsGamepad
+              port: 2
+          angle: 180
+      command:
+        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+          '@id': overrideAndShift
+          commandList:
+          - org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
+              '@id': overrideAutoshift
+              drive:
+                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                  drive
+              override: true
+          - org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToLowGear:
+              '@id': downshift
+              subsystem:
+                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                  drive
+      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.dPadButton:
+          forceLowGear
+      command:
+        org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
+          '@id': unoverrideAutoshift
+          drive:
+            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+              drive
+          override: false
+      action: WHEN_RELEASED
+  -   button:
+          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+              '@id': stabberButton #solenoid
+              joystick:
+                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                      driverGamepad
+              buttonNumber: 1
+      command:
+          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+              '@id': stabberCommand
+              subsystem:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                      '@id': stabber
+                      piston:
+                          '@id': stabberSolenoid
+                          forward: 6
+                          reverse: 7
+      action: WHEN_PRESSED
+  -   button:
+          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+              '@id': retractStabberButton #solenoid
+              joystick:
+                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                      driverGamepad
+              buttonNumber: 2
+      command:
+          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+              '@id': retractStabberCommand
+              subsystem:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                      stabber
+      action: WHEN_PRESSED
+  -   button:
+          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+              '@id': stabberBaseButton #solenoid
+              joystick:
+                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                      driverGamepad
+              buttonNumber: 3
+      command:
+          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+              '@id': stabberBaseCommand
+              subsystem:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                      '@id': stabberBase
+                      piston:
+                          '@id': stabberBaseSolenoid
+                          forward: 1
+                          reverse: 0
+      action: WHEN_PRESSED
+  -   button:
+          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+              '@id': retractStabberBaseButton #solenoid
+              joystick:
+                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                      driverGamepad
+              buttonNumber: 4
+      command:
+          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+              '@id': retractStabberBaseCommand
+              subsystem:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                      stabberBase
+      action: WHEN_PRESSED
+      #GetHatch
   -   button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': upshiftButton
+          '@id': hatchMechanismsButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               driverGamepad
-          buttonNumber: 2
+          buttonNumber: 3
       command:
-        org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToHighGear:
-          '@id': upshiftCommand
+        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+          '@id': hatchOut
           subsystem:
-            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-              drive
+            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+              '@id': hatchOutSubsystem
+              piston:
+                '@id': hatchOutPiston
+                module: 0
+                forward: 2
+                reverse: 3
       action: WHEN_PRESSED
+      #DropHatch
   -   button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': downshiftButton
+          '@id': hatchPusher
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               driverGamepad
-          buttonNumber: 1
+          buttonNumber: 4
       command:
-        org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToLowGear:
-          '@id': downshiftCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-              drive
+        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+          '@id': hatchRetractCommandSequenceGrabby
+          commandList:
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+                '@id': hatchPusherOut
+                subsystem:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                    '@id': pusher
+                    piston:
+                      '@id': pusherPiston
+                      module: 0
+                      forward: 4
+                      reverse: 5
+            - org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand:
+                '@id': delay
+                timeout: 0.1
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+                '@id': hatchIn
+                subsystem:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid: #Probably fix
+                  hatchPusherOut
+            - org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand:
+                '@id': delay2
+                timeout: 0.5
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+                '@id': pusherIn
+                subsystem:
+                  pusher
       action: WHEN_PRESSED
-#  -   button:
-#          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-#              '@id': stabberButton #solenoid
-#              joystick:
-#                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-#                      driverGamepad
-#              buttonNumber: 1
-#      command:
-#          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
-#              '@id': stabberCommand
-#              subsystem:
-#                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-#                      '@id': stabber
-#                      piston:
-#                          '@id': stabberSolenoid
-#                          forward: 6
-#                          reverse: 7
-#      action: WHEN_PRESSED
-#  -   button:
-#          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-#              '@id': retractStabberButton #solenoid
-#              joystick:
-#                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-#                      driverGamepad
-#              buttonNumber: 2
-#      command:
-#          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
-#              '@id': retractStabberCommand
-#              subsystem:
-#                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-#                      stabber
-#      action: WHEN_PRESSED
-#  -   button:
-#          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-#              '@id': stabberBaseButton #solenoid
-#              joystick:
-#                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-#                      driverGamepad
-#              buttonNumber: 3
-#      command:
-#          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
-#              '@id': stabberBaseCommand
-#              subsystem:
-#                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-#                      '@id': stabberBase
-#                      piston:
-#                          '@id': stabberBaseSolenoid
-#                          forward: 1
-#                          reverse: 0
-#      action: WHEN_PRESSED
-#  -   button:
-#          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-#              '@id': retractStabberBaseButton #solenoid
-#              joystick:
-#                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-#                      driverGamepad
-#              buttonNumber: 4
-#      command:
-#          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
-#              '@id': retractStabberBaseCommand
-#              subsystem:
-#                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-#                      stabberBase
-#      action: WHEN_PRESSED
-
-
-
-
-#      #GetHatch
-#  -   button:
-#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-#          '@id': hatchMechanismsButton
-#          joystick:
-#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-#              driverGamepad
-#          buttonNumber: 3
-#      command:
-#        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
-#          '@id': hatchOut
-#          subsystem:
-#            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-#              '@id': hatchOutSubsystem
-#              piston:
-#                '@id': hatchOutPiston
-#                module: 0
-#                forward: 2
-#                reverse: 3
-#      action: WHEN_PRESSED
-#      #DropHatch
-#  -   button:
-#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-#          '@id': hatchPusher
-#          joystick:
-#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-#              driverGamepad
-#          buttonNumber: 4
-#      command:
-#        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
-#          '@id': hatchRetractCommandSequenceGrabby
-#          commandList:
-#            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
-#                '@id': hatchPusherOut
-#                subsystem:
-#                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-#                    '@id': pusher
-#                    piston:
-#                      '@id': pusherPiston
-#                      module: 0
-#                      forward: 4
-#                      reverse: 5
-#            - org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand:
-#                '@id': delay
-#                timeout: 0.1
-#            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
-#                '@id': hatchIn
-#                subsystem:
-#                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid: #Probably fix
-#                  hatchPusherOut
-#            - org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand:
-#                '@id': delay2
-#                timeout: 0.5
-#            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
-#                '@id': pusherIn
-#                subsystem:
-#                  pusher
-#      action: WHEN_PRESSED
-#  #Stabby pull
-#  -   button:
-#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-#          '@id': hatchPuller
-#          joystick:
-#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-#              driverGamepad
-#          buttonNumber: 5
-#      command:
-#        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
-#          '@id': hatchCommandSequenceStabby
-#          commandList:
-#            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
-#                '@id': hatchPullerBig
-#                subsystem:
-#                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-#                    '@id': bigPuller
-#                    piston:
-#                      '@id': bigPullerPiston
-#                      module: 0
-#                      forward: 6
-#                      reverse: 7
-#            - org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand:
-#                '@id': delay3
-#                timeout: 0.5
-#            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
-#                '@id': hatchPullerHook
-#                subsystem:
-#                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-#                    '@id': hatchHook
-#                    piston:
-#                      '@id': hatchHookPiston
-#                      module: 0
-#                      forward: 8
-#                      reverse: 9
-#      action: WHEN_PRESSED
-#  #Stabby Retract
-#  -   button:
-#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-#          '@id': hatchRetract
-#          joystick:
-#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-#              driverGamepad
-#          buttonNumber: 6
-#      command:
-#        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
-#          '@id': hatchRetractCommandSequenceStabby
-#          commandList:
-#            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
-#                '@id': retractHatchPullerBig
-#                subsystem:
-#                  hatchHook
-#            - org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand:
-#                '@id': delay4
-#                timeout: 0.5
-#            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
-#                '@id': hatchPullerHook
-#                subsystem:
-#                  bigPuller
-#      action: WHEN_PRESSED
-
-
-
+  #Stabby pull
+  -   button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': hatchPuller
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              driverGamepad
+          buttonNumber: 5
+      command:
+        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+          '@id': hatchCommandSequenceStabby
+          commandList:
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+                '@id': hatchPullerBig
+                subsystem:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                    '@id': bigPuller
+                    piston:
+                      '@id': bigPullerPiston
+                      module: 0
+                      forward: 6
+                      reverse: 7
+            - org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand:
+                '@id': delay3
+                timeout: 0.5
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+                '@id': hatchPullerHook
+                subsystem:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                    '@id': hatchHook
+                    piston:
+                      '@id': hatchHookPiston
+                      module: 0
+                      forward: 8
+                      reverse: 9
+      action: WHEN_PRESSED
+  #Stabby Retract
+  -   button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': hatchRetract
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              driverGamepad
+          buttonNumber: 6
+      command:
+        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+          '@id': hatchRetractCommandSequenceStabby
+          commandList:
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+                '@id': retractHatchPullerBig
+                subsystem:
+                  hatchHook
+            - org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand:
+                '@id': delay4
+                timeout: 0.5
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+                '@id': hatchPullerHook
+                subsystem:
+                  bigPuller
+      action: WHEN_PRESSED
