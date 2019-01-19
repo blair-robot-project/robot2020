@@ -238,6 +238,56 @@ logger:
             '@id': upshiftDebouncer
             bufferTimeSeconds: 0.06
           #upshiftFwdThresh: 0.4
+    - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+        &legElevator
+        '@id': backLegElevatorTalon
+        port: 10
+        name: backLegElevatorTalon
+        reverseOutput: false
+        reverseSensor: false
+        enableBrakeMode: true
+        remoteLimitSwitchID: 1
+        revLimitSwitchNormallyOpen: true
+        postEncoderGearing: 1
+        feetPerRotation: 0.5962
+        currentLimit: 40
+        minNumPointsInBottomBuffer: 40
+        enableVoltageComp: true
+        feedbackDevice: QuadEncoder
+        encoderCPR: 1024
+        perGearSettings:
+          -   motionProfilePFwd: 0.5
+              feedForwardComponent:
+                org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardMPElevatorComponent:
+                  feetToFFComponentMap: !!map
+                    3.354 :
+                      org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
+                        kVFwd: 1.379
+                        kAFwd: 0.0191
+                        interceptVoltageFwd: 2.29000
+                        interceptVoltageRev: -1.1
+                    100 :
+                      org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
+                        kVFwd: 1.2926
+                        kAFwd: 0.0831
+                        interceptVoltageFwd: 2.56113
+                        interceptVoltageRev: -0.8
+    - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+        <<: *legElevator
+        '@id': frontLegElevatorTalon
+        port: 11
+        name: frontLegElevatorTalon
+    - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.SubsystemMPSimple:
+        '@id': backLegDrive
+        motor:
+          org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+            '@id': backLegDriveTalon
+            port: 15
+            name: backLegDriveTalon
+            reverseOutput: false
+            enableBrakeMode: false
+            enableVoltageComp: true
+            currentLimit: 30
 defaultCommands:
   - subsystem:
       org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
