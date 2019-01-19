@@ -1,6 +1,7 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers;
 
 import com.ctre.phoenix.motorcontrol.IMotorController;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
@@ -24,14 +25,13 @@ public class SlaveVictor {
      * Default constructor.
      *
      * @param port     The CAN ID of this Victor SPX.
-     * @param inverted Whether or not to invert this Victor. Note this is not relative to the master. Defaults to
-     *                 false.
+     * @param invertType Whether to invert this relative to the master. Defaults to not inverting relative to master.
      */
     @JsonCreator
     public SlaveVictor(@JsonProperty(required = true) int port,
-                       boolean inverted) {
+                       InvertType invertType) {
         victorSPX = new VictorSPX(port);
-        victorSPX.setInverted(inverted);
+        victorSPX.setInverted(invertType == null ? InvertType.FollowMaster : invertType);
         victorSPX.configPeakOutputForward(1, 0);
         victorSPX.configPeakOutputReverse(-1, 0);
         victorSPX.enableVoltageCompensation(true);
