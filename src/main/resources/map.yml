@@ -247,7 +247,10 @@ logger:
         reverseSensor: false
         enableBrakeMode: true
         remoteLimitSwitchID: 1
+        fwdLimitSwitchNormallyOpen: true
         revLimitSwitchNormallyOpen: true
+        fwdSoftLimit: 1.66
+        revSoftLimit: 0
         postEncoderGearing: 1
         feetPerRotation: 0.5962
         currentLimit: 40
@@ -469,6 +472,82 @@ buttons:
                 subsystem:
                   bigPuller
       action: WHEN_PRESSED
-
-
-
+  -   button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': climbButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              driverGamepad
+          buttonNumber: 7
+      command:
+        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+          '@id': climb
+          commandList:
+            - org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
+                '@id': dropLegs
+                commandSet:
+                    - org.usfirst.frc.team449.robot.subsystem.interfaces.position.commands.GoToPosition:
+                        '@id': dropBackLeg
+                        subsystem:
+                          org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
+                            backLegElevatorTalon
+                        setpoint: 1.66
+                    - org.usfirst.frc.team449.robot.subsystem.interfaces.position.commands.GoToPosition:
+                        '@id': dropFrontLeg
+                        subsystem:
+                          org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
+                            frontLegElevatorTalon
+                        setpoint: 1.66
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
+                '@id': legsDownDriveForward
+                subsystem:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.SubsystemMPSimple:
+                    backLegDrive
+                profile:
+                  '@id': backLegFirstNudge
+                  filename: "/home/lvuser/449_resources/backLegFirstNudge.csv"
+                  inverted: false
+                  resetPosition: true
+                timeout: 3
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.position.commands.GoToPosition:
+                '@id': retractFrontLeg
+                subsystem:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
+                    frontLegElevatorTalon
+                setpoint: 0
+            - org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
+                '@id': driveAfterFrontLegUp
+                commandSet:
+                  - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
+                      '@id': frontLegUpBackLegDriveForward
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.SubsystemMPSimple:
+                          backLegDrive
+                      profile:
+                        '@id': backLegSecondNudge
+                        filename: "/home/lvuser/449_resources/backLegAndDriveSecondNudge.csv"
+                        inverted: false
+                        resetPosition: true
+                      timeout: 3
+                  - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.RunProfileTwoSides:
+                      '@id': frontLegUpRobotDriveForward
+                      subsystem:
+                        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                          drive
+                      left:
+                        '@id': leftSideSecondNudge
+                        filename: "/home/lvuser/449_resources/backLegAndDriveSecondNudge.csv"
+                        inverted: false
+                        resetPosition: true
+                      right:
+                        '@id': rightSideSecondNudge
+                        filename: "/home/lvuser/449_resources/backLegAndDriveSecondNudge.csv"
+                        inverted: false
+                        resetPosition: true
+                      timeout: 3
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.position.commands.GoToPosition:
+                '@id': partiallyRetractBackLeg
+                subsystem:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
+                    backLegElevatorTalon
+                setpoint: 1.4
