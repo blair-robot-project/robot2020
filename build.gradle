@@ -1,23 +1,23 @@
 plugins {
-    id 'java'
-    id 'idea'
-    id 'eclipse'
-    id 'maven'
     id 'org.hidetake.ssh' version "2.9.0"
+    id 'java'
+    id 'eclipse'
+    id 'idea'
     id "edu.wpi.first.GradleRIO" version "2019.1.1"
-    id "com.google.protobuf" version "0.8.6"
+    id "com.google.protobuf" version "0.8.8"
 }
+
+group 'org.usfirst.frc.team449.robot2019'
+version '1.0'
+
+def ROBOT_MAIN_CLASS = "org.usfirst.frc.team449.robot.Main"
 
 repositories {
     mavenCentral()
-    maven {
-        name = "GradleRio"
-        url = "http://dev.imjac.in/maven"
-    }
 
     maven { url "https://plugins.gradle.org/m2/" }
+    maven { url 'https://jitpack.io' }
 }
-
 
 dependencies {
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
@@ -77,31 +77,87 @@ idea {
     }
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+/* ssh stuff */
+remotes {
+    rio {
+        host = 'roboRIO-449-frc.local'
+        user = 'lvuser'
+        knownHosts = allowAnyHosts
+    }
 }
 
+task('copyResources') {
+    doLast {
+        ssh.run {
+            session(remotes.rio) {
+                execute 'mkdir ~/449_resources', ignoreError: true
+                execute 'mkdir ~/logs', ignoreError: true
+                put from: fileTree('src/main/resources'), into: './449_resources/'
+                execute ". /etc/profile.d/natinst-path.sh; /usr/local/frc/bin/frcKillRobot.sh -t -r", ignoreError: true
+            }
+        }
+    }
+}
+
+// Define my targets (RoboRIO) and artifacts (deployable files)
+// This is added by GradleRIO's backing project EmbeddedTools.
+deploy {
+    targets {
+        roboRIO("roborio") {
+            // Team number is loaded either from the .wpilib/wpilib_preferences.json
+            // or from command line. If not found an exception will be thrown.
+            // You can use getTeamOrDefault(team) instead of getTeamNumber if you
+            // want to store a team number in this file.
+            team = 449
+        }
+    }
+    artifacts {
+        frcJavaArtifact('frcJava') {
+            targets << "roborio"
+            // Debug can be overridden by command line, for use with VSCode
+            debug = frc.getDebugOrDefault(false)
+        }
+        // Built in artifact to deploy arbitrary files to the roboRIO.
+        fileTreeArtifact('frcStaticFileDeploy') {
+            // The directory below is the local directory to deploy
+            files = fileTree(dir: 'src/main/deploy')
+            // Deploy to RoboRIO target, into /home/lvuser/deploy
+            targets << "roborio"
+            directory = '/home/lvuser/deploy'
+        }
+    }
+}
+
+// Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
+// in order to make them all available at runtime. Also adding the manifest so WPILib
+// knows where to look for our Robot Class.
+jar {
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
+}
 task genJavadoc(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
 
-task deleteDocs(type: Delete) {
-    delete '../docs'
+task deleteDocs(type: Delete){
+    delete 'docs'
     followSymlinks = false
 }
 
-task copyDocs(type: Copy, dependsOn: [genJavadoc, deleteDocs]) {
+task copyDocs(type: Copy, dependsOn: [genJavadoc, deleteDocs]){
     from 'build/docs/javadoc'
-    into '../docs'
+    into 'docs'
 }
 
 artifacts {
-    archives sourcesJar
     archives genJavadoc
 }
 
 compileJava {
     options.compilerArgs << '-parameters'
+}
+
+wrapper {
+    gradleVersion = '5.0'
 }

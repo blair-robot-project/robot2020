@@ -3,6 +3,7 @@ logger:
   '@id': logger
   eventLogFilename: "/home/lvuser/logs/eventLog-"
   telemetryLogFilename: "/home/lvuser/logs/telemetryLog-"
+  loopTimeMillis: 50
   loggables:
     - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
         '@id': PDP
@@ -38,9 +39,9 @@ logger:
               - &lowGear
                 gear: LOW
                 feedForwardComponent:
-                  org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.FeedForwardComponent.FeedForwardKaKvComponent:
+                  org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                     #kAFwd: 0.12919953323
-                    #kVFwd: 1.32498443423
+                    kVFwd: 1.32498443423
                     #interceptVoltageFwd: 0.797588
                     #kARev: 0.15941277553
                     #kVRev: 1.28936521731
@@ -51,9 +52,9 @@ logger:
               - &highGear
                 gear: HIGH
                 feedForwardComponent:
-                  org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.FeedForwardComponent.FeedForwardKaKvComponent:
+                  org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                     #kAFwd: 0.19423682134
-                    #kVFwd: 0.65106152446
+                    kVFwd: 0.65106152446
                     #interceptVoltageFwd: 0.986742
                     #kARev: 0.20714931484
                     #kVRev: 0.63105309
@@ -82,18 +83,18 @@ logger:
             perGearSettings:
               - <<: *lowGear
                 feedForwardComponent:
-                  org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.FeedForwardComponent.FeedForwardKaKvComponent:
+                  org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                     #kAFwd: 0.1131952403
-                    #kVFwd: 1.32948238154
+                    kVFwd: 1.32948238154
                     #interceptVoltageFwd: 0.793247
                     #kARev: 0.12721050276
                     #kVRev: 1.29887888885
                     #interceptVoltageRev: 0.7668543
               - <<: *highGear
                 feedForwardComponent:
-                  org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.FeedForwardComponent.FeedForwardKaKvComponent:
+                  org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                     #kAFwd: 0.19440692065
-                    #kVFwd: 0.63537039069
+                    kVFwd: 0.63537039069
                     #interceptVoltageFwd: 0.997928
                     #kARev: 0.19604213688
                     #kVRev: 0.62924298023
@@ -232,8 +233,8 @@ logger:
             oi
         autoshiftComponent:
           '@id': autoshiftComponent
-          #upshiftSpeed: 5.5
-          #downshiftSpeed: 3
+          upshiftSpeed: 5.5
+          downshiftSpeed: 3
           upshiftDebouncer:
             '@id': upshiftDebouncer
             bufferTimeSeconds: 0.06
@@ -280,17 +281,6 @@ logger:
         '@id': frontLegElevatorTalon
         port: 11
         name: frontLegElevatorTalon
-    - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.SubsystemMPSimple:
-        '@id': backLegDrive
-        motor:
-          org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-            '@id': backLegDriveTalon
-            port: 15
-            name: backLegDriveTalon
-            reverseOutput: false
-            enableBrakeMode: false
-            enableVoltageComp: true
-            currentLimit: 30
 defaultCommands:
   - subsystem:
       org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
@@ -397,20 +387,22 @@ buttons:
                       module: 0
                       forward: 4
                       reverse: 5
-            - org.usfirst.frc.team449.robot.commands.general,MappedWaitCommand:
+            - org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand:
                 '@id': delay
                 timeout: 0.1
             - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
                 '@id': hatchIn
                 subsystem:
-                  hatchPusherOut
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                    pusher
             - org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand:
                 '@id': delay2
                 timeout: 0.5
             - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
                 '@id': pusherIn
                 subsystem:
-                  pusher
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                    pusher
       action: WHEN_PRESSED
   #Stabby pull
   -   button:
@@ -444,9 +436,9 @@ buttons:
                     '@id': hatchHook
                     piston:
                       '@id': hatchHookPiston
-                      module: 0
-                      forward: 8
-                      reverse: 9
+                      module: 1
+                      forward: 0
+                      reverse: 1
       action: WHEN_PRESSED
   #Stabby Retract
   -   button:
@@ -463,14 +455,16 @@ buttons:
             - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
                 '@id': retractHatchPullerBig
                 subsystem:
-                  hatchHook
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                    hatchHook
             - org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand:
                 '@id': delay4
                 timeout: 0.5
             - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
-                '@id': hatchPullerHook
+                '@id': hatchPullerHookReverse
                 subsystem:
-                  bigPuller
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                    bigPuller
       action: WHEN_PRESSED
   -   button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -490,19 +484,46 @@ buttons:
                         '@id': dropBackLeg
                         subsystem:
                           org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
-                            backLegElevatorTalon
+                            '@id': backElevator
+                            talon:
+                              org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+                                backLegElevatorTalon
+                            pathGenerator:
+                              '@id': pathGeneratorBack
+                              fwdMaxVel: 4
+                              revMaxVel: 6
+                              maxAccel: 6
+                              deltaTimeSecs: 0.05
                         setpoint: 1.66
                     - org.usfirst.frc.team449.robot.subsystem.interfaces.position.commands.GoToPosition:
                         '@id': dropFrontLeg
                         subsystem:
                           org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
-                            frontLegElevatorTalon
+                            '@id': frontElevator
+                            talon:
+                              org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+                                frontLegElevatorTalon
+                            pathGenerator:
+                              '@id': pathGeneratorFront
+                              fwdMaxVel: 4
+                              revMaxVel: 6
+                              maxAccel: 6
+                              deltaTimeSecs: 0.05
                         setpoint: 1.66
             - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
                 '@id': legsDownDriveForward
                 subsystem:
                   org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.SubsystemMPSimple:
-                    backLegDrive
+                    '@id': backLegDrive
+                    motor:
+                      org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+                        '@id': backLegDriveTalon
+                        port: 15
+                        name: backLegDriveTalon
+                        reverseOutput: false
+                        enableBrakeMode: false
+                        enableVoltageComp: true
+                        currentLimit: 30
                 profile:
                   '@id': backLegFirstNudge
                   filename: "/home/lvuser/449_resources/robot2019FirstNudgeProfile.csv"
@@ -513,7 +534,7 @@ buttons:
                 '@id': retractFrontLeg
                 subsystem:
                   org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
-                    frontLegElevatorTalon
+                    frontElevator
                 setpoint: 0
             - org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
                 '@id': driveAfterFrontLegUp
@@ -549,5 +570,74 @@ buttons:
                 '@id': partiallyRetractBackLeg
                 subsystem:
                   org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
-                    backLegElevatorTalon
+                    backElevator
                 setpoint: 1.4
+      action: WHEN_PRESSED
+  -   button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': abortClimbButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              '@id': climbOverrideController
+              port: 2
+          buttonNumber: 1
+      command:
+        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+          '@id': abortClimb
+          commandList:
+            - org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
+                '@id': interruptAllMotorCommands
+                commandSet:
+                  - org.usfirst.frc.team449.robot.commands.general.RequireSubsystem:
+                      '@id': requireDrive
+                      subsystem:
+                        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                          drive
+                  - org.usfirst.frc.team449.robot.commands.general.RequireSubsystem:
+                      '@id': requireBackElevator
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
+                          backElevator
+                  - org.usfirst.frc.team449.robot.commands.general.RequireSubsystem:
+                      '@id': requireFrontElevator
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
+                          frontElevator
+                  - org.usfirst.frc.team449.robot.commands.general.RequireSubsystem:
+                      '@id': requireBackLegWheels
+                      subsystem:
+                        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                          drive
+            - org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
+                '@id': stopMotors
+                commandSet:
+                  - org.usfirst.frc.team449.robot.drive.commands.StopMotors:
+                      '@id': stopDrive
+                      subsystem:
+                        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                          drive
+                  - org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.commands.TurnMotorOffWithRequires:
+                      '@id': stopBackLegWheels
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.BinaryMotorSimple:
+                          '@id': backLegDriveMotor
+                          motor:
+                            org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+                              backLegDriveTalon
+                  - org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.commands.TurnMotorOffWithRequires:
+                      '@id': stopBackLegElevator
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.BinaryMotorSimple:
+                          '@id': backLegElevatorMotor
+                          motor:
+                            org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+                              backLegElevatorTalon
+                  - org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.commands.TurnMotorOffWithRequires:
+                      '@id': stopFrontLegElevator
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.BinaryMotorSimple:
+                          '@id': frontLegElevatorMotor
+                          motor:
+                            org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+                              frontLegElevatorTalon
+      action: WHEN_PRESSED
