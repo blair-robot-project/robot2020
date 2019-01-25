@@ -494,7 +494,7 @@ buttons:
                               revMaxVel: 6
                               maxAccel: 6
                               deltaTimeSecs: 0.05
-                        setpoint: 1.66
+                        setpoint: 1.66 #0.58 for level 2 climb
                     - org.usfirst.frc.team449.robot.subsystem.interfaces.position.commands.GoToPosition:
                         '@id': dropFrontLeg
                         subsystem:
@@ -509,7 +509,7 @@ buttons:
                               revMaxVel: 6
                               maxAccel: 6
                               deltaTimeSecs: 0.05
-                        setpoint: 1.66
+                        setpoint: 1.66 #0.58 for level 2 climb
             - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
                 '@id': legsDownDriveForward
                 subsystem:
