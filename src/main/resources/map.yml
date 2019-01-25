@@ -530,6 +530,30 @@ buttons:
                   inverted: false
                   resetPosition: true
                 timeout: 3
+            - org.usfirst.frc.team449.robot.commands.multiInterface.RunMotorUntilConditionMet:
+                '@id': crawlBackLeg
+                subsystem:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.BinaryMotorSimple:
+                    '@id': backLegDriveMotor
+                    motor:
+                      org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+                        backLegDriveTalon
+                    velocity: 0.1
+                subsystemConditional:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride:
+                    '@id': climberFailsafe
+                    infraredSensor:
+                      org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+                        '@id': IRsensor
+                        channel: 0
+                    button:
+                      org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+                        '@id': overrideIRButton
+                        joystick:
+                          org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                            '@id': climbOverrideController
+                            port: 2
+                        buttonNumber: 2
             - org.usfirst.frc.team449.robot.subsystem.interfaces.position.commands.GoToPosition:
                 '@id': retractFrontLeg
                 subsystem:
@@ -566,6 +590,34 @@ buttons:
                         inverted: false
                         resetPosition: true
                       timeout: 3
+            - org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
+                '@id': crawlBackLegAndDrive
+                commandSet:
+                  - org.usfirst.frc.team449.robot.commands.multiInterface.RunMotorUntilConditionMet:
+                      '@id': crawlBackLeg2
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.BinaryMotorSimple:
+                          backLegDriveMotor
+                      subsystemConditional:
+                        org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride:
+                          '@id': climberFailsafe2
+                          infraredSensor:
+                            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+                              '@id': IRsensor2
+                              channel: 1
+                          button:
+                            org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+                              overrideIRButton
+                  - org.usfirst.frc.team449.robot.commands.multiSubsystem.DriveStraightUntilConditionMet:
+                      '@id': crawlDrive
+                      absoluteTolerance: 2
+                      drive:
+                        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                          drive
+                      subsystemConditional:
+                        org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride:
+                          climberFailsafe2
+                      driveVelocity: 0.1
             - org.usfirst.frc.team449.robot.subsystem.interfaces.position.commands.GoToPosition:
                 '@id': partiallyRetractBackLeg
                 subsystem:
@@ -578,8 +630,7 @@ buttons:
           '@id': abortClimbButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              '@id': climbOverrideController
-              port: 2
+              climbOverrideController
           buttonNumber: 1
       command:
         org.usfirst.frc.team449.robot.commands.general.CommandSequence:
@@ -620,10 +671,7 @@ buttons:
                       '@id': stopBackLegWheels
                       subsystem:
                         org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.BinaryMotorSimple:
-                          '@id': backLegDriveMotor
-                          motor:
-                            org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-                              backLegDriveTalon
+                          backLegDriveMotor
                   - org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.commands.TurnMotorOffWithRequires:
                       '@id': stopBackLegElevator
                       subsystem:
