@@ -526,7 +526,7 @@ buttons:
                         currentLimit: 30
                 profile:
                   '@id': backLegFirstNudge
-                  filename: "/home/lvuser/449_resources/robot2019FirstNudgeProfile.csv"
+                  filename: "/home/lvuser/449_resources/robot2019ClimbFirstNudgeProfile.csv"
                   inverted: false
                   resetPosition: true
                 timeout: 3
@@ -570,7 +570,7 @@ buttons:
                           backLegDrive
                       profile:
                         '@id': backLegSecondNudge
-                        filename: "/home/lvuser/449_resources/robot2019SecondNudgeProfile.csv"
+                        filename: "/home/lvuser/449_resources/robot2019ClimbSecondNudgeProfile.csv"
                         inverted: false
                         resetPosition: true
                       timeout: 3
@@ -581,12 +581,12 @@ buttons:
                           drive
                       left:
                         '@id': leftSideSecondNudge
-                        filename: "/home/lvuser/449_resources/robot2019SecondNudgeProfile.csv"
+                        filename: "/home/lvuser/449_resources/robot2019ClimbSecondNudgeProfile.csv"
                         inverted: false
                         resetPosition: true
                       right:
                         '@id': rightSideSecondNudge
-                        filename: "/home/lvuser/449_resources/robot2019SecondNudgeProfile.csv"
+                        filename: "/home/lvuser/449_resources/robot2019ClimbSecondNudgeProfile.csv"
                         inverted: false
                         resetPosition: true
                       timeout: 3
