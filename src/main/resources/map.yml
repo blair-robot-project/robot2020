@@ -255,7 +255,49 @@ teleopStartupCommand:
     subsystem:
       org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics:
         pneumatics
-#AutoStartupCommand:
+#autoStartupCommand:
+#    org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+#        '@id': autoCommand
+#        commandList:
+#        - org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands.SetHeading:
+#              '@id': resetHeading
+#              subsystem:
+#                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#                      drive
+#        - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+#              '@id': stabberBaseCommand2
+#              subsystem:
+#                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+#                      '@id': stabberBase
+#                      piston:
+#                          '@id': stabberBaseSolenoid
+#                          forward: 2
+#                          reverse: 3
+#        - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.RunProfileTwoSides:
+#              '@id': autoToCargoShip
+#              subsystem:
+#                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#                      drive
+#              left:
+#                  '@id': autoToCargoShipLeft
+#                  filename: "/home/lvuser/449_resources/robot2019LeftStartToFLProfile.csv"
+#                  inverted: false
+#                  resetPosition: true
+#              right:
+#                  '@id': autoToCargoShipRight
+#                  filename: "/home/lvuser/449_resources/robot2019RightStartToFLProfile.csv"
+#                  inverted: true
+#                  resetPosition: true
+#              timeout: 16
+#        - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+#              '@id': retractStabberCommand2
+#              subsystem:
+#                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+#                      '@id': stabber
+#                      piston:
+#                          '@id': stabberSolenoid
+#                          forward: 4
+#                          reverse: 5
 updater:
   org.usfirst.frc.team449.robot.other.Updater:
     '@id': updater
@@ -269,6 +311,57 @@ updater:
       - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
           PDP
 buttons:
+    - button:
+          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+              '@id': testAutoButton
+              joystick:
+                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                      driverGamepad
+              buttonNumber: 5
+      command:
+          org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+              '@id': autoCommand
+              commandList:
+              -   org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands.SetHeading:
+                      '@id': resetHeading
+                      subsystem:
+                          org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                              drive
+              -   org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+                      '@id': stabberBaseCommand2
+                      subsystem:
+                          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                              '@id': stabberBase
+                              piston:
+                                  '@id': stabberBaseSolenoid
+                                  forward: 2
+                                  reverse: 3
+              -   org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.RunProfileTwoSides:
+                      '@id': autoToCargoShip
+                      subsystem:
+                          org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                              drive
+                      left:
+                          '@id': autoToCargoShipLeft
+                          filename: "/home/lvuser/449_resources/robot2019LeftStartToFLProfile.csv"
+                          inverted: false
+                          resetPosition: true
+                      right:
+                          '@id': autoToCargoShipRight
+                          filename: "/home/lvuser/449_resources/robot2019RightStartToFLProfile.csv"
+                          inverted: false
+                          resetPosition: true
+                      timeout: 16
+              -   org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+                      '@id': retractStabberCommand2
+                      subsystem:
+                          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                              '@id': stabber
+                              piston:
+                                  '@id': stabberSolenoid
+                                  forward: 4
+                                  reverse: 5
+      action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.dPadButton:
           '@id': forceLowGear
@@ -316,11 +409,7 @@ buttons:
               '@id': stabberCommand
               subsystem:
                   org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-                      '@id': stabber
-                      piston:
-                          '@id': stabberSolenoid
-                          forward: 4
-                          reverse: 5
+                      stabber
       action: WHEN_PRESSED
     - button:
           org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -348,11 +437,7 @@ buttons:
               '@id': stabberBaseCommand
               subsystem:
                   org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-                      '@id': stabberBase
-                      piston:
-                          '@id': stabberBaseSolenoid
-                          forward: 2
-                          reverse: 3
+                      stabberBase
       action: WHEN_PRESSED
     - button:
           org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
