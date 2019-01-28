@@ -141,7 +141,7 @@ public class Robot extends TimedRobot {
         }
 
         //Run the auto startup command
-        if (shouldStartAuto && !DriverStation.getInstance().getGameSpecificMessage().isEmpty()) {
+        if (shouldStartAuto) {
             robotMap.getAutoStartupCommand().start();
             shouldStartAuto = false;
         }
