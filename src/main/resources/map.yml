@@ -254,6 +254,7 @@ defaultCommands:
             currentLimit: 30
             fwdLimitSwitchNormallyOpen: true
             revLimitSwitchNormallyOpen: true
+            remoteLimitSwitchID: 1
     command:
 #            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.PIDToPosition:
 #              '@id': LimeLightPIDCommand
@@ -269,16 +270,19 @@ defaultCommands:
 #              org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
 #                LimeLightXPos
       org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.ControlAnalogMotorWithThrottle:
-          '@id': sliderThrottle
+          '@id': sliderThrottleCommand
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
               LimeLightXPos
           throttle:
-            stick:
+            org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+              '@id': sliderThrottle
+              stick:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                    mechanismsGamepad
-                axis: 4
-                inverted: false
+                    driverGamepad
+              axis: 4
+              inverted: false
+
 startupCommand:
   org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
     '@id': startupCommand
@@ -349,6 +353,8 @@ updater:
           navX
       - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
           PDP
+      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+          sliderThrottle
 buttons:
     - button:
           org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
