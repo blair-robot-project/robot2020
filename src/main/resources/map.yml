@@ -250,6 +250,38 @@ defaultCommands:
     command:
       org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
         defaultDriveCommand
+  - subsystem:
+      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+        '@id': LimeLightXPos
+        motor:
+          org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+            '@id': LimeLightMotor
+            name: "LimeLightPos"
+            port: 8
+            enableBrakeMode: true
+            enableVoltageComp: true
+            reverseSensor: false
+            currentLimit: 30
+    command:
+#      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.PIDToPosition:
+#        '@id': LimeLightPIDCommand
+#        motor:
+#          org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+#            LimeLightXPos
+#        supplier:
+#          org.usfirst.frc.team449.robot.components.LimeLightComponent:
+#            '@id': LimeLightXGetter
+#            value: x
+#        p: .1
+#      subsystem:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+#          LimeLightXPos
+      throttle:
+        stick:
+          org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+            mechanismsGamepad
+        axis: 4
+        inverted: false
 startupCommand:
   org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
     '@id': startupCommand
