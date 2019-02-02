@@ -252,6 +252,8 @@ defaultCommands:
             enableVoltageComp: true
             reverseSensor: false
             currentLimit: 30
+            fwdLimitSwitchNormallyOpen: true
+            revLimitSwitchNormallyOpen: true
     command:
 #            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.PIDToPosition:
 #              '@id': LimeLightPIDCommand
@@ -266,12 +268,17 @@ defaultCommands:
 #            subsystem:
 #              org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
 #                LimeLightXPos
-      throttle:
-        stick:
-          org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-            mechanismsGamepad
-        axis: 4
-        inverted: false
+      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.ControlAnalogMotorWithThrottle:
+          '@id': sliderThrottle
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+              LimeLightXPos
+          throttle:
+            stick:
+                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                    mechanismsGamepad
+                axis: 4
+                inverted: false
 startupCommand:
   org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
     '@id': startupCommand
