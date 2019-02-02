@@ -207,7 +207,7 @@ logger:
         '@id': defaultDriveCommand
         kP: 0.004
         kI: 0.0
-        kD: 0.03
+        kD: 0.05
         absoluteTolerance: 0
         deadband: 2
         maxAngularVelToEnterLoop: 15
@@ -247,7 +247,7 @@ defaultCommands:
           org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
             '@id': LimeLightMotor
             name: "LimeLightPos"
-            port: 8
+            port: 7
             enableBrakeMode: true
             enableVoltageComp: true
             reverseSensor: false
