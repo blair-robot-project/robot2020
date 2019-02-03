@@ -281,13 +281,6 @@ logger:
         '@id': frontLegElevatorTalon
         port: 11
         name: frontLegElevatorTalon
-defaultCommands:
-  - subsystem:
-      org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-        drive
-    command:
-      org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
-        defaultDriveCommand
 startupCommand:
   org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
     '@id': startupCommand
@@ -304,18 +297,6 @@ teleopStartupCommand:
       org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics:
         pneumatics
 #AutoStartupCommand:
-updater:
-  org.usfirst.frc.team449.robot.other.Updater:
-    '@id': updater
-    updatables:
-      - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-          drive
-      - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad:
-          oi
-      - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS:
-          navX
-      - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
-          PDP
 buttons:
   -   button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -655,10 +636,15 @@ buttons:
                         org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
                           frontElevator
                   - org.usfirst.frc.team449.robot.commands.general.RequireSubsystem:
-                      '@id': requireBackLegWheels
+                      '@id': requireBackLegCrawler
                       subsystem:
-                        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-                          drive
+                        org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.BinaryMotorSimple:
+                          backLegDriveMotor
+                  - org.usfirst.frc.team449.robot.commands.general.RequireSubsystem:
+                      '@id': requireBackLegDrive
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.SubsystemMPSimple:
+                          backLegDrive
             - org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
                 '@id': stopMotors
                 commandSet:
@@ -689,3 +675,85 @@ buttons:
                             org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
                               frontLegElevatorTalon
       action: WHEN_PRESSED
+defaultCommands:
+  - subsystem:
+      org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+        drive
+    command:
+      org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
+        defaultDriveCommand
+  - subsystem:
+      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+        '@id': backLegElevatorAnalog
+        motor:
+          org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+            backLegElevatorTalon
+    command:
+      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.ControlAnalogMotorWithThrottle:
+        '@id': backElevatorManualControl
+        subsystem:
+          org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+            backLegElevatorAnalog
+        throttle:
+          org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+            '@id': backElevatorManualThrottle
+            stick:
+              org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                climbOverrideController
+            axis: 0
+  - subsystem:
+      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+        '@id': frontLegElevatorAnalog
+        motor:
+          org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+            frontLegElevatorTalon
+    command:
+      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.ControlAnalogMotorWithThrottle:
+        '@id': frontElevatorManualControl
+        subsystem:
+          org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+            frontLegElevatorAnalog
+        throttle:
+          org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+            '@id': frontElevatorManualThrottle
+            stick:
+              org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                climbOverrideController
+            axis: 1
+  - subsystem:
+      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+        '@id': backLegDriveAnalog
+        motor:
+          org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+            backLegDriveTalon
+    command:
+      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.ControlAnalogMotorWithThrottle:
+        '@id': backLegDriveManualControl
+        subsystem:
+          org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+            backLegDriveAnalog
+        throttle:
+          org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+            '@id': backLegDriveManualThrottle
+            stick:
+              org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                climbOverrideController
+            axis: 2
+updater:
+  org.usfirst.frc.team449.robot.other.Updater:
+    '@id': updater
+    updatables:
+      - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+          drive
+      - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad:
+          oi
+      - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS:
+          navX
+      - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
+          PDP
+      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+          backElevatorManualThrottle
+      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+          frontElevatorManualThrottle
+      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+          backLegDriveManualThrottle
