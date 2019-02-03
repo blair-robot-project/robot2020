@@ -1,5 +1,5 @@
 ---
-useCameraServer: true
+useCameraServer: false
 logger:
   '@id': logger
   eventLogFilename: "/home/lvuser/logs/eventLog-"
@@ -262,17 +262,15 @@ defaultCommands:
     command:
             org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.PIDToPosition:
               '@id': LimeLightPIDCommand
-              motor:
-                org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-                  LimeLightXPos
               supplier:
                 org.usfirst.frc.team449.robot.components.LimeLightComponent:
                   '@id': LimeLightXGetter
                   value: x
-              p: .01
-            subsystem:
-              org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-                LimeLightXPos
+              p: .1
+              subsystem:
+                org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+                  LimeLightXPos
+              invertInput: true
 #      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.ControlAnalogMotorWithThrottle:
 #          '@id': sliderThrottleCommand
 #          subsystem:
@@ -357,8 +355,8 @@ updater:
           navX
       - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
           PDP
-      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
-          sliderThrottle
+#      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+#          sliderThrottle
 buttons:
     - button:
           org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:

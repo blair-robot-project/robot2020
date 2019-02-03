@@ -13,9 +13,10 @@ import java.util.function.DoubleSupplier;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class PIDToPosition <T extends Subsystem & SubsystemAnalogMotor> extends PIDCommand {
 
-    @NotNull T motor;
-    @NotNull DoubleSupplier supplier;
-    double setPoint;
+    @NotNull private DoubleSupplier supplier;
+    private double setPoint;
+    private boolean invertInput;
+    private T subsystem;
 
     @JsonCreator
     public PIDToPosition(@JsonProperty(required = true) T subsystem,
@@ -23,12 +24,14 @@ public class PIDToPosition <T extends Subsystem & SubsystemAnalogMotor> extends 
                          double p,
                          double i,
                          double d,
-                         double setPoint){
+                         double setPoint,
+                         boolean invertInput){
         super(p, i, d);
         requires(subsystem);
-        this.motor = motor;
+        this.subsystem = subsystem;
         this.supplier = supplier;
         this.setPoint = setPoint;
+        this.invertInput = invertInput;
     }
 
     /**
@@ -45,7 +48,7 @@ public class PIDToPosition <T extends Subsystem & SubsystemAnalogMotor> extends 
      */
     @Override
     protected double returnPIDInput() {
-        return supplier.getAsDouble();
+        return !invertInput ? supplier.getAsDouble() : -supplier.getAsDouble();
     }
 
     /**
@@ -61,7 +64,7 @@ public class PIDToPosition <T extends Subsystem & SubsystemAnalogMotor> extends 
      */
     @Override
     protected void usePIDOutput(double output) {
-        motor.set(output);
+        subsystem.set(output);
     }
 
     /**
