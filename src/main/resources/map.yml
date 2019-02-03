@@ -4,7 +4,7 @@ logger:
   '@id': logger
   eventLogFilename: "/home/lvuser/logs/eventLog-"
   telemetryLogFilename: "/home/lvuser/logs/telemetryLog-"
-  loopTimeMillis: 100
+  loopTimeMillis: 20
   loggables:
     - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
         '@id': PDP
@@ -12,6 +12,26 @@ logger:
         voltagePerCurrentLinReg:
           bufferSize: 250
           rSquaredThreshhold: 0.75
+    - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+        '@id': LimeLightMotor
+        name: "LimeLightPos"
+        port: 7
+        enableBrakeMode: true
+        enableVoltageComp: true
+        reverseSensor: false
+        currentLimit: 30
+        fwdLimitSwitchNormallyOpen: true
+        revLimitSwitchNormallyOpen: true
+        remoteLimitSwitchID: 1
+        feedbackDevice: QuadEncoder
+        encoderCPR: 256
+        perGearSettings:
+          - maxSpeed: 30.5
+            kP: 0
+            feedForwardComponent:
+              org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
+                kVFwd: 0.36
+                interceptVoltageFwd: 0.52
     - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
         '@id': drive
         #Wheelbase: 2.16810362021
@@ -249,28 +269,20 @@ defaultCommands:
         '@id': LimeLightXPos
         motor:
           org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-            '@id': LimeLightMotor
-            name: "LimeLightPos"
-            port: 7
-            enableBrakeMode: true
-            enableVoltageComp: true
-            reverseSensor: false
-            currentLimit: 30
-            fwdLimitSwitchNormallyOpen: true
-            revLimitSwitchNormallyOpen: true
-            remoteLimitSwitchID: 1
+            LimeLightMotor
     command:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.PIDToPosition:
-              '@id': LimeLightPIDCommand
-              supplier:
-                org.usfirst.frc.team449.robot.components.LimeLightComponent:
-                  '@id': LimeLightXGetter
-                  value: x
-              p: .1
-              subsystem:
-                org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-                  LimeLightXPos
-              invertInput: true
+      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.PIDToPosition:
+        '@id': LimeLightPIDCommand
+        supplier:
+          org.usfirst.frc.team449.robot.components.LimeLightComponent:
+            '@id': LimeLightXGetter
+            value: x
+        p: .15
+        d: 0.2
+        subsystem:
+          org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+            LimeLightXPos
+        invertInput: true
 #      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.ControlAnalogMotorWithThrottle:
 #          '@id': sliderThrottleCommand
 #          subsystem:
@@ -487,19 +499,51 @@ buttons:
                       stabberBase
       action: WHEN_PRESSED
     - button:
-          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-              '@id': retractStabberBaseButton #solenoid
-              joystick:
-                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                      driverGamepad
-              buttonNumber: 4
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': retractStabberBaseButton #solenoid
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              driverGamepad
+          buttonNumber: 4
       command:
-          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
-              '@id': retractStabberBaseCommand
-              subsystem:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-                      stabberBase
+        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+          '@id': retractStabberBaseCommand
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+              stabberBase
       action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': resetSlider
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsGamepad
+          buttonNumber: 1
+      command:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.PIDToPosition:
+          '@id': ResetSlider
+          supplier:
+            org.usfirst.frc.team449.robot.components.TalonDataComponent:
+              talon:
+                org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+                  LimeLightMotor
+              value: position
+          p: .1
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+              LimeLightXPos
+      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': stopResetSlider
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsGamepad
+          buttonNumber: 2
+      command:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.PIDToPosition:
+          ResetSlider
+      action: CANCEL_WHEN_PRESSED
 #    - button:
 #          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
 #              '@id': swapCamButton
@@ -641,3 +685,10 @@ buttons:
 #                subsystem:
 #                  bigPuller
 #      action: WHEN_PRESSED
+autoStartupCommand:
+  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogMotorVoltageRamp:
+    '@id': voltageRamp
+    subsystem:
+      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+        LimeLightXPos
+    voltsPerSecond: 0.5
