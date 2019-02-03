@@ -31,6 +31,8 @@ public class GoToVisionTarget<T extends Subsystem & SubsystemMPTwoSides & Subsys
      */
     private final NetworkTable table;
 
+    private final double xOffset, yOffset;
+
     /**
      * Default constructor
      *
@@ -47,14 +49,19 @@ public class GoToVisionTarget<T extends Subsystem & SubsystemMPTwoSides & Subsys
                             @JsonProperty(required = true) double maxVel,
                             @JsonProperty(required = true) double maxAccel,
                             @JsonProperty(required = true) double maxJerk,
-                            @JsonProperty(required = true) double deltaTime) {
+                            @JsonProperty(required = true) double deltaTime,
+                            double xOffset,
+                            double yOffset) {
         this.subsystem = subsystem;
+        requires(subsystem);
         this.table = NetworkTableInstance.getDefault().getTable("SmartDashboard").getSubTable("jetson-vision");
         GetPathFromJetson getPath = new GetPathFromJetson(pathRequester, null, deltaTime, maxVel, maxAccel, maxJerk,
                 false);
         GoToPositionRelative goToPositionRelative = new GoToPositionRelative<>(getPath, subsystem);
         goToPositionRelative.setWaypoints(this::getWaypoints);
         addSequential(goToPositionRelative);
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
     }
 
     /**
@@ -76,7 +83,7 @@ public class GoToVisionTarget<T extends Subsystem & SubsystemMPTwoSides & Subsys
      */
     private double getX() {
         //Not a typo, this is how our coordinate transform works
-        return -table.getEntry("z").getDouble(0);
+        return -table.getEntry("z").getDouble(0) + xOffset;
     }
 
     /**
@@ -84,7 +91,7 @@ public class GoToVisionTarget<T extends Subsystem & SubsystemMPTwoSides & Subsys
      */
     private double getY() {
         //Not a typo, this is how our coordinate transform works
-        return -table.getEntry("x").getDouble(0);
+        return table.getEntry("x").getDouble(0) + yOffset;
     }
 
     /**

@@ -381,4 +381,5 @@ buttons:
             maxAccel: 9
             maxJerk: 10
             deltaTime: 0.05
+            xOffset: -0.5
     action: WHEN_PRESSED
