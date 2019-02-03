@@ -7,7 +7,7 @@ logger:
   loggables:
   - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
       '@id': PDP
-      canID: 4
+      canID: 0
       voltagePerCurrentLinReg:
         bufferSize: 250
         rSquaredThreshhold: 0.75
@@ -292,12 +292,14 @@ autoStartupCommand:
         pathRequester:
           '@id': pathRequester
           address: "tcp://10.4.49.2:5800"
+          wheelbase: 2.167
         poseEstimator:
           org.usfirst.frc.team449.robot.generalInterfaces.poseEstimator.UnidirectionalPoseEstimator:
             poseEstimator
-        #x: 10
-        #y: 0
-        #theta: 0
+        waypoints:
+            - x: 10
+              y: 0
+              theta: 0
         maxVel: 7
         maxAccel: 12
         maxJerk: 16

@@ -94,4 +94,9 @@ public class Waypoint {
     public void setThetaDegrees(double theta) {
         this.theta = theta;
     }
+
+    @Override
+    public String toString(){
+        return "X: "+getX() +", Y: "+getY()+", Theta: "+getThetaDegrees();
+    }
 }

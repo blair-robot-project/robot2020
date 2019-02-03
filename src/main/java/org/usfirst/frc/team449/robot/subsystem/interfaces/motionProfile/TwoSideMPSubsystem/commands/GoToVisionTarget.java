@@ -65,9 +65,9 @@ public class GoToVisionTarget<T extends Subsystem & SubsystemMPTwoSides & Subsys
         System.out.println("X: " + getX());
         System.out.println("Y: " + getY());
         System.out.println("THETA: " + getTheta());
-        Waypoint[] toRet = new Waypoint[2];
-        toRet[0] = new Waypoint(0,0,0);
-        toRet[1] = new Waypoint(getX(), getY(), getTheta());
+        Waypoint[] toRet = new Waypoint[1];
+//        toRet[0] = new Waypoint(0,0,0);
+        toRet[0] = new Waypoint(getX(), getY(), getTheta());
         return toRet;
     }
 
@@ -91,6 +91,6 @@ public class GoToVisionTarget<T extends Subsystem & SubsystemMPTwoSides & Subsys
      * @return The relative angular distance to the setpoint, in degrees.
      */
     private double getTheta() {
-        return -table.getEntry("yaw").getDouble(0);
+        return -Math.toDegrees(table.getEntry("yaw").getDouble(0));
     }
 }
