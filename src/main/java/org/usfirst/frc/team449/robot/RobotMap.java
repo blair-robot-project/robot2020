@@ -62,6 +62,11 @@ public class RobotMap {
     private final Command startupCommand;
 
     /**
+     * Whether the camera server should be run.
+     */
+    private final boolean useCameraServer;
+
+    /**
      * Default constructor.
      *
      * @param buttons              The buttons for controlling this robot. Can be null for an empty list.
@@ -71,6 +76,7 @@ public class RobotMap {
      * @param autoStartupCommand   The command to be run when first enabled in autonomous mode.
      * @param teleopStartupCommand The command to be run when first enabled in teleoperated mode.
      * @param startupCommand       The command to be run when first enabled.
+     * @param useCameraServer Whether the camera server should be run. Defaults to false.
      */
     @JsonCreator
     public RobotMap(@Nullable List<CommandButton> buttons,
@@ -79,7 +85,8 @@ public class RobotMap {
                     @Nullable List<DefaultCommand> defaultCommands,
                     @Nullable Command autoStartupCommand,
                     @Nullable Command teleopStartupCommand,
-                    @Nullable Command startupCommand) {
+                    @Nullable Command startupCommand,
+                    boolean useCameraServer) {
         this.buttons = buttons != null ? buttons : new ArrayList<>();
         this.logger = logger;
         this.updater = updater;
@@ -87,6 +94,7 @@ public class RobotMap {
         this.autoStartupCommand = autoStartupCommand;
         this.teleopStartupCommand = teleopStartupCommand;
         this.startupCommand = startupCommand;
+        this.useCameraServer = useCameraServer;
     }
 
     /**
@@ -127,5 +135,12 @@ public class RobotMap {
     @NotNull
     public Runnable getUpdater() {
         return updater;
+    }
+
+    /**
+     * @return Whether the camera server should be run.
+     */
+    public boolean useCameraServer() {
+        return useCameraServer;
     }
 }
