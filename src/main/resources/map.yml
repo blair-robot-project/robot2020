@@ -3,16 +3,16 @@ useCameraServer: true
 logger:
   '@id': logger
   eventLogFilename: "/home/lvuser/logs/eventLog-"
-#  telemetryLogFilename: "/home/lvuser/logs/telemetryLog-"
+  telemetryLogFilename: "/home/lvuser/logs/telemetryLog-"
 #  telemetryLogFilename: "/home/lvuser/logs/lowGearFwdAccel-"
 #  telemetryLogFilename: "/home/lvuser/logs/lowGearRevAccel-"
 #  telemetryLogFilename: "/home/lvuser/logs/lowGearFwdQuasi-"
 #  telemetryLogFilename: "/home/lvuser/logs/lowGearRevQuasi-"
 #  telemetryLogFilename: "/home/lvuser/logs/highGearFwdAccel-"
-  telemetryLogFilename: "/home/lvuser/logs/highGearRevAccel-"
+#  telemetryLogFilename: "/home/lvuser/logs/highGearRevAccel-"
 #  telemetryLogFilename: "/home/lvuser/logs/highGearFwdQuasi-"
 #  telemetryLogFilename: "/home/lvuser/logs/highGearRevQuasi-"
-  loopTimeMillis: 20
+  loopTimeMillis: 100
   loggables:
     - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
         '@id': PDP
