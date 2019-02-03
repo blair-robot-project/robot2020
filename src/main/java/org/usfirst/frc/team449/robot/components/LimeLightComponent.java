@@ -15,26 +15,32 @@ public class LimeLightComponent implements DoubleSupplier {
 
     @NotNull NetworkTableEntry entry;
 
-    enum returnValue{
+    enum ReturnValue {
         x,y,area;
     }
 
+    /**
+     * Default creator
+     * @param value whether to request x distance from center, y distance from center, or the area of vision target
+     */
     @JsonCreator
-    public LimeLightComponent(@JsonProperty(required = true) returnValue value){
+    public LimeLightComponent(@JsonProperty(required = true) ReturnValue value){
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-        if(value == returnValue.x) {
-            entry = table.getEntry("tx");
-        }else if(value == returnValue.y){
-            entry = table.getEntry("ty");
-        }else{
-            entry = table.getEntry("ta");
+        switch(value) {
+            case x:
+                entry = table.getEntry("tx");
+                break;
+            case y:
+                entry = table.getEntry("ty");
+                break;
+            case area:
+                entry = table.getEntry("ta");
+                break;
         }
     }
 
     /**
-     * Gets a result.
-     *
-     * @return a result
+     * @return requested value from LimeLight
      */
     @Override
     public double getAsDouble() {

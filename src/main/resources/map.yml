@@ -2,7 +2,7 @@
 useCameraServer: true
 logger:
   '@id': logger
-  eventLogFilename: "/home/lvuser/logs/eventLog-"
+  eventLoFilename: "/home/lvuser/logs/eventLog-"
   telemetryLogFilename: "/home/lvuser/logs/telemetryLog-"
   loopTimeMillis: 100
   loggables:
@@ -260,32 +260,32 @@ defaultCommands:
             revLimitSwitchNormallyOpen: true
             remoteLimitSwitchID: 1
     command:
-#            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.PIDToPosition:
-#              '@id': LimeLightPIDCommand
-#              motor:
-#                org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-#                  LimeLightXPos
-#              supplier:
-#                org.usfirst.frc.team449.robot.components.LimeLightComponent:
-#                  '@id': LimeLightXGetter
-#                  value: x
-#              p: .1
-#            subsystem:
-#              org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-#                LimeLightXPos
-      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.ControlAnalogMotorWithThrottle:
-          '@id': sliderThrottleCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-              LimeLightXPos
-          throttle:
-            org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
-              '@id': sliderThrottle
-              stick:
-                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                    driverGamepad
-              axis: 4
-              inverted: false
+            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.PIDToPosition:
+              '@id': LimeLightPIDCommand
+              motor:
+                org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+                  LimeLightXPos
+              supplier:
+                org.usfirst.frc.team449.robot.components.LimeLightComponent:
+                  '@id': LimeLightXGetter
+                  value: x
+              p: .1
+            subsystem:
+              org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+                LimeLightXPos
+#      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.ControlAnalogMotorWithThrottle:
+#          '@id': sliderThrottleCommand
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+#              LimeLightXPos
+#          throttle:
+#            org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+#              '@id': sliderThrottle
+#              stick:
+#                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#                    driverGamepad
+#              axis: 4
+#              inverted: false
 
 startupCommand:
   org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
