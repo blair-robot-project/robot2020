@@ -2,7 +2,7 @@
 useCameraServer: true
 logger:
   '@id': logger
-  eventLoFilename: "/home/lvuser/logs/eventLog-"
+  eventLogFilename: "/home/lvuser/logs/eventLog-"
   telemetryLogFilename: "/home/lvuser/logs/telemetryLog-"
   loopTimeMillis: 100
   loggables:
@@ -269,7 +269,7 @@ defaultCommands:
                 org.usfirst.frc.team449.robot.components.LimeLightComponent:
                   '@id': LimeLightXGetter
                   value: x
-              p: .1
+              p: .01
             subsystem:
               org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
                 LimeLightXPos

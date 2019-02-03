@@ -35,19 +35,14 @@ public class TalonDataComponent implements DoubleSupplier {
         switch(value) {
             case position:
                 return talon.getPositionFeet();
-                break;
             case velocity:
                 return talon.getVelocity();
-                break;
             case current:
                 return talon.getOutputCurrent();
-                break;
             case voltage:
                 return talon.getOutputVoltage();
-                break;
             default:
                 return 0;
-                break;
         }
     }
 }
