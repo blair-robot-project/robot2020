@@ -35,11 +35,15 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
         super(p, i, d);
         requires(subsystem);
         this.subsystem = subsystem;
-        this.supplier = supplier;
-        this.setPoint = setPoint;
         this.invertInput = invertInput;
 
-        //Set a deadband around the setpoint, in degrees, within which don't move, to avoid "dancing"
+        if (supplier == null){
+            this.setPoint = setPoint;
+        }else {
+            this.supplier = supplier;
+        }
+
+        //Set a deadband around the setpoint, in appropriate units, within which don't move, to avoid "dancing"
         this.deadband = deadband;
     }
 
@@ -67,6 +71,10 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
      */
     @Override
     protected double returnPIDInput() {
+        double value = supplier.getAsDouble();
+        if(Double.isNaN(value)){
+            return setPoint;
+        }
         return !invertInput ? supplier.getAsDouble() : -supplier.getAsDouble();
     }
 

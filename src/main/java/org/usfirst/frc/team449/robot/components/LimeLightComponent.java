@@ -14,6 +14,7 @@ import java.util.function.DoubleSupplier;
 public class LimeLightComponent implements DoubleSupplier {
 
     @NotNull NetworkTableEntry entry;
+    private final NetworkTableEntry tv;
 
     enum ReturnValue {
         x,y,area;
@@ -37,6 +38,7 @@ public class LimeLightComponent implements DoubleSupplier {
                 entry = table.getEntry("ta");
                 break;
         }
+        tv = table.getEntry("tv");
     }
 
     /**
@@ -44,7 +46,9 @@ public class LimeLightComponent implements DoubleSupplier {
      */
     @Override
     public double getAsDouble() {
-        return entry.getDouble(0.0)
-                * NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0.0);
+        if (tv.getDouble(0) == 0){
+            return Double.NaN;
+        }
+        return entry.getDouble(0.0);
     }
 }
