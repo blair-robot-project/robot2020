@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.SubsystemAnalogMotor;
 
 import java.util.function.DoubleSupplier;
@@ -13,8 +14,8 @@ import java.util.function.DoubleSupplier;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extends PIDCommand {
 
-    @NotNull private DoubleSupplier supplier;
-    private double setPoint;
+    @NotNull private DoubleSupplier processVariableSupplier;
+    @NotNull private DoubleSupplier setpointSupplier;
     private boolean invertInput;
     private T subsystem;
 
@@ -25,26 +26,35 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
 
     @JsonCreator
     public AnalogPIDCommand(@JsonProperty(required = true) T subsystem,
-                            @JsonProperty(required = true) DoubleSupplier supplier,
+                            @NotNull @JsonProperty(required = true) DoubleSupplier processVariableSupplier,
                             double deadband,
                             double p,
                             double i,
                             double d,
                             double setPoint,
+                            @Nullable DoubleSupplier setpointSupplier,
                             boolean invertInput){
         super(p, i, d);
         requires(subsystem);
         this.subsystem = subsystem;
         this.invertInput = invertInput;
 
-        if (supplier == null){
-            this.setPoint = setPoint;
-        }else {
-            this.supplier = supplier;
+        if (setpointSupplier == null){
+            this.setpointSupplier = () -> setPoint;
+        } else {
+            this.setpointSupplier = setpointSupplier;
         }
+
+        this.processVariableSupplier = processVariableSupplier;
+
+        // Make the processVariableSupplier equal the setPoint
+
+
 
         //Set a deadband around the setpoint, in appropriate units, within which don't move, to avoid "dancing"
         this.deadband = deadband;
+        //Setpoint is always zero since we subtract it off ourselves, from the input.
+        this.setSetpoint(0);
     }
 
     /**
@@ -71,11 +81,11 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
      */
     @Override
     protected double returnPIDInput() {
-        double value = supplier.getAsDouble();
+        double value = processVariableSupplier.getAsDouble();
         if(Double.isNaN(value)){
-            return setPoint;
+            return 0;
         }
-        return !invertInput ? supplier.getAsDouble() : -supplier.getAsDouble();
+        return !invertInput ? value - setpointSupplier.getAsDouble() : -value - setpointSupplier.getAsDouble();
     }
 
     /**
