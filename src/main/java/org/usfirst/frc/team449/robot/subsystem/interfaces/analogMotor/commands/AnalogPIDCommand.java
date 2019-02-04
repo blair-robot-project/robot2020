@@ -11,27 +11,46 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.SubsystemA
 import java.util.function.DoubleSupplier;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class PIDToPosition <T extends Subsystem & SubsystemAnalogMotor> extends PIDCommand {
+public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extends PIDCommand {
 
     @NotNull private DoubleSupplier supplier;
     private double setPoint;
     private boolean invertInput;
     private T subsystem;
 
+    /**
+     * The range in which output is turned off to prevent "dancing" around the setpoint.
+     */
+    private final double deadband;
+
     @JsonCreator
-    public PIDToPosition(@JsonProperty(required = true) T subsystem,
-                         @JsonProperty(required = true) DoubleSupplier supplier,
-                         double p,
-                         double i,
-                         double d,
-                         double setPoint,
-                         boolean invertInput){
+    public AnalogPIDCommand(@JsonProperty(required = true) T subsystem,
+                            @JsonProperty(required = true) DoubleSupplier supplier,
+                            double deadband,
+                            double p,
+                            double i,
+                            double d,
+                            double setPoint,
+                            boolean invertInput){
         super(p, i, d);
         requires(subsystem);
         this.subsystem = subsystem;
         this.supplier = supplier;
         this.setPoint = setPoint;
         this.invertInput = invertInput;
+
+        //Set a deadband around the setpoint, in degrees, within which don't move, to avoid "dancing"
+        this.deadband = deadband;
+    }
+
+    /**
+     * Deadband the output of the PID loop.
+     *
+     * @param output The output from the WPILib angular PID loop.
+     * @return That output after being deadbanded with the map-given deadband.
+     */
+    protected double deadbandOutput(double output) {
+        return Math.abs(this.getPIDController().getError()) > deadband ? output : 0;
     }
 
     /**
@@ -64,6 +83,7 @@ public class PIDToPosition <T extends Subsystem & SubsystemAnalogMotor> extends 
      */
     @Override
     protected void usePIDOutput(double output) {
+        output = deadbandOutput(output);
         subsystem.set(output);
     }
 

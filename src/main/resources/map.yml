@@ -271,7 +271,7 @@ defaultCommands:
           org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
             LimeLightMotor
     command:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.PIDToPosition:
+      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
         '@id': LimeLightPIDCommand
         supplier:
           org.usfirst.frc.team449.robot.components.LimeLightComponent:
@@ -520,7 +520,7 @@ buttons:
               mechanismsGamepad
           buttonNumber: 1
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.PIDToPosition:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
           '@id': ResetSlider
           supplier:
             org.usfirst.frc.team449.robot.components.TalonDataComponent:
@@ -541,7 +541,7 @@ buttons:
               mechanismsGamepad
           buttonNumber: 2
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.PIDToPosition:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
           ResetSlider
       action: CANCEL_WHEN_PRESSED
 #    - button:
