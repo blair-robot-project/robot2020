@@ -478,8 +478,8 @@ buttons:
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
               stabberBase
-          action: WHEN_PRESSED
-  -   button:
+      action: WHEN_PRESSED
+    - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': climbButton
           joystick:
@@ -638,7 +638,7 @@ buttons:
                     backElevator
                 setpoint: 1.4
       action: WHEN_PRESSED
-  -   button:
+    - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': abortClimbButton
           joystick:
