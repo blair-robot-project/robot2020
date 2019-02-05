@@ -21,6 +21,18 @@ public class LimelightNavXTargetComponent implements DoubleSupplier {
 
     @Override
     public double getAsDouble() {
-        return (90 - Math.abs(ahrs.getHeading() % 45)) / 2;
+        double heading = ahrs.getHeading();
+        if (heading >= 0){
+            if (heading % 45 < Math.abs(heading % 45 - 45)) return heading % 45 / 2;
+            else return (heading % 45 - 45) / 2;
+        }
+        /*
+         * May want to negate answers. Either by negating return statements, or by treating the angle as positive (+) originally
+         * and switching back to negative (-) later
+         */
+        else {
+            if (heading % 45 + 45 < Math.abs(heading % 45)) return (heading % 45 + 45) / 2;
+            else return heading % 45 / 2;
+        }
     }
 }
