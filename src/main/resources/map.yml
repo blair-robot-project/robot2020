@@ -239,7 +239,7 @@ logger:
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         &legElevator
         '@id': backLegElevatorTalon
-        port: 10
+        port: 9
         name: backLegElevatorTalon
         reverseOutput: false
         reverseSensor: false
@@ -247,8 +247,6 @@ logger:
         remoteLimitSwitchID: 1
         fwdLimitSwitchNormallyOpen: true
         revLimitSwitchNormallyOpen: true
-        fwdSoftLimit: 1.66
-        revSoftLimit: 0
         postEncoderGearing: 1
         feetPerRotation: 0.5962
         currentLimit: 40
@@ -258,26 +256,27 @@ logger:
         encoderCPR: 1024
         perGearSettings:
           -   motionProfilePFwd: 0.5
+              maxSpeed:
               feedForwardComponent:
-                org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardMPElevatorComponent:
-                  feetToFFComponentMap: !!map
-                    3.354 :
-                      org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                        kVFwd: 1.379
-                        kAFwd: 0.0191
-                        interceptVoltageFwd: 2.29000
-                        interceptVoltageRev: -1.1
-                    100 :
-                      org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                        kVFwd: 1.2926
-                        kAFwd: 0.0831
-                        interceptVoltageFwd: 2.56113
-                        interceptVoltageRev: -0.8
+                org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
+                  kVFwd: 0.542
+                  kAFwd: 0.00193
+                  interceptVoltageFwd: 0.798
+#                  interceptVoltageRev: -0.798
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         <<: *legElevator
         '@id': frontLegElevatorTalon
-        port: 11
+        port: 8
         name: frontLegElevatorTalon
+        reverseOutput: true
+        perGearSettings:
+          - motionProfilePFwd: 0.5
+            feedForwardComponent:
+              org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
+                kVFwd: 0.542
+                kAFwd: 0.00675
+                interceptVoltageFwd: 2.659
+#                interceptVoltageRev: -2.659
 startupCommand:
   org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
     '@id': startupCommand
@@ -732,7 +731,7 @@ defaultCommands:
             stick:
               org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
                 climbOverrideController
-            axis: 0
+            axis: 1
   - subsystem:
       org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
         '@id': frontLegElevatorAnalog
@@ -747,11 +746,12 @@ defaultCommands:
             frontLegElevatorAnalog
         throttle:
           org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
-            '@id': frontElevatorManualThrottle
-            stick:
-              org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                climbOverrideController
-            axis: 1
+            backElevatorManualThrottle
+#            '@id': frontElevatorManualThrottle
+#            stick:
+#              org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#                climbOverrideController
+#            axis: 5
   - subsystem:
       org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
         '@id': backLegDriveAnalog
@@ -785,8 +785,8 @@ updater:
           PDP
       - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
           backElevatorManualThrottle
-      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
-          frontElevatorManualThrottle
+#      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+#          frontElevatorManualThrottle
       - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
           backLegDriveManualThrottle
 #    - button:
