@@ -35,15 +35,16 @@ public class SlaveTalon implements Loggable {
      * Default constructor.
      *
      * @param port     The CAN ID of this Talon SRX.
-     * @param inverted Whether or not to invert this Talon. Note this is not relative to the master. Defaults to false.
+     * @param invertType Whether or not to invert this Talon. Defaults to FollowMaster , but can be changed to OpposeMaster.
      */
     @JsonCreator
     public SlaveTalon(@JsonProperty(required = true) int port,
-                      boolean inverted) {
+                      InvertType invertType) {
         this.talonSRX = new TalonSRX(port);
-        this.talonSRX.setInverted(inverted);
+        //this.talonSRX.setInverted(inverted);
 
         //Turn off features we don't want a slave to have
+        talonSRX.setInverted(invertType == null ? InvertType.FollowMaster : invertType);
         talonSRX.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
         talonSRX.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
         talonSRX.configForwardSoftLimitEnable(false, 0);

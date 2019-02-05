@@ -6,15 +6,16 @@ package org.usfirst.frc.team449.robot;
  * change the parameter class to the startRobot call.
  */
 public final class Main {
-	private Main() {
-	}
 
-	/**
-	 * Main initialization function. Do not perform any initialization here.
-	 *
-	 * <p>If you change your main robot class, change the parameter type.
-	 */
-	public static void main(String... args) {
-		Robot.startRobot(Robot::new);
-	}
+    private Main() {
+    }
+
+    /**
+     * Main initialization function. Do not perform any initialization here.
+     *
+     * <p>If you change your main robot class, change the parameter type.
+     */
+    public static void main(String... args) {
+        Robot.startRobot(Robot::new);
+    }
 }

@@ -3,6 +3,7 @@ package org.usfirst.frc.team449.robot;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -83,6 +84,10 @@ public class Robot extends TimedRobot {
 
         shouldStartAuto = this.robotMap.getAutoStartupCommand() != null;
 
+        if(robotMap.useCameraServer()){
+            CameraServer.getInstance().startAutomaticCapture();
+        }
+
         robotMap.getLogger().start();
     }
 
@@ -141,7 +146,7 @@ public class Robot extends TimedRobot {
         }
 
         //Run the auto startup command
-        if (shouldStartAuto && !DriverStation.getInstance().getGameSpecificMessage().isEmpty()) {
+        if (shouldStartAuto) {
             robotMap.getAutoStartupCommand().start();
             shouldStartAuto = false;
         }
