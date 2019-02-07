@@ -1,5 +1,5 @@
 ---
-useCameraServer: true
+useCameraServer: false
 logger:
   '@id': logger
   eventLogFilename: "/home/lvuser/logs/eventLog-"
@@ -21,11 +21,11 @@ logger:
             '@id': leftMaster
             name: left
             port: 1
-            PDP:
-              org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
-            voltagePerCurrentLinReg:
-              bufferSize: 250
-              rSquaredThreshhold: 0.75
+#            PDP:
+#              org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
+#            voltagePerCurrentLinReg:
+#              bufferSize: 250
+#              rSquaredThreshhold: 0.75
             reverseOutput: true
             reverseSensor: false
             enableBrakeMode: true
@@ -240,13 +240,13 @@ logger:
         &legElevator
         '@id': backLegElevatorTalon
         port: 9
-        name: backLegElevatorTalon
+        name: "backLegElevatorTalon"
         reverseOutput: false
-        reverseSensor: false
+        reverseSensor: true
         enableBrakeMode: true
-        remoteLimitSwitchID: 1
-        fwdLimitSwitchNormallyOpen: true
-        revLimitSwitchNormallyOpen: true
+#        remoteLimitSwitchID: 1
+#        fwdLimitSwitchNormallyOpen: true
+#        revLimitSwitchNormallyOpen: true
         postEncoderGearing: 1
         feetPerRotation: 0.5962
         currentLimit: 40
@@ -256,27 +256,32 @@ logger:
         encoderCPR: 1024
         perGearSettings:
           -   motionProfilePFwd: 0.5
-              maxSpeed:
+              maxSpeed: 17
+              kP: 0.2
               feedForwardComponent:
                 org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                   kVFwd: 0.542
                   kAFwd: 0.00193
-                  interceptVoltageFwd: 0.798
-#                  interceptVoltageRev: -0.798
+                  interceptVoltageFwd: -0.798
+                  interceptVoltageRev: 0.798
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         <<: *legElevator
         '@id': frontLegElevatorTalon
         port: 8
-        name: frontLegElevatorTalon
+        name: "frontLegElevatorTalon"
         reverseOutput: true
+        reverseSensor: false
+#        remoteLimitSwitchID: 4
         perGearSettings:
           - motionProfilePFwd: 0.5
+            maxSpeed: 17
+            kP: 0.2
             feedForwardComponent:
               org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                 kVFwd: 0.542
                 kAFwd: 0.00675
-                interceptVoltageFwd: 2.659
-#                interceptVoltageRev: -2.659
+                interceptVoltageFwd: -2.659
+                interceptVoltageRev: 2.659
 startupCommand:
   org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
     '@id': startupCommand
@@ -705,6 +710,30 @@ buttons:
                           motor:
                             org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
                               frontLegElevatorTalon
+      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': testMPButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              climbOverrideController
+          buttonNumber: 2
+      command:
+        org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
+            '@id': dropLegs3
+            commandSet:
+                - org.usfirst.frc.team449.robot.subsystem.interfaces.position.commands.GoToPosition:
+                    '@id': dropBackLeg3
+                    subsystem:
+                      org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
+                        backElevator
+                    setpoint: 0.4 #0.58 for level 2 climb
+                - org.usfirst.frc.team449.robot.subsystem.interfaces.position.commands.GoToPosition:
+                    '@id': dropFrontLeg3
+                    subsystem:
+                      org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
+                        frontElevator
+                    setpoint: 0.4 #0.58 for level 2 climb
       action: WHEN_PRESSED
 defaultCommands:
   - subsystem:
