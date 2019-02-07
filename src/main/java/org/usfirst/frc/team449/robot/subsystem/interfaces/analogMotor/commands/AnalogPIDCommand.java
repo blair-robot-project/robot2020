@@ -18,6 +18,8 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
     @NotNull private DoubleSupplier setpointSupplier;
     private boolean invertInput;
     private T subsystem;
+    private double absoluteTolerance;
+    private BufferTimer onTargetBuffer;
 
     /**
      * The range in which output is turned off to prevent "dancing" around the setpoint.
@@ -32,6 +34,7 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
                             double i,
                             double d,
                             double setPoint,
+                            double absoluteTolerance,
                             @Nullable DoubleSupplier setpointSupplier,
                             boolean invertInput){
         super(p, i, d);
@@ -49,7 +52,8 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
 
         // Make the processVariableSupplier equal the setPoint
 
-
+        //Set the absolute tolerance to be considered on target within.
+        this.getPIDController().setAbsoluteTolerance(absoluteTolerance);
 
         //Set a deadband around the setpoint, in appropriate units, within which don't move, to avoid "dancing"
         this.deadband = deadband;
