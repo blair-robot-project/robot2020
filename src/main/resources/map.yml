@@ -500,7 +500,7 @@ buttons:
                     - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
                         '@id': dropBackLeg
                         subsystem:
-                          org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
+                          org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
                             '@id': backElevator
                             talon:
                               org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
@@ -511,6 +511,11 @@ buttons:
                               revMaxVel: 6
                               maxAccel: 6
                               deltaTimeSecs: 0.05
+                            piston:
+                              '@id': backElevatorBrake
+                              module: 0
+                              forward: 6
+                              reverse: 7
                         profile:
                           '@id': dropBackLegProfile
                           filename: "/home/lvuser/449_resources/robot2019ClimbDropLegProfile.csv"
@@ -520,7 +525,7 @@ buttons:
                     - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
                         '@id': dropFrontLeg
                         subsystem:
-                          org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
+                          org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
                             '@id': frontElevator
                             talon:
                               org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
@@ -531,6 +536,11 @@ buttons:
                               revMaxVel: 6
                               maxAccel: 6
                               deltaTimeSecs: 0.05
+                            piston:
+                              '@id': frontElevatorBrake
+                              module: 1
+                              forward: 1
+                              reverse: 0
                         profile:
                           '@id': dropFrontLegProfile
                           filename: "/home/lvuser/449_resources/robot2019ClimbDropLegProfile.csv"
@@ -584,7 +594,7 @@ buttons:
             - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
                 '@id': retractFrontLeg
                 subsystem:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
+                  org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
                     frontElevator
                 profile:
                   '@id': retractFrontLegProfile
@@ -653,7 +663,7 @@ buttons:
             - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
                 '@id': partiallyRetractBackLeg
                 subsystem:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
+                  org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
                     backElevator
                 profile:
                   '@id': partiallyRetractBackLegProfile
@@ -684,12 +694,12 @@ buttons:
                   - org.usfirst.frc.team449.robot.commands.general.RequireSubsystem:
                       '@id': requireBackElevator
                       subsystem:
-                        org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
+                        org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
                           backElevator
                   - org.usfirst.frc.team449.robot.commands.general.RequireSubsystem:
                       '@id': requireFrontElevator
                       subsystem:
-                        org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
+                        org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
                           frontElevator
                   - org.usfirst.frc.team449.robot.commands.general.RequireSubsystem:
                       '@id': requireBackLegCrawler
@@ -742,18 +752,28 @@ buttons:
         org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
             '@id': dropLegs3
             commandSet:
-                - org.usfirst.frc.team449.robot.subsystem.interfaces.position.commands.GoToPosition:
+                - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
                     '@id': dropBackLeg3
                     subsystem:
-                      org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
+                      org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
                         backElevator
-                    setpoint: 0.4 #0.58 for level 2 climb
-                - org.usfirst.frc.team449.robot.subsystem.interfaces.position.commands.GoToPosition:
+                    profile:
+                      '@id': dropBackLegProfile3
+                      filename: "/home/lvuser/449_resources/robot2019ClimbDropLegProfile.csv"
+                      inverted: false
+                      resetPosition: true
+                    timeout: 3
+                - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
                     '@id': dropFrontLeg3
                     subsystem:
-                      org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPositionOnboardMP:
+                      org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
                         frontElevator
-                    setpoint: 0.4 #0.58 for level 2 climb
+                    profile:
+                      '@id': dropFrontLegProfile3
+                      filename: "/home/lvuser/449_resources/robot2019ClimbDropLegProfile.csv"
+                      inverted: false
+                      resetPosition: true
+                    timeout: 3
       action: WHEN_PRESSED
 defaultCommands:
   - subsystem:
