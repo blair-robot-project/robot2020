@@ -547,6 +547,19 @@ buttons:
                           inverted: false
                           resetPosition: true
                         timeout: 6
+            - org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
+                '@id': brakeElevators
+                commandSet:
+                  - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+                      '@id': brakeBackElevator
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
+                          backElevator
+                  - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+                      '@id': brakeFrontElevator
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
+                          frontElevator
             - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
                 '@id': legsDownDriveForward
                 subsystem:
@@ -602,6 +615,19 @@ buttons:
                   inverted: true
                   resetPosition: true
                 timeout: 6
+            - org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
+                '@id': brakeElevators2
+                commandSet:
+                  - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+                      '@id': brakeBackElevator2
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
+                          backElevator
+                  - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+                      '@id': brakeFrontElevator2
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
+                          frontElevator
             - org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
                 '@id': driveAfterFrontLegUp
                 commandSet:
@@ -671,6 +697,19 @@ buttons:
                   inverted: true
                   resetPosition: true
                 timeout: 3
+            - org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
+                '@id': brakeElevators3
+                commandSet:
+                  - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+                      '@id': brakeBackElevator3
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
+                          backElevator
+                  - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+                      '@id': brakeFrontElevator3
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
+                          frontElevator
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -740,6 +779,19 @@ buttons:
                           motor:
                             org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
                               frontLegElevatorTalon
+            - org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
+                '@id': brakeElevators4
+                commandSet:
+                  - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+                      '@id': brakeBackElevator4
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
+                          backElevator
+                  - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+                      '@id': brakeFrontElevator4
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
+                          frontElevator
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -749,31 +801,47 @@ buttons:
               climbOverrideController
           buttonNumber: 2
       command:
-        org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
-            '@id': dropLegs3
-            commandSet:
-                - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
-                    '@id': dropBackLeg3
-                    subsystem:
-                      org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
-                        backElevator
-                    profile:
-                      '@id': dropBackLegProfile3
-                      filename: "/home/lvuser/449_resources/robot2019ClimbDropLegProfile.csv"
-                      inverted: false
-                      resetPosition: true
-                    timeout: 3
-                - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
-                    '@id': dropFrontLeg3
-                    subsystem:
-                      org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
-                        frontElevator
-                    profile:
-                      '@id': dropFrontLegProfile3
-                      filename: "/home/lvuser/449_resources/robot2019ClimbDropLegProfile.csv"
-                      inverted: false
-                      resetPosition: true
-                    timeout: 3
+        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+          '@id': testMPCommand
+          commandList:
+            - org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
+                '@id': dropLegs3
+                commandSet:
+                    - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
+                        '@id': dropBackLeg3
+                        subsystem:
+                          org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
+                            backElevator
+                        profile:
+                          '@id': dropBackLegProfile3
+                          filename: "/home/lvuser/449_resources/robot2019ClimbDropLegProfile.csv"
+                          inverted: false
+                          resetPosition: true
+                        timeout: 3
+                    - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
+                        '@id': dropFrontLeg3
+                        subsystem:
+                          org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
+                            frontElevator
+                        profile:
+                          '@id': dropFrontLegProfile3
+                          filename: "/home/lvuser/449_resources/robot2019ClimbDropLegProfile.csv"
+                          inverted: false
+                          resetPosition: true
+                        timeout: 3
+            - org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
+                '@id': brakeElevators5
+                commandSet:
+                  - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+                      '@id': brakeBackElevator5
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
+                          backElevator
+                  - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+                      '@id': brakeFrontElevator5
+                      subsystem:
+                        org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
+                          frontElevator
       action: WHEN_PRESSED
 defaultCommands:
   - subsystem:
