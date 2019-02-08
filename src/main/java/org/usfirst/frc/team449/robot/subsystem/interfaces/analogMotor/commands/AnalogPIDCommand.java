@@ -50,7 +50,16 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
      */
     private final double deadband;
 
-    @Nullable private final BufferTimer onTargetBuffer;
+    /**
+     * The minimum the robot should be able to output, to overcome friction.
+     */
+    private final double minimumOutput;
+
+    /**
+     * A buffer timer for having the loop be on target before it stops running. Can be null for no buffer.
+     */
+    @Nullable
+    private final BufferTimer onTargetBuffer;
 
     /**
      *
@@ -68,6 +77,7 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
      * @param setpointSupplier Supplies the setpoint
      * @param inverted Determines whether input should be inverted
      * @param timeout How long this command is allowed to run for (in milliseconds). Defaults to no timeout.
+     * @param minimumOutput The minimum output of the loop. Defaults to zero.
      */
     @JsonCreator
     public AnalogPIDCommand(@JsonProperty(required = true) double absoluteTolerance,
@@ -81,7 +91,8 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
                             @Nullable DoubleSupplier setpointSupplier,
                             boolean inverted,
                             @Nullable BufferTimer onTargetBuffer,
-                            @Nullable Long timeout) {
+                            @Nullable Long timeout,
+                            double minimumOutput) {
         super(kP, kI, kD);
         requires(subsystem);
 
@@ -99,6 +110,8 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
 
         //Set the absolute tolerance to be considered on target within.
         this.getPIDController().setAbsoluteTolerance(absoluteTolerance);
+
+        this.minimumOutput = minimumOutput;
 
         //Supplying a setpoint, in degrees from 180 to -180.
         if (setpointSupplier == null) {
@@ -208,6 +221,27 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
         //The PIDController onTarget() is crap and sometimes never returns true because of floating point errors, so
         // we need a timeout
         return onTarget() || (timeout != null && Clock.currentTimeMillis() - startTime > timeout);
+    }
+
+    /**
+     * Process the output of the PID loop to account for minimum output and inversion.
+     *
+     * @param output The output from the WPILib angular PID loop.
+     * @return The processed output, ready to be subtracted from the left side of the drive output and added to the
+     * right side.
+     */
+    protected double processPIDOutput(double output) {
+        //Set the output to the minimum if it's too small.
+        if (output > 0 && output < minimumOutput) {
+            output = minimumOutput;
+        } else if (output < 0 && output > -minimumOutput) {
+            output = -minimumOutput;
+        }
+        if (inverted) {
+            output *= -1;
+        }
+
+        return output;
     }
 
 }
