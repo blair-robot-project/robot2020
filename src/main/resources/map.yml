@@ -298,9 +298,6 @@ defaultCommands:
             distanceToTarget:
               org.usfirst.frc.team449.robot.components.LimeLighDistanceComponentSimple:
         inverted: false
-        onTargetBuffer: 0
-        timeout: 0
-        minimumOutput: 0
 #      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.ControlAnalogMotorWithThrottle:
 #          '@id': sliderThrottleCommand
 #          subsystem:
