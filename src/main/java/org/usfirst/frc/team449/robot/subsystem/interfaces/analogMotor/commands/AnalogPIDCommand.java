@@ -77,6 +77,8 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
      * @param inverted Determines whether input should be inverted
      * @param timeout How long this command is allowed to run for (in milliseconds). Defaults to no timeout.
      * @param minimumOutput The minimum output of the loop. Defaults to zero.
+     * @param maximumOutput The maximum output of the loop. Can be null, and if it is, no maximum output is used.
+     * @param loopTimeMillis The time, in milliseconds, between each loop iteration. Defaults to 20 ms.
      */
     @JsonCreator
     public AnalogPIDCommand(@JsonProperty(required = true) double absoluteTolerance,
@@ -91,8 +93,10 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
                             boolean inverted,
                             @Nullable BufferTimer onTargetBuffer,
                             @Nullable Long timeout,
-                            double minimumOutput) {
-        super(kP, kI, kD);
+                            double minimumOutput, @Nullable Double maximumOutput,
+                            @Nullable Integer loopTimeMillis) {
+        //Set P, I and D. I and D will normally be 0 if you're using cascading control, like you should be.
+        super(kP, kI, kD, loopTimeMillis != null ? loopTimeMillis / 1000. : 20. / 1000.);
         requires(subsystem);
 
         //The drive subsystem to execute this command on and to get the gyro reading from.
@@ -132,6 +136,12 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
 
         //Setpoint is always zero since we subtract it off ourselves, from the input.
         this.setSetpoint(0);
+
+        //This caps the output we can give. One way to set up closed-loop is to make P large and then use this to
+        // prevent overshoot.
+        if (maximumOutput != null) {
+            this.getPIDController().setOutputRange(-maximumOutput, maximumOutput);
+        }
     }
 
     /**
@@ -157,6 +167,8 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
     protected double deadbandOutput(double output) {
         return Math.abs(this.getPIDController().getError()) > deadband ? output : 0;
     }
+
+
 
     /**
      * Returns the input for the pid loop.
