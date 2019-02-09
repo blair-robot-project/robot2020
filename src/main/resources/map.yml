@@ -215,12 +215,6 @@ logger:
           port: 5
           oversampleBits: 0
           averageBits: 0
-    - org.usfirst.frc.team449.robot.generalInterfaces.poseEstimator.UnidirectionalPoseEstimator:
-        '@id': poseEstimator
-        subsystem:
-          org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-            drive
-        absolutePosAngleTolerance: 5
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         leftMaster
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
@@ -290,14 +284,7 @@ defaultCommands:
         kP: .3
         kI: 0
         kD: 0
-        setpointSupplier:
-          org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
-            angularInput:
-              org.usfirst.frc.team449.robot.components.LimelightNavXTargetComponent:
-               ahrs:
-                navX
-            distanceToTarget:
-              org.usfirst.frc.team449.robot.components.LimeLighDistanceComponentSimple: {}
+        setpoint: 0
 #      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.ControlAnalogMotorWithThrottle:
 #          '@id': sliderThrottleCommand
 #          subsystem:
@@ -311,15 +298,6 @@ defaultCommands:
 #                    driverGamepad
 #              axis: 4
 #              inverted: false
-startupCommand:
-  org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
-    '@id': startupCommand
-    commandSet:
-      - org.usfirst.frc.team449.robot.commands.general.RunRunnables:
-          '@id': runRunnables
-          runnables:
-            - org.usfirst.frc.team449.robot.generalInterfaces.poseEstimator.UnidirectionalPoseEstimator:
-                poseEstimator
 teleopStartupCommand:
   org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.commands.StartCompressor:
     '@id': startCompressor
@@ -385,57 +363,6 @@ updater:
 #          sliderThrottle
 buttons:
     - button:
-          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-              '@id': testAutoButton
-              joystick:
-                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                      driverGamepad
-              buttonNumber: 5
-      command:
-          org.usfirst.frc.team449.robot.commands.general.CommandSequence:
-              '@id': autoCommand
-              commandList:
-              -   org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands.SetHeading:
-                      '@id': resetHeading
-                      subsystem:
-                          org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-                              drive
-              -   org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
-                      '@id': stabberBaseCommand2
-                      subsystem:
-                          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-                              '@id': stabberBase
-                              piston:
-                                  '@id': stabberBaseSolenoid
-                                  forward: 2
-                                  reverse: 3
-              -   org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.RunProfileTwoSides:
-                      '@id': autoToCargoShip
-                      subsystem:
-                          org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-                              drive
-                      left:
-                          '@id': autoToCargoShipLeft
-                          filename: "/home/lvuser/449_resources/robot2019LeftStartToFLProfile.csv"
-                          inverted: false
-                          resetPosition: true
-                      right:
-                          '@id': autoToCargoShipRight
-                          filename: "/home/lvuser/449_resources/robot2019RightStartToFLProfile.csv"
-                          inverted: false
-                          resetPosition: true
-                      timeout: 16
-              -   org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
-                      '@id': retractStabberCommand2
-                      subsystem:
-                          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-                              '@id': stabber
-                              piston:
-                                  '@id': stabberSolenoid
-                                  forward: 4
-                                  reverse: 5
-      action: WHEN_PRESSED
-    - button:
         org.usfirst.frc.team449.robot.oi.buttons.dPadButton:
           '@id': forceLowGear
           joystick:
@@ -481,8 +408,12 @@ buttons:
           org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
               '@id': stabberCommand
               subsystem:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-                      stabber
+                org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                  '@id': stabber
+                  piston:
+                    '@id': stabberSolenoid
+                    forward: 4
+                    reverse: 5
       action: WHEN_PRESSED
     - button:
           org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -509,8 +440,12 @@ buttons:
           org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
               '@id': stabberBaseCommand
               subsystem:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-                      stabberBase
+                org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                  '@id': stabberBase
+                  piston:
+                    '@id': stabberBaseSolenoid
+                    forward: 2
+                    reverse: 3
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
