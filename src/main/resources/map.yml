@@ -273,16 +273,34 @@ defaultCommands:
     command:
       org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
         '@id': LimeLightPIDCommand
-        supplier:
-          org.usfirst.frc.team449.robot.components.LimeLightComponent:
-            '@id': LimeLightXGetter
-            value: x
-        p: .15
-        d: 0.2
+        absoluteTolerance: 0
         subsystem:
           org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
             LimeLightXPos
-        invertInput: true
+          invertInput: true
+        processVariableSupplier:
+          org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
+            angularInput:
+              org.usfirst.frc.team449.robot.components.LimeLightComponent:
+                value: x
+            distanceToTarget:
+              org.usfirst.frc.team449.robot.components.LimeLighDistanceComponentSimple:
+        deadband: 0
+        kp: .1
+        Ki: 0
+        Kd: 0
+        setpointSupplier:
+          org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
+            angularInput:
+              org.usfirst.frc.team449.robot.components.LimelightNavXTargetComponent:
+               ahrs:
+                navX
+            distanceToTarget:
+              org.usfirst.frc.team449.robot.components.LimeLighDistanceComponentSimple:
+        inverted: false
+        onTargetBuffer: 0
+        timeout: 0
+        minimumOutput: 0
 #      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.ControlAnalogMotorWithThrottle:
 #          '@id': sliderThrottleCommand
 #          subsystem:
@@ -296,7 +314,6 @@ defaultCommands:
 #                    driverGamepad
 #              axis: 4
 #              inverted: false
-
 startupCommand:
   org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
     '@id': startupCommand
