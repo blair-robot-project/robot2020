@@ -16,7 +16,7 @@ public class LimeLighDistanceComponentSimple implements DoubleSupplier {
     }
 
     @Override
-    public double getAsDouble() {
+    public double getAsDouble() { //Actual target height 5.825572
         double robotToTargAngle = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tvert").getDouble(0) * (41/320);
         double distanceToTarg = (Math.sqrt(137)/2) / (2 * Math.tan(robotToTargAngle / 2));
         return distanceToTarg;
