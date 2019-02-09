@@ -23,6 +23,7 @@ public class LimeLightAngularToDistanceComponent implements DoubleSupplier {
     @Override
     public double getAsDouble() {
         double theta = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
-        return distanceToTarget.getAsDouble() * Math.cos(theta) * Math.tan(angularInput.getAsDouble());
+        System.out.println("AngularToDistance: "+(distanceToTarget.getAsDouble() * Math.cos(theta) * Math.tan(angularInput.getAsDouble())));
+        return distanceToTarget.getAsDouble() * Math.cos(Math.toRadians(theta)) * Math.tan(Math.toRadians(angularInput.getAsDouble()));
     }
 }
