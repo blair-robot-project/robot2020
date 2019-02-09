@@ -380,6 +380,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             }
         }
 
+        //Load motion profile
         if (profile != null) {
             loadProfile(profile);
         }
@@ -903,7 +904,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                 "current",
                 "control_mode",
                 "gear",
-                "resistance"
+                "resistance",
+                "forward_limit",
+                "reverse_limit"
         };
     }
 
@@ -928,7 +931,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                 getOutputCurrent(),
                 getControlMode(),
                 getGear(),
-                (voltagePerCurrentLinReg != null && PDP != null) ? -voltagePerCurrentLinReg.getSlope() : null
+                (voltagePerCurrentLinReg != null && PDP != null) ? -voltagePerCurrentLinReg.getSlope() : null,
+                this.getFwdLimitSwitch(),
+                this.getRevLimitSwitch()
         };
     }
 
