@@ -17,6 +17,9 @@ import org.usfirst.frc.team449.robot.other.BufferTimer;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extends PIDCommand {
 
+    /**
+     * The measurement of the process variable
+     */
     @NotNull private final DoubleSupplier processVariableSupplier;
 
     /**
@@ -63,39 +66,38 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
     /**
      *
      * @param onTargetBuffer A buffer timer for having the loop be on target before it stops running. Can be null for
-     *      *                          no buffer.
-     * @param absoluteTolerance The maximum number of degrees off from the target at which we can be considered within
-     *                          tolerance.
-     * @param subsystem The drive subsystem to execute this command on and to get the gyro reading from.
-     * @param processVariableSupplier Make the processVariableSupplier equal the setpoint
-     * @param deadband The range in which output is turned off to prevent "dancing" around the setpoint.
-     * @param kP Proportional gain. Defaults to zero.
-     * @param kI Integral gain. Defaults to zero.
-     * @param kD Derivative gain. Defaults to zero.
-     * @param setpoint The setpoint, in degrees from 180 to -180.
-     * @param setpointSupplier Supplies the setpoint
-     * @param inverted Determines whether input should be inverted
-     * @param timeout How long this command is allowed to run for (in milliseconds). Defaults to no timeout.
+     *                       no buffer.
+     * @param absoluteTolerance The maximum value off from the target at which we can be considered within tolerance.
      * @param minimumOutput The minimum output of the loop. Defaults to zero.
      * @param maximumOutput The maximum output of the loop. Can be null, and if it is, no maximum output is used.
      * @param loopTimeMillis The time, in milliseconds, between each loop iteration. Defaults to 20 ms.
+     * @param deadband The deadband around the setpoint within which no output is given to the motors. Defaults to zero.
+     * @param inverted Determines whether input should be inverted
+     * @param kP Proportional gain. Defaults to zero.
+     * @param kI Integral gain. Defaults to zero.
+     * @param kD Derivative gain. Defaults to zero.
+     * @param setpoint The setpoint.
+     * @param setpointSupplier Supplies the setpoint
+     * @param subsystem The drive subsystem to execute this command on and to get the gyro reading from.
+     * @param timeout How long this command is allowed to run for (in milliseconds). Defaults to no timeout.
+     * @param processVariableSupplier The measurement of the process variable
      */
     @JsonCreator
     public AnalogPIDCommand(@JsonProperty(required = true) double absoluteTolerance,
-                            @NotNull @JsonProperty(required = true) T subsystem,
-                            @NotNull @JsonProperty(required = true) DoubleSupplier processVariableSupplier,
+                            @Nullable BufferTimer onTargetBuffer,
+                            double minimumOutput, @Nullable Double maximumOutput,
+                            @Nullable Integer loopTimeMillis,
                             double deadband,
+                            boolean inverted,
                             double kP,
                             double kI,
                             double kD,
-                            double setpoint,
-                            @Nullable DoubleSupplier setpointSupplier,
-                            boolean inverted,
-                            @Nullable BufferTimer onTargetBuffer,
+                            @JsonProperty(required = true) double setpoint,
+                            @NotNull @JsonProperty(required = true) T subsystem,
                             @Nullable Long timeout,
-                            double minimumOutput, @Nullable Double maximumOutput,
-                            @Nullable Integer loopTimeMillis) {
-        //Set P, I and D. I and D will normally be 0 if you're using cascading control, like you should be.
+                            @NotNull @JsonProperty(required = true) DoubleSupplier processVariableSupplier,
+                            @Nullable DoubleSupplier setpointSupplier) {
+        //Set P, I and D
         super(kP, kI, kD, loopTimeMillis != null ? loopTimeMillis / 1000. : 20. / 1000.);
         requires(subsystem);
 
@@ -125,11 +127,6 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
 
         // Make the processVariableSupplier equal the setpoint
         this.processVariableSupplier = processVariableSupplier;
-
-        // Make the processVariableSupplier equal the setPoint
-
-        //Set the absolute tolerance to be considered on target within.
-        this.getPIDController().setAbsoluteTolerance(absoluteTolerance);
 
         //Set a deadband around the setpoint, in appropriate units, within which don't move, to avoid "dancing"
         this.deadband = deadband;
@@ -167,8 +164,6 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
     protected double deadbandOutput(double output) {
         return Math.abs(this.getPIDController().getError()) > deadband ? output : 0;
     }
-
-
 
     /**
      * Returns the input for the pid loop.
