@@ -83,7 +83,7 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
      * @param processVariableSupplier The measurement of the process variable
      */
     @JsonCreator
-    public AnalogPIDCommand(@JsonProperty(required = true) double absoluteTolerance,
+    public AnalogPIDCommand(double absoluteTolerance,
                             @Nullable BufferTimer onTargetBuffer,
                             double minimumOutput, @Nullable Double maximumOutput,
                             @Nullable Integer loopTimeMillis,
@@ -92,7 +92,7 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
                             double kP,
                             double kI,
                             double kD,
-                            @JsonProperty(required = true) double setpoint,
+                            double setpoint,
                             @NotNull @JsonProperty(required = true) T subsystem,
                             @Nullable Long timeout,
                             @NotNull @JsonProperty(required = true) DoubleSupplier processVariableSupplier,

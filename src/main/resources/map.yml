@@ -461,38 +461,38 @@ buttons:
             org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
               stabberBase
       action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': resetSlider
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsGamepad
-          buttonNumber: 1
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
-          '@id': ResetSlider
-          supplier:
-            org.usfirst.frc.team449.robot.components.TalonDataComponent:
-              talon:
-                org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-                  LimeLightMotor
-              value: position
-          p: .1
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-              LimeLightXPos
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': stopResetSlider
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsGamepad
-          buttonNumber: 2
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
-          ResetSlider
-      action: CANCEL_WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': resetSlider
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              mechanismsGamepad
+#          buttonNumber: 1
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
+#          '@id': ResetSlider
+#          supplier:
+#            org.usfirst.frc.team449.robot.components.TalonDataComponent:
+#              talon:
+#                org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+#                  LimeLightMotor
+#              value: position
+#          p: .1
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+#              LimeLightXPos
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': stopResetSlider
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              mechanismsGamepad
+#          buttonNumber: 2
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
+#          ResetSlider
+#      action: CANCEL_WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': cargoIntakeButton
@@ -514,8 +514,9 @@ buttons:
                   enableVoltageComp: true
                   currentLimit: 30
                   reverseOutput: false
-              inFastVel: 0.5
-              outFastVel: 0.5
+              inFastVel: -1
+              inSlowVel: -0.2
+              outFastVel: 1
           mode: IN_FAST
       action: WHEN_PRESSED
     - button:
@@ -527,7 +528,7 @@ buttons:
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
              cargoSubsystem
-          mode: OFF
+          mode: IN_SLOW
       action: WHEN_RELEASED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -553,7 +554,7 @@ buttons:
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
               cargoSubsystem
-          mode: OFF
+          mode: "OFF"
       action: WHEN_RELEASED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -572,9 +573,8 @@ buttons:
                 org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.MappedVictorSPX:
                   '@id': cargoArmVictor
                   port: 14
-                  brakeMode: false
+                  brakeMode: true
                   inverted: false
-                  voltageComp: true
           setpoint: 0.3
       action: WHEN_PRESSED
     - button:
