@@ -244,11 +244,12 @@ logger:
         reverseOutput: false
         reverseSensor: true
         enableBrakeMode: true
-#        remoteLimitSwitchID: 1
-#        fwdLimitSwitchNormallyOpen: true
-#        revLimitSwitchNormallyOpen: true
+        remoteLimitSwitchID: 4
+        fwdLimitSwitchNormallyOpen: true
+        revLimitSwitchNormallyOpen: true
         postEncoderGearing: 1
-        feetPerRotation: 0.5962
+        #2.256*pi/12
+        feetPerRotation: 0.59061941887
         currentLimit: 40
         minNumPointsInBottomBuffer: 40
         enableVoltageComp: true
@@ -260,10 +261,15 @@ logger:
               kP: 0.2
               feedForwardComponent:
                 org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                  kVFwd: 0.542
-                  kAFwd: 0.00193
-                  interceptVoltageFwd: -0.798
-                  interceptVoltageRev: 0.798
+                  kVFwd: 0.422
+                  kAFwd: 0.004
+#                  interceptVoltageFwd: -1.559
+#                  interceptVoltageRev: 1.559
+        profile:
+          '@id': dropBackLegProfilePreloaded
+          filename: "/home/lvuser/449_resources/robot2019ClimbDropLegLevel2Profile.csv"
+          inverted: false
+          resetPosition: true
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         <<: *legElevator
         '@id': frontLegElevatorTalon
@@ -271,17 +277,19 @@ logger:
         name: "frontLegElevatorTalon"
         reverseOutput: true
         reverseSensor: false
-#        remoteLimitSwitchID: 4
+        remoteLimitSwitchID: 11
         perGearSettings:
           - motionProfilePFwd: 0.5
             maxSpeed: 17
             kP: 0.2
             feedForwardComponent:
               org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                kVFwd: 0.542
-                kAFwd: 0.00675
-                interceptVoltageFwd: -2.659
-                interceptVoltageRev: 2.659
+                kVFwd: 0.422
+                kAFwd: 0.01416
+#                interceptVoltageFwd: -5.467
+#                interceptVoltageRev: 5.467
+        profile:
+          dropBackLegProfilePreloaded
 startupCommand:
   org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
     '@id': startupCommand
@@ -807,28 +815,18 @@ buttons:
             - org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
                 '@id': dropLegs3
                 commandSet:
-                    - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
+                    - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunLoadedProfile:
                         '@id': dropBackLeg3
                         subsystem:
                           org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
                             backElevator
-                        profile:
-                          '@id': dropBackLegProfile3
-                          filename: "/home/lvuser/449_resources/robot2019ClimbDropLegProfile.csv"
-                          inverted: false
-                          resetPosition: true
-                        timeout: 3
-                    - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunProfile:
+                        timeout: 6
+                    - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.RunLoadedProfile:
                         '@id': dropFrontLeg3
                         subsystem:
                           org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
                             frontElevator
-                        profile:
-                          '@id': dropFrontLegProfile3
-                          filename: "/home/lvuser/449_resources/robot2019ClimbDropLegProfile.csv"
-                          inverted: false
-                          resetPosition: true
-                        timeout: 3
+                        timeout: 6
             - org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
                 '@id': brakeElevators5
                 commandSet:
@@ -842,6 +840,20 @@ buttons:
                       subsystem:
                         org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
                           frontElevator
+      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': testBrakeButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              climbOverrideController
+          buttonNumber: 3
+      command:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.ToggleSolenoid:
+          '@id': brakeBackElevator6
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.complex.elevator.SubsystemPositionMPWithBrake:
+              backElevator
       action: WHEN_PRESSED
 defaultCommands:
   - subsystem:
@@ -884,11 +896,11 @@ defaultCommands:
         throttle:
           org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
             backElevatorManualThrottle
-#            '@id': frontElevatorManualThrottle
-#            stick:
-#              org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-#                climbOverrideController
-#            axis: 5
+  #            '@id': frontElevatorManualThrottle
+  #            stick:
+  #              org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+  #                climbOverrideController
+  #            axis: 5
   - subsystem:
       org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
         '@id': backLegDriveAnalog

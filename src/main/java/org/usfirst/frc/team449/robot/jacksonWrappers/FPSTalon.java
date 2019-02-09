@@ -201,7 +201,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                     @Nullable Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
                     @Nullable Map<ControlFrame, Integer> controlFrameRatesMillis,
                     @Nullable List<SlaveTalon> slaveTalons,
-                    @Nullable List<SlaveVictor> slaveVictors) {
+                    @Nullable List<SlaveVictor> slaveVictors,
+                    @Nullable MotionProfileData profile) {
         //Instantiate the base CANTalon this is a wrapper on.
         canTalon = new TalonSRX(port);
         //Set the name to the given one or to talon_portnum
@@ -377,6 +378,10 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                 slave.setMaster(canTalon, enableBrakeMode,
                         enableVoltageComp ? notNullVoltageCompSamples : null);
             }
+        }
+
+        if (profile != null) {
+            loadProfile(profile);
         }
     }
 
