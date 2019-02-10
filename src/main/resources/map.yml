@@ -264,12 +264,7 @@ logger:
                   kVFwd: 0.422
                   kAFwd: 0.004
 #                  interceptVoltageFwd: -1.559
-#                  interceptVoltageRev: 1.559s
-        profile:
-          '@id': dropBackLegProfilePreloaded
-          filename: "/home/lvuser/449_resources/robot2019ClimbDropLegLevel2Profile.csv"
-          inverted: false
-          resetPosition: true
+#                  interceptVoltageRev: 1.559
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         <<: *legElevator
         '@id': frontLegElevatorTalon
@@ -288,8 +283,34 @@ logger:
                 kAFwd: 0.01416
 #                interceptVoltageFwd: -5.467
 #                interceptVoltageRev: 5.467
-        profile:
-          dropBackLegProfilePreloaded
+    - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+        '@id': backLegDriveTalon
+        port: 12
+        name: "backLegDriveTalon"
+        reverseOutput: false
+        reverseSensor: false
+        enableBrakeMode: true
+        #        remoteLimitSwitchID: 4
+        #        fwdLimitSwitchNormallyOpen: true
+        #        revLimitSwitchNormallyOpen: true
+        postEncoderGearing: 1
+        #2.256*pi/12
+        feetPerRotation: 0.59061941887
+        currentLimit: 40
+        minNumPointsInBottomBuffer: 40
+        enableVoltageComp: true
+        feedbackDevice: QuadEncoder
+        encoderCPR: 1024
+        perGearSettings:
+          - motionProfilePFwd: 0.5
+            maxSpeed: 17
+            kP: 0.2
+            feedForwardComponent:
+              org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
+                kVFwd: 0.422
+                kAFwd: 0.004
+    #                  interceptVoltageFwd: -1.559
+    #                  interceptVoltageRev: 1.559
 #startupCommand:
 #  org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
 #    '@id': startupCommand
@@ -450,20 +471,14 @@ buttons:
 #      action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': testMPButton
+          '@id': climbButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               '@id': climbOverrideController
               port: 2
-          buttonNumber: 2
+          buttonNumber: 1
       command:
-        org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.RunElevator:
-          '@id': dropLegs
-          moveType: BOTH
-          maxVel: 0.5
-          maxAccel: 0.5
-          startPos: 0
-          endPos: 0.5
+        org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.Climb:
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
               '@id': climber
@@ -473,6 +488,10 @@ buttons:
               frontTalon:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
                   frontLegElevatorTalon
+              driveTalon:
+                org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+                  backLegDriveTalon
+              driveTalonCrawlVelocity: 0.1
               brakeBack:
                 '@id': backElevatorBrake
                 module: 0
@@ -484,6 +503,52 @@ buttons:
                 module: 0
                 forward: 1
                 reverse: 0
+          maxVelDrop: 0.5
+          maxAccelDrop: 0.5
+          maxVelRetract: 1
+          maxAccelRetract: 1
+          maxVelNudge: 0.2
+          maxAccelNudge: 0.2
+          #1.66 for level 3
+          extendDistance: 0.58
+          partialRetractionDistance: 0.26
+          #12.169 / 12
+          nudge1Distance: 1.014
+          #11.072 / 12
+          nudge2Distance: 0.923
+          infraredSensor1:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+              '@id': failsafe1
+              channel: 0
+          infraredSensor2:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+              '@id': failsafe2
+              channel: 1
+          continueButton:
+            org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+              '@id': continueButton
+              joystick:
+                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                  climbOverrideController
+              buttonNumber: 3
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': testClimbButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              climbOverrideController
+          buttonNumber: 2
+      command:
+        org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.RunElevator:
+          '@id': dropLegs
+          moveType: BOTH
+          maxVel: 0.5
+          maxAccel: 0.5
+          startPos: 0
+          endPos: 0.5
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
+              climber
       action: WHEN_PRESSED
 #defaultCommands:
 #  - subsystem:
