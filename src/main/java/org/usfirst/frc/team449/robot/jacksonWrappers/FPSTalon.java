@@ -886,6 +886,11 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         }
     }
 
+    public void executeMPPoint(double pos, double vel, double acc) {
+        canTalon.set(ControlMode.Position, feetToEncoder(pos), DemandType.ArbitraryFeedForward,
+                currentGearSettings.getFeedForwardComponent().calcMPVoltage(pos, vel, acc) / 12);
+    }
+
     /**
      * Get the headers for the data this subsystem logs every loop.
      *

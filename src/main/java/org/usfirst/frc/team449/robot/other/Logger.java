@@ -200,7 +200,8 @@ public class Logger implements Runnable {
 
         try {
             //Log each event to a file
-            for (LogEvent event : events) {
+            for (int i = 0; i < events.size(); i++) {
+                LogEvent event = events.get(i);
                 eventLogWriter.write(event.toString() + "\n");
             }
             eventLogWriter.flush();
