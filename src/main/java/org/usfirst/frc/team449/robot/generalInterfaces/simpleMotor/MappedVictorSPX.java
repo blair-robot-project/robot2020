@@ -41,6 +41,8 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
                            @JsonProperty(required = true) boolean brakeMode,
                            boolean inverted,
                            boolean enableVoltageComp,
+                           Double peakVoltageForward,
+                           Double peakVoltageRev,
                            @Nullable Integer voltageCompSamples,
                            @Nullable List<SlaveVictor> slaveVictors) {
         victorSPX = new VictorSPX(port);
@@ -49,6 +51,8 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
         victorSPX.enableVoltageCompensation(enableVoltageComp);
         victorSPX.configVoltageCompSaturation(12, 0);
         victorSPX.configVoltageMeasurementFilter(voltageCompSamples != null ? voltageCompSamples : 32, 0);
+        victorSPX.configPeakOutputForward(peakVoltageForward != null ? peakVoltageForward/12. : 1, 0);
+        victorSPX.configPeakOutputReverse(peakVoltageRev != null ? peakVoltageRev/12. : -1, 0);
 
         if (slaveVictors != null) {
             //Set up slaves.
