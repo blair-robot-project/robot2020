@@ -1,18 +1,18 @@
 ---
-useCameraServer: true
+useCameraServer: false
 logger:
   '@id': logger
   eventLogFilename: "/home/lvuser/logs/eventLog-"
-#  telemetryLogFilename: "/home/lvuser/logs/telemetryLog-"
+  telemetryLogFilename: "/home/lvuser/logs/telemetryLog-"
 #  telemetryLogFilename: "/home/lvuser/logs/lowGearFwdAccel-"
 #  telemetryLogFilename: "/home/lvuser/logs/lowGearRevAccel-"
 #  telemetryLogFilename: "/home/lvuser/logs/lowGearFwdQuasi-"
 #  telemetryLogFilename: "/home/lvuser/logs/lowGearRevQuasi-"
-#  telemetryLogFilename: "/home/lvuser/logs/highGearFwdAccel-"
-  telemetryLogFilename: "/home/lvuser/logs/highGearRevAccel-"
 #  telemetryLogFilename: "/home/lvuser/logs/highGearFwdQuasi-"
 #  telemetryLogFilename: "/home/lvuser/logs/highGearRevQuasi-"
-  loopTimeMillis: 20
+#  telemetryLogFilename: "/home/lvuser/logs/highGearFwdAccel-"
+#  telemetryLogFilename: "/home/lvuser/logs/highGearRevAccel-"
+  loopTimeMillis: 100
   loggables:
     - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
         '@id': PDP
@@ -48,28 +48,28 @@ logger:
               - &lowGear
                 gear: LOW
                 motionProfilePFwd: 0.5
-                maxSpeed: 7.5
+                maxSpeed: 7.0
                 kP: 0.15
                 feedForwardComponent:
                   org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                    kVFwd: 1.434947
-                    kVRev: 1.422456
-                    kAFwd: 0.129389
-                    kARev: 0.098438
-                    interceptVoltageFwd: 0.840671
-                    interceptVoltageRev: 0.951342
+                    kVFwd: 1.433226
+                    kVRev: 1.408763
+                    kAFwd: 0.165688
+                    kARev: 0.155610
+                    interceptVoltageFwd: 0.960891
+                    interceptVoltageRev: 1.120689
               - &highGear
                 gear: HIGH
-                maxSpeed: 17.5
+                maxSpeed: 14
                 kP: 0.3
                 feedForwardComponent:
                   org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                    kAFwd: 0.104733
-                    kARev: 0.112725
-                    kVFwd: 0.550328
-                    kVRev: 0.562768
-                    interceptVoltageFwd: 1.267677
-                    interceptVoltageRev: 1.276519
+                    kAFwd: 0.15676
+                    kARev: 0.079744
+                    kVFwd: 0.59688
+                    kVRev: 0.642463
+                    interceptVoltageFwd: 1.40187
+                    interceptVoltageRev: 1.421967
             minNumPointsInBottomBuffer: 10
             updaterProcessPeriodSecs: 0.005
             statusFrameRatesMillis: !!map
@@ -91,21 +91,21 @@ logger:
               - <<: *lowGear
                 feedForwardComponent:
                   org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                    kVFwd: 1.465997
-                    kVRev: 1.405794
-                    kAFwd: 0.134288
-                    kARev: 0.123510
-                    interceptVoltageFwd: 0.902385
-                    interceptVoltageRev: 1.085658
+                    kVFwd: 1.460269
+                    kVRev: 1.421145
+                    kAFwd: 0.224505
+                    kARev: 0.181874
+                    interceptVoltageFwd: 0.959980
+                    interceptVoltageRev: 1.120998
               - <<: *highGear
                 feedForwardComponent:
                   org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                    kVFwd: 0.618505
-                    kVRev: 0.545093
-                    kAFwd: 0.086978
-                    kARev: 0.144963
-                    interceptVoltageFwd: 1.264484
-                    interceptVoltageRev: 1.399418
+                    kVFwd: 0.631419
+                    kVRev: 0.632986
+                    kAFwd: 0.151538
+                    kARev: 0.154705
+                    interceptVoltageFwd: 1.400309
+                    interceptVoltageRev: 1.487342
             slaveVictors:
               - port: 5
                 #inverted: false
@@ -199,7 +199,7 @@ logger:
         nodeID: 0
         pressureSensor:
           '@id': pressureSensor
-          port: 5
+          port: 0
           oversampleBits: 0
           averageBits: 0
     - org.usfirst.frc.team449.robot.generalInterfaces.poseEstimator.UnidirectionalPoseEstimator:
@@ -607,10 +607,10 @@ buttons:
 #      action: WHEN_PRESSED
 #autoStartupCommand:
 #    org.usfirst.frc.team449.robot.commands.general.CommandSequence:
-#        '@id': autoCommand
+#        '@id': autoCharacterizeCommand
 #        commandList:
 #            - org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToHighGear:
-#                '@id': highGearTest
+#                '@id': switchGearCommand
 #                subsystem:
 #                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
 #                    drive
