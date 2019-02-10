@@ -10,11 +10,14 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDoubleSolenoid;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.SubsystemBinaryMotor;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class SubsystemClimber2019 extends Subsystem {
+public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMotor {
 
-    private final FPSTalon backTalon, frontTalon;
+    private final FPSTalon backTalon, frontTalon, driveTalon;
+
+    private double driveTalonCrawlVelocity;
 
     /**
      * The pistons for the brake.
@@ -22,12 +25,20 @@ public class SubsystemClimber2019 extends Subsystem {
     @NotNull
     private final MappedDoubleSolenoid brakeBack, brakeFront;
 
+    /**
+     * Whether or not the motor is currently on.
+     */
+    private boolean motorOn;
+
     @JsonCreator
-    public SubsystemClimber2019(FPSTalon backTalon, FPSTalon frontTalon,
+    public SubsystemClimber2019(FPSTalon backTalon, FPSTalon frontTalon, FPSTalon driveTalon,
+                                double driveTalonCrawlVelocity,
                                 @JsonProperty(required = true) @NotNull MappedDoubleSolenoid brakeBack,
                                 @JsonProperty(required = true) @NotNull MappedDoubleSolenoid brakeFront) {
         this.backTalon = backTalon;
         this.frontTalon = frontTalon;
+        this.driveTalon = driveTalon;
+        this.driveTalonCrawlVelocity = driveTalonCrawlVelocity;
         this.brakeBack = brakeBack;
         this.brakeFront = brakeFront;
         brakeBack.set(DoubleSolenoid.Value.kForward);
@@ -44,6 +55,10 @@ public class SubsystemClimber2019 extends Subsystem {
         frontTalon.executeMPPoint(motionState.pos(), motionState.vel(), motionState.acc());
     }
 
+    public void profileDrive(MotionState motionState) {
+        driveTalon.executeMPPoint(motionState.pos(), motionState.vel(), motionState.acc());
+    }
+
     public void fullStopBack() {
         brakeBack.set(DoubleSolenoid.Value.kForward);
         backTalon.disable();
@@ -52,6 +67,37 @@ public class SubsystemClimber2019 extends Subsystem {
     public void fullStopFront() {
         brakeFront.set(DoubleSolenoid.Value.kForward);
         frontTalon.disable();
+    }
+
+    public void fullStopDrive() {
+        brakeFront.set(DoubleSolenoid.Value.kForward);
+        frontTalon.disable();
+    }
+
+    /**
+     * Turns the motor on, and sets it to a map-specified speed.
+     */
+    @Override
+    public void turnMotorOn() {
+        driveTalon.setVelocity(driveTalonCrawlVelocity);
+        motorOn = true;
+    }
+
+    /**
+     * Turns the motor off.
+     */
+    @Override
+    public void turnMotorOff() {
+        driveTalon.setVelocity(0);
+        motorOn = false;
+    }
+
+    /**
+     * @return true if the motor is on, false otherwise.
+     */
+    @Override
+    public boolean isMotorOn() {
+        return motorOn;
     }
 
     /**

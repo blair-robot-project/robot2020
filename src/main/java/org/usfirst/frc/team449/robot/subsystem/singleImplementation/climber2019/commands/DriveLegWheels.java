@@ -9,21 +9,16 @@ import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class RunElevator extends Command {
+public class DriveLegWheels extends Command {
 
     private final MotionProfile profile;
-
-    protected enum MoveType {BACK, FRONT, BOTH}
-
-    private final MoveType moveType;
 
     private final SubsystemClimber2019 subsystem;
 
     @JsonCreator
-    public RunElevator(MoveType moveType, double maxVel, double maxAccel, double startPos, double endPos,
-                       SubsystemClimber2019 subsystem) {
+    public DriveLegWheels(double maxVel, double maxAccel, double startPos, double endPos,
+                          SubsystemClimber2019 subsystem) {
         requires(subsystem);
-        this.moveType = moveType;
         this.subsystem = subsystem;
 
         MotionProfileConstraints constraints = new MotionProfileConstraints(maxVel, maxAccel);
@@ -37,7 +32,7 @@ public class RunElevator extends Command {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("RunElevator initialize, " + moveType, this.getClass());
+        Logger.addEvent("DriveLegWheels initialize, ", this.getClass());
     }
 
     /**
@@ -46,20 +41,7 @@ public class RunElevator extends Command {
     @Override
     protected void execute() {
         double t = timeSinceInitialized();
-        switch (moveType) {
-            case BACK:
-                subsystem.profileBack(profile.stateByTimeClamped(t));
-                break;
-            case FRONT:
-                subsystem.profileFront(profile.stateByTimeClamped(t));
-                break;
-            case BOTH:
-                subsystem.profileBack(profile.stateByTimeClamped(t));
-                subsystem.profileFront(profile.stateByTimeClamped(t));
-                break;
-            default:
-                break;
-        }
+        subsystem.profileDrive(profile.stateByTimeClamped(t));
     }
 
     /**
@@ -69,20 +51,7 @@ public class RunElevator extends Command {
     @Override
     protected void end() {
         Logger.addEvent("RunElevator end, " + timeSinceInitialized(), this.getClass());
-        switch (moveType) {
-            case BACK:
-                subsystem.fullStopBack();
-                break;
-            case FRONT:
-                subsystem.fullStopFront();
-                break;
-            case BOTH:
-                subsystem.fullStopBack();
-                subsystem.fullStopFront();
-                break;
-            default:
-                break;
-        }
+        subsystem.fullStopDrive();
     }
 
     @Override
