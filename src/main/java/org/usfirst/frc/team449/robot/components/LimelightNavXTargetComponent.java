@@ -18,7 +18,7 @@ public class LimelightNavXTargetComponent implements DoubleSupplier {
 
     @Override
     public double getAsDouble() {
-        return -Math.IEEEremainder(ahrs.getCachedHeading(), 90);
+        return -Math.IEEEremainder(ahrs.getCachedHeading(), 90)/2.;
 //        double heading = ahrs.getHeading();
 //        if (heading >= 0){
 //            if (heading % 45 < Math.abs(Math.IEEEremainder(heading, 45))) {

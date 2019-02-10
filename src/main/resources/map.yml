@@ -279,7 +279,7 @@ defaultCommands:
                 '@id': TargetXPos
                 value: x
             distanceToTarget:
-              org.usfirst.frc.team449.robot.components.LimeLighDistanceComponentSimple: {}
+              org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentSimple: {}
         deadband: 0
         kP: .3
         kI: 0

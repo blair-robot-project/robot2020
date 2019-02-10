@@ -8,10 +8,10 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 import java.util.function.DoubleSupplier;
 
-public class LimeLighDistanceComponentSimple implements DoubleSupplier {
+public class LimeLightDistanceComponentSimple implements DoubleSupplier {
 
     @JsonCreator
-    public LimeLighDistanceComponentSimple(){
+    public LimeLightDistanceComponentSimple(){
 
     }
 
