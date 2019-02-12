@@ -48,6 +48,7 @@ public class RunMotorUntilConditionMet<T extends Subsystem & SubsystemBinaryMoto
      */
     @Override
     protected void initialize() {
+//        System.out.println("RUN MOTOR UNTIL CONDITION MET INIT");
         Logger.addEvent("RunMotorUntilConditionMet init", this.getClass());
     }
 
@@ -66,6 +67,7 @@ public class RunMotorUntilConditionMet<T extends Subsystem & SubsystemBinaryMoto
      */
     @Override
     protected boolean isFinished() {
+//        System.out.println("COMMAND SAYS CONDITION IS: " + subsystemConditional.isConditionTrueCached());
         return subsystemConditional.isConditionTrueCached();
     }
 

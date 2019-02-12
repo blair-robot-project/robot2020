@@ -516,21 +516,31 @@ buttons:
           nudge1Distance: 1.014
           #11.072 / 12
           nudge2Distance: 0.923
-          infraredSensor1:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+          failsafe1:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride:
               '@id': failsafe1
-              channel: 0
-          infraredSensor2:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+              infraredSensor:
+                org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+                  '@id': IR1
+                  channel: 0
+              button:
+                org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+                  '@id': continueButton
+                  joystick:
+                    org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                      climbOverrideController
+                  buttonNumber: 3
+          failsafe2:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride:
               '@id': failsafe2
-              channel: 1
-          continueButton:
-            org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-              '@id': continueButton
-              joystick:
-                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                  climbOverrideController
-              buttonNumber: 3
+              infraredSensor:
+                org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+                  '@id': IR2
+                  channel: 1
+              button:
+                org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+                  continueButton
+      action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': testClimbButton
@@ -549,6 +559,21 @@ buttons:
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
               climber
+      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': testBrakeButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              climbOverrideController
+          buttonNumber: 4
+      command:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.ToggleSolenoid:
+          '@id': toggleBrake
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+              '@id': brakeSolenoid
+              piston: frontElevatorBrake
       action: WHEN_PRESSED
 #defaultCommands:
 #  - subsystem:
@@ -569,3 +594,7 @@ updater:
 #          navX
       - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
           PDP
+      - org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride:
+          failsafe1
+      - org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride:
+          failsafe2

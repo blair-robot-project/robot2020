@@ -66,5 +66,6 @@ public class IRWithButtonOverride implements SubsystemConditional {
 	@Override
 	public void update() {
 		isConditionTrueCached = isConditionTrue();
+//		System.out.println("SUBSYSTEM SAYS CONDITION IS: " + isConditionTrueCached);
 	}
 }
