@@ -239,14 +239,14 @@ logger:
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         &legElevator
         '@id': backLegElevatorTalon
-        port: 10
+        port: 9
         name: "backLegElevatorTalon"
         reverseOutput: false
         reverseSensor: true
         enableBrakeMode: true
-#        remoteLimitSwitchID: 4
-#        fwdLimitSwitchNormallyOpen: true
-#        revLimitSwitchNormallyOpen: true
+        remoteLimitSwitchID: 4
+        fwdLimitSwitchNormallyOpen: true
+        revLimitSwitchNormallyOpen: true
         postEncoderGearing: 1
         #2.256*pi/12
         feetPerRotation: 0.59061941887
@@ -256,33 +256,33 @@ logger:
         feedbackDevice: QuadEncoder
         encoderCPR: 1024
         perGearSettings:
-          -   motionProfilePFwd: 0.5
+          -   motionProfilePFwd: 0
               maxSpeed: 17
               kP: 0.2
               feedForwardComponent:
                 org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                   kVFwd: 0.422
                   kAFwd: 0.004
-#                  interceptVoltageFwd: -1.559
-#                  interceptVoltageRev: 1.559
+                  interceptVoltageFwd: 1.559
+                  interceptVoltageRev: -1.559
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         <<: *legElevator
         '@id': frontLegElevatorTalon
-        port: 14
+        port: 8
         name: "frontLegElevatorTalon"
         reverseOutput: true
         reverseSensor: false
-#        remoteLimitSwitchID: 11
+        remoteLimitSwitchID: 11
         perGearSettings:
-          - motionProfilePFwd: 0.5
+          - motionProfilePFwd: 0
             maxSpeed: 17
             kP: 0.2
             feedForwardComponent:
               org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                 kVFwd: 0.422
                 kAFwd: 0.01416
-#                interceptVoltageFwd: -5.467
-#                interceptVoltageRev: 5.467
+                interceptVoltageFwd: 5.467
+                interceptVoltageRev: -5.467
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         '@id': backLegDriveTalon
         port: 12
@@ -290,9 +290,9 @@ logger:
         reverseOutput: false
         reverseSensor: false
         enableBrakeMode: true
-        #        remoteLimitSwitchID: 4
-        #        fwdLimitSwitchNormallyOpen: true
-        #        revLimitSwitchNormallyOpen: true
+#        remoteLimitSwitchID: 4
+        fwdLimitSwitchNormallyOpen: true
+        revLimitSwitchNormallyOpen: true
         postEncoderGearing: 1
         #2.256*pi/12
         feetPerRotation: 0.59061941887
@@ -309,8 +309,8 @@ logger:
               org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                 kVFwd: 0.422
                 kAFwd: 0.004
-    #                  interceptVoltageFwd: -1.559
-    #                  interceptVoltageRev: 1.559
+                interceptVoltageFwd: -1.559
+                interceptVoltageRev: 1.559
 #startupCommand:
 #  org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
 #    '@id': startupCommand
@@ -499,8 +499,7 @@ buttons:
                 reverse: 6
               brakeFront:
                 '@id': frontElevatorBrake
-                #1
-                module: 0
+                module: 1
                 forward: 1
                 reverse: 0
           maxVelDrop: 0.5
@@ -543,7 +542,7 @@ buttons:
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': testClimbButton
+          '@id': testLiftButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               climbOverrideController
