@@ -284,22 +284,43 @@ autoStartupCommand:
                           '@id': stabberBaseSolenoid
                           forward: 2
                           reverse: 3
-        - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.RunProfileTwoSides:
-              '@id': startToCargoShip
-              subsystem:
+        - org.usfirst.frc.team449.robot.commands.general:
+            '@id': startToCargoShip
+            digitalInput: digitalInput
+            onTrue:
+              org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.RunProfileTwoSides:
+                '@id': startToCargoShipLeft
+                subsystem:
                   org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-                      drive
-              left:
-                  '@id': startToCargoShipLeft
+                    drive
+                left:
+                  '@id': leftStartToCargoShipLeft
                   filename: "/home/lvuser/449_resources/robot2019LeftStartToLFProfile.csv"
                   inverted: false
                   resetPosition: true
-              right:
-                  '@id': startToCargoShipRight
+                right:
+                  '@id': leftStartToCargoShipRight
                   filename: "/home/lvuser/449_resources/robot2019RightStartToLFProfile.csv"
                   inverted: true
                   resetPosition: true
-              timeout: 16
+                timeout: 16
+            onFalse:
+              org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.RunProfileTwoSides:
+                '@id': startToCargoShipRight
+                subsystem:
+                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                    drive
+                left:
+                  '@id': rightStartToCargoShipLeft
+                  filename: "/home/lvuser/449_resources/robot2019LeftStartToRFProfile.csv"
+                  inverted: false
+                  resetPosition: true
+                right:
+                  '@id': rightStartToCargoShipRight
+                  filename: "/home/lvuser/449_resources/robot2019RightStartToRFProfile.csv"
+                  inverted: true
+                  resetPosition: true
+                timeout: 16
         - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
               '@id': retractStabberCommand2
               subsystem:
@@ -309,43 +330,85 @@ autoStartupCommand:
                           '@id': stabberSolenoid
                           forward: 4
                           reverse: 5
-        - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.RunProfileTwoSides:
-              '@id': cargoShipToLoad
+        - org.usfirst.frc.team449.robot.commands.general:
+          '@id': cargoShipToLoad
+          digitalInput: digitalInput
+          onTrue:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.RunProfileTwoSides:
+              '@id': cargoShipToLoadLeft
               subsystem:
-                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-                      drive
+                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                  drive
               left:
-                  '@id': cargoShipToLoadLeft
-                  filename: "/home/lvuser/449_resources/robot2019LeftLFToLoadProfile.csv"
-                  inverted: false
-                  resetPosition: true
+                '@id': leftCargoShipToLoadLeft
+                filename: "/home/lvuser/449_resources/robot2019LeftLFToLoadProfile.csv"
+                inverted: false
+                resetPosition: true
               right:
-                  '@id': cargoShipToLoadRight
-                  filename: "/home/lvuser/449_resources/robot2019RightLFToLoadProfile.csv"
-                  inverted: true
-                  resetPosition: true
+                '@id': leftCargoShipToLoadRight
+                filename: "/home/lvuser/449_resources/robot2019RightLFToLoadProfile.csv"
+                inverted: true
+                resetPosition: true
+              timeout: 16
+          onFalse:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.RunProfileTwoSides:
+              '@id': cargoShipToLoadRight
+              subsystem:
+                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                  drive
+              left:
+                '@id': rightCargoShipToLoadLeft
+                filename: "/home/lvuser/449_resources/robot2019LeftRFToLoadProfile.csv"
+                inverted: false
+                resetPosition: true
+              right:
+                '@id': rightCargoShipToLoadRight
+                filename: "/home/lvuser/449_resources/robot2019RightRFToLoadProfile.csv"
+                inverted: true
+                resetPosition: true
               timeout: 16
         - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
               '@id': stabberCommand2
               subsystem:
                   org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
                       stabber
-        - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.RunProfileTwoSides:
-              '@id': loadToCargoShip
-              subsystem:
+        - org.usfirst.frc.team449.robot.commands.general:
+            '@id': loadToCargoShip
+            digitalInput: digitalInput
+            onTrue:
+              org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.RunProfileTwoSides:
+                '@id': loadToCargoShipLeft
+                subsystem:
                   org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-                      drive
-              left:
-                  '@id': loadToCargoShipLeft
-                  filename: "/home/lvuser/449_resources/robot2019LeftloadToLMProfile.csv"
+                    drive
+                left:
+                  '@id': leftLoadToCargoShipLeft
+                  filename: "/home/lvuser/449_resources/robot2019LeftStartToLMProfile.csv"
                   inverted: false
                   resetPosition: true
-              right:
-                  '@id': loadToCargoShipRight
-                  filename: "/home/lvuser/449_resources/robot2019RightloadToLMProfile.csv"
+                right:
+                  '@id': leftLoadToCargoShipRight
+                  filename: "/home/lvuser/449_resources/robot2019RightLoadToLMProfile.csv"
                   inverted: true
                   resetPosition: true
-              timeout: 16
+                timeout: 16
+            onFalse:
+              org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.RunProfileTwoSides:
+                '@id': loadToCargoShipCommandRight
+                subsystem:
+                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                    drive
+                left:
+                  '@id': rightLoadToCargoShipLeft
+                  filename: "/home/lvuser/449_resources/robot2019LeftStartToRMProfile.csv"
+                  inverted: false
+                  resetPosition: true
+                right:
+                  '@id': rightLoadToCargoShipRight
+                  filename: "/home/lvuser/449_resources/robot2019RightLoadToRMProfile.csv"
+                  inverted: true
+                  resetPosition: true
+                timeout: 16
         - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
               '@id': retractStabberCommand3
               subsystem:
