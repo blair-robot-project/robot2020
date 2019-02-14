@@ -1,6 +1,8 @@
 package org.usfirst.frc.team449.robot.drive.unidirectional;
 
 import com.fasterxml.jackson.annotation.*;
+import com.team254.lib.util.motion.MotionState;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -81,6 +83,14 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
         //scale by the max speed
         leftMaster.setVelocity(left);
         rightMaster.setVelocity(right);
+    }
+
+    public void profileLeft(MotionState motionState) {
+        leftMaster.executeMPPoint(motionState.pos(), motionState.vel(), motionState.acc());
+    }
+
+    public void profileRight(MotionState motionState) {
+        rightMaster.executeMPPoint(motionState.pos(), motionState.vel(), motionState.acc());
     }
 
     /**

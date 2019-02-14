@@ -3,13 +3,16 @@ package org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019
 import com.fasterxml.jackson.annotation.JsonCreator;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import org.usfirst.frc.team449.robot.commands.multiInterface.RunMotorUntilConditionMet;
+import org.usfirst.frc.team449.robot.commands.multiSubsystem.DriveStraightUntilConditionMet;
+import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
+import org.usfirst.frc.team449.robot.drive.unidirectional.commands.RunDriveMP;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride;
 import org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019;
 
 public class Climb extends CommandGroup {
 
 	@JsonCreator
-	public Climb(SubsystemClimber2019 subsystem,
+	public Climb(SubsystemClimber2019 subsystem, DriveUnidirectionalWithGyro drive,
 	             double maxVelDrop, double maxAccelDrop, double maxVelRetract, double maxAccelRetract,
 	             double maxVelNudge, double maxAccelNudge,
 	             double extendDistance, double partialRetractionDistance,
@@ -19,23 +22,37 @@ public class Climb extends CommandGroup {
 
 		RunElevator dropLegs = new RunElevator(RunElevator.MoveType.BOTH, maxVelDrop, maxAccelDrop,
 				0, extendDistance, subsystem);
-		DriveLegWheels nudgeForwardLegsDropped = new DriveLegWheels(maxVelNudge, maxAccelNudge,
+		DriveLegWheels nudgeLegsForwardLegsDropped = new DriveLegWheels(maxVelNudge, maxAccelNudge,
 				0, nudge1Distance, subsystem);
-		RunMotorUntilConditionMet crawlForwardLegsDropped = new RunMotorUntilConditionMet(subsystem, failsafe1);
+		RunDriveMP nudgeDriveForwardLegsDropped = new RunDriveMP(maxVelNudge, maxAccelNudge,
+				0, nudge1Distance, drive);
+		RunMotorUntilConditionMet crawlLegsForwardLegsDropped = new RunMotorUntilConditionMet(subsystem, failsafe1);
+		DriveStraightUntilConditionMet crawlDriveForwardLegsDropped = new DriveStraightUntilConditionMet(
+				2, null, 0, null, null,
+				0, false, 0, 0, 0, drive, failsafe1, 0.1);
 		RunElevator retractFrontLeg = new RunElevator(RunElevator.MoveType.FRONT, maxVelRetract, maxAccelRetract,
 				extendDistance, 0, subsystem);
-		DriveLegWheels nudgeForwardFrontLegRetracted = new DriveLegWheels(maxVelNudge, maxAccelNudge,
+		DriveLegWheels nudgeLegsForwardFrontLegRetracted = new DriveLegWheels(maxVelNudge, maxAccelNudge,
 				nudge1Distance, nudge2Distance, subsystem);
-		RunMotorUntilConditionMet crawlForwardFrontLegRetracted = new RunMotorUntilConditionMet(subsystem, failsafe2);
+		RunDriveMP nudgeDriveForwardFrontLegRetracted = new RunDriveMP(maxVelNudge, maxAccelNudge,
+				0, nudge1Distance, drive);
+		RunMotorUntilConditionMet crawlLegsForwardFrontLegRetracted = new RunMotorUntilConditionMet(subsystem, failsafe2);
+		DriveStraightUntilConditionMet crawlDriveForwardFrontLegRetracted = new DriveStraightUntilConditionMet(
+				2, null, 0, null, null,
+				0, false, 0, 0, 0, drive, failsafe2, 0.1);
 		RunElevator retractBackLegPartially = new RunElevator(RunElevator.MoveType.BACK, maxVelRetract, maxAccelRetract,
 				extendDistance, extendDistance - partialRetractionDistance, subsystem);
 
 		addSequential(dropLegs);
-		addSequential(nudgeForwardLegsDropped, 6);
-		addSequential(crawlForwardLegsDropped);
+		addParallel(nudgeLegsForwardLegsDropped);
+		addSequential(nudgeDriveForwardLegsDropped);
+		addParallel(crawlLegsForwardLegsDropped);
+		addSequential(crawlDriveForwardLegsDropped);
 		addSequential(retractFrontLeg);
-		addSequential(nudgeForwardFrontLegRetracted, 6);
-		addSequential(crawlForwardFrontLegRetracted);
+		addParallel(nudgeLegsForwardFrontLegRetracted);
+		addSequential(nudgeDriveForwardFrontLegRetracted);
+		addParallel(crawlLegsForwardFrontLegRetracted);
+		addSequential(crawlDriveForwardFrontLegRetracted);
 		addSequential(retractBackLegPartially);
 	}
 }

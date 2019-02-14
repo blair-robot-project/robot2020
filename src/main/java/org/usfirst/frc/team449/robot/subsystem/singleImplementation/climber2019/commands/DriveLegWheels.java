@@ -50,7 +50,7 @@ public class DriveLegWheels extends Command {
      */
     @Override
     protected void end() {
-        Logger.addEvent("RunElevator end, " + timeSinceInitialized(), this.getClass());
+        Logger.addEvent("DriveLegWheels end, " + timeSinceInitialized(), this.getClass());
         subsystem.fullStopDrive();
     }
 

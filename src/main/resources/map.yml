@@ -258,7 +258,7 @@ logger:
         perGearSettings:
           -   motionProfilePFwd: 0
               maxSpeed: 17
-              kP: 0.2
+              kP: 0.5
               feedForwardComponent:
                 org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                   kVFwd: 0.422
@@ -276,7 +276,7 @@ logger:
         perGearSettings:
           - motionProfilePFwd: 0
             maxSpeed: 17
-            kP: 0.2
+            kP: 0.5
             feedForwardComponent:
               org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                 kVFwd: 0.422
