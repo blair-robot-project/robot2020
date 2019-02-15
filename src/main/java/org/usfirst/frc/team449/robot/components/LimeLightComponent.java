@@ -15,9 +15,10 @@ public class LimeLightComponent implements DoubleSupplier {
 
     @NotNull NetworkTableEntry entry;
     private final NetworkTableEntry tv;
+    private final ReturnValue value;
 
     enum ReturnValue {
-        x,y,area;
+        x, y, area, poseX, poseY, poseZ, pitch, yaw, roll;
     }
 
     /**
@@ -27,6 +28,7 @@ public class LimeLightComponent implements DoubleSupplier {
     @JsonCreator
     public LimeLightComponent(@JsonProperty(required = true) ReturnValue value){
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+        this.value = value;
         switch(value) {
             case x:
                 entry = table.getEntry("tx");
@@ -37,6 +39,8 @@ public class LimeLightComponent implements DoubleSupplier {
             case area:
                 entry = table.getEntry("ta");
                 break;
+            default:
+                entry = table.getEntry("camtran");
         }
         tv = table.getEntry("tv");
     }
@@ -49,6 +53,22 @@ public class LimeLightComponent implements DoubleSupplier {
         if (tv.getDouble(0) == 0){
             return Double.NaN;
         }
-        return entry.getDouble(0.0);
+        double[] camtran = entry.getDoubleArray(new double[6]);
+        switch(value) {
+            case poseX:
+                return camtran[0];
+            case poseY:
+                return camtran[1];
+            case poseZ:
+                return camtran[2];
+            case pitch:
+                return camtran[3];
+            case yaw:
+                return camtran[4];
+            case roll:
+                return camtran[5];
+            default:
+                return entry.getDouble(0.0);
+        }
     }
 }
