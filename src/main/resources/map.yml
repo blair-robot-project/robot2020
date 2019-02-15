@@ -241,9 +241,9 @@ logger:
         '@id': backLegElevatorTalon
         port: 9
         name: "backLegElevatorTalon"
-        reverseOutput: false
+        reverseOutput: true
         reverseSensor: true
-        enableBrakeMode: true
+        enableBrakeMode: false
         remoteLimitSwitchID: 4
         fwdLimitSwitchNormallyOpen: true
         revLimitSwitchNormallyOpen: true
@@ -270,7 +270,7 @@ logger:
         '@id': frontLegElevatorTalon
         port: 8
         name: "frontLegElevatorTalon"
-        reverseOutput: true
+        reverseOutput: false
         reverseSensor: false
         remoteLimitSwitchID: 11
         perGearSettings:
@@ -289,7 +289,7 @@ logger:
         name: "backLegDriveTalon"
         reverseOutput: false
         reverseSensor: false
-        enableBrakeMode: true
+        enableBrakeMode: false
 #        remoteLimitSwitchID: 4
         fwdLimitSwitchNormallyOpen: true
         revLimitSwitchNormallyOpen: true
@@ -320,12 +320,6 @@ logger:
 #          runnables:
 #            - org.usfirst.frc.team449.robot.generalInterfaces.poseEstimator.UnidirectionalPoseEstimator:
 #                poseEstimator
-teleopStartupCommand:
-  org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.commands.StartCompressor:
-    '@id': startCompressor
-    subsystem:
-      org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics:
-        pneumatics
 buttons:
 #    - button:
 #          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -559,21 +553,42 @@ buttons:
             org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
               climber
       action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': testBrakeButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              climbOverrideController
-          buttonNumber: 4
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.ToggleSolenoid:
-          '@id': toggleBrake
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': testBrakeButton
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              climbOverrideController
+#          buttonNumber: 4
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.ToggleSolenoid:
+#          '@id': toggleBrake
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+#              '@id': brakeSolenoid
+#              piston: frontElevatorBrake
+#      action: WHEN_PRESSED
+teleopStartupCommand:
+  org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+    '@id': teleopInit
+    commandList:
+      - org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.commands.StartCompressor:
+          '@id': startCompressor
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics:
+              pneumatics
+      - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+          '@id': unbrakeBack
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-              '@id': brakeSolenoid
+              '@id': backBrakeSolenoid
+              piston: backElevatorBrake
+      - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+          '@id': unbrakeFront
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+              '@id': frontBrakeSolenoid
               piston: frontElevatorBrake
-      action: WHEN_PRESSED
 #defaultCommands:
 #  - subsystem:
 #      org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
