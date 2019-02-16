@@ -1,5 +1,7 @@
 package org.usfirst.frc.team449.robot.components;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.filters.LinearDigitalFilter;
@@ -10,7 +12,8 @@ public class LimeLightYawTargetComponent implements DoubleSupplier {
     LimeLightComponent limeLightComponent;
     LinearDigitalFilter filter;
 
-    public LimeLightYawTargetComponent(int bufferCapacity, LimeLightComponent limeLightComponent) {
+    @JsonCreator
+    public LimeLightYawTargetComponent(@JsonProperty(required = true) Integer bufferCapacity, @JsonProperty (required = true) LimeLightComponent limeLightComponent) {
         this.limeLightComponent = limeLightComponent;
         filter = LinearDigitalFilter.movingAverage(new PIDSource() {
             @Override
@@ -26,7 +29,7 @@ public class LimeLightYawTargetComponent implements DoubleSupplier {
             public double pidGet() {
                 return limeLightComponent.getAsDouble();
             }
-        }, bufferCapacity);
+        }, bufferCapacity != null ? bufferCapacity : 5);
     }
 
     @Override

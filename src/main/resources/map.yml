@@ -295,9 +295,12 @@ defaultCommands:
         setpointSupplier:
           org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
             angularInput:
-              org.usfirst.frc.team449.robot.components.LimelightNavXTargetComponent:
-                ahrs:
-                  navX
+              org.usfirst.frc.team449.robot.components.LimelightYawTargetComponent:
+                bufferCapacity: 10
+                limeLightComponent:
+                  org.usfirst.frc.team449.robot.components.LimeLightComponent:
+                    '@id': LimeLightComp
+                    value: yaw
             distanceToTarget:
               org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentSimple: {}
 #        setpoint: 0
