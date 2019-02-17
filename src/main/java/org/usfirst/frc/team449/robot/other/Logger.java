@@ -200,7 +200,8 @@ public class Logger implements Runnable {
 
         try {
             //Log each event to a file
-            for (LogEvent event : events) {
+            for (int i = 0; i < events.size(); i++) {
+                LogEvent event = events.get(i);
                 eventLogWriter.write(event.toString() + "\n");
             }
             eventLogWriter.flush();
@@ -228,10 +229,10 @@ public class Logger implements Runnable {
 
             for (int j = 0; j < data.length; j++) {
                 datum = data[j];
-                datumClass = datum.getClass();
                 //We do this big thing here so we log it to SmartDashboard as the correct data type, so we make each
                 //thing into a booleanBox, graph, etc.
                 if (datum != null) {
+                    datumClass = datum.getClass();
                     if (datumClass.equals(boolean.class) || datumClass.equals(Boolean.class)) {
                         SmartDashboard.putBoolean(itemNames[i][j], (boolean) datum);
                     } else if (datumClass.equals(int.class) || datumClass.equals(Integer.class)) {
