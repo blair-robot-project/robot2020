@@ -85,18 +85,36 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
         rightMaster.setVelocity(right);
     }
 
+    /**
+     * Give the left side of the drive a motion state to reach.
+     * @param motionState The desired motion state.
+     */
     public void profileLeft(MotionState motionState) {
         leftMaster.executeMPPoint(motionState.pos(), motionState.vel(), motionState.acc());
     }
 
+    /**
+     * Give the right side of the drive a motion state to reach.
+     * @param motionState The desired motion state.
+     */
     public void profileRight(MotionState motionState) {
         rightMaster.executeMPPoint(motionState.pos(), motionState.vel(), motionState.acc());
     }
 
+    /**
+     * Give the left side of the drive a motion state to reach, but offset the desired position by a given value.
+     * @param motionState The desired motion state.
+     * @param offset      The position offset, in feet.
+     */
     public void profileLeftWithOffset(MotionState motionState, double offset) {
         leftMaster.executeMPPoint(motionState.pos() + offset, motionState.vel(), motionState.acc());
     }
 
+    /**
+     * Give the right side of the drive a motion state to reach, but offset the desired position by a given value.
+     * @param motionState The desired motion state.
+     * @param offset      The position offset, in feet.
+     */
     public void profileRightWithOffset(MotionState motionState, double offset) {
         rightMaster.executeMPPoint(motionState.pos() + offset, motionState.vel(), motionState.acc());
     }

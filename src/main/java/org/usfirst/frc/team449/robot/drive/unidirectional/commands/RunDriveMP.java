@@ -2,6 +2,7 @@ package org.usfirst.frc.team449.robot.drive.unidirectional.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.team254.lib.util.motion.*;
 import edu.wpi.first.wpilibj.command.Command;
@@ -9,18 +10,42 @@ import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
 import org.usfirst.frc.team449.robot.other.Logger;
 
+/**
+ * Directly run a 1D 254 motion profile on the robot drive.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class RunDriveMP<T extends DriveUnidirectionalWithGyro> extends Command {
 
+	/**
+	 * The profiles for the left and right side of the drive to follow, respectively.
+	 */
+	@NotNull
 	private final MotionProfile leftProfile, rightProfile;
 
+	/**
+	 * The robot drive.
+	 */
+	@NotNull
 	private final T subsystem;
 
+	/**
+	 * The initial positions of the left and right side of the drive, respectively.
+	 */
 	private double initPosLeft, initPosRight;
 
+	/**
+	 * Default constructor
+	 *
+	 * @param maxVel    The maximum velocity of the profile, in feet/second.
+	 * @param maxAccel  The maximum acceleration of the profile, in feet/second^2.
+	 * @param distance  The distance to travel, in feet.
+	 * @param subsystem The robot drive.
+	 */
 	@JsonCreator
-	public RunDriveMP(double maxVel, double maxAccel, double distance,
-	                      @NotNull T subsystem) {
+	public RunDriveMP(@JsonProperty(required = true) double maxVel,
+	                  @JsonProperty(required = true) double maxAccel,
+	                  @JsonProperty(required = true) double distance,
+	                  @JsonProperty(required = true) @NotNull T subsystem) {
 		requires(subsystem);
 		this.subsystem = subsystem;
 
@@ -33,7 +58,7 @@ public class RunDriveMP<T extends DriveUnidirectionalWithGyro> extends Command {
 	}
 
 	/**
-	 * The initialize method is called the first time this Command is run after being started.
+	 * Store the initial position of the each side of the drive.
 	 */
 	@Override
 	protected void initialize() {
@@ -43,7 +68,7 @@ public class RunDriveMP<T extends DriveUnidirectionalWithGyro> extends Command {
 	}
 
 	/**
-	 * The execute method is called repeatedly until this Command either finishes or is canceled.
+	 * Command the profile state for time t, offset by the initial position.
 	 */
 	@Override
 	protected void execute() {
@@ -53,8 +78,7 @@ public class RunDriveMP<T extends DriveUnidirectionalWithGyro> extends Command {
 	}
 
 	/**
-	 * Called when the command ended peacefully. This is where you may want to wrap up loose ends, like shutting off a
-	 * motor that was being used in the command.
+	 * Stop the drive.
 	 */
 	@Override
 	protected void end() {
@@ -62,6 +86,11 @@ public class RunDriveMP<T extends DriveUnidirectionalWithGyro> extends Command {
 		subsystem.fullStop();
 	}
 
+	/**
+	 * Run until the current state of each profile coincides with the end state of each profile.
+	 *
+	 * @return true if the profiles have finished, false otherwise.
+	 */
 	@Override
 	protected boolean isFinished() {
 		double t = timeSinceInitialized();

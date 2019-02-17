@@ -396,8 +396,8 @@ buttons:
           drive:
             org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
               drive
-          maxVelDrop: 0.5
-          maxAccelDrop: 0.5
+          maxVelExtend: 0.5
+          maxAccelExtend: 0.5
           maxVelRetract: 1
           maxAccelRetract: 1
           maxVelNudge: 0.2
@@ -446,7 +446,7 @@ buttons:
           buttonNumber: 2
       command:
         org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.RunElevator:
-          '@id': dropLegs
+          '@id': extendLegs
           moveType: BOTH
           maxVel: 0.5
           maxAccel: 0.5

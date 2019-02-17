@@ -2,40 +2,84 @@ package org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.team254.lib.util.motion.*;
 import edu.wpi.first.wpilibj.command.Command;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019;
 
+/**
+ * Run one or both elevators for a certain distance.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class RunElevator extends Command {
 
+    /**
+     * The profiles for the back and front elevators, respectively.
+     */
     private final MotionProfile backProfile, frontProfile;
 
+    /**
+     * An enum to select whether we want to move just the back elevator, just the front, or both.
+     */
     protected enum MoveType {BACK, FRONT, BOTH}
 
+    /**
+     * Whether we want to move just the back elevator, just the front, or both.
+     */
     private final MoveType moveType;
 
-    private final SubsystemClimber2019 subsystem;
+    /**
+     * The climber subsystem.
+     */
+    private final SubsystemClimber2019 climber;
 
+    /**
+     * How far to make the elevator extend before retracting, to unstick the brake, in feet.
+     */
     private final Double unstickTolerance;
 
-    private final double initBackPos, initFrontPos, offset;
+    /**
+     * The initial positions of the front and back elevators.
+     */
+    private final double initBackPos, initFrontPos;
 
+    /**
+     * Whether we are done unsticking the brake.
+     */
     private boolean doneUnsticking;
 
+    /**
+     * Default constructor.
+     *
+     * @param moveType         Whether we want to move just the back elevator, just the front, or both.
+     * @param maxVel           The maximum velocity to run the elevators at, in feet/second.
+     * @param maxAccel         The maximum velocity to run the elevators at, in feet/second^2.
+     * @param startPos         The start position of the elevator, in feet.
+     * @param endPos           The end position of the elevator, in feet.
+     * @param offset           How much the front elevator should extend further than the back elevator, in feet.
+     * @param unstickTolerance How far to make the elevator extend before retracting, to unstick the brake, in feet.
+     * @param climber          The climber subsystem.
+     */
     @JsonCreator
-    public RunElevator(MoveType moveType, double maxVel, double maxAccel, double startPos, double endPos, double offset,
-                       Double unstickTolerance, SubsystemClimber2019 subsystem) {
-        requires(subsystem);
+    public RunElevator(@JsonProperty(required = true) @NotNull MoveType moveType,
+                       @JsonProperty(required = true) double maxVel,
+                       @JsonProperty(required = true) double maxAccel,
+                       @JsonProperty(required = true) double startPos,
+                       @JsonProperty(required = true) double endPos,
+                       double offset,
+                       @Nullable Double unstickTolerance,
+                       @JsonProperty(required = true) @NotNull SubsystemClimber2019 climber) {
+        requires(climber);
         this.moveType = moveType;
-        this.subsystem = subsystem;
-        this.offset = offset;
+        this.climber = climber;
         this.unstickTolerance = unstickTolerance;
 
-        initBackPos = subsystem.getBackPos();
-        initFrontPos = subsystem.getFrontPos();
+        initBackPos = climber.getBackPos();
+        initFrontPos = climber.getFrontPos();
 
         MotionProfileConstraints constraints = new MotionProfileConstraints(maxVel, maxAccel);
 
@@ -46,7 +90,7 @@ public class RunElevator extends Command {
     }
 
     /**
-     * The initialize method is called the first time this Command is run after being started.
+     * Determine whether we need to unstick based on whether unstickTolerance is null.
      */
     @Override
     protected void initialize() {
@@ -55,7 +99,7 @@ public class RunElevator extends Command {
     }
 
     /**
-     * The execute method is called repeatedly until this Command either finishes or is canceled.
+     * Unstick the brake, and run the elevator once that's done.
      */
     @Override
     protected void execute() {
@@ -63,14 +107,14 @@ public class RunElevator extends Command {
             MotionState motionState = new MotionState(0, 10, 0, 0);
             switch (moveType) {
                 case BACK:
-                    doneUnsticking = subsystem.profileBackUntilMovement(motionState, initBackPos, unstickTolerance);
+                    doneUnsticking = climber.profileBackUntilMovement(motionState, initBackPos, unstickTolerance);
                     break;
                 case FRONT:
-                    doneUnsticking = subsystem.profileFrontUntilMovement(motionState, initFrontPos, unstickTolerance);
+                    doneUnsticking = climber.profileFrontUntilMovement(motionState, initFrontPos, unstickTolerance);
                     break;
                 case BOTH:
-                    doneUnsticking = subsystem.profileBackUntilMovement(motionState, initBackPos, unstickTolerance)
-                                  && subsystem.profileFrontUntilMovement(motionState, initFrontPos, unstickTolerance);
+                    doneUnsticking = climber.profileBackUntilMovement(motionState, initBackPos, unstickTolerance)
+                                  && climber.profileFrontUntilMovement(motionState, initFrontPos, unstickTolerance);
                     break;
                 default:
                     break;
@@ -83,14 +127,14 @@ public class RunElevator extends Command {
         double t = timeSinceInitialized();
         switch (moveType) {
             case BACK:
-                subsystem.profileBack(backProfile.stateByTimeClamped(t));
+                climber.profileBack(backProfile.stateByTimeClamped(t));
                 break;
             case FRONT:
-                subsystem.profileFront(frontProfile.stateByTimeClamped(t));
+                climber.profileFront(frontProfile.stateByTimeClamped(t));
                 break;
             case BOTH:
-                subsystem.profileBack(backProfile.stateByTimeClamped(t));
-                subsystem.profileFront(frontProfile.stateByTimeClamped(t));
+                climber.profileBack(backProfile.stateByTimeClamped(t));
+                climber.profileFront(frontProfile.stateByTimeClamped(t));
                 break;
             default:
                 break;
@@ -98,28 +142,32 @@ public class RunElevator extends Command {
     }
 
     /**
-     * Called when the command ended peacefully. This is where you may want to wrap up loose ends, like shutting off a
-     * motor that was being used in the command.
+     * Stop the elevator motors being used.
      */
     @Override
     protected void end() {
         Logger.addEvent("RunElevator end, " + timeSinceInitialized(), this.getClass());
         switch (moveType) {
             case BACK:
-                subsystem.fullStopBack();
+                climber.fullStopBack();
                 break;
             case FRONT:
-                subsystem.fullStopFront();
+                climber.fullStopFront();
                 break;
             case BOTH:
-                subsystem.fullStopBack();
-                subsystem.fullStopFront();
+                climber.fullStopBack();
+                climber.fullStopFront();
                 break;
             default:
                 break;
         }
     }
 
+    /**
+     * Run until the current state of each profile coincides with the end state of each profile.
+     *
+     * @return true if the profiles have finished, false otherwise.
+     */
     @Override
     protected boolean isFinished() {
         double t = timeSinceInitialized();

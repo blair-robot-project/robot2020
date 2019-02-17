@@ -2,26 +2,52 @@ package org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.team254.lib.util.motion.*;
 import edu.wpi.first.wpilibj.command.Command;
+import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019;
 
+/**
+ * Drive the leg-drive forward a given distance.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class DriveLegWheels extends Command {
 
+    /**
+     * The profile for the leg-drive to follow.
+     */
+    @NotNull
     private final MotionProfile profile;
 
-    private final SubsystemClimber2019 subsystem;
+    /**
+     * The climber subsystem.
+     */
+    @NotNull
+    private final SubsystemClimber2019 climber;
 
+    /**
+     * The initial position of the leg-drive motor.
+     */
     private double initPos;
 
+    /**
+     * Default constructor.
+     *
+     * @param maxVel    The maximum velocity for driving the leg-drive, in feet/second.
+     * @param maxAccel  The maximum acceleration for driving the leg-drive, in feet/second^2.
+     * @param distance  The distance to drive the leg-drive, in feet.
+     * @param climber   The climber subsystem.
+     */
     @JsonCreator
-    public DriveLegWheels(double maxVel, double maxAccel, double distance,
-                          SubsystemClimber2019 subsystem) {
-        requires(subsystem);
-        this.subsystem = subsystem;
+    public DriveLegWheels(@JsonProperty(required = true) double maxVel,
+                          @JsonProperty(required = true) double maxAccel,
+                          @JsonProperty(required = true) double distance,
+                          @JsonProperty(required = true) @NotNull SubsystemClimber2019 climber) {
+        requires(climber);
+        this.climber = climber;
 
         MotionProfileConstraints constraints = new MotionProfileConstraints(maxVel, maxAccel);
 
@@ -30,33 +56,37 @@ public class DriveLegWheels extends Command {
     }
 
     /**
-     * The initialize method is called the first time this Command is run after being started.
+     * Store the initial position of the leg-drive.
      */
     @Override
     protected void initialize() {
         Logger.addEvent("DriveLegWheels initialize, ", this.getClass());
-        initPos = subsystem.getDrivePos();
+        initPos = climber.getDrivePos();
     }
 
     /**
-     * The execute method is called repeatedly until this Command either finishes or is canceled.
+     * Command the profile state for time t, offset by the initial position.
      */
     @Override
     protected void execute() {
         double t = timeSinceInitialized();
-        subsystem.profileDriveWithOffset(profile.stateByTimeClamped(t), initPos);
+        climber.profileDriveWithOffset(profile.stateByTimeClamped(t), initPos);
     }
 
     /**
-     * Called when the command ended peacefully. This is where you may want to wrap up loose ends, like shutting off a
-     * motor that was being used in the command.
+     * Stop the leg-drive.
      */
     @Override
     protected void end() {
         Logger.addEvent("DriveLegWheels end, " + timeSinceInitialized(), this.getClass());
-        subsystem.fullStopDrive();
+        climber.fullStopDrive();
     }
 
+    /**
+     * Run until the current state of the profile coincides with the end state of the profile.
+     *
+     * @return true if the profile has finished, false otherwise.
+     */
     @Override
     protected boolean isFinished() {
         double t = timeSinceInitialized();

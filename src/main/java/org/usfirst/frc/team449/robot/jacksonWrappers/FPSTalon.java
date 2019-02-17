@@ -886,6 +886,12 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         }
     }
 
+    /**
+     * Command the Talon to achieve a given position, velocity, and acceleration.
+     * @param pos The desired position in feet.
+     * @param vel The desired velocity in feet/second.
+     * @param acc The desired velocity in feet/second^2.
+     */
     public void executeMPPoint(double pos, double vel, double acc) {
         canTalon.set(ControlMode.Position, feetToEncoder(pos), DemandType.ArbitraryFeedForward,
                 currentGearSettings.getFeedForwardComponent().calcMPVoltage(pos, vel, acc) / 12);

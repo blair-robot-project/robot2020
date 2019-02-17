@@ -12,12 +12,23 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDoubleSolenoid;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.SubsystemBinaryMotor;
 
+/**
+ * A 2019 climbing subsystem.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMotor {
 
+    /**
+     * Talons for the back elevator, front elevator, and leg-drive.
+     */
+    @NotNull
     private final FPSTalon backTalon, frontTalon, driveTalon;
 
-    private double driveTalonCrawlVelocity;
+    /**
+     * Velocity, in feet/second at which the drive and leg-drive should crawl until the IR trips.
+     * Gets overridden in Climb command.
+     */
+    private double crawlVelocity;
 
     /**
      * The pistons for the brake.
@@ -26,58 +37,104 @@ public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMo
     private final MappedDoubleSolenoid brakeBack, brakeFront;
 
     /**
-     * Whether or not the motor is currently on.
+     * Whether or not the leg-drive motor is currently on.
      */
     private boolean motorOn;
 
+    /**
+     * Default constructor
+     *
+     * @param backTalon     The Talon for the back elevator.
+     * @param frontTalon    The Talon for the front elevator.
+     * @param driveTalon    The Talon for the leg-drive.
+     * @param crawlVelocity Velocity, in feet/second at which the drive and leg-drive should crawl until the IR trips.
+     *                      Gets overridden in Climb command.
+     * @param brakeBack     The piston to brake the back elevator.
+     * @param brakeFront    The piston to brake the front elevator.
+     */
     @JsonCreator
-    public SubsystemClimber2019(FPSTalon backTalon, FPSTalon frontTalon, FPSTalon driveTalon,
-                                double driveTalonCrawlVelocity,
+    public SubsystemClimber2019(@JsonProperty(required = true) @NotNull FPSTalon backTalon,
+                                @JsonProperty(required = true) @NotNull FPSTalon frontTalon,
+                                @JsonProperty(required = true) @NotNull FPSTalon driveTalon,
+                                double crawlVelocity,
                                 @JsonProperty(required = true) @NotNull MappedDoubleSolenoid brakeBack,
                                 @JsonProperty(required = true) @NotNull MappedDoubleSolenoid brakeFront) {
         this.backTalon = backTalon;
         this.frontTalon = frontTalon;
         this.driveTalon = driveTalon;
-        this.driveTalonCrawlVelocity = driveTalonCrawlVelocity;
+        this.crawlVelocity = crawlVelocity;
         this.brakeBack = brakeBack;
         this.brakeFront = brakeFront;
         brakeBack.set(DoubleSolenoid.Value.kForward);
         brakeFront.set(DoubleSolenoid.Value.kForward);
     }
 
+    /**
+     * Give the back elevator a motion state to reach.
+     * @param motionState The desired motion state.
+     */
     public void profileBack(MotionState motionState) {
         brakeBack.set(DoubleSolenoid.Value.kReverse);
         backTalon.executeMPPoint(motionState.pos(), motionState.vel(), motionState.acc());
     }
 
+    /**
+     * Give the front elevator a motion state to reach.
+     * @param motionState The desired motion state.
+     */
     public void profileFront(MotionState motionState) {
         brakeFront.set(DoubleSolenoid.Value.kReverse);
         frontTalon.executeMPPoint(motionState.pos(), motionState.vel(), motionState.acc());
     }
 
+    /**
+     * Give the leg-drive a motion state to reach.
+     * @param motionState The desired motion state.
+     */
     public void profileDrive(MotionState motionState) {
         driveTalon.executeMPPoint(motionState.pos(), motionState.vel(), motionState.acc());
     }
 
+    /**
+     * Give the leg-drive a motion state to reach, but offset the desired position by a given value.
+     * @param motionState The desired motion state.
+     * @param offset      The position offset, in feet.
+     */
     public void profileDriveWithOffset(MotionState motionState, double offset) {
         driveTalon.executeMPPoint(motionState.pos() + offset, motionState.vel(), motionState.acc());
     }
 
+    /**
+     * Stop the back elevator.
+     */
     public void fullStopBack() {
         brakeBack.set(DoubleSolenoid.Value.kForward);
         backTalon.disable();
     }
 
+    /**
+     * Stop the front elevator.
+     */
     public void fullStopFront() {
         brakeFront.set(DoubleSolenoid.Value.kForward);
         frontTalon.disable();
     }
 
+    /**
+     * Stop the leg-drive.
+     */
     public void fullStopDrive() {
         driveTalon.disable();
     }
 
-    //Return true if done
+    /**
+     * Try to reach a motion state on the back elevator as long as it hasn't moved a given tolerance from its initial
+     * position. Used to unstick brake disengagement.
+     * @param motionState The motion state to try to reach.
+     * @param initPos     The initial position of the back elevator.
+     * @param tolerance   The distance required to move, in feet.
+     * @return True if we've made it past the desired tolerance, false otherwise.
+     */
     public boolean profileBackUntilMovement(MotionState motionState, double initPos, double tolerance) {
         brakeBack.set(DoubleSolenoid.Value.kReverse);
         if (Math.abs(initPos - backTalon.getPositionFeet()) > tolerance) {
@@ -87,7 +144,14 @@ public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMo
         return false;
     }
 
-    //Return true if done
+    /**
+     * Try to reach a motion state on the front elevator as long as it hasn't moved a given tolerance from its initial
+     * position. Used to unstick brake disengagement.
+     * @param motionState The motion state to try to reach.
+     * @param initPos     The initial position of the front elevator.
+     * @param tolerance   The distance required to move, in feet.
+     * @return true if we've made it past the desired tolerance, false otherwise.
+     */
     public boolean profileFrontUntilMovement(MotionState motionState, double initPos, double tolerance) {
         brakeFront.set(DoubleSolenoid.Value.kReverse);
         if (Math.abs(initPos - frontTalon.getPositionFeet()) > tolerance) {
@@ -97,33 +161,46 @@ public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMo
         return false;
     }
 
+    /**
+     * @return the position of the back motor.
+     */
     public double getBackPos() {
         return backTalon.getPositionFeet();
     }
 
+    /**
+     * @return the position of the front motor.
+     */
     public double getFrontPos() {
         return frontTalon.getPositionFeet();
     }
 
+    /**
+     * @return the position of the leg-drive motor.
+     */
     public double getDrivePos() {
         return driveTalon.getPositionFeet();
     }
 
-    public void setDriveTalonCrawlVelocity(double vel) {
-        driveTalonCrawlVelocity = vel;
+    /**
+     * Set the velocity at which the leg-drive crawls until the IR trips.
+     * @param vel The crawl velocity to set.
+     */
+    public void setCrawlVelocity(double vel) {
+        crawlVelocity = vel;
     }
 
     /**
-     * Turns the motor on, and sets it to a map-specified speed.
+     * Turns the leg-drive motor on, and sets it to its designated speed.
      */
     @Override
     public void turnMotorOn() {
-        driveTalon.setVelocity(driveTalonCrawlVelocity);
+        driveTalon.setVelocity(crawlVelocity);
         motorOn = true;
     }
 
     /**
-     * Turns the motor off.
+     * Turns the leg-drive motor off.
      */
     @Override
     public void turnMotorOff() {
@@ -132,7 +209,7 @@ public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMo
     }
 
     /**
-     * @return true if the motor is on, false otherwise.
+     * @return true if the leg-drive motor is on, false otherwise.
      */
     @Override
     public boolean isMotorOn() {
