@@ -11,20 +11,24 @@ import org.usfirst.frc.team449.robot.other.Logger;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class RunDriveMP<T extends DriveUnidirectionalWithGyro> extends Command {
 
-	private final MotionProfile profile;
+	private final MotionProfile leftProfile, rightProfile;
 
 	private final T subsystem;
 
 	@JsonCreator
-	public RunDriveMP(double maxVel, double maxAccel, double startPos, double endPos,
+	public RunDriveMP(double maxVel, double maxAccel, double distance,
 	                      T subsystem) {
 		requires(subsystem);
 		this.subsystem = subsystem;
 
 		MotionProfileConstraints constraints = new MotionProfileConstraints(maxVel, maxAccel);
 
-		profile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(endPos),
-				new MotionState(0,startPos,0,0));
+		double initPosLeft = subsystem.getLeftPosCached(), initPosRight = subsystem.getRightPosCached();
+
+		leftProfile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(initPosLeft + distance),
+				new MotionState(0, initPosLeft, 0, 0));
+		rightProfile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(initPosRight + distance),
+				new MotionState(0, initPosRight, 0, 0));
 	}
 
 	/**
@@ -41,8 +45,8 @@ public class RunDriveMP<T extends DriveUnidirectionalWithGyro> extends Command {
 	@Override
 	protected void execute() {
 		double t = timeSinceInitialized();
-		subsystem.profileLeft(profile.stateByTimeClamped(t));
-		subsystem.profileRight(profile.stateByTimeClamped(t));
+		subsystem.profileLeft(leftProfile.stateByTimeClamped(t));
+		subsystem.profileRight(rightProfile.stateByTimeClamped(t));
 	}
 
 	/**
@@ -58,7 +62,8 @@ public class RunDriveMP<T extends DriveUnidirectionalWithGyro> extends Command {
 	@Override
 	protected boolean isFinished() {
 		double t = timeSinceInitialized();
-		return profile.stateByTimeClamped(t).coincident(profile.endState());
+		return leftProfile.stateByTimeClamped(t).coincident(leftProfile.endState())
+			&& rightProfile.stateByTimeClamped(t).coincident(rightProfile.endState());
 	}
 
 }

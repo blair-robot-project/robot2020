@@ -19,31 +19,41 @@ public class Climb extends CommandGroup {
 	             double maxVelNudge, double maxAccelNudge,
 	             double extendDistance, double partialRetractionDistance,
 	             double nudge1Distance, double nudge2Distance,
+	             double offset, double crawlVelocity, double unstickTolerance,
 	             IRWithButtonOverride failsafe1, IRWithButtonOverride failsafe2) {
 		requires(subsystem);
+		subsystem.setDriveTalonCrawlVelocity(crawlVelocity);
+
 
 		RunElevator dropLegs = new RunElevator(RunElevator.MoveType.BOTH, maxVelDrop, maxAccelDrop,
-				0, extendDistance, 0.03, null, subsystem);
+				0, extendDistance, offset, null, subsystem);
+
 		DriveLegWheels nudgeLegsForwardLegsDropped = new DriveLegWheels(maxVelNudge, maxAccelNudge,
-				0, nudge1Distance, subsystem);
-		RunDriveMP nudgeDriveForwardLegsDropped = new RunDriveMP(maxVelNudge, maxAccelNudge,
-				0, -nudge1Distance, drive);
-		RunMotorUntilConditionMet crawlLegsForwardLegsDropped = new RunMotorUntilConditionMet(subsystem, failsafe1);
-		DriveStraightUntilConditionMet crawlDriveForwardLegsDropped = new DriveStraightUntilConditionMet(
+				nudge1Distance, subsystem);
+		RunDriveMP nudgeDriveForwardLegsDropped = new RunDriveMP<>(maxVelNudge, maxAccelNudge,
+				-nudge1Distance, drive);
+
+		RunMotorUntilConditionMet crawlLegsForwardLegsDropped = new RunMotorUntilConditionMet<>(subsystem, failsafe1);
+		DriveStraightUntilConditionMet crawlDriveForwardLegsDropped = new DriveStraightUntilConditionMet<>(
 				2, null, 0, null, null,
-				0, false, 0, 0, 0, drive, failsafe1, -0.02);
+				0, false, 0, 0, 0, drive, failsafe1, -crawlVelocity);
+
 		RunElevator retractFrontLeg = new RunElevator(RunElevator.MoveType.FRONT, maxVelRetract, maxAccelRetract,
-				extendDistance, 0, 0, 0.1, subsystem);
+				extendDistance + offset, 0, 0, unstickTolerance, subsystem);
+
 		DriveLegWheels nudgeLegsForwardFrontLegRetracted = new DriveLegWheels(maxVelNudge, maxAccelNudge,
-				nudge1Distance, nudge1Distance + nudge2Distance, subsystem);
-		RunDriveMP nudgeDriveForwardFrontLegRetracted = new RunDriveMP(maxVelNudge, maxAccelNudge,
-				-nudge1Distance, -nudge1Distance - nudge2Distance, drive);
-		RunMotorUntilConditionMet crawlLegsForwardFrontLegRetracted = new RunMotorUntilConditionMet(subsystem, failsafe2);
-		DriveStraightUntilConditionMet crawlDriveForwardFrontLegRetracted = new DriveStraightUntilConditionMet(
+				nudge2Distance, subsystem);
+		RunDriveMP nudgeDriveForwardFrontLegRetracted = new RunDriveMP<>(maxVelNudge, maxAccelNudge,
+				-nudge2Distance, drive);
+
+		RunMotorUntilConditionMet crawlLegsForwardFrontLegRetracted = new RunMotorUntilConditionMet<>(subsystem, failsafe2);
+		DriveStraightUntilConditionMet crawlDriveForwardFrontLegRetracted = new DriveStraightUntilConditionMet<>(
 				2, null, 0, null, null,
-				0, false, 0, 0, 0, drive, failsafe2, -0.02);
+				0, false, 0, 0, 0, drive, failsafe2, -crawlVelocity);
+
 		RunElevator retractBackLegPartially = new RunElevator(RunElevator.MoveType.BACK, maxVelRetract, maxAccelRetract,
-				extendDistance, extendDistance - partialRetractionDistance, 0, 0.1, subsystem);
+				extendDistance, extendDistance - partialRetractionDistance, 0, unstickTolerance, subsystem);
+
 
 		addSequential(dropLegs);
 		addParallel(nudgeLegsForwardLegsDropped);

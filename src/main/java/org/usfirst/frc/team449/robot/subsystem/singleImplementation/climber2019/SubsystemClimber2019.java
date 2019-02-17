@@ -101,6 +101,14 @@ public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMo
         return frontTalon.getPositionFeet();
     }
 
+    public double getDrivePos() {
+        return driveTalon.getPositionFeet();
+    }
+
+    public void setDriveTalonCrawlVelocity(double vel) {
+        driveTalonCrawlVelocity = vel;
+    }
+
     /**
      * Turns the motor on, and sets it to a map-specified speed.
      */

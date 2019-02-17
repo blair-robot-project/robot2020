@@ -16,15 +16,17 @@ public class DriveLegWheels extends Command {
     private final SubsystemClimber2019 subsystem;
 
     @JsonCreator
-    public DriveLegWheels(double maxVel, double maxAccel, double startPos, double endPos,
+    public DriveLegWheels(double maxVel, double maxAccel, double distance,
                           SubsystemClimber2019 subsystem) {
         requires(subsystem);
         this.subsystem = subsystem;
 
         MotionProfileConstraints constraints = new MotionProfileConstraints(maxVel, maxAccel);
 
-        profile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(endPos),
-                new MotionState(0,startPos,0,0)); //find actual pos of motor, crawl changes pos
+        double initPos = subsystem.getDrivePos();
+
+        profile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(initPos + distance),
+                new MotionState(0, initPos, 0, 0));
     }
 
     /**
