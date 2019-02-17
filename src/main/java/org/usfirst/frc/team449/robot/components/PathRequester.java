@@ -80,10 +80,7 @@ public class PathRequester {
         pathRequest.setMaxAccel(maxAccel);
         pathRequest.setMaxJerk(maxJerk);
         pathRequest.setWheelbase(wheelbase);
-        System.out.println("Waypoints: "+ Arrays.toString(waypoints));
-        System.out.println("Socket send started");
         socket.send(pathRequest.build().toByteArray());
-        System.out.println("Socket send ended");
     }
 
     /**
@@ -97,14 +94,10 @@ public class PathRequester {
     @Nullable
     public MotionProfileData[] getPath(boolean inverted, boolean resetPosition) {
         //Read from Jetson
-        System.out.println("Attempting non-blocking read");
         output = socket.recv(ZMQ.NOBLOCK);
         if (output == null) {
             return null;
         }
-        System.out.println("Received message");
-        System.out.println("Message length: "+output.length);
-        System.out.println("Message: "+ Arrays.toString(output));
 
         //Make these local variables and not fields so that this thread doesn't retain any connection to it.
         MotionProfileData leftMotionProfileData, rightMotionProfileData = null;
@@ -112,7 +105,6 @@ public class PathRequester {
         try {
             //Read the response
             path = PathOuterClass.Path.parseFrom(output);
-            System.out.println("Path accel count: "+path.getAccelLeftCount());
             leftMotionProfileData = new MotionProfileData(path.getPosLeftList(), path.getVelLeftList(),
                     path.getAccelLeftList(), path.getDeltaTime(), inverted, false, resetPosition);
             if (path.getPosRightCount() != 0) {
@@ -124,8 +116,6 @@ public class PathRequester {
             e.printStackTrace();
             return null;
         }
-
-        System.out.println("Read protobuf.");
 
         //Return stuff
         if (rightMotionProfileData == null) {

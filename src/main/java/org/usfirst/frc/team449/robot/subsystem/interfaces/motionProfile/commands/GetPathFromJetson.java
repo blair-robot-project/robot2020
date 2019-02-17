@@ -98,7 +98,6 @@ public class GetPathFromJetson extends Command implements PoseCommand {
     @Override
     protected void initialize() {
         Logger.addEvent("GetPathFromJetson init", this.getClass());
-        System.out.print("GetPathFromJetson init");
         //Check if we're using the supplier or the parameter
         if (waypointSupplier != null) {
             waypoints = waypointSupplier.get();
