@@ -84,6 +84,13 @@ remotes {
         user = 'lvuser'
         knownHosts = allowAnyHosts
     }
+
+    jetson {
+        host = '10.4.49.7'
+        user = 'nvidia'
+        knownHosts = allowAnyHosts
+        password = 'nvidia'
+    }
 }
 
 task('copyResources') {
@@ -98,6 +105,17 @@ task('copyResources') {
         }
     }
 }
+
+task('startVision') {
+    doLast {
+        ssh.run {
+            session(remotes.jetson) {
+                execute './jetson_vision.sh', ignoreError: true
+            }
+        }
+    }
+}
+
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project EmbeddedTools.
@@ -135,24 +153,24 @@ jar {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
 }
-task genJavadoc(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
+//task genJavadoc(type: Jar, dependsOn: javadoc) {
+//    classifier = 'javadoc'
+//    from javadoc.destinationDir
+//}
 
-task deleteDocs(type: Delete){
-    delete 'docs'
-    followSymlinks = false
-}
+//task deleteDocs(type: Delete){
+//    delete 'docs'
+//    followSymlinks = false
+//}
+//
+//task copyDocs(type: Copy, dependsOn: [genJavadoc, deleteDocs]){
+//    from 'build/docs/javadoc'
+//    into 'docs'
+//}
 
-task copyDocs(type: Copy, dependsOn: [genJavadoc, deleteDocs]){
-    from 'build/docs/javadoc'
-    into 'docs'
-}
-
-artifacts {
-    archives genJavadoc
-}
+//artifacts {
+//    archives genJavadoc
+//}
 
 compileJava {
     options.compilerArgs << '-parameters'

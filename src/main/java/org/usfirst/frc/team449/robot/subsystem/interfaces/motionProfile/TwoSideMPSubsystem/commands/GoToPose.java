@@ -89,13 +89,13 @@ public class GoToPose<T extends Subsystem & SubsystemMPTwoSides & SubsystemAHRS>
         }
 
         //Get the pose
-        pos = poseEstimator.getPos();
-        Waypoint[] toRet = new Waypoint[waypoints.length + 1];
-        toRet[0] = new Waypoint(pos[0], pos[1], subsystem.getHeadingCached());
+//        pos = poseEstimator.getPos();
+//        Waypoint[] toRet = new Waypoint[waypoints.length + 1];
+//        toRet[0] = new Waypoint(pos[0], pos[1], subsystem.getHeadingCached());
 
-        System.arraycopy(waypoints, 0, toRet, 1, waypoints.length);
+//        System.arraycopy(waypoints, 0, toRet, 1, waypoints.length);
 
-        return toRet;
+        return waypoints;
     }
 
     /**

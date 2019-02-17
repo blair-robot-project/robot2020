@@ -13,6 +13,8 @@ import org.zeromq.ZMQ;
 import proto.PathOuterClass;
 import proto.PathRequestOuterClass;
 
+import java.util.Arrays;
+
 /**
  * The object that requests a motion profile from the Jetson.
  */
@@ -40,16 +42,20 @@ public class PathRequester {
      */
     private byte[] output;
 
+    private double wheelbase;
+
     /**
      * Default constructor.
      *
      * @param address The address of the port on the RIO to open.
      */
     @JsonCreator
-    public PathRequester(@NotNull @JsonProperty(required = true) String address) {
+    public PathRequester(@NotNull @JsonProperty(required = true) String address,
+                         @JsonProperty(required = true) double wheelbase) {
         ZMQ.Context context = ZMQ.context(1);
         socket = context.socket(ZMQ.REQ);
         socket.bind(address);
+        this.wheelbase = wheelbase;
     }
 
     /**
@@ -73,6 +79,7 @@ public class PathRequester {
         pathRequest.setMaxVel(maxVel);
         pathRequest.setMaxAccel(maxAccel);
         pathRequest.setMaxJerk(maxJerk);
+        pathRequest.setWheelbase(wheelbase);
         socket.send(pathRequest.build().toByteArray());
     }
 

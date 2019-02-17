@@ -10,4 +10,5 @@ message PathRequest {
     required double maxVel = 5;
     required double maxAccel = 6;
     required double maxJerk = 7;
+    optional double wheelbase = 8;
 }
