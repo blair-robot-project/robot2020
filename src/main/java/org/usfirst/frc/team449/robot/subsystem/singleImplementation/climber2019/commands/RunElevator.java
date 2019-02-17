@@ -11,7 +11,7 @@ import org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class RunElevator extends Command {
 
-    private final MotionProfile profile;
+    private final MotionProfile backProfile, frontProfile;
 
     protected enum MoveType {BACK, FRONT, BOTH}
 
@@ -19,16 +19,29 @@ public class RunElevator extends Command {
 
     private final SubsystemClimber2019 subsystem;
 
+    private final Double unstickTolerance;
+
+    private final double initBackPos, initFrontPos, offset;
+
+    private boolean doneUnsticking;
+
     @JsonCreator
-    public RunElevator(MoveType moveType, double maxVel, double maxAccel, double startPos, double endPos,
-                       SubsystemClimber2019 subsystem) {
+    public RunElevator(MoveType moveType, double maxVel, double maxAccel, double startPos, double endPos, double offset,
+                       Double unstickTolerance, SubsystemClimber2019 subsystem) {
         requires(subsystem);
         this.moveType = moveType;
         this.subsystem = subsystem;
+        this.offset = offset;
+        this.unstickTolerance = unstickTolerance;
+
+        initBackPos = subsystem.getBackPos();
+        initFrontPos = subsystem.getFrontPos();
 
         MotionProfileConstraints constraints = new MotionProfileConstraints(maxVel, maxAccel);
 
-        profile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(endPos),
+        backProfile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(endPos),
+                new MotionState(0,startPos,0,0));
+        frontProfile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(endPos + offset),
                 new MotionState(0,startPos,0,0));
     }
 
@@ -38,6 +51,7 @@ public class RunElevator extends Command {
     @Override
     protected void initialize() {
         Logger.addEvent("RunElevator initialize, " + moveType, this.getClass());
+        doneUnsticking = unstickTolerance == null;
     }
 
     /**
@@ -45,17 +59,38 @@ public class RunElevator extends Command {
      */
     @Override
     protected void execute() {
+        if (!doneUnsticking) {
+            MotionState motionState = new MotionState(0, 10, 0, 0);
+            switch (moveType) {
+                case BACK:
+                    doneUnsticking = subsystem.profileBackUntilMovement(motionState, initBackPos, unstickTolerance);
+                    break;
+                case FRONT:
+                    doneUnsticking = subsystem.profileFrontUntilMovement(motionState, initFrontPos, unstickTolerance);
+                    break;
+                case BOTH:
+                    doneUnsticking = subsystem.profileBackUntilMovement(motionState, initBackPos, unstickTolerance)
+                                  && subsystem.profileFrontUntilMovement(motionState, initFrontPos, unstickTolerance);
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (!doneUnsticking) {
+            return;
+        }
+
         double t = timeSinceInitialized();
         switch (moveType) {
             case BACK:
-                subsystem.profileBack(profile.stateByTimeClamped(t));
+                subsystem.profileBack(backProfile.stateByTimeClamped(t));
                 break;
             case FRONT:
-                subsystem.profileFront(profile.stateByTimeClamped(t));
+                subsystem.profileFront(frontProfile.stateByTimeClamped(t));
                 break;
             case BOTH:
-                subsystem.profileBack(profile.stateByTimeClamped(t));
-                subsystem.profileFront(profile.stateByTimeClamped(t));
+                subsystem.profileBack(backProfile.stateByTimeClamped(t));
+                subsystem.profileFront(frontProfile.stateByTimeClamped(t));
                 break;
             default:
                 break;
@@ -88,6 +123,7 @@ public class RunElevator extends Command {
     @Override
     protected boolean isFinished() {
         double t = timeSinceInitialized();
-        return profile.stateByTimeClamped(t).coincident(profile.endState());
+        return backProfile.stateByTimeClamped(t).coincident(backProfile.endState())
+            && frontProfile.stateByTimeClamped(t).coincident(frontProfile.endState());
     }
 }

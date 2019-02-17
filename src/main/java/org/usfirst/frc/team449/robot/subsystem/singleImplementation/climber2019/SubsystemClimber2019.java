@@ -42,7 +42,7 @@ public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMo
         this.brakeBack = brakeBack;
         this.brakeFront = brakeFront;
         brakeBack.set(DoubleSolenoid.Value.kForward);
-        brakeFront.set(DoubleSolenoid.Value.kReverse);
+        brakeFront.set(DoubleSolenoid.Value.kForward);
     }
 
     public void profileBack(MotionState motionState) {
@@ -70,8 +70,35 @@ public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMo
     }
 
     public void fullStopDrive() {
-        brakeFront.set(DoubleSolenoid.Value.kForward);
-        frontTalon.disable();
+        driveTalon.disable();
+    }
+
+    //Return true if done
+    public boolean profileBackUntilMovement(MotionState motionState, double initPos, double tolerance) {
+        brakeBack.set(DoubleSolenoid.Value.kReverse);
+        if (Math.abs(initPos - backTalon.getPositionFeet()) > tolerance) {
+            return true;
+        }
+        backTalon.executeMPPoint(motionState.pos(), motionState.vel(), motionState.acc());
+        return false;
+    }
+
+    //Return true if done
+    public boolean profileFrontUntilMovement(MotionState motionState, double initPos, double tolerance) {
+        brakeFront.set(DoubleSolenoid.Value.kReverse);
+        if (Math.abs(initPos - frontTalon.getPositionFeet()) > tolerance) {
+            return true;
+        }
+        frontTalon.executeMPPoint(motionState.pos(), motionState.vel(), motionState.acc());
+        return false;
+    }
+
+    public double getBackPos() {
+        return backTalon.getPositionFeet();
+    }
+
+    public double getFrontPos() {
+        return frontTalon.getPositionFeet();
     }
 
     /**

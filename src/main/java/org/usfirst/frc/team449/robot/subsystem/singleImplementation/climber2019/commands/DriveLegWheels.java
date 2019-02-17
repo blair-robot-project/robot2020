@@ -24,7 +24,7 @@ public class DriveLegWheels extends Command {
         MotionProfileConstraints constraints = new MotionProfileConstraints(maxVel, maxAccel);
 
         profile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(endPos),
-                new MotionState(0,startPos,0,0));
+                new MotionState(0,startPos,0,0)); //find actual pos of motor, crawl changes pos
     }
 
     /**
@@ -33,6 +33,7 @@ public class DriveLegWheels extends Command {
     @Override
     protected void initialize() {
         Logger.addEvent("DriveLegWheels initialize, ", this.getClass());
+        System.out.println("DriveLegWheels initialize");
     }
 
     /**
