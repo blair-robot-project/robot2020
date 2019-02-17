@@ -84,6 +84,13 @@ remotes {
         user = 'lvuser'
         knownHosts = allowAnyHosts
     }
+
+    jetson {
+        host = '10.4.49.7'
+        user = 'nvidia'
+        knownHosts = allowAnyHosts
+        password = 'nvidia'
+    }
 }
 
 task('copyResources') {
@@ -98,6 +105,17 @@ task('copyResources') {
         }
     }
 }
+
+task('startVision') {
+    doLast {
+        ssh.run {
+            session(remotes.jetson) {
+                execute './jetson_vision.sh', ignoreError: true
+            }
+        }
+    }
+}
+
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project EmbeddedTools.
@@ -139,7 +157,7 @@ jar {
 //    classifier = 'javadoc'
 //    from javadoc.destinationDir
 //}
-//
+
 //task deleteDocs(type: Delete){
 //    delete 'docs'
 //    followSymlinks = false
@@ -149,7 +167,7 @@ jar {
 //    from 'build/docs/javadoc'
 //    into 'docs'
 //}
-//
+
 //artifacts {
 //    archives genJavadoc
 //}
