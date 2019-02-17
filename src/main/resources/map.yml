@@ -361,62 +361,6 @@ buttons:
           override: false
       action: WHEN_RELEASED
     - button:
-          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-              '@id': stabberButton #solenoid
-              joystick:
-                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                      driverGamepad
-              buttonNumber: 1
-      command:
-          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
-              '@id': stabberCommand
-              subsystem:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-                      stabber
-      action: WHEN_PRESSED
-    - button:
-          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-              '@id': retractStabberButton #solenoid
-              joystick:
-                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                      driverGamepad
-              buttonNumber: 2
-      command:
-          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
-              '@id': retractStabberCommand
-              subsystem:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-                      stabber
-      action: WHEN_PRESSED
-    - button:
-          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-              '@id': stabberBaseButton #solenoid
-              joystick:
-                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                      driverGamepad
-              buttonNumber: 3
-      command:
-          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
-              '@id': stabberBaseCommand
-              subsystem:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-                      stabberBase
-      action: WHEN_PRESSED
-    - button:
-          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-              '@id': retractStabberBaseButton #solenoid
-              joystick:
-                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                      driverGamepad
-              buttonNumber: 4
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
-          '@id': retractStabberBaseCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-              stabberBase
-      action: WHEN_PRESSED
-    - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': climbButton
           joystick:
@@ -466,7 +410,7 @@ buttons:
           #11.072 / 12
           nudge2Distance: 0.923
           offset: 0.03
-          crawlVelocity: 0.2
+          crawlVelocity: 0.1
           unstickTolerance: 0.05
           failsafe1:
             org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride:

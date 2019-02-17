@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.team254.lib.util.motion.*;
 import edu.wpi.first.wpilibj.command.Command;
+import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
 import org.usfirst.frc.team449.robot.other.Logger;
 
@@ -15,20 +16,20 @@ public class RunDriveMP<T extends DriveUnidirectionalWithGyro> extends Command {
 
 	private final T subsystem;
 
+	private double initPosLeft, initPosRight;
+
 	@JsonCreator
 	public RunDriveMP(double maxVel, double maxAccel, double distance,
-	                      T subsystem) {
+	                      @NotNull T subsystem) {
 		requires(subsystem);
 		this.subsystem = subsystem;
 
 		MotionProfileConstraints constraints = new MotionProfileConstraints(maxVel, maxAccel);
 
-		double initPosLeft = subsystem.getLeftPosCached(), initPosRight = subsystem.getRightPosCached();
-
-		leftProfile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(initPosLeft + distance),
-				new MotionState(0, initPosLeft, 0, 0));
-		rightProfile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(initPosRight + distance),
-				new MotionState(0, initPosRight, 0, 0));
+		leftProfile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(distance),
+				new MotionState(0, 0, 0, 0));
+		rightProfile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(distance),
+				new MotionState(0, 0, 0, 0));
 	}
 
 	/**
@@ -37,6 +38,8 @@ public class RunDriveMP<T extends DriveUnidirectionalWithGyro> extends Command {
 	@Override
 	protected void initialize() {
 		Logger.addEvent("RunDriveMP initialize, ", this.getClass());
+		initPosLeft = subsystem.getLeftPosCached();
+		initPosRight = subsystem.getRightPosCached();
 	}
 
 	/**
@@ -45,8 +48,8 @@ public class RunDriveMP<T extends DriveUnidirectionalWithGyro> extends Command {
 	@Override
 	protected void execute() {
 		double t = timeSinceInitialized();
-		subsystem.profileLeft(leftProfile.stateByTimeClamped(t));
-		subsystem.profileRight(rightProfile.stateByTimeClamped(t));
+		subsystem.profileLeftWithOffset(leftProfile.stateByTimeClamped(t), initPosLeft);
+		subsystem.profileRightWithOffset(rightProfile.stateByTimeClamped(t), initPosRight);
 	}
 
 	/**

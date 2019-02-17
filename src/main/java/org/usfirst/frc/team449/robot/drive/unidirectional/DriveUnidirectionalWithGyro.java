@@ -93,6 +93,14 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
         rightMaster.executeMPPoint(motionState.pos(), motionState.vel(), motionState.acc());
     }
 
+    public void profileLeftWithOffset(MotionState motionState, double offset) {
+        leftMaster.executeMPPoint(motionState.pos() + offset, motionState.vel(), motionState.acc());
+    }
+
+    public void profileRightWithOffset(MotionState motionState, double offset) {
+        rightMaster.executeMPPoint(motionState.pos() + offset, motionState.vel(), motionState.acc());
+    }
+
     /**
      * Get the velocity of the left side of the drive.
      *

@@ -59,6 +59,10 @@ public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMo
         driveTalon.executeMPPoint(motionState.pos(), motionState.vel(), motionState.acc());
     }
 
+    public void profileDriveWithOffset(MotionState motionState, double offset) {
+        driveTalon.executeMPPoint(motionState.pos() + offset, motionState.vel(), motionState.acc());
+    }
+
     public void fullStopBack() {
         brakeBack.set(DoubleSolenoid.Value.kForward);
         backTalon.disable();

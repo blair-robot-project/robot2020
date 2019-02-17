@@ -14,7 +14,7 @@ public class Climb extends CommandGroup {
 
 	@JsonCreator
 	public Climb(@JsonProperty(required = true) SubsystemClimber2019 subsystem,
-	             DriveUnidirectionalWithGyro drive,
+	             @JsonProperty(required = true) DriveUnidirectionalWithGyro drive,
 	             double maxVelDrop, double maxAccelDrop, double maxVelRetract, double maxAccelRetract,
 	             double maxVelNudge, double maxAccelNudge,
 	             double extendDistance, double partialRetractionDistance,

@@ -122,6 +122,7 @@ public class DriveStraightUntilConditionMet<T extends Subsystem & DriveUnidirect
     protected void end() {
         Logger.addEvent("DriveStraightUntilConditionMet end", this.getClass());
         this.getPIDController().disable();
+        drive.fullStop();
     }
 
     /**

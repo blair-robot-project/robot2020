@@ -15,6 +15,8 @@ public class DriveLegWheels extends Command {
 
     private final SubsystemClimber2019 subsystem;
 
+    private double initPos;
+
     @JsonCreator
     public DriveLegWheels(double maxVel, double maxAccel, double distance,
                           SubsystemClimber2019 subsystem) {
@@ -23,10 +25,8 @@ public class DriveLegWheels extends Command {
 
         MotionProfileConstraints constraints = new MotionProfileConstraints(maxVel, maxAccel);
 
-        double initPos = subsystem.getDrivePos();
-
-        profile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(initPos + distance),
-                new MotionState(0, initPos, 0, 0));
+        profile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(distance),
+                new MotionState(0, 0, 0, 0));
     }
 
     /**
@@ -35,7 +35,7 @@ public class DriveLegWheels extends Command {
     @Override
     protected void initialize() {
         Logger.addEvent("DriveLegWheels initialize, ", this.getClass());
-        System.out.println("DriveLegWheels initialize");
+        initPos = subsystem.getDrivePos();
     }
 
     /**
@@ -44,7 +44,7 @@ public class DriveLegWheels extends Command {
     @Override
     protected void execute() {
         double t = timeSinceInitialized();
-        subsystem.profileDrive(profile.stateByTimeClamped(t));
+        subsystem.profileDriveWithOffset(profile.stateByTimeClamped(t), initPos);
     }
 
     /**
