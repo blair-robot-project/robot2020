@@ -627,7 +627,7 @@ autoStartupCommand:
                 subsystem:
                     org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
                         drive
-          - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+          - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
                 '@id': stabberBaseCommand2
                 subsystem:
                     org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
@@ -652,7 +652,7 @@ autoStartupCommand:
                   right:
                     '@id': leftStartToCargoShipRight
                     filename: "/home/lvuser/449_resources/robot2019RightStartToLFProfile.csv"
-                    inverted: true
+                    inverted: false
                     resetPosition: true
                   timeout: 16
               onFalse:
@@ -669,10 +669,10 @@ autoStartupCommand:
                   right:
                     '@id': rightStartToCargoShipRight
                     filename: "/home/lvuser/449_resources/robot2019RightStartToRFProfile.csv"
-                    inverted: true
+                    inverted: false
                     resetPosition: true
                   timeout: 16
-          - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+          - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
               '@id': retractStabberCommand2
               subsystem:
                 org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
@@ -713,7 +713,7 @@ autoStartupCommand:
                         right:
                           '@id': cargoShipToLeftLoadRightFwd
                           filename: "/home/lvuser/449_resources/robot2019RightLFToLoadProfile.csv"
-                          inverted: true
+                          inverted: false
                           resetPosition: true
                         timeout: 16
               onFalse:
@@ -749,7 +749,7 @@ autoStartupCommand:
                         right:
                           '@id': rightCargoShipToLoadRightFwd
                           filename: "/home/lvuser/449_resources/robot2019RightRFToLoadProfile.csv"
-                          inverted: true
+                          inverted: false
                           resetPosition: true
                         timeout: 16
           - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
@@ -793,7 +793,7 @@ autoStartupCommand:
                         right:
                           '@id': leftLoadToCargoShipRightFwd
                           filename: "/home/lvuser/449_resources/robot2019RightLoadToLMProfile.csv"
-                          inverted: true
+                          inverted: false
                           resetPosition: true
                         timeout: 16
               onFalse:
@@ -806,14 +806,14 @@ autoStartupCommand:
                           org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
                             drive
                         left:
-                          '@id': rightLoadToCargoShipLeftRev
+                          '@id': leftLoadToCargoShipRightRev
                           filename: "/home/lvuser/449_resources/robot2019LeftLoadToRightProfile.csv"
                           inverted: false
                           resetPosition: true
                         right:
                           '@id': rightLoadToCargoShipRightRev
                           filename: "/home/lvuser/449_resources/robot2019RightLoadToRightProfile.csv"
-                          inverted: true
+                          inverted: false
                           resetPosition: true
                         timeout: 16
                     - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.RunProfileTwoSides:
@@ -829,7 +829,7 @@ autoStartupCommand:
                         right:
                           '@id': rightLoadToCargoShipRightFwd
                           filename: "/home/lvuser/449_resources/robot2019RightLoadToRMProfile.csv"
-                          inverted: true
+                          inverted: false
                           resetPosition: true
                         timeout: 16
           - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
