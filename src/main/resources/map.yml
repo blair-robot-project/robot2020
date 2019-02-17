@@ -35,11 +35,11 @@ logger:
         encoderCPR: 256
         perGearSettings:
           - maxSpeed: 30.5
-            kP: 0
-            feedForwardComponent:
-              org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                kVFwd: 0.36
-                interceptVoltageFwd: 0.52
+            kP: 0.2
+#            feedForwardComponent:
+#              org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
+#                kVFwd: 0.36
+#                interceptVoltageFwd: 0.52
     - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
         '@id': drive
         #Wheelbase: 2.16810362021
@@ -294,17 +294,21 @@ defaultCommands:
         kI: 0
         kD: 0
         setpointSupplier:
-          org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
-            angularInput:
-              org.usfirst.frc.team449.robot.components.LimeLightYawTargetComponent:
-                bufferCapacity: 10
-                limeLightComponent:
-                  org.usfirst.frc.team449.robot.components.LimeLightComponent:
-                    '@id': LimeLightComp
-                    value: yaw
-            distanceToTarget:
-              org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentSimple: {}
-#        setpoint: 0
+#          org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
+#            angularInput:
+#                org.usfirst.frc.team449.robot.components.LimelightNavXTargetComponent:
+#                    ahrs:
+#                        org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS:
+#                            navX
+#              org.usfirst.frc.team449.robot.components.LimeLightYawTargetComponent:
+#                bufferCapacity: 10
+#                limeLightComponent:
+#                  org.usfirst.frc.team449.robot.components.LimeLightComponent:
+#                    '@id': LimeLightComp
+#                    value: yaw
+#            distanceToTarget:
+#              org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentSimple: {}
+        setpoint: 0
 #      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.ControlAnalogMotorWithThrottle:
 #          '@id': sliderThrottleCommand
 #          subsystem:
