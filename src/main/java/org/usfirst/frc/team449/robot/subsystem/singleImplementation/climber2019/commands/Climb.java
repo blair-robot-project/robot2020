@@ -1,7 +1,9 @@
 package org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +17,7 @@ import org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.
 /**
  * Run a full 2019 climb sequence.
  */
+@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class Climb extends CommandGroup {
 
 	/**
@@ -30,9 +33,9 @@ public class Climb extends CommandGroup {
 	 * @param maxAccelNudge    The maximum velocity for nudging forward via profile.
 	 * @param crawlVelocity    The velocity for crawling forward until the IR trips.
 	 * @param extendDistance   How far the elevators should extend, in feet.
-	 * @param partialRetractionDistance How far to retract the back elevator at the end of the climb sequence, in feet.
 	 * @param nudge1Distance   How far to nudge the robot forward after the legs both extend, in feet.
 	 * @param nudge2Distance   How far to nudge the robot forward after the front leg retracts, in feet.
+	 * @param nudge3Distance   How far to nudge the robot forward after both legs are retracted, in feet.
 	 * @param offset           How much the front elevator should extend further than the back elevator, in feet.
 	 * @param unstickTolerance How far to make the elevator extend before retracting, to unstick the brake, in feet.
 	 * @param failsafe1        The IR sensor with button override which must return true before the front leg may retract.
@@ -49,9 +52,9 @@ public class Climb extends CommandGroup {
 	             @JsonProperty(required = true) double maxAccelNudge,
 	             @JsonProperty(required = true) double crawlVelocity,
 	             @JsonProperty(required = true) double extendDistance,
-	             @JsonProperty(required = true) double partialRetractionDistance,
 	             @JsonProperty(required = true) double nudge1Distance,
 	             @JsonProperty(required = true) double nudge2Distance,
+	             @JsonProperty(required = true) double nudge3Distance,
 	             double offset,
 	             @Nullable Double unstickTolerance,
 	             @JsonProperty(required = true) @NotNull IRWithButtonOverride failsafe1,
@@ -86,8 +89,11 @@ public class Climb extends CommandGroup {
 				2, null, 0, null, null,
 				0, false, 0, 0, 0, drive, failsafe2, -crawlVelocity);
 
-		RunElevator retractBackLegPartially = new RunElevator(RunElevator.MoveType.BACK, maxVelRetract, maxAccelRetract,
-				extendDistance, extendDistance - partialRetractionDistance, 0, unstickTolerance, climber);
+		RunElevator retractBackLeg = new RunElevator(RunElevator.MoveType.BACK, maxVelRetract, maxAccelRetract,
+				extendDistance, 0, 0, unstickTolerance, climber);
+
+		RunDriveMP nudgeDriveForwardLegsRetracted = new RunDriveMP<>(maxVelNudge, maxAccelNudge,
+				-nudge3Distance, drive);
 
 
 		addSequential(extendLegs);
@@ -100,6 +106,7 @@ public class Climb extends CommandGroup {
 		addSequential(nudgeDriveForwardFrontLegRetracted);
 		addParallel(crawlLegsForwardFrontLegRetracted);
 		addSequential(crawlDriveForwardFrontLegRetracted);
-		addSequential(retractBackLegPartially);
+		addSequential(retractBackLeg);
+		addSequential(nudgeDriveForwardLegsRetracted);
 	}
 }

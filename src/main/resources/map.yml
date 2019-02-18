@@ -4,7 +4,7 @@ logger:
   '@id': logger
   eventLogFilename: "/home/lvuser/logs/eventLog-"
   telemetryLogFilename: "/home/lvuser/logs/telemetryLog-"
-  loopTimeMillis: 20
+  loopTimeMillis: 100
   loggables:
     - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
         '@id': PDP
@@ -241,8 +241,8 @@ logger:
         '@id': backLegElevatorTalon
         port: 9
         name: "backLegElevatorTalon"
-        reverseOutput: false
-        reverseSensor: true
+        reverseOutput: true
+        reverseSensor: false
         enableBrakeMode: true
         remoteLimitSwitchID: 4
         fwdLimitSwitchNormallyOpen: true
@@ -263,14 +263,14 @@ logger:
                   kVFwd: 0.422
                   kAFwd: 0.004
                   interceptVoltageFwd: 2.059
-                  interceptVoltageRev: -2.059
+                  interceptVoltageRev: 0
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         <<: *legElevator
         '@id': frontLegElevatorTalon
         port: 8
         name: "frontLegElevatorTalon"
-        reverseOutput: true
-        reverseSensor: false
+        reverseOutput: false
+        reverseSensor: true
         remoteLimitSwitchID: 11
         perGearSettings:
           - maxSpeed: 17
@@ -280,13 +280,13 @@ logger:
                 kVFwd: 0.422
                 kAFwd: 0.01416
                 interceptVoltageFwd: 5.467
-                interceptVoltageRev: -5.467
+                interceptVoltageRev: 0
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         '@id': backLegDriveTalon
         port: 10
         name: "backLegDriveTalon"
         reverseOutput: true
-        reverseSensor: true
+        reverseSensor: false
         enableBrakeMode: true
         feetPerRotation: 1.047198
         currentLimit: 30
@@ -296,12 +296,12 @@ logger:
         encoderCPR: 1024
         perGearSettings:
           - motionProfilePFwd: 0.5
-            maxSpeed: 17
-            kP: 0.2
+            maxSpeed: 7.5
+            kP: 0.5
             feedForwardComponent:
               org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                kVFwd: 9.4
-                interceptVoltageFwd: 0.6
+                kVFwd: 0.89457
+                interceptVoltageFwd: 3.1415
 defaultCommands:
   - subsystem:
       org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
@@ -370,7 +370,8 @@ buttons:
           buttonNumber: 1
       command:
         org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.Climb:
-          subsystem:
+          '@id': climb
+          climber:
             org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
               '@id': climber
               backTalon:
@@ -382,7 +383,7 @@ buttons:
               driveTalon:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
                   backLegDriveTalon
-              driveTalonCrawlVelocity: 0.02
+              crawlVelocity: 0
               brakeBack:
                 '@id': backElevatorBrake
                 module: 0
@@ -398,19 +399,19 @@ buttons:
               drive
           maxVelExtend: 0.5
           maxAccelExtend: 0.5
-          maxVelRetract: 1
-          maxAccelRetract: 1
+          maxVelRetract: 6
+          maxAccelRetract: 6
           maxVelNudge: 0.2
           maxAccelNudge: 0.2
           #1.66 for level 3
           extendDistance: 0.58
-          partialRetractionDistance: 0.26
           #12.169 / 12
           nudge1Distance: 1.014
           #11.072 / 12
           nudge2Distance: 0.923
+          nudge3Distance: 0.9
           offset: 0.03
-          crawlVelocity: 0.1
+          crawlVelocity: 0
           unstickTolerance: 0.05
           failsafe1:
             org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride:
@@ -454,7 +455,7 @@ buttons:
           endPos: 0.5
           offset: 0.03
 #          unstickTolerance: 0.05
-          subsystem:
+          climber:
             org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
               climber
       action: WHEN_PRESSED
@@ -473,16 +474,16 @@ buttons:
 #              '@id': brakeSolenoid
 #              piston: frontElevatorBrake
 #      action: WHEN_PRESSED
-#autoStartupCommand:
-#  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogMotorVoltageRamp:
-#    '@id': voltageRamp
-#    subsystem:
-#      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-#        '@id': legDriveAnalogMotor
-#        motor:
-#          org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-#            backLegDriveTalon
-#    voltsPerSecond: 0.5
+autoStartupCommand:
+  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogMotorVoltageRamp:
+    '@id': voltageRamp
+    subsystem:
+      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+        '@id': legDriveAnalogMotor
+        motor:
+          org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+            backLegDriveTalon
+    voltsPerSecond: 0.5
 updater:
   org.usfirst.frc.team449.robot.other.Updater:
     '@id': updater
