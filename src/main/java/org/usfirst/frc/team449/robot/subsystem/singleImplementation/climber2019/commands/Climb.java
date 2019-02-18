@@ -36,6 +36,8 @@ public class Climb extends CommandGroup {
 	 * @param nudge2Distance   How far to nudge the robot forward after the front leg retracts, in feet.
 	 * @param nudge3Distance   How far to nudge the robot forward after both legs are retracted, in feet.
 	 * @param offset           How much the front elevator should extend further than the back elevator, in feet.
+	 * @param velReduction     How much to reduce the max velocity of the back elevator profile, as a percent.
+	 * @param accelReduction   How much to reduce the max acceleration of the back elevator profile, as a percent.
 	 * @param unstickTolerance How far to make the elevator extend before retracting, to unstick the brake, in feet.
 	 */
 	@JsonCreator
@@ -52,12 +54,14 @@ public class Climb extends CommandGroup {
 	             @JsonProperty(required = true) double nudge2Distance,
 	             @JsonProperty(required = true) double nudge3Distance,
 	             double offset,
+	             double velReduction,
+	             double accelReduction,
 	             @Nullable Double unstickTolerance) {
 		requires(climber);
 
 
 		RunElevator extendLegs = new RunElevator(RunElevator.MoveType.BOTH, maxVelExtend, maxAccelExtend,
-				0, extendDistance, offset, null, climber);
+				0, extendDistance, offset, velReduction, accelReduction, null, climber);
 
 		DriveLegWheels nudgeLegsForwardLegsExtended = new DriveLegWheels(maxVelNudge, maxAccelNudge,
 				nudge1Distance, climber);
@@ -65,7 +69,7 @@ public class Climb extends CommandGroup {
 				-nudge1Distance, drive);
 
 		RunElevator retractFrontLeg = new RunElevator(RunElevator.MoveType.FRONT, maxVelRetract, maxAccelRetract,
-				extendDistance + offset, 0, 0, unstickTolerance, climber);
+				extendDistance + offset, 0, 0, 0, 0, unstickTolerance, climber);
 
 		DriveLegWheels nudgeLegsForwardFrontLegRetracted = new DriveLegWheels(maxVelNudge, maxAccelNudge,
 				nudge2Distance, climber);
@@ -73,7 +77,7 @@ public class Climb extends CommandGroup {
 				-nudge2Distance, drive);
 
 		RunElevator retractBackLeg = new RunElevator(RunElevator.MoveType.BACK, maxVelRetract, maxAccelRetract,
-				extendDistance, 0, 0, unstickTolerance, climber);
+				extendDistance, 0, 0, 0, 0, unstickTolerance, climber);
 
 		RunDriveMP nudgeDriveForwardLegsRetracted = new RunDriveMP<>(maxVelNudge, maxAccelNudge,
 				-nudge3Distance, drive);

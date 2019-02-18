@@ -411,6 +411,8 @@ buttons:
           nudge2Distance: 0.923
           nudge3Distance: 0.9
           offset: 0.03
+          velReduction: 0.3
+          accelReduction: 0.3
           unstickTolerance: 0.05
       action: WHEN_PRESSED
     - button:
@@ -427,9 +429,10 @@ buttons:
           maxVel: 0.5
           maxAccel: 0.5
           startPos: 0
-          endPos: 0.5
+          endPos: 0.58
           offset: 0.03
-#          unstickTolerance: 0.05
+          velReduction: 0.3
+          accelReduction: 0.3
           climber:
             org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
               climber
@@ -449,16 +452,16 @@ buttons:
 #              '@id': brakeSolenoid
 #              piston: frontElevatorBrake
 #      action: WHEN_PRESSED
-autoStartupCommand:
-  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogMotorVoltageRamp:
-    '@id': voltageRamp
-    subsystem:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-        '@id': legDriveAnalogMotor
-        motor:
-          org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-            backLegDriveTalon
-    voltsPerSecond: 0.5
+#autoStartupCommand:
+#  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogMotorVoltageRamp:
+#    '@id': voltageRamp
+#    subsystem:
+#      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+#        '@id': legDriveAnalogMotor
+#        motor:
+#          org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+#            backLegDriveTalon
+#    voltsPerSecond: 0.5
 updater:
   org.usfirst.frc.team449.robot.other.Updater:
     '@id': updater

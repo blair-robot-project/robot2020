@@ -61,6 +61,8 @@ public class RunElevator extends Command {
      * @param startPos         The start position of the elevator, in feet.
      * @param endPos           The end position of the elevator, in feet.
      * @param offset           How much the front elevator should extend further than the back elevator, in feet.
+     * @param velReduction     How much to reduce the max velocity of the back elevator profile, as a percent.
+     * @param accelReduction   How much to reduce the max acceleration of the back elevator profile, as a percent.
      * @param unstickTolerance How far to make the elevator extend before retracting, to unstick the brake, in feet.
      * @param climber          The climber subsystem.
      */
@@ -71,6 +73,8 @@ public class RunElevator extends Command {
                        @JsonProperty(required = true) double startPos,
                        @JsonProperty(required = true) double endPos,
                        double offset,
+                       double velReduction,
+                       double accelReduction,
                        @Nullable Double unstickTolerance,
                        @JsonProperty(required = true) @NotNull SubsystemClimber2019 climber) {
         requires(climber);
@@ -81,11 +85,13 @@ public class RunElevator extends Command {
         initBackPos = climber.getBackPos();
         initFrontPos = climber.getFrontPos();
 
-        MotionProfileConstraints constraints = new MotionProfileConstraints(maxVel, maxAccel);
+        MotionProfileConstraints backConstraints = new MotionProfileConstraints((1 - velReduction) * maxVel,
+                                                                                (1 - accelReduction) * maxAccel);
+        MotionProfileConstraints frontConstraints = new MotionProfileConstraints(maxVel, maxAccel);
 
-        backProfile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(endPos),
+        backProfile = MotionProfileGenerator.generateProfile(backConstraints, new MotionProfileGoal(endPos),
                 new MotionState(0,startPos,0,0));
-        frontProfile = MotionProfileGenerator.generateProfile(constraints, new MotionProfileGoal(endPos + offset),
+        frontProfile = MotionProfileGenerator.generateProfile(frontConstraints, new MotionProfileGoal(endPos + offset),
                 new MotionState(0,startPos,0,0));
     }
 
