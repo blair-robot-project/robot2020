@@ -37,8 +37,6 @@ public class Climb extends CommandGroup {
 	 * @param nudge3Distance   How far to nudge the robot forward after both legs are retracted, in feet.
 	 * @param offset           How much the front elevator should extend further than the back elevator, in feet.
 	 * @param unstickTolerance How far to make the elevator extend before retracting, to unstick the brake, in feet.
-	 * @param failsafe1        The IR sensor with button override which must return true before the front leg may retract.
-	 * @param failsafe2        The IR sensor with button override which must return true before the back leg may retract.
 	 */
 	@JsonCreator
 	public Climb(@JsonProperty(required = true) @NotNull SubsystemClimber2019 climber,
@@ -54,9 +52,7 @@ public class Climb extends CommandGroup {
 	             @JsonProperty(required = true) double nudge2Distance,
 	             @JsonProperty(required = true) double nudge3Distance,
 	             double offset,
-	             @Nullable Double unstickTolerance,
-	             @JsonProperty(required = true) @NotNull IRWithButtonOverride failsafe1,
-	             @JsonProperty(required = true) @NotNull IRWithButtonOverride failsafe2) {
+	             @Nullable Double unstickTolerance) {
 		requires(climber);
 
 

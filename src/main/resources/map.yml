@@ -412,30 +412,6 @@ buttons:
           nudge3Distance: 0.9
           offset: 0.03
           unstickTolerance: 0.05
-          failsafe1:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride:
-              '@id': failsafe1
-              infraredSensor:
-                org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-                  '@id': IR1
-                  channel: 0
-              button:
-                org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-                  '@id': continueButton
-                  joystick:
-                    org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                      climbOverrideController
-                  buttonNumber: 3
-          failsafe2:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride:
-              '@id': failsafe2
-              infraredSensor:
-                org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-                  '@id': IR2
-                  channel: 1
-              button:
-                org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-                  continueButton
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
