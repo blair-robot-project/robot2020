@@ -31,7 +31,6 @@ public class Climb extends CommandGroup {
 	 * @param maxAccelRetract  The maximum acceleration for retracting the legs.
 	 * @param maxVelNudge      The maximum velocity for nudging forward via profile.
 	 * @param maxAccelNudge    The maximum velocity for nudging forward via profile.
-	 * @param crawlVelocity    The velocity for crawling forward until the IR trips.
 	 * @param extendDistance   How far the elevators should extend, in feet.
 	 * @param nudge1Distance   How far to nudge the robot forward after the legs both extend, in feet.
 	 * @param nudge2Distance   How far to nudge the robot forward after the front leg retracts, in feet.
@@ -50,7 +49,6 @@ public class Climb extends CommandGroup {
 	             @JsonProperty(required = true) double maxAccelRetract,
 	             @JsonProperty(required = true) double maxVelNudge,
 	             @JsonProperty(required = true) double maxAccelNudge,
-	             @JsonProperty(required = true) double crawlVelocity,
 	             @JsonProperty(required = true) double extendDistance,
 	             @JsonProperty(required = true) double nudge1Distance,
 	             @JsonProperty(required = true) double nudge2Distance,
@@ -60,7 +58,6 @@ public class Climb extends CommandGroup {
 	             @JsonProperty(required = true) @NotNull IRWithButtonOverride failsafe1,
 	             @JsonProperty(required = true) @NotNull IRWithButtonOverride failsafe2) {
 		requires(climber);
-		climber.setCrawlVelocity(crawlVelocity);
 
 
 		RunElevator extendLegs = new RunElevator(RunElevator.MoveType.BOTH, maxVelExtend, maxAccelExtend,
@@ -71,11 +68,6 @@ public class Climb extends CommandGroup {
 		RunDriveMP nudgeDriveForwardLegsExtended = new RunDriveMP<>(maxVelNudge, maxAccelNudge,
 				-nudge1Distance, drive);
 
-		RunMotorUntilConditionMet crawlLegsForwardLegsExtended = new RunMotorUntilConditionMet<>(climber, failsafe1);
-		DriveStraightUntilConditionMet crawlDriveForwardLegsExtended = new DriveStraightUntilConditionMet<>(
-				2, null, 0, null, null,
-				0, false, 0, 0, 0, drive, failsafe1, -crawlVelocity);
-
 		RunElevator retractFrontLeg = new RunElevator(RunElevator.MoveType.FRONT, maxVelRetract, maxAccelRetract,
 				extendDistance + offset, 0, 0, unstickTolerance, climber);
 
@@ -83,11 +75,6 @@ public class Climb extends CommandGroup {
 				nudge2Distance, climber);
 		RunDriveMP nudgeDriveForwardFrontLegRetracted = new RunDriveMP<>(maxVelNudge, maxAccelNudge,
 				-nudge2Distance, drive);
-
-		RunMotorUntilConditionMet crawlLegsForwardFrontLegRetracted = new RunMotorUntilConditionMet<>(climber, failsafe2);
-		DriveStraightUntilConditionMet crawlDriveForwardFrontLegRetracted = new DriveStraightUntilConditionMet<>(
-				2, null, 0, null, null,
-				0, false, 0, 0, 0, drive, failsafe2, -crawlVelocity);
 
 		RunElevator retractBackLeg = new RunElevator(RunElevator.MoveType.BACK, maxVelRetract, maxAccelRetract,
 				extendDistance, 0, 0, unstickTolerance, climber);
@@ -99,13 +86,9 @@ public class Climb extends CommandGroup {
 		addSequential(extendLegs);
 		addParallel(nudgeLegsForwardLegsExtended);
 		addSequential(nudgeDriveForwardLegsExtended);
-		addParallel(crawlLegsForwardLegsExtended);
-		addSequential(crawlDriveForwardLegsExtended);
 		addSequential(retractFrontLeg);
 		addParallel(nudgeLegsForwardFrontLegRetracted);
 		addSequential(nudgeDriveForwardFrontLegRetracted);
-		addParallel(crawlLegsForwardFrontLegRetracted);
-		addSequential(crawlDriveForwardFrontLegRetracted);
 		addSequential(retractBackLeg);
 		addSequential(nudgeDriveForwardLegsRetracted);
 	}

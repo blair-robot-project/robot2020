@@ -411,7 +411,6 @@ buttons:
           nudge2Distance: 0.923
           nudge3Distance: 0.9
           offset: 0.03
-          crawlVelocity: 0
           unstickTolerance: 0.05
           failsafe1:
             org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride:
