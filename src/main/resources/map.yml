@@ -269,8 +269,8 @@ logger:
         '@id': frontLegElevatorTalon
         port: 8
         name: "frontLegElevatorTalon"
-        reverseOutput: false
-        reverseSensor: true
+        reverseOutput: true
+        reverseSensor: false
         remoteLimitSwitchID: 11
         perGearSettings:
           - maxSpeed: 17
@@ -286,7 +286,7 @@ logger:
         port: 10
         name: "backLegDriveTalon"
         reverseOutput: true
-        reverseSensor: false
+        reverseSensor: true
         enableBrakeMode: true
         feetPerRotation: 1.047198
         currentLimit: 30
@@ -399,7 +399,7 @@ buttons:
               drive
           maxVelExtend: 0.5
           maxAccelExtend: 0.5
-          maxVelRetract: 6
+          maxVelRetract: 4
           maxAccelRetract: 6
           maxVelNudge: 0.2
           maxAccelNudge: 0.2
@@ -411,9 +411,7 @@ buttons:
           nudge2Distance: 0.923
           nudge3Distance: 0.9
           offset: 0.03
-          velReduction: 0.3
-          accelReduction: 0.3
-          unstickTolerance: 0.05
+          velReduction: 0.1
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -431,8 +429,8 @@ buttons:
           startPos: 0
           endPos: 0.58
           offset: 0.03
-          velReduction: 0.3
-          accelReduction: 0.3
+          velReduction: 0.15
+          accelReduction: 0.15
           climber:
             org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
               climber
@@ -474,7 +472,3 @@ updater:
           navX
       - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
           PDP
-      - org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride:
-          failsafe1
-      - org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride:
-          failsafe2

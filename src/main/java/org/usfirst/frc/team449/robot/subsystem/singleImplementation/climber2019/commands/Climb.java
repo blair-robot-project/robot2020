@@ -77,7 +77,7 @@ public class Climb extends CommandGroup {
 				-nudge2Distance, drive);
 
 		RunElevator retractBackLeg = new RunElevator(RunElevator.MoveType.BACK, maxVelRetract, maxAccelRetract,
-				extendDistance, 0, 0, 0, 0, unstickTolerance, climber);
+				extendDistance, 0, 0, 0, 0, null, climber);
 
 		RunDriveMP nudgeDriveForwardLegsRetracted = new RunDriveMP<>(maxVelNudge, maxAccelNudge,
 				-nudge3Distance, drive);

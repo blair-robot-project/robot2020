@@ -45,7 +45,7 @@ public class RunElevator extends Command {
     /**
      * The initial positions of the front and back elevators.
      */
-    private final double initBackPos, initFrontPos;
+    private double initBackPos, initFrontPos;
 
     /**
      * Whether we are done unsticking the brake.
@@ -82,9 +82,6 @@ public class RunElevator extends Command {
         this.climber = climber;
         this.unstickTolerance = unstickTolerance;
 
-        initBackPos = climber.getBackPos();
-        initFrontPos = climber.getFrontPos();
-
         MotionProfileConstraints backConstraints = new MotionProfileConstraints((1 - velReduction) * maxVel,
                                                                                 (1 - accelReduction) * maxAccel);
         MotionProfileConstraints frontConstraints = new MotionProfileConstraints(maxVel, maxAccel);
@@ -102,6 +99,9 @@ public class RunElevator extends Command {
     protected void initialize() {
         Logger.addEvent("RunElevator initialize, " + moveType, this.getClass());
         doneUnsticking = unstickTolerance == null;
+        initBackPos = climber.getBackPos();
+        initFrontPos = climber.getFrontPos();
+        System.out.println("START: " + timeSinceInitialized());
     }
 
     /**
@@ -153,6 +153,7 @@ public class RunElevator extends Command {
     @Override
     protected void end() {
         Logger.addEvent("RunElevator end, " + timeSinceInitialized(), this.getClass());
+        System.out.println("END: " + timeSinceInitialized());
         switch (moveType) {
             case BACK:
                 climber.fullStopBack();
