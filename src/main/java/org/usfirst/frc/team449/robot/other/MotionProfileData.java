@@ -164,7 +164,8 @@ public class MotionProfileData {
     }
 
     /**
-     * @return A 2D array containing 3 values for each point- position, velocity, and delta time respectively.
+     * @return A 2D array containing 4 values for each point- position, velocity, acceleration and delta time
+     * respectively, in feet, feet per second, feet per (second^2), and milliseconds.
      */
     @NotNull
     public double[][] getData() {

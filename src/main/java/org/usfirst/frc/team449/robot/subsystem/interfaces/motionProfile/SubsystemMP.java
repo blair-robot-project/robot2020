@@ -11,7 +11,7 @@ import org.usfirst.frc.team449.robot.other.MotionProfileData;
 public interface SubsystemMP {
 
     /**
-     * Loads a profile into the MP buffer.
+     * Loads a proSubsystemMPfile into the MP buffer.
      *
      * @param profile The profile to be loaded.
      */
