@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.manual.commands;
+package org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.manual.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -11,14 +11,15 @@ import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.other.MotionProfileData;
-import org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.manual.SubsystemMPManual;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.manual.SubsystemMPManualTwoSides;
 
 
 /**
  * Executes the motion profile
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MotionProfileCommand<T extends Subsystem & SubsystemMPManual> extends Command {
+public class RunMPManualTwoSides<T extends Subsystem & SubsystemMPManualTwoSides> extends Command {
+
     /**
      * Amount of time this command is allowed to run for, in milliseconds
      */
@@ -30,9 +31,14 @@ public class MotionProfileCommand<T extends Subsystem & SubsystemMPManual> exten
     private T subsystem;
 
     /**
-     * The motion profile points that the command will execute
+     * The motion profile points that the command will execute (left side)
      */
-    private MotionProfileData data;
+    private MotionProfileData left;
+
+    /**
+     * The motion profile points that the command will execute (right side)
+     */
+    private MotionProfileData right;
 
     /**
      * The time this command started running at.
@@ -46,21 +52,24 @@ public class MotionProfileCommand<T extends Subsystem & SubsystemMPManual> exten
 
 
     /**
-     * @param timeout   the time that this command will run for in seconds
+     * @param timeout   the time that this command will run for, in seconds
      * @param subsystem the subsystem the motion profile will run on
-     * @param data      the motion profile points
+     * @param left      the motion profile points (left side)
+     * @param right     the motion profile points (right side)
      */
     @JsonCreator
-    public MotionProfileCommand(@JsonProperty(required = true) double timeout,
+    public RunMPManualTwoSides(@JsonProperty(required = true) double timeout,
                                 @NotNull @JsonProperty(required = true) T subsystem,
-                                @NotNull @JsonProperty(required = true) MotionProfileData data) {
+                                @NotNull @JsonProperty(required = true) MotionProfileData left,
+                                @NotNull @JsonProperty(required = true) MotionProfileData right) {
 
         this.timeout = (long) (timeout * 1000.);
 
         this.subsystem = subsystem;
         requires(subsystem);
 
-        this.data = data;
+        this.left = left;
+        this.right = right;
 
     }
 
@@ -79,29 +88,32 @@ public class MotionProfileCommand<T extends Subsystem & SubsystemMPManual> exten
      * @see Command#isTimedOut() isTimedOut()
      */
     protected boolean isFinished() {
-        return (index == data.getData().length - 1 || timeout <= Clock.currentTimeMillis() - startTime);
+        return (index == left.getData().length - 1 || timeout <= Clock.currentTimeMillis() - startTime);
     }
 
     @Override
     protected void initialize() {
         //Record the start time.
         startTime = Clock.currentTimeMillis();
-        Logger.addEvent("RunLoadedProfile init", this.getClass());
+        Logger.addEvent("RunProfile init", this.getClass());
 
     }
 
     @Override
     protected void execute() {
-        index = Math.min((int) (Clock.currentTimeMillis() - startTime) / data.getPointTimeMillis(), data.getData().length - 1);
-        double[] profileData = data.getData()[index];
-        subsystem.runMPPoint(profileData[0], profileData[1], profileData[2]);
+        index = Math.min((int) (Clock.currentTimeMillis() - startTime) / left.getPointTimeMillis(), left.getData().length - 1);
+        double[] profileDataLeft = left.getData()[index];
+        double[] profileDataRight = right.getData()[index];
+        subsystem.runMPPoint(profileDataLeft[0], profileDataLeft[1], profileDataLeft[2],
+                            profileDataRight[0], profileDataRight[1], profileDataRight[2]);
     }
 
     @Override
     protected void end() {
-        double pos = data.getData()[data.getData().length - 1][0];
-        subsystem.holdPosition(pos);
-        Logger.addEvent("RunLoadedProfile end.", this.getClass());
+        double leftPos = left.getData()[left.getData().length - 1][0];
+        double rightPos = right.getData()[right.getData().length - 1][0];
+        subsystem.holdPosition(leftPos, rightPos);
+        Logger.addEvent("RunProfile end.", this.getClass());
     }
 
 }
