@@ -35,10 +35,16 @@ public class PrintProfile extends InstantCommand {
     public void execute() {
         MotionProfileData leftP = left.get(), rightP = right.get();
         System.out.println("Left: ");
+        if (leftP.getData().length == 0){
+            System.out.println("Empty");
+        }
         for (double[] line : leftP.getData()) {
             System.out.println("Position: " + line[0] + ", velocity: " + line[1] + ", acceleration: " + line[2]);
         }
         System.out.println("Right: ");
+        if (leftP.getData().length == 0){
+            System.out.println("Empty");
+        }
         for (double[] line : rightP.getData()) {
             System.out.println("Position: " + line[0] + ", velocity: " + line[1] + ", acceleration: " + line[2]);
         }
