@@ -9,9 +9,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public interface SubsystemMPManual {
 
     /**
-     *
-     */
-    /**
      * Run trajectory point
      *
      * @param pos the position at the trajectory point
@@ -32,5 +29,6 @@ public interface SubsystemMPManual {
      * @param pos the position to stop at
      */
     void holdPosition(double pos);
+
 }
 
