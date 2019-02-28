@@ -201,7 +201,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                     @Nullable Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
                     @Nullable Map<ControlFrame, Integer> controlFrameRatesMillis,
                     @Nullable List<SlaveTalon> slaveTalons,
-                    @Nullable List<SlaveVictor> slaveVictors) {
+                    @Nullable List<SlaveVictor> slaveVictors,
+                    @Nullable MotionProfileData profile) {
         //Instantiate the base CANTalon this is a wrapper on.
         canTalon = new TalonSRX(port);
         //Set the name to the given one or to talon_portnum
@@ -377,6 +378,11 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                 slave.setMaster(canTalon, enableBrakeMode,
                         enableVoltageComp ? notNullVoltageCompSamples : null);
             }
+        }
+
+        //Load motion profile
+        if (profile != null) {
+            loadProfile(profile);
         }
     }
 
@@ -892,6 +898,17 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     }
 
     /**
+     * Command the Talon to achieve a given position, velocity, and acceleration.
+     * @param pos The desired position in feet.
+     * @param vel The desired velocity in feet/second.
+     * @param acc The desired velocity in feet/second^2.
+     */
+    public void executeMPPoint(double pos, double vel, double acc) {
+        canTalon.set(ControlMode.Position, feetToEncoder(pos), DemandType.ArbitraryFeedForward,
+                currentGearSettings.getFeedForwardComponent().calcMPVoltage(pos, vel, acc) / 12);
+    }
+
+    /**
      * Get the headers for the data this subsystem logs every loop.
      *
      * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
@@ -909,7 +926,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                 "current",
                 "control_mode",
                 "gear",
-                "resistance"
+                "resistance",
+                "forward_limit",
+                "reverse_limit"
         };
     }
 
@@ -934,7 +953,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                 getOutputCurrent(),
                 getControlMode(),
                 getGear(),
-                (voltagePerCurrentLinReg != null && PDP != null) ? -voltagePerCurrentLinReg.getSlope() : null
+                (voltagePerCurrentLinReg != null && PDP != null) ? -voltagePerCurrentLinReg.getSlope() : null,
+                this.getFwdLimitSwitch(),
+                this.getRevLimitSwitch()
         };
     }
 
