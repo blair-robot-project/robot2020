@@ -16,9 +16,10 @@ public class LimeLightComponent implements DoubleSupplier {
     @NotNull NetworkTableEntry entry;
     private final NetworkTableEntry tv;
     private final ReturnValue value;
+    private final double offset;
 
     enum ReturnValue {
-        x, y, area, poseX, poseY, poseZ, pitch, yaw, roll;
+        x, y, area, poseX, poseY, poseZ, pitch, yaw, roll
     }
 
     /**
@@ -26,9 +27,11 @@ public class LimeLightComponent implements DoubleSupplier {
      * @param value whether to request x distance from center, y distance from center, or the area of vision target
      */
     @JsonCreator
-    public LimeLightComponent(@JsonProperty(required = true) ReturnValue value){
+    public LimeLightComponent(@JsonProperty(required = true) ReturnValue value,
+                              double offset){
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
         this.value = value;
+        this.offset = offset;
         switch(value) {
             case x:
                 entry = table.getEntry("tx");
@@ -56,19 +59,19 @@ public class LimeLightComponent implements DoubleSupplier {
         double[] camtran = entry.getDoubleArray(new double[6]);
         switch(value) {
             case poseX:
-                return camtran[0];
+                return camtran[0] + offset;
             case poseY:
-                return camtran[1];
+                return camtran[1] + offset;
             case poseZ:
-                return camtran[2];
+                return camtran[2] + offset;
             case pitch:
-                return camtran[3];
+                return camtran[3] + offset;
             case yaw:
-                return camtran[4];
+                return camtran[4] + offset;
             case roll:
-                return camtran[5];
+                return camtran[5] + offset;
             default:
-                return entry.getDouble(0.0);
+                return entry.getDouble(0.0) + offset;
         }
     }
 }
