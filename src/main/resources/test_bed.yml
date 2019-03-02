@@ -1,4 +1,5 @@
 ---
+useCameraServer: false
 logger:
   '@id': logger
   eventLogFilename: "/home/lvuser/logs/eventLog-"
@@ -48,6 +49,7 @@ logger:
                 interceptVoltageRev: 0.7743393
             maxSpeed: 8.7
             kP: 0.15
+            posKP: 0.15
             motionProfilePFwd: 0.5
           - &highGear
             gear: HIGH
@@ -205,9 +207,9 @@ logger:
       navX
   - org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
       '@id': defaultDriveCommand
-#      kP: 0.0075
-#      kI: 0.0
-#      kD: 0.03
+      kP: 0.0075
+      kI: 0.0
+      kD: 0.03
       absoluteTolerance: 0
       deadband: 2
       maxAngularVelToEnterLoop: 15
@@ -313,20 +315,33 @@ autoStartupCommand:
   org.usfirst.frc.team449.robot.commands.general.CommandSequence:
     '@id': auto
     commandList:
-      - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.manual.commands.RunMPManualTwoSides:
+      - org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands.SetHeading:
+          '@id': resetNavX
+          subsystem:
+            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
+      - org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP:
           '@id': FLtoLoad
+          absoluteTolerance: 2
+          deadband: 2
+          inverted: false
+          kP: 0.04
+#          kI: 0.0
+          kD: 0.03
           timeout: 15
-          subsystem: drive
+          subsystem:
+            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
           left:
             '@id': LeftFLtoLoad
-            filename: "robot2019LeftFLtoLoadFwdProfile.csv"
+            filename: "/home/lvuser/449_resources/robot2019LeftStartToFProfile.csv"
             inverted: false
             resetPosition: true
           right:
             '@id': RightFLtoLoad
-            filename: "robot2019RightFLtoLoafFwdProfile.csv"
+            filename: "/home/lvuser/449_resources/robot2019RightStartToFProfile.csv"
             inverted: false
             resetPosition: true
+      - org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
+          defaultDriveCommand
 updater:
   org.usfirst.frc.team449.robot.other.Updater:
     '@id': updater

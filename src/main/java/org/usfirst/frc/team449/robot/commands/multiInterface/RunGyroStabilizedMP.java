@@ -1,6 +1,9 @@
 package org.usfirst.frc.team449.robot.commands.multiInterface;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -14,7 +17,8 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands.PIDAngleCommand;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.manual.SubsystemMPManualTwoSides;
 
-public class RunGyroStabalizedMP<T extends Subsystem & SubsystemMPManualTwoSides & SubsystemAHRS> extends PIDAngleCommand {
+@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
+public class RunGyroStabilizedMP<T extends Subsystem & SubsystemMPManualTwoSides & SubsystemAHRS> extends PIDAngleCommand {
 
     /**
      * The output of the PID loop. Field to avoid garbage collection.
@@ -73,7 +77,8 @@ public class RunGyroStabalizedMP<T extends Subsystem & SubsystemMPManualTwoSides
      * @param timeout   the time that this command will run for, in seconds
      * @param startAngle The angle that the profile starts at. Defaults to 0.
      */
-    public RunGyroStabalizedMP(double absoluteTolerance,
+    @JsonCreator
+    public RunGyroStabilizedMP(double absoluteTolerance,
                                @Nullable BufferTimer onTargetBuffer,
                                double minimumOutput,
                                @Nullable Double maximumOutput,

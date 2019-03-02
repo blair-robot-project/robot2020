@@ -578,12 +578,12 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             canTalon.set(ControlMode.MotionMagic, nativeSetpoint);
             motionMagicNotifier.startPeriodic(updateMMPeriodSecs);
         } else {
-            if (nativeSetpoint == 0) {
+//            if (nativeSetpoint == 0) {
                 canTalon.config_kF(0, 0, 0);
-            } else {
-                canTalon.config_kF(0,
-                        1023. / 12. / nativeSetpoint * currentGearSettings.getFeedForwardComponent().applyAsDouble(feet), 0);
-            }
+//            } else {
+//                canTalon.config_kF(0,
+//                        1023. / 12. / nativeSetpoint * currentGearSettings.getFeedForwardComponent().applyAsDouble(feet), 0);
+//            }
             canTalon.set(ControlMode.Position, nativeSetpoint);
         }
     }
@@ -904,6 +904,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      */
     public void executeMPPoint(double pos, double vel, double acc) {
         setPositionPID();
+        canTalon.config_kF(0, 0);
         canTalon.set(ControlMode.Position, feetToEncoder(pos), DemandType.ArbitraryFeedForward,
                 currentGearSettings.getFeedForwardComponent().calcMPVoltage(pos, vel, acc) / 12);
     }
