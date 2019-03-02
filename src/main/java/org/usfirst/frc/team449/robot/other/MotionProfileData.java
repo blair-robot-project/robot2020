@@ -38,8 +38,8 @@ public class MotionProfileData {
     private int pointTimeMillis;
 
     /**
-     * A 2D array containing 4 values for each point- position, velocity, acceleration and delta time respectively, in
-     * feet, feet per second, feet per (second^2), and milliseconds.
+     * A 2D array containing 4 values for each point- position, velocity, acceleration and angle respectively, in
+     * feet, feet per second, feet per (second^2), and degrees.
      */
     private double data[][];
 
@@ -172,8 +172,8 @@ public class MotionProfileData {
     }
 
     /**
-     * @return A 2D array containing 4 values for each point- position, velocity, acceleration and delta time
-     * respectively, in feet, feet per second, feet per (second^2), and milliseconds.
+     * @return A 2D array containing 4 values for each point- position, velocity, acceleration and angle
+     * respectively, in feet, feet per second, feet per (second^2), and degrees.
      */
     @NotNull
     public double[][] getData() {

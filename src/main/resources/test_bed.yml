@@ -309,6 +309,24 @@ teleopStartupCommand:
     subsystem:
       org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics:
         pneumatics
+autoStartupCommand:
+  org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+    '@id': auto
+    commandList:
+      - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.manual.commands.RunMPManualTwoSides:
+          '@id': FLtoLoad
+          timeout: 15
+          subsystem: drive
+          left:
+            '@id': LeftFLtoLoad
+            filename: "robot2019LeftFLtoLoadFwdProfile.csv"
+            inverted: false
+            resetPosition: true
+          right:
+            '@id': RightFLtoLoad
+            filename: "robot2019RightFLtoLoafFwdProfile.csv"
+            inverted: false
+            resetPosition: true
 updater:
   org.usfirst.frc.team449.robot.other.Updater:
     '@id': updater
