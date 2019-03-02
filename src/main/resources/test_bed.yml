@@ -265,62 +265,20 @@ autoStartupCommand:
   org.usfirst.frc.team449.robot.commands.general.CommandSequence:
     '@id': auto
     commandList:
-    #            - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.GoToPositionRelative:
-    #                '@id': gtpr
-    #                getPath:
-    #                    org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.GetPathFromJetson:
-    #                        '@id': getPath
-    #                        pathRequester:
-    #                            '@id': pathRequester
-    #                            address: "tcp://10.4.49.2:5800"
-    #                        x: 10
-    #                        y: 0
-    #                        theta: 0
-    #                        maxVel: 7
-    #                        maxAccel: 12
-    #                        maxJerk: 16
-    #                        deltaTime: 0.02
-    #                        resetPosition: true
-    #                subsystem:
-    #                    org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-    #                        drive
-    - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.GoToPose:
-        '@id': firstGoToPos
-        subsystem:
-          org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-            drive
-        pathRequester:
-          '@id': pathRequester
-          address: "tcp://10.4.49.2:5800"
-          wheelbase: 2.167
-        poseEstimator:
-          org.usfirst.frc.team449.robot.generalInterfaces.poseEstimator.UnidirectionalPoseEstimator:
-            poseEstimator
-        waypoints:
-            - x: 10
-              y: 0
-              theta: 0
-        maxVel: 7
-        maxAccel: 12
-        maxJerk: 16
-        deltaTime: 0.02
-    - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.GoToPose:
-        '@id': secondGoToPos
-        subsystem:
-          org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-            drive
-        pathRequester:
-          pathRequester
-        poseEstimator:
-          org.usfirst.frc.team449.robot.generalInterfaces.poseEstimator.UnidirectionalPoseEstimator:
-            poseEstimator
-        #x: 15
-        #y: 5
-        #theta: 90
-        maxVel: 5
-        maxAccel: 8
-        maxJerk: 16
-        deltaTime: 0.02
+      - org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.manual.commands.RunMPManualTwoSides:
+          '@id': FLtoLoad
+          timeout: 15
+          subsystem: drive
+          left:
+            '@id': LeftFLtoLoad
+            filename: "robot2019LeftFLtoLoadFwdProfile.csv"
+            inverted: false
+            resetPosition: true
+          right:
+            '@id': RightFLtoLoad
+            filename: "robot2019RightFLtoLoafFwdProfile.csv"
+            inverted: false
+            resetPosition: true
 updater:
   org.usfirst.frc.team449.robot.other.Updater:
     '@id': updater

@@ -38,8 +38,8 @@ public class MotionProfileData {
     private int pointTimeMillis;
 
     /**
-     * A 2D array containing 4 values for each point- position, velocity, acceleration and delta time respectively, in
-     * feet, feet per second, feet per (second^2), and milliseconds.
+     * A 2D array containing 4 values for each point- position, velocity, acceleration and angle respectively, in
+     * feet, feet per second, feet per (second^2), and degrees.
      */
     private double data[][];
 
@@ -93,6 +93,8 @@ public class MotionProfileData {
             data[i][0] = pos[i];
             data[i][1] = vel[i];
             data[i][2] = accel[i];
+            // ignore angle
+            data[i][3] = 0;
         }
     }
 
@@ -135,7 +137,7 @@ public class MotionProfileData {
         int numLines = Integer.parseInt(br.readLine());
 
         //Instantiate data
-        data = new double[numLines][3];
+        data = new double[numLines][4];
 
         //Declare the arrays outside the loop to avoid garbage collection.
         String[] line;
@@ -151,6 +153,7 @@ public class MotionProfileData {
             tmp[0] = Double.parseDouble(line[0]);
             tmp[1] = Double.parseDouble(line[1]);
             tmp[2] = Double.parseDouble(line[2]);
+            tmp[3] = Double.parseDouble(line[4]);
 
             //Only set once
             if (pointTimeMillis == 0) {
@@ -164,8 +167,8 @@ public class MotionProfileData {
     }
 
     /**
-     * @return A 2D array containing 4 values for each point- position, velocity, acceleration and delta time
-     * respectively, in feet, feet per second, feet per (second^2), and milliseconds.
+     * @return A 2D array containing 4 values for each point- position, velocity, acceleration and angle
+     * respectively, in feet, feet per second, feet per (second^2), and degrees.
      */
     @NotNull
     public double[][] getData() {
