@@ -5,7 +5,6 @@ import com.ctre.phoenix.motion.SetValueMotionProfile;
 import com.ctre.phoenix.motion.TrajectoryPoint;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXPIDSetConfiguration;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -830,7 +829,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         double feedforward;
 
         //Set proper PID constants
-        if (data.isInverted()) {
+        if (data.isBackwards()) {
             if (data.isVelocityOnly()) {
                 canTalon.config_kP(1, 0, 0);
                 canTalon.config_kI(1, 0, 0);
@@ -870,9 +869,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             point.profileSlotSelect0 = 1;        // gain selection, we always put MP gains in slot 1.
 
             // Set all the fields of the profile point
-            point.position = feetToEncoder(startPosition + (data.getData()[i][0] * (data.isInverted() ? -1 : 1)));
+            point.position = feetToEncoder(startPosition + (data.getData()[i][0] * (data.isBackwards() ? -1 : 1)));
 
-            if (data.isInverted()) {
+            if (data.isBackwards()) {
                 feedforward = currentGearSettings.getFeedForwardComponent().calcMPVoltage(-data.getData()[i][0],
                         -data.getData()[i][1], -data.getData()[i][2]);
             } else {

@@ -46,7 +46,7 @@ public class RunMPManualTwoSides<T extends Subsystem & SubsystemMPManualTwoSides
     private long startTime;
 
     /**
-     *
+     * The index of the motion profile point currently being run.
      */
     private int index;
 
@@ -70,7 +70,6 @@ public class RunMPManualTwoSides<T extends Subsystem & SubsystemMPManualTwoSides
 
         this.left = left;
         this.right = right;
-
     }
 
     /**

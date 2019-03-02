@@ -18,9 +18,9 @@ import java.util.List;
 public class MotionProfileData {
 
     /**
-     * Whether or not the profile is inverted because we're driving it backwards.
+     * Whether or not the profile is driving backwards.
      */
-    private final boolean inverted;
+    private final boolean backwards;
 
     /**
      * Whether or not to reset the talon position when this profile starts.
@@ -48,7 +48,7 @@ public class MotionProfileData {
      *
      * @param filename      The filename of the .csv with the motion profile data. The first line must be the number of
      *                      other lines.
-     * @param inverted      Whether or not the profile is inverted (would be inverted if we're driving it backwards)
+     * @param inverted      Whether or not the profile is backwards (would be backwards if we're driving it backwards)
      * @param velocityOnly  Whether or not to only use velocity feed-forward. Used for tuning kV and kA. Defaults to
      *                      false.
      * @param resetPosition Whether or not to reset the talon position when this profile starts. Defaults to false.
@@ -58,7 +58,7 @@ public class MotionProfileData {
                              @JsonProperty(required = true) boolean inverted,
                              boolean velocityOnly,
                              boolean resetPosition) {
-        this.inverted = inverted;
+        this.backwards = inverted;
         this.velocityOnly = velocityOnly;
         this.resetPosition = resetPosition;
 
@@ -77,22 +77,25 @@ public class MotionProfileData {
      * @param vel           An array of corresponding velocity setpoints, in feet/sec.
      * @param accel         An array of corresponding acceleration setpoints, in feet/sec^2.
      * @param deltaTime     The time between setpoints, in seconds.
-     * @param inverted      Whether or not the profile is inverted (would be inverted if we're driving it backwards)
+     * @param inverted      Whether or not the profile is backwards (would be backwards if we're driving it backwards)
      * @param velocityOnly  Whether or not to only use velocity feed-forward. Used for tuning kV and kA. Defaults to
      *                      false.
      * @param resetPosition Whether or not to reset the talon position when this profile starts.
      */
     public MotionProfileData(@NotNull double[] pos, @NotNull double[] vel, @NotNull double[] accel,
                              double deltaTime, boolean inverted, boolean velocityOnly, boolean resetPosition) {
-        this.inverted = inverted;
+        this.backwards = inverted;
+        double invertMult = inverted ? -1 :1;
         this.velocityOnly = velocityOnly;
         this.resetPosition = resetPosition;
         this.pointTimeMillis = (int) (deltaTime * 1000.);
         data = new double[pos.length][3];
         for (int i = 0; i < pos.length; i++) {
-            data[i][0] = pos[i];
-            data[i][1] = vel[i];
-            data[i][2] = accel[i];
+            data[i][0] = pos[i]*invertMult;
+            data[i][1] = vel[i]*invertMult;
+            data[i][2] = accel[i]*invertMult;
+            // Ignore angle
+            data[i][3] = 0;
         }
     }
 
@@ -103,23 +106,25 @@ public class MotionProfileData {
      * @param vel           A list of corresponding velocity setpoints, in feet/sec.
      * @param accel         A list of corresponding acceleration setpoints, in feet/sec^2.
      * @param deltaTime     The time between setpoints, in seconds.
-     * @param inverted      Whether or not the profile is inverted (would be inverted if we're driving it backwards)
+     * @param inverted      Whether or not the profile is backwards (would be backwards if we're driving it backwards)
      * @param velocityOnly  Whether or not to only use velocity feed-forward. Used for tuning kV and kA. Defaults to
      *                      false.
      * @param resetPosition Whether or not to reset the talon position when this profile starts.
      */
     public MotionProfileData(@NotNull List<Double> pos, @NotNull List<Double> vel, @NotNull List<Double> accel,
                              double deltaTime, boolean inverted, boolean velocityOnly, boolean resetPosition) {
-        this.inverted = inverted;
+        this.backwards = inverted;
+        double invertMult = inverted ? -1 :1;
         this.velocityOnly = velocityOnly;
         this.resetPosition = resetPosition;
         this.pointTimeMillis = (int) (deltaTime * 1000.);
         data = new double[pos.size()][3];
         for (int i = 0; i < pos.size(); i++) {
-            data[i][0] = pos.get(i);
-            data[i][1] = vel.get(i);
-            data[i][2] = accel.get(i);
-
+            data[i][0] = pos.get(i) * invertMult;
+            data[i][1] = vel.get(i) * invertMult;
+            data[i][2] = accel.get(i) * invertMult;
+            // Ignore angle
+            data[i][3] = 0;
         }
     }
 
@@ -135,11 +140,13 @@ public class MotionProfileData {
         int numLines = Integer.parseInt(br.readLine());
 
         //Instantiate data
-        data = new double[numLines][3];
+        data = new double[numLines][4];
 
         //Declare the arrays outside the loop to avoid garbage collection.
         String[] line;
         double[] tmp;
+
+        double invertMult = backwards ? -1 :1;
 
         //Iterate through each line of data.
         for (int i = 0; i < numLines; i++) {
@@ -148,9 +155,10 @@ public class MotionProfileData {
             //declare as a new double because we already put the old object it referenced in data.
             tmp = new double[4];
 
-            tmp[0] = Double.parseDouble(line[0]);
-            tmp[1] = Double.parseDouble(line[1]);
-            tmp[2] = Double.parseDouble(line[2]);
+            tmp[0] = Double.parseDouble(line[0]) * invertMult;
+            tmp[1] = Double.parseDouble(line[1]) * invertMult;
+            tmp[2] = Double.parseDouble(line[2]) * invertMult;
+            tmp[3] = Double.parseDouble(line[4]) * invertMult;
 
             //Only set once
             if (pointTimeMillis == 0) {
@@ -187,10 +195,10 @@ public class MotionProfileData {
     }
 
     /**
-     * @return Whether or not the profile is inverted because we're driving it backwards.
+     * @return Whether or not the profile is driving backwards.
      */
-    public boolean isInverted() {
-        return inverted;
+    public boolean isBackwards() {
+        return backwards;
     }
 
     /**

@@ -34,12 +34,14 @@ public class RunGyroStabalizedMP<T extends Subsystem & SubsystemMPManualTwoSides
     /**
      * The motion profile points that the command will execute (left side)
      */
-    private MotionProfileData left;
+    private final MotionProfileData left;
 
     /**
      * The motion profile points that the command will execute (right side)
      */
-    private MotionProfileData right;
+    private final MotionProfileData right;
+
+    private final double startAngle;
 
     /**
      * The time this command started running at.
@@ -69,6 +71,7 @@ public class RunGyroStabalizedMP<T extends Subsystem & SubsystemMPManualTwoSides
      * @param kI                Integral gain. Defaults to zero.
      * @param kD                Derivative gain. Defaults to zero.
      * @param timeout   the time that this command will run for, in seconds
+     * @param startAngle The angle that the profile starts at. Defaults to 0.
      */
     public RunGyroStabalizedMP(double absoluteTolerance,
                                @Nullable BufferTimer onTargetBuffer,
@@ -80,11 +83,17 @@ public class RunGyroStabalizedMP<T extends Subsystem & SubsystemMPManualTwoSides
                                double kP,
                                double kI,
                                double kD,
-                               @JsonProperty(required = true) double timeout) {
+                               @JsonProperty(required = true) double timeout,
+                               @JsonProperty(required = true) MotionProfileData left,
+                               @JsonProperty(required = true) MotionProfileData right,
+                               double startAngle) {
         super(absoluteTolerance, onTargetBuffer, minimumOutput, maximumOutput, loopTimeMillis, deadband, inverted, subsystem, kP, kI, kD);
 
         this.subsystem = subsystem;
         this.timeout = (long) (timeout * 1000.);
+        this.left = left;
+        this.right = right;
+        this.startAngle = startAngle;
     }
 
     /**
@@ -118,7 +127,7 @@ public class RunGyroStabalizedMP<T extends Subsystem & SubsystemMPManualTwoSides
         index = Math.min((int) (Clock.currentTimeMillis() - startTime) / left.getPointTimeMillis(), left.getData().length - 1);
         double[] profileDataLeft = left.getData()[index];
         double[] profileDataRight = right.getData()[index];
-        this.getPIDController().setSetpoint(profileDataLeft[3]);
+        this.getPIDController().setSetpoint(profileDataLeft[3] + startAngle);
         output = processPIDOutput(this.getPIDController().get());
         subsystem.runMPPoint(profileDataLeft[0], profileDataLeft[1] - output, profileDataLeft[2],
                             profileDataRight[0], profileDataRight[1] + output, profileDataRight[2]);
