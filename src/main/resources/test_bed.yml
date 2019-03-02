@@ -122,8 +122,8 @@ logger:
               rightMaster
           piston:
             '@id': driveShifter
-            forward: 4
-            reverse: 5
+            forward: 0
+            reverse: 1
           startingGear: LOW
   - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad:
       '@id': oi
@@ -197,12 +197,6 @@ logger:
         port: 0
         oversampleBits: 0
         averageBits: 0
-  - org.usfirst.frc.team449.robot.generalInterfaces.poseEstimator.UnidirectionalPoseEstimator:
-      '@id': poseEstimator
-      subsystem:
-        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-          drive
-      absolutePosAngleTolerance: 5
   - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
       leftMaster
   - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
@@ -211,9 +205,9 @@ logger:
       navX
   - org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
       '@id': defaultDriveCommand
-      kP: 0.0075
-      kI: 0.0
-      kD: 0.03
+#      kP: 0.0075
+#      kI: 0.0
+#      kD: 0.03
       absoluteTolerance: 0
       deadband: 2
       maxAngularVelToEnterLoop: 15
@@ -239,22 +233,76 @@ logger:
           '@id': upshiftDebouncer
           bufferTimeSeconds: 0.06
         upshiftFwdThresh: 0.4
+  - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+        '@id': LimeLightMotor
+        name: "LimeLightPos"
+        port: 7
+        enableBrakeMode: true
+        enableVoltageComp: true
+        reverseSensor: false
+        currentLimit: 30
+        fwdLimitSwitchNormallyOpen: true
+        revLimitSwitchNormallyOpen: true
+        remoteLimitSwitchID: 4
+        feedbackDevice: QuadEncoder
+        encoderCPR: 256
+        perGearSettings:
+            - maxSpeed: 30.5
+              kP: 0.3
+              feedForwardComponent:
+                org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
+                    kVFwd: 0.36
+                    interceptVoltageFwd: 0.6
 defaultCommands:
-- subsystem:
-    org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-      drive
-  command:
-    org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
-      defaultDriveCommand
-startupCommand:
-  org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
-    '@id': startupCommand
-    commandSet:
-    - org.usfirst.frc.team449.robot.commands.general.RunRunnables:
-        '@id': runRunnables
-        runnables:
-        - org.usfirst.frc.team449.robot.generalInterfaces.poseEstimator.UnidirectionalPoseEstimator:
-            poseEstimator
+    - subsystem:
+        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+          drive
+      command:
+        org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
+          defaultDriveCommand
+    - subsystem:
+          org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+              '@id': LimeLightXPos
+              motor:
+                  org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+                      LimeLightMotor
+      command:
+          org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
+              '@id': LimeLightPIDCommand
+              absoluteTolerance: 0
+              subsystem:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+                      LimeLightXPos
+              inverted: true
+              processVariableSupplier:
+                  org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
+                      angularInput:
+                          org.usfirst.frc.team449.robot.components.LimeLightComponent:
+                              '@id': TargetXPos
+                              value: x
+                              offset: 0.5
+                      distanceToTarget:
+                          org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentSimple: {}
+              deadband: 0.75
+              kP: 0.3
+              kI: 0
+              kD: 0.0
+#              setpointSupplier:
+#                org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
+#                  angularInput:
+##                      org.usfirst.frc.team449.robot.components.LimelightNavXTargetComponent:
+##                          ahrs:
+##                              org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS:
+##                                  navX
+#                    org.usfirst.frc.team449.robot.components.LimeLightYawTargetComponent:
+#                      bufferCapacity: 10
+#                      limeLightComponent:
+#                        org.usfirst.frc.team449.robot.components.LimeLightComponent:
+#                          '@id': LimeLightComp
+#                          value: yaw
+#                  distanceToTarget:
+#                    org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentSimple: {}
+              setpoint: 0.0
 teleopStartupCommand:
   org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.commands.StartCompressor:
     '@id': startCompressor
@@ -322,22 +370,34 @@ buttons:
     action: WHEN_PRESSED
   - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-            '@id': visionButton
+            '@id': stabberButton #solenoid
             joystick:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
                     driverGamepad
-            buttonNumber: 3
+            buttonNumber: 1
     command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.commands.GoToVisionTarget:
-            '@id': goToVisionTarget
+        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+            '@id': stabberCommand
             subsystem:
-                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-                    drive
-            pathRequester:
-                pathRequester
-            maxVel: 7
-            maxAccel: 9
-            maxJerk: 10
-            deltaTime: 0.05
-            xOffset: -0.5
+                org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                    '@id': stabber
+                    piston:
+                        '@id': stabberSolenoid
+                        module: 0
+                        forward: 4
+                        reverse: 5
+    action: WHEN_PRESSED
+  - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+            '@id': retractStabberButton #solenoid
+            joystick:
+                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                    driverGamepad
+            buttonNumber: 2
+    command:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+            '@id': retractStabberCommand
+            subsystem:
+                org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                    stabber
     action: WHEN_PRESSED
