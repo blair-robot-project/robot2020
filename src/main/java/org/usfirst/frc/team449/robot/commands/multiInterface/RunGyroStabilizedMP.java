@@ -129,7 +129,9 @@ public class RunGyroStabilizedMP<T extends Subsystem & SubsystemMPManualTwoSides
 
     @Override
     protected void execute() {
-        index = Math.min((int) (Clock.currentTimeMillis() - startTime) / left.getPointTimeMillis(), left.getData().length - 1);
+        if (left.getPointTimeMillis() != 0) {
+            index = Math.min((int) (Clock.currentTimeMillis() - startTime) / left.getPointTimeMillis(), left.getData().length - 1);
+        }
         double[] profileDataLeft = left.getData()[index];
         double[] profileDataRight = right.getData()[index];
         this.getPIDController().setSetpoint(clipTo180(profileDataLeft[3] + startAngle));
