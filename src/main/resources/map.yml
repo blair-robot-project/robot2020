@@ -452,6 +452,7 @@ buttons:
           drive:
             org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
               drive
+      action: WHEN_PRESSED
 #    - button:
 #        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
 #          '@id': testBrakeButton
