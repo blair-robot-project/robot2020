@@ -259,7 +259,7 @@ logger:
         encoderCPR: 1024
         perGearSettings:
           -   maxSpeed: 17
-              posKP: 1.2
+              posKP: 0.3
               feedForwardComponent:
                 org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                   kVFwd: 0.422
@@ -276,7 +276,7 @@ logger:
         remoteLimitSwitchID: 11
         perGearSettings:
           - maxSpeed: 17
-            posKP: 1.2
+            posKP: 0.3
             feedForwardComponent:
               org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                 kVFwd: 0.422
@@ -403,17 +403,20 @@ buttons:
           maxAccelExtend: 0.5
           maxVelRetract: 4
           maxAccelRetract: 6
-          maxVelNudge: 0.2
-          maxAccelNudge: 0.2
+          maxVelNudge: 0.7
+          maxAccelNudge: 0.7
           #1.66 for level 3
-          extendDistance: 0.58
+          extendDistance: 1.7
           #12.169 / 12
           nudge1Distance: 1.014
           #11.072 / 12
           nudge2Distance: 0.923
-          nudge3Distance: 0.9
-          offset: 0.03
-          velReduction: 0.1
+          nudge3Distance: 1.1
+          offset: 0.0001
+          velReduction: 0
+          voltageBack: 2
+          voltageFront: 4
+          crawlVelocity: 0.1
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:

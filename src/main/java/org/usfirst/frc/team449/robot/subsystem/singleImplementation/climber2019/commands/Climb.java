@@ -10,7 +10,11 @@ import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.commands.multiInterface.RunMotorUntilConditionMet;
 import org.usfirst.frc.team449.robot.commands.multiSubsystem.DriveStraightUntilConditionMet;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
+import org.usfirst.frc.team449.robot.drive.unidirectional.commands.DriveAtSpeed;
 import org.usfirst.frc.team449.robot.drive.unidirectional.commands.RunDriveMP;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.commands.TurnMotorOff;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.commands.TurnMotorOffWithRequires;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.commands.TurnMotorOn;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride;
 import org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019;
 
@@ -39,6 +43,8 @@ public class Climb extends CommandGroup {
 	 * @param velReduction     How much to reduce the max velocity of the back elevator profile, as a percent.
 	 * @param accelReduction   How much to reduce the max acceleration of the back elevator profile, as a percent.
 	 * @param unstickTolerance How far to make the elevator extend before retracting, to unstick the brake, in feet.
+	 * @param voltageBack  The voltage to give to stall the back elevator.
+	 * @param voltageFront The voltage to give to stall the front elevator.
 	 */
 	@JsonCreator
 	public Climb(@JsonProperty(required = true) @NotNull SubsystemClimber2019 climber,
@@ -56,12 +62,18 @@ public class Climb extends CommandGroup {
 	             double offset,
 	             double velReduction,
 	             double accelReduction,
-	             @Nullable Double unstickTolerance) {
+	             @Nullable Double unstickTolerance,
+				 double voltageBack,
+	             double voltageFront,
+				 double crawlVelocity) {
 		requires(climber);
+		climber.setCrawlVelocity(crawlVelocity);
 
 
 		RunElevator extendLegs = new RunElevator(RunElevator.MoveType.BOTH, maxVelExtend, maxAccelExtend,
 				0, extendDistance, offset, velReduction, accelReduction, null, climber);
+
+		StallElevators stallElevators = new StallElevators(climber, voltageBack, voltageFront);
 
 		DriveLegWheels nudgeLegsForwardLegsExtended = new DriveLegWheels(maxVelNudge, maxAccelNudge,
 				nudge1Distance, climber);
@@ -76,20 +88,29 @@ public class Climb extends CommandGroup {
 		RunDriveMP nudgeDriveForwardFrontLegRetracted = new RunDriveMP<>(maxVelNudge, maxAccelNudge,
 				-nudge2Distance, drive);
 
+		DriveAtSpeed crawlDrive = new DriveAtSpeed<>(drive, -crawlVelocity / 3., 5);
+		TurnMotorOn crawlLeg = new TurnMotorOn(climber);
+
 		RunElevator retractBackLeg = new RunElevator(RunElevator.MoveType.BACK, maxVelRetract, maxAccelRetract,
 				extendDistance, 0, 0, 0, 0, null, climber);
+
+		TurnMotorOffWithRequires stopLegCrawl = new TurnMotorOffWithRequires<>(climber);
 
 		RunDriveMP nudgeDriveForwardLegsRetracted = new RunDriveMP<>(maxVelNudge, maxAccelNudge,
 				-nudge3Distance, drive);
 
 
 		addSequential(extendLegs);
+		addSequential(stallElevators);
 		addParallel(nudgeLegsForwardLegsExtended);
 		addSequential(nudgeDriveForwardLegsExtended);
 		addSequential(retractFrontLeg);
 		addParallel(nudgeLegsForwardFrontLegRetracted);
 		addSequential(nudgeDriveForwardFrontLegRetracted);
+		addParallel(crawlDrive);
+		addParallel(crawlLeg);
 		addSequential(retractBackLeg);
+		addSequential(stopLegCrawl);
 		addSequential(nudgeDriveForwardLegsRetracted);
 	}
 }
