@@ -819,9 +819,6 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         //Reset the Talon
         clearMP();
 
-        //Declare this out here to avoid garbage collection
-        double feedforward;
-
         //Set proper PID constants
         if (data.isBackwards()) {
             if (data.isVelocityOnly()) {
@@ -863,20 +860,14 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             point.profileSlotSelect0 = 1;        // gain selection, we always put MP gains in slot 1.
 
             // Set all the fields of the profile point
-            point.position = feetToEncoder(startPosition + (data.getData()[i][0] * (data.isBackwards() ? -1 : 1)));
+            point.position = feetToEncoder(startPosition + data.getData()[i][0]);
 
-            if (data.isBackwards()) {
-                feedforward = currentGearSettings.getFeedForwardComponent().calcMPVoltage(-data.getData()[i][0],
-                        -data.getData()[i][1], -data.getData()[i][2]);
-            } else {
-                feedforward = currentGearSettings.getFeedForwardComponent().calcMPVoltage(data.getData()[i][0],
-                        data.getData()[i][1], data.getData()[i][2]);
-            }
-            point.velocity = feedforward;
+            point.velocity = currentGearSettings.getFeedForwardComponent().calcMPVoltage(data.getData()[i][0],
+                    data.getData()[i][1], data.getData()[i][2]);;
 
             //Doing vel+accel shouldn't lead to impossible setpoints, so if it does, we log so we know to change
             // either the profile or kA.
-            if (Math.abs(feedforward) > 12) {
+            if (Math.abs(point.velocity) > 12) {
                 System.out.println("Point " + Arrays.toString(data.getData()[i]) + " has an unattainable " +
                         "velocity+acceleration setpoint!");
                 Logger.addEvent("Point " + Arrays.toString(data.getData()[i]) + " has an unattainable " +
@@ -897,6 +888,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @param acc The desired velocity in feet/second^2.
      */
     public void executeMPPoint(double pos, double vel, double acc) {
+        setpoint = pos;
         setPositionPID();
         canTalon.config_kF(0, 0);
         canTalon.set(ControlMode.Position, feetToEncoder(pos), DemandType.ArbitraryFeedForward,
