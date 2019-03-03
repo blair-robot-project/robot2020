@@ -69,10 +69,10 @@ public class FeedForwardMPElevatorComponent extends FeedForwardComponent {
     }
 
     /**
-     * Calculate the feedforward for the given input.
+     * Calculate the voltage to use as a feedforward for the given position.
      *
-     * @param operand the setpoint, in feet, feet/sec, feet/sec^2, etc.
-     * @return the feedforward (kF gain) to use for that input.
+     * @param operand the setpoint, in feet.
+     * @return the feedforward voltage to use for that input.
      */
     @Override
     public double applyAsDouble(double operand) {

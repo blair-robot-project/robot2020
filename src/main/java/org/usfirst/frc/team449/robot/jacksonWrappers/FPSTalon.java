@@ -571,20 +571,14 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         setpoint = feet;
         nativeSetpoint = feetToEncoder(feet);
         setPositionPID();
+        canTalon.config_kF(0, 0);
         if (currentGearSettings.getMotionMagicMaxVel() != null) {
             motionMagicNotifier.stop();
-            //We don't know the setpoint for motion magic so we can't do fancy F stuff
-            canTalon.config_kF(0, 0, 0);
             canTalon.set(ControlMode.MotionMagic, nativeSetpoint);
             motionMagicNotifier.startPeriodic(updateMMPeriodSecs);
         } else {
-//            if (nativeSetpoint == 0) {
-                canTalon.config_kF(0, 0, 0);
-//            } else {
-//                canTalon.config_kF(0,
-//                        1023. / 12. / nativeSetpoint * currentGearSettings.getFeedForwardComponent().applyAsDouble(feet), 0);
-//            }
-            canTalon.set(ControlMode.Position, nativeSetpoint);
+            canTalon.set(ControlMode.Position, nativeSetpoint, DemandType.ArbitraryFeedForward,
+                    currentGearSettings.getFeedForwardComponent().applyAsDouble(feet) / 12.);
         }
     }
 
@@ -634,7 +628,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         setVelocityPID();
         canTalon.config_kF(0, 0, 0);
         canTalon.set(ControlMode.Velocity, nativeSetpoint, DemandType.ArbitraryFeedForward,
-                currentGearSettings.getFeedForwardComponent().applyAsDouble(velocity) / 12.);
+                currentGearSettings.getFeedForwardComponent().calcVelVoltage(getPositionFeet(), velocity) / 12.);
     }
 
     /**
@@ -906,7 +900,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         setPositionPID();
         canTalon.config_kF(0, 0);
         canTalon.set(ControlMode.Position, feetToEncoder(pos), DemandType.ArbitraryFeedForward,
-                currentGearSettings.getFeedForwardComponent().calcMPVoltage(pos, vel, acc) / 12);
+                currentGearSettings.getFeedForwardComponent().calcMPVoltage(pos, vel, acc) / 12.);
     }
 
     /**

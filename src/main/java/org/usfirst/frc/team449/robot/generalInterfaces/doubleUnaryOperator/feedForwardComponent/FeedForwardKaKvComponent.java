@@ -25,6 +25,11 @@ public class FeedForwardKaKvComponent extends FeedForwardComponent {
     private final double interceptVoltageFwd, interceptVoltageRev;
 
     /**
+     * The difference between the current motor position and the desired one. Field to avoid garbage collection.
+     */
+    private double posDifference;
+
+    /**
      * Default constructor.
      *
      * @param kVFwd               The voltage required to run forwards at a steady-state velocity of 1 foot per second.
@@ -72,19 +77,20 @@ public class FeedForwardKaKvComponent extends FeedForwardComponent {
     }
 
     /**
-     * Calculate the voltage for the given input.
+     * Calculate the voltage to use as a feedforward for the given position.
      *
-     * @param operand the setpoint, in feet, feet/sec, feet/sec^2, etc.
+     * @param operand the setpoint, in feet.
      * @return the feedforward voltage to use for that input.
      */
     @Override
     public double applyAsDouble(double operand) {
-        if (operand == 0) {
+        posDifference = talon.getPositionFeet() - operand;
+        if (posDifference == 0) {
             return 0;
-        } else if (operand > 0) {
-            return (kVFwd * operand + interceptVoltageFwd);
+        } else if (posDifference > 0) {
+            return interceptVoltageFwd;
         } else {
-            return (kVRev * operand - interceptVoltageRev);
+            return -interceptVoltageRev;
         }
     }
 }
