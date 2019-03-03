@@ -14,6 +14,7 @@ import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.other.MotionProfileData;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.SubsystemMPTwoSides;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.manual.SubsystemMPManualTwoSides;
 
 
 /**
@@ -21,8 +22,8 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideM
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT, property = "@class")
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemAHRS, DriveUnidirectional, Loggable,
-        SubsystemMPTwoSides {
+public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemAHRS, DriveUnidirectional,
+        Loggable, SubsystemMPTwoSides, SubsystemMPManualTwoSides{
 
     /**
      * Right master Talon
@@ -379,7 +380,6 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
      *
      * @param profile The profile to be loaded.
      */
-    @Override
     public void loadMotionProfile(@NotNull MotionProfileData profile) {
         leftMaster.loadProfile(profile);
         rightMaster.loadProfile(profile);
@@ -391,7 +391,6 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
      * @param left  The profile to load into the left side.
      * @param right The profile to load into the right side.
      */
-    @Override
     public void loadMotionProfile(@NotNull MotionProfileData left, @NotNull MotionProfileData right) {
         Logger.addEvent("Loading left", this.getClass());
         leftMaster.loadProfile(left);
@@ -402,7 +401,6 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
     /**
      * Start running the profile that's currently loaded into the MP buffer.
      */
-    @Override
     public void startRunningLoadedProfile() {
         leftMaster.startRunningMP();
         rightMaster.startRunningMP();
@@ -413,9 +411,20 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
      *
      * @return true if there's no profile loaded and no profile running, false otherwise.
      */
-    @Override
     public boolean profileFinished() {
         return leftMaster.MPIsFinished() && rightMaster.MPIsFinished();
+    }
+
+    /**
+     * Run trajectory point
+     *
+     * @param pos   the position at the trajectory point
+     * @param vel   the velocity at the trajectory point
+     * @param accel the acceleration at the trajectory point
+     */
+    @Override
+    public void runMPPoint(double pos, double vel, double accel) {
+        runMPPoint(pos, vel, accel, pos, vel, accel);
     }
 
     /**
@@ -429,11 +438,12 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
 
     /**
      * Hold the current position.
+     *
+     * @param pos the position to stop at
      */
     @Override
-    public void holdPosition() {
-        leftMaster.holdPositionMP();
-        rightMaster.holdPositionMP();
+    public void holdPosition(double pos) {
+        holdPosition(pos, pos);
     }
 
     /**
@@ -441,7 +451,6 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
      *
      * @return true if a profile is loaded and ready to run, false otherwise.
      */
-    @Override
     public boolean readyToRunProfile() {
         return leftMaster.readyForMP() && rightMaster.readyForMP();
     }
@@ -465,4 +474,44 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
         cachedRightVel = getRightVel();
         cachedRightPos = getRightPos();
     }
+
+
+    /**
+     * Runs a trajectory point on left and right sides
+     *
+     * @param leftPos    position from the left profile
+     * @param leftVel    velocity from the left profile
+     * @param leftAccel  acceleration from the left profile
+     * @param rightPos   position from the right profile
+     * @param rightVel   velocity from the right profile
+     * @param rightAccel acceleration from the right profile
+     */
+    @Override
+    public void runMPPoint(double leftPos, double leftVel, double leftAccel, double rightPos, double rightVel, double rightAccel) {
+        rightMaster.executeMPPoint(rightPos, rightVel, rightAccel);
+        leftMaster.executeMPPoint(leftPos, leftVel, leftAccel);
+    }
+
+    /**
+     * Hold the current position.
+     */
+    @Override
+    public void holdPosition() {
+        leftMaster.holdPositionMP();
+        rightMaster.holdPositionMP();
+    }
+
+    /**
+     * Hold the current position.
+     *
+     * @param leftPos the position to stop the left side at
+     * @param rightPos the position to stop the right side at
+     */
+    @Override
+    public void holdPosition(double leftPos, double rightPos){
+        leftMaster.setPositionSetpoint(leftPos);
+        rightMaster.setPositionSetpoint(rightPos);
+    }
+
+
 }
