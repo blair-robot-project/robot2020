@@ -42,6 +42,7 @@ logger:
                 motionProfilePFwd: 0.5
                 maxSpeed: 7.0
                 kP: 0.15
+                posKP: 0.15
                 feedForwardComponent:
                   org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                     kVFwd: 1.433226
@@ -247,7 +248,8 @@ logger:
         remoteLimitSwitchID: 4
         fwdLimitSwitchNormallyOpen: true
         revLimitSwitchNormallyOpen: true
-        postEncoderGearing: 1
+        #1/7, 7:1
+        postEncoderGearing: 0.142857
         #2.256*pi/12
         feetPerRotation: 0.59061941887
         currentLimit: 40
@@ -429,12 +431,27 @@ buttons:
           startPos: 0
           endPos: 0.58
           offset: 0.03
-          velReduction: 0.15
-          accelReduction: 0.15
+          velReduction: 0.1
           climber:
             org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
               climber
       action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': abortButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              climbOverrideController
+          buttonNumber: 3
+      command:
+        org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.AbortClimb:
+          '@id': abortClimb
+          climber:
+            org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
+              climber
+          drive:
+            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+              drive
 #    - button:
 #        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
 #          '@id': testBrakeButton
