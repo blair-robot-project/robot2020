@@ -7,15 +7,26 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand;
+import org.usfirst.frc.team449.robot.commands.general.RequireSubsystem;
 import org.usfirst.frc.team449.robot.commands.multiInterface.RunMotorUntilConditionMet;
 import org.usfirst.frc.team449.robot.commands.multiSubsystem.DriveStraightUntilConditionMet;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
 import org.usfirst.frc.team449.robot.drive.unidirectional.commands.DriveAtSpeed;
 import org.usfirst.frc.team449.robot.drive.unidirectional.commands.RunDriveMP;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.SubsystemAnalogMotor;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.SetAnalogMotor;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.commands.TurnMotorOff;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.commands.TurnMotorOffWithRequires;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.commands.TurnMotorOn;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.IRWithButtonOverride;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse;
 import org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019;
 
 /**
@@ -49,6 +60,10 @@ public class Climb extends CommandGroup {
 	@JsonCreator
 	public Climb(@JsonProperty(required = true) @NotNull SubsystemClimber2019 climber,
 	             @JsonProperty(required = true) @NotNull DriveUnidirectionalWithGyro drive,
+	             @JsonProperty(required = true) @NotNull SubsystemSolenoid hatchExtender,
+	             @JsonProperty(required = true) @NotNull AnalogMotorSimple sliderMotor,
+	             @JsonProperty(required = true) @NotNull SubsystemAnalogMotor cargoArm,
+	             @JsonProperty(required = true) @NotNull IntakeSimple cargoIntake,
 	             @JsonProperty(required = true) double maxVelExtend,
 	             @JsonProperty(required = true) double maxAccelExtend,
 	             @JsonProperty(required = true) double maxVelRetract,
@@ -63,12 +78,19 @@ public class Climb extends CommandGroup {
 	             double velReduction,
 	             double accelReduction,
 	             @Nullable Double unstickTolerance,
-				 double voltageBack,
+	             double voltageBack,
 	             double voltageFront,
-				 double crawlVelocity) {
+	             double crawlVelocity) {
 		requires(climber);
 		climber.setCrawlVelocity(crawlVelocity);
 
+
+		SolenoidForward extendHatch = new SolenoidForward(hatchExtender);
+		SetAnalogMotor retractCargo = new SetAnalogMotor(cargoArm, 0.3);
+		SetIntakeMode stopIntakingCargo = new SetIntakeMode<>(cargoIntake, SubsystemIntake.IntakeMode.OFF);
+		RequireSubsystem stopSlider = new RequireSubsystem(sliderMotor);
+
+		MappedWaitCommand pauseForPrep = new MappedWaitCommand(0.5);
 
 		RunElevator extendLegs = new RunElevator(RunElevator.MoveType.BOTH, maxVelExtend, maxAccelExtend,
 				0, extendDistance, offset, velReduction, accelReduction, null, climber);
@@ -80,6 +102,7 @@ public class Climb extends CommandGroup {
 		RunDriveMP nudgeDriveForwardLegsExtended = new RunDriveMP<>(maxVelNudge, maxAccelNudge,
 				-nudge1Distance, drive);
 
+//		SolenoidReverse retractHatch = new SolenoidReverse(hatchExtender);
 		RunElevator retractFrontLeg = new RunElevator(RunElevator.MoveType.FRONT, maxVelRetract, maxAccelRetract,
 				extendDistance + offset, 0, 0, 0, 0, unstickTolerance, climber);
 
@@ -99,11 +122,16 @@ public class Climb extends CommandGroup {
 		RunDriveMP nudgeDriveForwardLegsRetracted = new RunDriveMP<>(maxVelNudge, maxAccelNudge,
 				-nudge3Distance, drive);
 
-
+		addParallel(extendHatch);
+		addParallel(retractCargo);
+		addParallel(stopIntakingCargo);
+		addSequential(stopSlider);
+		addSequential(pauseForPrep);
 		addSequential(extendLegs);
 		addSequential(stallElevators);
 		addParallel(nudgeLegsForwardLegsExtended);
 		addSequential(nudgeDriveForwardLegsExtended);
+//		addParallel(retractHatch);
 		addSequential(retractFrontLeg);
 		addParallel(nudgeLegsForwardFrontLegRetracted);
 		addSequential(nudgeDriveForwardFrontLegRetracted);

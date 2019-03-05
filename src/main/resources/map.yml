@@ -399,6 +399,18 @@ buttons:
           drive:
             org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
               drive
+          hatchExtender:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+              hatchSolenoid
+          sliderMotor:
+            org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+              lateralSlider
+          cargoArm:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+              cargoArmMotor
+          cargoInatke:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+              cargoSubsystem
           maxVelExtend: 0.5
           maxAccelExtend: 0.5
           maxVelRetract: 4
