@@ -38,24 +38,29 @@ public class Climb extends CommandGroup {
 	/**
 	 * Default constructor.
 	 * 
-	 * @param climber          The climber subsystem.
-	 * @param drive            The robot drive.
-	 * @param maxVelExtend     The maximum velocity for extending the legs.
-	 * @param maxAccelExtend   The maximum acceleration for extending the legs.
-	 * @param maxVelRetract    The maximum velocity for retracting the legs.
-	 * @param maxAccelRetract  The maximum acceleration for retracting the legs.
-	 * @param maxVelNudge      The maximum velocity for nudging forward via profile.
-	 * @param maxAccelNudge    The maximum velocity for nudging forward via profile.
-	 * @param extendDistance   How far the elevators should extend, in feet.
-	 * @param nudge1Distance   How far to nudge the robot forward after the legs both extend, in feet.
-	 * @param nudge2Distance   How far to nudge the robot forward after the front leg retracts, in feet.
-	 * @param nudge3Distance   How far to nudge the robot forward after both legs are retracted, in feet.
-	 * @param offset           How much the front elevator should extend further than the back elevator, in feet.
-	 * @param velReduction     How much to reduce the max velocity of the back elevator profile, as a percent.
-	 * @param accelReduction   How much to reduce the max acceleration of the back elevator profile, as a percent.
-	 * @param unstickTolerance How far to make the elevator extend before retracting, to unstick the brake, in feet.
-	 * @param voltageBack  The voltage to give to stall the back elevator.
-	 * @param voltageFront The voltage to give to stall the front elevator.
+	 * @param climber           The climber subsystem.
+	 * @param drive             The robot drive.
+	 * @param hatchExtender     The solenoid that extends and retracts the hatch mechanism.
+	 * @param sliderMotor       The motor that controls the hatch linear slider.
+	 * @param cargoArm          The motor raises and lowers the cargo arm.
+	 * @param cargoIntake       The cargo intake.
+	 * @param maxVelExtend      The maximum velocity for extending the legs.
+	 * @param maxAccelExtend    The maximum acceleration for extending the legs.
+	 * @param maxVelRetract     The maximum velocity for retracting the legs.
+	 * @param maxAccelRetract   The maximum acceleration for retracting the legs.
+	 * @param maxVelNudge       The maximum velocity for nudging forward via profile.
+	 * @param maxAccelNudge     The maximum velocity for nudging forward via profile.
+	 * @param extendDistance    How far the elevators should extend, in feet.
+	 * @param nudge1Distance    How far to nudge the robot forward after the legs both extend, in feet.
+	 * @param nudge2Distance    How far to nudge the robot forward after the front leg retracts, in feet.
+	 * @param nudge3Distance    How far to nudge the robot forward after both legs are retracted, in feet.
+	 * @param heightOffset      How much the front elevator should extend further than the back elevator, in feet.
+	 * @param velReduction      How much to reduce the max velocity of the back elevator profile, as a percent.
+	 * @param accelReduction    How much to reduce the max acceleration of the back elevator profile, as a percent.
+	 * @param unstickTolerance  How far to make the elevator extend before retracting, to unstick the brake, in feet.
+	 * @param stallVoltageBack  The voltage to give to stall the back elevator.
+	 * @param stallVoltageFront The voltage to give to stall the front elevator.
+	 * @param crawlVelocity     The velocity at which to crawl the leg-drive and drive while the back elevator lifts.
 	 */
 	@JsonCreator
 	public Climb(@JsonProperty(required = true) @NotNull SubsystemClimber2019 climber,
@@ -74,12 +79,12 @@ public class Climb extends CommandGroup {
 	             @JsonProperty(required = true) double nudge1Distance,
 	             @JsonProperty(required = true) double nudge2Distance,
 	             @JsonProperty(required = true) double nudge3Distance,
-	             double offset,
+	             double heightOffset,
 	             double velReduction,
 	             double accelReduction,
 	             @Nullable Double unstickTolerance,
-	             double voltageBack,
-	             double voltageFront,
+	             double stallVoltageBack,
+	             double stallVoltageFront,
 	             double crawlVelocity) {
 		requires(climber);
 		climber.setCrawlVelocity(crawlVelocity);
@@ -93,9 +98,9 @@ public class Climb extends CommandGroup {
 		MappedWaitCommand pauseForPrep = new MappedWaitCommand(0.5);
 
 		RunElevator extendLegs = new RunElevator(RunElevator.MoveType.BOTH, maxVelExtend, maxAccelExtend,
-				0, extendDistance, offset, velReduction, accelReduction, null, climber);
+				0, extendDistance, heightOffset, velReduction, accelReduction, null, climber);
 
-		StallElevators stallElevators = new StallElevators(climber, voltageBack, voltageFront);
+		StallElevators stallElevators = new StallElevators(climber, stallVoltageBack, stallVoltageFront);
 
 		DriveLegWheels nudgeLegsForwardLegsExtended = new DriveLegWheels(maxVelNudge, maxAccelNudge,
 				nudge1Distance, climber);
@@ -104,7 +109,7 @@ public class Climb extends CommandGroup {
 
 //		SolenoidReverse retractHatch = new SolenoidReverse(hatchExtender);
 		RunElevator retractFrontLeg = new RunElevator(RunElevator.MoveType.FRONT, maxVelRetract, maxAccelRetract,
-				extendDistance + offset, 0, 0, 0, 0, unstickTolerance, climber);
+				extendDistance + heightOffset, 0, 0, 0, 0, unstickTolerance, climber);
 
 		DriveLegWheels nudgeLegsForwardFrontLegRetracted = new DriveLegWheels(maxVelNudge, maxAccelNudge,
 				nudge2Distance, climber);

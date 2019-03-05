@@ -424,10 +424,10 @@ buttons:
           #11.072 / 12
           nudge2Distance: 0.923
           nudge3Distance: 1.1
-          offset: 0.0001
+          heightOffset: 0.0001
           velReduction: 0
-          voltageBack: 2
-          voltageFront: 4
+          stallVoltageBack: 2
+          stallVoltageFront: 4
           crawlVelocity: 0.1
       action: WHEN_PRESSED
     - button:
