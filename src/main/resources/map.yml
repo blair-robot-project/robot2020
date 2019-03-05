@@ -357,20 +357,6 @@ teleopStartupCommand:
     subsystem:
       org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics:
         pneumatics
-updater:
-  org.usfirst.frc.team449.robot.other.Updater:
-    '@id': updater
-    updatables:
-      - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-          drive
-      - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad:
-          oi
-      - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS:
-          navX
-      - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
-          PDP
-#      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
-#          sliderThrottle
 buttons:
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.dPadButton:
@@ -441,12 +427,16 @@ buttons:
                       stabber
       action: WHEN_PRESSED
     - button:
-          org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          org.usfirst.frc.team449.robot.oi.buttons.TriggerButton:
               '@id': stabberBaseButton #solenoid
-              joystick:
-                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                    mechanismsGamepad
-              buttonNumber: 1
+              triggerAt: 0.5
+              throttle:
+                org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+                  '@id': mechRightTrigger
+                  axis: 3
+                  joystick:
+                    org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                      mechanismsGamepad
       command:
           org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
               '@id': stabberBaseCommand
@@ -460,12 +450,16 @@ buttons:
                         reverse: 3
       action: WHEN_PRESSED
     - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+        org.usfirst.frc.team449.robot.oi.buttons.TriggerButton:
           '@id': retractStabberBaseButton #solenoid
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsGamepad
-          buttonNumber: 2
+          triggerAt: 0.5
+          throttle:
+            org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+              '@id': mechLeftTrigger
+              axis: 2
+              joystick:
+                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                  mechanismsGamepad
       command:
         org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
           '@id': retractStabberBaseCommand
@@ -900,3 +894,21 @@ autoStartupCommand:
 #                        drive
 #                voltsPerSecond: 0.5
 #                spin: true
+updater:
+  org.usfirst.frc.team449.robot.other.Updater:
+    '@id': updater
+    updatables:
+      - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+          drive
+      - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad:
+          oi
+      - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS:
+          navX
+      - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
+          PDP
+      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+          mechRightTrigger
+      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+          mechLeftTrigger
+#      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+#          sliderThrottle
