@@ -476,20 +476,26 @@ buttons:
               mechanismsGamepad
           buttonNumber: 1
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
-          '@id': ResetSlider
-          processVariableSupplier:
-            org.usfirst.frc.team449.robot.components.TalonDataComponent:
-              talon:
-                org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-                  LimeLightMotor
-              value: position
-          p: .1
-          setpoint: 0
-          deadband: 0.1
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-              LimeLightXPos
+        org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
+          '@id': disableTrackingSequence
+          commandSet:
+            - org.usfirst.frc.team449.robot.commands.limelight.SetTracking:
+                '@id': disableLimelight
+                track: false
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
+                '@id': ResetSlider
+                processVariableSupplier:
+                  org.usfirst.frc.team449.robot.components.TalonDataComponent:
+                    talon:
+                      org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+                        LimeLightMotor
+                    value: position
+                p: .1
+                setpoint: 0
+                deadband: 0.1
+                subsystem:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+                    LimeLightXPos
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -500,8 +506,16 @@ buttons:
           buttonNumber: 2
       command:
         org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
-          ResetSlider
+          disableTrackingSequence
       action: CANCEL_WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          stopResetSlider
+      command:
+        org.usfirst.frc.team449.robot.commands.limelight.SetTracking:
+          '@id': enableLimelight
+          track: true
+      action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': cargoIntakeButton
