@@ -6,13 +6,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DigitalInput;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
+
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 /**
  * A roboRIO digital input pin.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MappedDigitalInput extends DigitalInput implements Loggable {
+public class MappedDigitalInput extends DigitalInput implements Loggable, BooleanSupplier {
+
+    private final String name;
 
     /**
      * Create an instance of a Digital Input class. Creates a digital input given a channel.
@@ -20,8 +26,10 @@ public class MappedDigitalInput extends DigitalInput implements Loggable {
      * @param channel the DIO channel for the digital input 0-9 are on-board, 10-25 are on the MXP
      */
     @JsonCreator
-    public MappedDigitalInput(@JsonProperty(required = true) int channel) {
+    public MappedDigitalInput(@JsonProperty(required = true) int channel,
+                              @Nullable String name) {
         super(channel);
+        this.name = name != null ? name : "DigitalInput" + this.getChannel();
     }
 
     /**
@@ -64,6 +72,11 @@ public class MappedDigitalInput extends DigitalInput implements Loggable {
     @NotNull
     @Override
     public String getLogName() {
-        return "DigitalInput" + this.getChannel();
+        return name;
+    }
+
+    @Override
+    public boolean getAsBoolean() {
+        return get();
     }
 }

@@ -264,6 +264,7 @@ logger:
     - org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
         '@id': digitalInput
         channel: 0
+        name: "OnLeft"
     - org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP:
         &gyroMP
         '@id': startToLeftCargoShip
