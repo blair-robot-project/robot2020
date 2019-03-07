@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.cscore.MjpegServer;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedUsbCamera;
 import org.usfirst.frc.team449.robot.other.Logger;
@@ -16,7 +18,7 @@ import java.util.List;
  * Subsystem to initialize cameras and put video on Shuffleboard.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class CameraNetwork extends Subsystem {
+public class CameraNetwork extends Subsystem implements Loggable {
 
     /**
      * Video server to view on Shuffleboard.
@@ -79,6 +81,7 @@ public class CameraNetwork extends Subsystem {
      * @return Video server to view on Shuffleboard.
      */
     @NotNull
+    @Log
     public MjpegServer getServer() {
         return server;
     }
@@ -87,6 +90,7 @@ public class CameraNetwork extends Subsystem {
      * @return List of cameras used on the robot.
      */
     @NotNull
+    @Log
     public List<MappedUsbCamera> getCameras() {
         return cameras;
     }
@@ -94,6 +98,7 @@ public class CameraNetwork extends Subsystem {
     /**
      * @return The index of the active camera in the list of cameras.
      */
+    @Log
     public int getCamNum() {
         return camNum;
     }
