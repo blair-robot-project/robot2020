@@ -28,6 +28,8 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSole
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse;
 import org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019;
+import org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics;
+import org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.commands.StopCompressor;
 
 /**
  * Run a full 2019 climb sequence.
@@ -69,6 +71,7 @@ public class Climb extends CommandGroup {
 	             @JsonProperty(required = true) @NotNull AnalogMotorSimple sliderMotor,
 	             @JsonProperty(required = true) @NotNull SubsystemAnalogMotor cargoArm,
 	             @JsonProperty(required = true) @NotNull IntakeSimple cargoIntake,
+	             @JsonProperty(required = true) Pneumatics pneumatics,
 	             @JsonProperty(required = true) double maxVelExtend,
 	             @JsonProperty(required = true) double maxAccelExtend,
 	             @JsonProperty(required = true) double maxVelRetract,
@@ -94,6 +97,7 @@ public class Climb extends CommandGroup {
 		SetAnalogMotor retractCargo = new SetAnalogMotor(cargoArm, 0.3);
 		SetIntakeMode stopIntakingCargo = new SetIntakeMode<>(cargoIntake, SubsystemIntake.IntakeMode.OFF);
 		RequireSubsystem stopSlider = new RequireSubsystem(sliderMotor);
+		StopCompressor stopCompressor = pneumatics == null ? null : new StopCompressor(pneumatics);
 
 		MappedWaitCommand pauseForPrep = new MappedWaitCommand(0.5);
 
@@ -130,6 +134,9 @@ public class Climb extends CommandGroup {
 		addParallel(extendHatch);
 		addParallel(retractCargo);
 		addParallel(stopIntakingCargo);
+		if (stopCompressor != null) {
+			addParallel(stopCompressor);
+		}
 		addSequential(stopSlider);
 		addSequential(pauseForPrep);
 		addSequential(extendLegs);
