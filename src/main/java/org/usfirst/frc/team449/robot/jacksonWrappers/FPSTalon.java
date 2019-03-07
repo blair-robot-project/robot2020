@@ -10,13 +10,13 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Notifier;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardComponent;
-import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.other.Logger;
@@ -32,7 +32,7 @@ import java.util.Map;
  * in this class takes arguments in post-gearing FPS.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class FPSTalon implements SimpleMotor, Shiftable, Loggable, io.github.oblarg.oblog.Loggable {
+public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
 
     /**
      * The CTRE CAN Talon SRX that this class is a wrapper on
@@ -899,67 +899,67 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable, io.github.obl
                 currentGearSettings.getFeedForwardComponent().calcMPVoltage(pos, vel, acc) / 12);
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader() {
-        return new String[]{
-                "velocity",
-                "position",
-                "setpoint",
-                "error",
-                "battery_voltage",
-                "voltage",
-                "current",
-                "control_mode",
-                "gear",
-                "resistance",
-                "forward_limit",
-                "reverse_limit"
-        };
-    }
-
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @Nullable
-    @Override
-    public Object[] getData() {
-        if (voltagePerCurrentLinReg != null && PDP != null) {
-            voltagePerCurrentLinReg.addPoint(getOutputCurrent(), PDP.getVoltage() - getBatteryVoltage());
-        }
-        return new Object[]{
-                getVelocity(),
-                getPositionFeet(),
-                getSetpoint(),
-                getError(),
-                getBatteryVoltage(),
-                getOutputVoltage(),
-                getOutputCurrent(),
-                getControlMode(),
-                getGear(),
-                (voltagePerCurrentLinReg != null && PDP != null) ? -voltagePerCurrentLinReg.getSlope() : null,
-                this.getFwdLimitSwitch(),
-                this.getRevLimitSwitch()
-        };
-    }
-
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @NotNull
-    @Override
-    public String getLogName() {
-        return name;
-    }
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader() {
+//        return new String[]{
+//                "velocity",
+//                "position",
+//                "setpoint",
+//                "error",
+//                "battery_voltage",
+//                "voltage",
+//                "current",
+//                "control_mode",
+//                "gear",
+//                "resistance",
+//                "forward_limit",
+//                "reverse_limit"
+//        };
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @Nullable
+//    @Override
+//    public Object[] getData() {
+//        if (voltagePerCurrentLinReg != null && PDP != null) {
+//            voltagePerCurrentLinReg.addPoint(getOutputCurrent(), PDP.getVoltage() - getBatteryVoltage());
+//        }
+//        return new Object[]{
+//                getVelocity(),
+//                getPositionFeet(),
+//                getSetpoint(),
+//                getError(),
+//                getBatteryVoltage(),
+//                getOutputVoltage(),
+//                getOutputCurrent(),
+//                getControlMode(),
+//                getGear(),
+//                (voltagePerCurrentLinReg != null && PDP != null) ? -voltagePerCurrentLinReg.getSlope() : null,
+//                this.getFwdLimitSwitch(),
+//                this.getRevLimitSwitch()
+//        };
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @NotNull
+//    @Override
+//    public String getLogName() {
+//        return name;
+//    }
 
     /**
      * An object representing the CANTalon settings that are different for each gear.
