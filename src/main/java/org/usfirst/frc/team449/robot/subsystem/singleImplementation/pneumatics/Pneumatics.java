@@ -59,6 +59,14 @@ public class Pneumatics extends Subsystem implements Loggable {
     }
 
     /**
+     * Stop the compressor.
+     */
+    public void stopCompressor() {
+        compressor.setClosedLoopControl(false);
+        compressor.stop();
+    }
+
+    /**
      * Get the headers for the data this subsystem logs every loop.
      *
      * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().

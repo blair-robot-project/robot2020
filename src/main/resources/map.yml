@@ -675,6 +675,8 @@ autoStartupCommand:
       org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput: digitalInput
     driveDefaultCommand:
       org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive: defaultDriveCommand
+    compressor:
+      org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics: pneumatics
 #autoStartupCommand:
 #  org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
 #    '@id': autoAndAdjust
