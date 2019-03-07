@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
@@ -14,7 +16,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake
  * A simple two-sided intake subsystem.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class IntakeTwoSidesSimple extends Subsystem implements SubsystemIntakeTwoSides {
+public class IntakeTwoSidesSimple extends Subsystem implements SubsystemIntakeTwoSides, Loggable {
 
     /**
      * The motors this subsystem controls.
@@ -86,6 +88,7 @@ public class IntakeTwoSidesSimple extends Subsystem implements SubsystemIntakeTw
      */
     @NotNull
     @Override
+    @Log
     public SubsystemIntake.IntakeMode getMode() {
         return mode;
     }
