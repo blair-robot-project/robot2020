@@ -2,12 +2,12 @@ package org.usfirst.frc.team449.robot.commands.multiInterface.drive;
 
 import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import org.jetbrains.annotations.Contract;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent;
-import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
 import org.usfirst.frc.team449.robot.oi.unidirectional.OIUnidirectional;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
 import org.usfirst.frc.team449.robot.other.Logger;
@@ -194,6 +194,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
      * @return false
      */
     @Override
+    @Log
     protected boolean isFinished() {
         return false;
     }
@@ -215,49 +216,74 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
         subsystem.fullStop();
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader() {
-        return new String[]{
-                "drivingStraight",
-                "running",
-                "raw_output",
-                "processed_output",
-                "final_output"
-        };
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader() {
+//        return new String[]{
+//                "drivingStraight",
+//                "running",
+//                "raw_output",
+//                "processed_output",
+//                "final_output"
+//        };
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @NotNull
+//    @Override
+//    public Object[] getData() {
+//        return new Object[]{
+//                drivingStraight,
+//                this.isRunning(),
+//                rawOutput,
+//                processedOutput,
+//                finalOutput
+//        };
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @Override
+//    @NotNull
+//    @Contract(pure = true)
+//    public String getLogName() {
+//        return "UnidirectionalNavXDefaultDrive";
+//    }
+
+    @Log
+    public boolean isDrivingStraight(){
+        return drivingStraight;
     }
 
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @NotNull
-    @Override
-    public Object[] getData() {
-        return new Object[]{
-                drivingStraight,
-                this.isRunning(),
-                rawOutput,
-                processedOutput,
-                finalOutput
-        };
+    @Log
+    public boolean thusIsRunning(){
+        return this.isRunning();
     }
 
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @Override
-    @NotNull
-    @Contract(pure = true)
-    public String getLogName() {
-        return "UnidirectionalNavXDefaultDrive";
+    @Log
+    public double getRawOutput(){
+        return rawOutput;
+    }
+
+    @Log
+    public double getProcessedOutput(){
+        return processedOutput;
+    }
+
+    @Log
+    public double getFinalOutput(){
+        return finalOutput;
     }
 }
