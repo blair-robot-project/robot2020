@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.oi.throttles.Throttle;
 
@@ -54,6 +55,7 @@ public class OITankSimple extends OITank {
      * @return percent of max speed for left motor cluster from [-1.0, 1.0]
      */
     @Override
+    @Log
     public double getLeftThrottle() {
         //If the driver is trying to drive straight, use the average of the two sticks.
         if (commandingStraight()) {
@@ -68,6 +70,7 @@ public class OITankSimple extends OITank {
      * @return percent of max speed for right motor cluster from [-1.0, 1.0]
      */
     @Override
+    @Log
     public double getRightThrottle() {
         //If the driver is trying to drive straight, use the average of the two sticks.
         if (commandingStraight()) {
@@ -82,18 +85,19 @@ public class OITankSimple extends OITank {
      * @return True if the driver is trying to drive straight, false otherwise.
      */
     @Override
+    @Log
     public boolean commandingStraight() {
         return Math.abs(getLeftRightOutputCached()[0] - getLeftRightOutputCached()[1]) <= commandingStraightTolerance;
     }
 
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @NotNull
-    @Override
-    public String getLogName() {
-        return "OI";
-    }
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @NotNull
+//    @Override
+//    public String getLogName() {
+//        return "OI";
+//    }
 }
