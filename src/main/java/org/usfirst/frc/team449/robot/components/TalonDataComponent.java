@@ -8,8 +8,8 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import java.util.function.DoubleSupplier;
 
 public class TalonDataComponent implements DoubleSupplier {
-    @NotNull private FPSTalon talon;
-    @NotNull private ReturnValue value;
+    @NotNull private final FPSTalon talon;
+    @NotNull private final ReturnValue value;
 
     enum ReturnValue{
         position, velocity, current, voltage;
@@ -18,11 +18,11 @@ public class TalonDataComponent implements DoubleSupplier {
     /**
      *
      * @param talon the talon to get a value from
-     * @param value whether to get the postition, velocity, current, or voltage
+     * @param value whether to get the position, velocity, current, or voltage
      */
     @JsonCreator
-    public TalonDataComponent(@JsonProperty(required = true) FPSTalon talon,
-                              @JsonProperty(required = true) ReturnValue value) {
+    public TalonDataComponent(@NotNull @JsonProperty(required = true) FPSTalon talon,
+                              @NotNull @JsonProperty(required = true) ReturnValue value) {
         this.talon = talon;
         this.value = value;
     }
