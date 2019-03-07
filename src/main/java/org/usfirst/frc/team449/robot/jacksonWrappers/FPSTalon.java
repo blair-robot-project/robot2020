@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Notifier;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +32,7 @@ import java.util.Map;
  * in this class takes arguments in post-gearing FPS.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
+public class FPSTalon implements SimpleMotor, Shiftable, Loggable, io.github.oblarg.oblog.Loggable {
 
     /**
      * The CTRE CAN Talon SRX that this class is a wrapper on
@@ -586,6 +587,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
      */
     @Nullable
+    @Log
     public Double getVelocity() {
         return encoderToFPS(canTalon.getSelectedSensorVelocity(0));
     }
@@ -1256,5 +1258,10 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         public double getMotionMagicMaxAccel() {
             return motionMagicMaxAccel;
         }
+    }
+
+    @Override
+    public String configureLogName() {
+        return name;
     }
 }
