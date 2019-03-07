@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDoubleSolenoid;
 
@@ -13,7 +14,7 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDoubleSolenoid;
  * A simple SubsystemSolenoid.java.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class SolenoidSimple extends Subsystem implements SubsystemSolenoid {
+public class SolenoidSimple extends Subsystem implements SubsystemSolenoid, Loggable {
 
     /**
      * Piston for pushing gears
