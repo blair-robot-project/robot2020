@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
@@ -17,7 +19,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemC
  * A climber subsystem that uses power monitoring to stop climbing.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class ClimberCurrentLimited extends Subsystem implements SubsystemBinaryMotor, SubsystemConditional {
+public class ClimberCurrentLimited extends Subsystem implements SubsystemBinaryMotor, SubsystemConditional, Loggable {
 
     /**
      * The CANTalon controlling one of the climber motors.
@@ -120,6 +122,7 @@ public class ClimberCurrentLimited extends Subsystem implements SubsystemBinaryM
      * @return true if the motor is on, false otherwise.
      */
     @Override
+    @Log
     public boolean isMotorOn() {
         return motorSpinning;
     }
@@ -136,6 +139,7 @@ public class ClimberCurrentLimited extends Subsystem implements SubsystemBinaryM
      * @return true if the condition was met when cached, false otherwise
      */
     @Override
+    @Log
     public boolean isConditionTrueCached() {
         return conditionMetCached;
     }
