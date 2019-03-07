@@ -58,7 +58,7 @@ public class Auto2018SingleHatch<T extends Subsystem & SubsystemAHRS & Subsystem
             addParallel(adjustCommand);
         }
         addParallel(new SetTracking(true));
-        addParallel(new SolenoidForward(angularCompliance));
+//        addParallel(new SolenoidForward(angularCompliance));
         addParallel(new SolenoidForward(hatchMech));
         addSequential(new SetHeading(drive, 0));
         addSequential(new ConditionalCommandDigitalInputBased(leftDriveCommand, rightDriveCommand, startingSideSwitch));

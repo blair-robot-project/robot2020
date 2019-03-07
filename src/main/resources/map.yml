@@ -232,6 +232,7 @@ logger:
     - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS:
         navX
     - org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
+        &defaultDriveCommand
         '@id': defaultDriveCommand
         kP: 0.003
         kI: 0.0
@@ -434,7 +435,7 @@ buttons:
                 org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
                   '@id': mechRightTrigger
                   axis: 3
-                  joystick:
+                  stick:
                     org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
                       mechanismsGamepad
       command:
@@ -457,7 +458,7 @@ buttons:
             org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
               '@id': mechLeftTrigger
               axis: 2
-              joystick:
+              stick:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
                   mechanismsGamepad
       command:
@@ -489,7 +490,7 @@ buttons:
                       org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
                         LimeLightMotor
                     value: position
-                p: .1
+                kP: .1
                 setpoint: 0
                 deadband: 0.1
                 subsystem:
@@ -660,7 +661,16 @@ autoStartupCommand:
   org.usfirst.frc.team449.robot.commands.autonomous.Auto2018SingleHatch:
     '@id': bigAutoCommand
     adjustCommand:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand: LimeLightPIDCommand
+      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
+          <<: *autoadjust
+          '@id': autoautoadjust
+          processVariableSupplier:
+              org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
+                  angularInput:
+                      org.usfirst.frc.team449.robot.components.LimeLightComponent:
+                          TargetXPos
+                  distanceToTarget:
+                      org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentSimple: {}
     drive:
       org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
     hatchMech:
@@ -674,7 +684,13 @@ autoStartupCommand:
     startingSideSwitch:
       org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput: digitalInput
     driveDefaultCommand:
-      org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive: defaultDriveCommand
+      org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
+        <<: *defaultDriveCommand
+        '@id': autoDefaultDriveCommand
+        driveStraightLoopEntryTimer:
+          driveStraightLoopEntryTimer
+        autoshiftComponent:
+          autoshiftComponent
     compressor:
       org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics: pneumatics
 #autoStartupCommand:
