@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.oi.throttles.Throttle;
 
@@ -49,18 +50,19 @@ public class OIArcadeSimple extends OIArcade {
      * both from [-1, 1]
      */
     @Override
+    @Log
     public double[] getFwdRotOutput() {
         return new double[]{velThrottle.getValue(), rotThrottle.getValue()};
     }
 
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @NotNull
-    @Override
-    public String getLogName() {
-        return "OI";
-    }
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @NotNull
+//    @Override
+//    public String getLogName() {
+//        return "OI";
+//    }
 }

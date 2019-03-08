@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
@@ -17,7 +19,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSole
  * A subsystem with a solenoid and a motor that can be turned on and off.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class SubsystemBinaryMotorSolenoid extends Subsystem implements SubsystemBinaryMotor, SubsystemSolenoid {
+public class SubsystemBinaryMotorSolenoid extends Subsystem implements SubsystemBinaryMotor, SubsystemSolenoid, Loggable {
 
     /**
      * The motor that this subsystem controls.
@@ -93,6 +95,7 @@ public class SubsystemBinaryMotorSolenoid extends Subsystem implements Subsystem
     /**
      * @return true if the motor is on, false otherwise.
      */
+    @Log
     @Override
     public boolean isMotorOn() {
         return motorOn;
@@ -112,6 +115,7 @@ public class SubsystemBinaryMotorSolenoid extends Subsystem implements Subsystem
      */
     @Override
     @NotNull
+    @Log
     public DoubleSolenoid.Value getSolenoidPosition() {
         return pistonPos;
     }

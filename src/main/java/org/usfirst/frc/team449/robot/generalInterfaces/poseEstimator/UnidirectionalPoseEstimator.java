@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
-import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
@@ -17,8 +18,7 @@ import java.util.List;
  * A Runnable for pose estimation that can take absolute positions.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class UnidirectionalPoseEstimator<T extends SubsystemAHRS & DriveUnidirectional> implements PoseEstimator,
-        Loggable {
+public class UnidirectionalPoseEstimator<T extends SubsystemAHRS & DriveUnidirectional> implements PoseEstimator, Loggable {
     /**
      * The subsystem to get gyro and encoder data from.
      */
@@ -155,6 +155,7 @@ public class UnidirectionalPoseEstimator<T extends SubsystemAHRS & DriveUnidirec
      * @return An array of length 2 containing the [x, y] displacement of the robot.
      */
     @NotNull
+    @Log
     private double[] calcVector(double left, double right, double deltaTheta, double lastAngle) {
 
         //If we're going in a straight line
@@ -227,6 +228,7 @@ public class UnidirectionalPoseEstimator<T extends SubsystemAHRS & DriveUnidirec
      * @param time The time, in milleseconds after the robot code started, that the absolute position was recorded.
      * @return true if the absolute position was the most recent received and was used, false otherwise.
      */
+    @Log
     public synchronized boolean addAbsolutePos(double x, double y, long time) {
         //Ignore it if it's older than the existing absolute position
         if (time < absolutePosTime) {
@@ -249,6 +251,7 @@ public class UnidirectionalPoseEstimator<T extends SubsystemAHRS & DriveUnidirec
      * @return true if the absolute position was the most recent received and the angle was correct enough to be used,
      * false otherwise.
      */
+    @Log
     public synchronized boolean addAbsolutePos(double x, double y, long time, double angle) {
         //Ignore it if it's older than the existing absolute position
         if (time < absolutePosTime) {
@@ -287,6 +290,7 @@ public class UnidirectionalPoseEstimator<T extends SubsystemAHRS & DriveUnidirec
      */
     @NotNull
     @Override
+    @Log
     public double[] getPos() {
         return currentPos;
     }
@@ -337,6 +341,7 @@ public class UnidirectionalPoseEstimator<T extends SubsystemAHRS & DriveUnidirec
      * @param time A time in milliseconds since the robot code started
      * @return the lowest index of times whose value is greater than time.
      */
+    @Log
     private int getFirstKeepableIndex(long time) {
         int firstKeepableIndex = times.size();
         for (int i = 0; i < times.size(); i++) {
@@ -348,44 +353,49 @@ public class UnidirectionalPoseEstimator<T extends SubsystemAHRS & DriveUnidirec
         return firstKeepableIndex;
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader() {
-        return new String[]{
-                "effective_wheelbase",
-                "x_displacement",
-                "y_displacement"
-        };
-    }
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader() {
+//        return new String[]{
+//                "effective_wheelbase",
+//                "x_displacement",
+//                "y_displacement"
+//        };
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @NotNull
+//    @Override
+//    public Object[] getData() {
+//        return new Object[]{
+//                fudgedWheelbaseDiameter,
+//                getPos()[0],
+//                getPos()[1]
+//        };
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @NotNull
+//    @Override
+//    public String getLogName() {
+//        return "PoseEstimator";
+//    }
 
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @NotNull
-    @Override
-    public Object[] getData() {
-        return new Object[]{
-                fudgedWheelbaseDiameter,
-                getPos()[0],
-                getPos()[1]
-        };
-    }
-
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @NotNull
-    @Override
-    public String getLogName() {
-        return "PoseEstimator";
+    @Log
+    public double getFudgedWheelbaseDiameter(){
+        return fudgedWheelbaseDiameter;
     }
 }

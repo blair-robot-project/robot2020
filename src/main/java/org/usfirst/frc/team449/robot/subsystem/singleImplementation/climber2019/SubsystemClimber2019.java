@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.team254.lib.util.motion.*;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDoubleSolenoid;
@@ -16,7 +18,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.SubsystemB
  * A 2019 climbing subsystem.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMotor {
+public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMotor, Loggable {
 
     /**
      * Talons for the back elevator, front elevator, and leg-drive.
@@ -212,6 +214,7 @@ public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMo
      * @return true if the leg-drive motor is on, false otherwise.
      */
     @Override
+    @Log
     public boolean isMotorOn() {
         return motorOn;
     }

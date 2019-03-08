@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -43,6 +44,7 @@ public class ThrottleSum implements Throttle {
      *
      * @return The summed outputs, clipped to [-1, 1].
      */
+    @Log
     public double getValue() {
         //sum throttles
         sum = 0;
@@ -66,6 +68,7 @@ public class ThrottleSum implements Throttle {
      * @return The output from [-1, 1].
      */
     @Override
+    @Log
     public double getValueCached() {
         return cachedValue;
     }
@@ -78,44 +81,44 @@ public class ThrottleSum implements Throttle {
         cachedValue = getValue();
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader() {
-        return new String[]{
-                "Value"
-        };
-    }
-
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @NotNull
-    @Override
-    public Object[] getData() {
-        return new Object[]{
-                getValueCached()
-        };
-    }
-
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @NotNull
-    @Override
-    public String getLogName() {
-        StringBuilder toRet = new StringBuilder();
-        for (Throttle throttle : throttles) {
-            toRet.append(throttle.getLogName()).append("+");
-        }
-        return toRet.toString();
-    }
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader() {
+//        return new String[]{
+//                "Value"
+//        };
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @NotNull
+//    @Override
+//    public Object[] getData() {
+//        return new Object[]{
+//                getValueCached()
+//        };
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @NotNull
+//    @Override
+//    public String getLogName() {
+//        StringBuilder toRet = new StringBuilder();
+//        for (Throttle throttle : throttles) {
+//            toRet.append(throttle.getLogName()).append("+");
+//        }
+//        return toRet.toString();
+//    }
 }

@@ -5,8 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.AnalogInput;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 
 /**
@@ -42,11 +43,13 @@ public class MappedAnalogInput extends AnalogInput implements Updatable, Loggabl
      *
      * @return The value of the analog input on [0,1], scaled so that 5 volts is 1 and 0 volts is 0.
      */
+    @Log
     public double getPercentValue() {
         //Round to 3 decimal places and clip to between 0 and 1.
         return Math.min(Math.max(Math.round((getAverageValue() - 55.) / 64190. * 1000.) / 1000., 0), 1);
     }
 
+    @Log
     public double getPercentValueCached() {
         return percentValueCached;
     }
@@ -56,40 +59,40 @@ public class MappedAnalogInput extends AnalogInput implements Updatable, Loggabl
         percentValueCached = getPercentValue();
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader() {
-        return new String[]{
-                "value"
-        };
-    }
-
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @NotNull
-    @Override
-    public Object[] getData() {
-        return new Object[]{
-                getPercentValueCached()
-        };
-    }
-
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @NotNull
-    @Override
-    public String getLogName() {
-        return "Analog_" + this.getChannel();
-    }
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader() {
+//        return new String[]{
+//                "value"
+//        };
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @NotNull
+//    @Override
+//    public Object[] getData() {
+//        return new Object[]{
+//                getPercentValueCached()
+//        };
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @NotNull
+//    @Override
+//    public String getLogName() {
+//        return "Analog_" + this.getChannel();
+//    }
 }

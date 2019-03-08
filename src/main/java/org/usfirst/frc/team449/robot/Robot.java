@@ -7,6 +7,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import io.github.oblarg.oblog.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.yaml.snakeyaml.Yaml;
@@ -89,7 +90,15 @@ public class Robot extends TimedRobot {
             CameraServer.getInstance().startAutomaticCapture();
         }
 
-        robotMap.getLogger().start();
+//        robotMap.getLogger().start();
+
+        Logger.configureLoggingAndConfig(robotMap, false);
+
+    }
+
+    @Override
+    public void robotPeriodic() {
+        Logger.updateEntries();
     }
 
     /**

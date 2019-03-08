@@ -4,10 +4,11 @@ import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
-import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
 
 /**
  * A {@link TalonSRX} that will be slaved to another TalonSRX or a {@link com.ctre.phoenix.motorcontrol.can.VictorSPX}.
@@ -112,46 +113,61 @@ public class SlaveTalon implements Loggable {
         this.linRegComponent = linRegComponent;
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader() {
-        return new String[]{
-                "current",
-                "voltage",
-                "resistance"
-        };
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader() {
+//        return new String[]{
+//                "current",
+//                "voltage",
+//                "resistance"
+//        };
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @Nullable
+//    @Override
+//    public Object[] getData() {
+//        if (linRegComponent != null && PDP != null) {
+//            linRegComponent.addPoint(talonSRX.getOutputCurrent(), PDP.getVoltage() - talonSRX.getBusVoltage());
+//        }
+//        return new Object[]{
+//                talonSRX.getOutputCurrent(),
+//                talonSRX.getMotorOutputVoltage(),
+//                (linRegComponent != null && PDP != null) ? -linRegComponent.getSlope() : null;
+//        };
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @Override
+//    public @NotNull String getLogName() {
+//        return "talon_" + talonSRX.getDeviceID();
+//    }
+
+    @Log
+    public double getOutPutCurrent (){
+        return  talonSRX.getOutputCurrent();
     }
 
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @Nullable
-    @Override
-    public Object[] getData() {
-        if (linRegComponent != null && PDP != null) {
-            linRegComponent.addPoint(talonSRX.getOutputCurrent(), PDP.getVoltage() - talonSRX.getBusVoltage());
-        }
-        return new Object[]{
-                talonSRX.getOutputCurrent(),
-                talonSRX.getMotorOutputVoltage(),
-                (linRegComponent != null && PDP != null) ? -linRegComponent.getSlope() : null
-        };
+    @Log
+    public double getMotorOutPutVolt(){
+        return talonSRX.getMotorOutputVoltage();
     }
 
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @Override
-    public @NotNull String getLogName() {
-        return "talon_" + talonSRX.getDeviceID();
+    @Log
+    public Double getRisistance(){
+        return (linRegComponent != null && PDP != null) ? -linRegComponent.getSlope() : Double.NaN;
     }
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.other.MotionProfileData;
@@ -13,7 +14,7 @@ import org.usfirst.frc.team449.robot.other.MotionProfileData;
  * A simple subsystem that uses a Talon for motion profiling.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class SubsystemMPSimple extends Subsystem implements SubsystemMP {
+public class SubsystemMPSimple extends Subsystem implements SubsystemMP, Loggable {
 
     /**
      * The motor this subsystem controls.

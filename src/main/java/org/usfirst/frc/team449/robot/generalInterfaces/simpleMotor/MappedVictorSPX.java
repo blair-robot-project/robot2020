@@ -7,9 +7,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
 
 import java.util.List;
@@ -89,42 +90,52 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
         victorSPX.set(ControlMode.Disabled, 0);
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader() {
-        return new String[]{
-                "bus_voltage",
-                "voltage"
-        };
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader() {
+//        return new String[]{
+//                "bus_voltage",
+//                "voltage"
+//        };
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @NotNull
+//    @Override
+//    public Object[] getData() {
+//        return new Object[]{
+//                victorSPX.getBusVoltage(),
+//                victorSPX.getMotorOutputVoltage()
+//        };
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @Override
+//    @NotNull
+//    public String getLogName() {
+//        return "victor_" + victorSPX.getDeviceID();
+//    }
+
+    @Log
+    public double getBusVolt(){
+        return victorSPX.getBusVoltage();
     }
 
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @NotNull
-    @Override
-    public Object[] getData() {
-        return new Object[]{
-                victorSPX.getBusVoltage(),
-                victorSPX.getMotorOutputVoltage()
-        };
-    }
-
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @Override
-    @NotNull
-    public String getLogName() {
-        return "victor_" + victorSPX.getDeviceID();
+    @Log
+    public double getMotorOutPutVolt(){
+        return victorSPX.getMotorOutputVoltage();
     }
 }

@@ -2,12 +2,10 @@ package org.usfirst.frc.team449.robot.drive.unidirectional;
 
 import com.fasterxml.jackson.annotation.*;
 import com.team254.lib.util.motion.MotionState;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import org.jetbrains.annotations.Contract;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
 import org.usfirst.frc.team449.robot.other.Logger;
@@ -23,7 +21,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideM
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT, property = "@class")
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemAHRS, DriveUnidirectional,
-        Loggable, SubsystemMPTwoSides, SubsystemMPManualTwoSides{
+        SubsystemMPTwoSides, SubsystemMPManualTwoSides, io.github.oblarg.oblog.Loggable {
 
     /**
      * Right master Talon
@@ -328,6 +326,7 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
      * @return true if the NavX is currently overriden, false otherwise.
      */
     @Override
+    @Log
     public boolean getOverrideGyro() {
         return overrideGyro;
     }
@@ -339,41 +338,41 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
     public void setOverrideGyro(boolean override) {
         overrideGyro = override;
     }
-
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @Override
-    @NotNull
-    @Contract(pure = true)
-    public String[] getHeader() {
-        return new String[]{"override_gyro"};
-    }
-
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @Override
-    @NotNull
-    public Object[] getData() {
-        return new Object[]{getOverrideGyro()};
-    }
-
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @Override
-    @NotNull
-    @Contract(pure = true)
-    public String getLogName() {
-        return "Drive";
-    }
+//
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @Override
+//    @NotNull
+//    @Contract(pure = true)
+//    public String[] getHeader() {
+//        return new String[]{"override_gyro"};
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @Override
+//    @NotNull
+//    public Object[] getData() {
+//        return new Object[]{getOverrideGyro()};
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @Override
+//    @NotNull
+//    @Contract(pure = true)
+//    public String getLogName() {
+//        return "Drive";
+//    }
 
     /**
      * Loads a profile into the MP buffer.
@@ -512,6 +511,4 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
         leftMaster.setPositionSetpoint(leftPos);
         rightMaster.setPositionSetpoint(rightPos);
     }
-
-
 }

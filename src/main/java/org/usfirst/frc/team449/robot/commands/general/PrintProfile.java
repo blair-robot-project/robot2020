@@ -1,8 +1,9 @@
 package org.usfirst.frc.team449.robot.commands.general;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.other.MotionProfileData;
 
 import java.util.function.Supplier;
@@ -54,6 +55,6 @@ public class PrintProfile extends InstantCommand {
      * Log on end.
      */
     public void end() {
-        Logger.addEvent("PrintProfile end", this.getClass());
+        Shuffleboard.addEventMarker("PrintProfile end", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 }

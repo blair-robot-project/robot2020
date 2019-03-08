@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.commands.multiInterface.IntakeUntilConditonMet;
+import org.usfirst.frc.team449.robot.commands.multiInterface.IntakeUntilConditionMet;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode;
@@ -58,7 +58,7 @@ public class LowerIntakeRaise<T extends Subsystem & SubsystemIntake & SubsystemS
         addSequential(new GoToPosition<>(elevator, elevatorIntakePos));
         addSequential(new SetIntakeMode(actuatedIntake, actuatedIntakeMode));
         addSequential(new SetIntakeMode(carriage, carriageIntakeMode));
-        addSequential(new IntakeUntilConditonMet<>(carriage, carriageIntakeMode, carriageHoldMode));
+        addSequential(new IntakeUntilConditionMet<>(carriage, carriageIntakeMode, carriageHoldMode));
         addSequential(new SetIntakeMode(actuatedIntake, SubsystemIntake.IntakeMode.OFF));
         addSequential(new GoToPosition<>(elevator, elevatorUpPos));
         //Retract the intake by setting the piston to the opposite

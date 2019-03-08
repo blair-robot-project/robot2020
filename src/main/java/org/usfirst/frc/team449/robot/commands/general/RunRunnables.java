@@ -5,9 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedRunnable;
-import org.usfirst.frc.team449.robot.other.Logger;
 
 /**
  * A command that runs any number of {@link Runnable} objects every tic.
@@ -36,7 +37,7 @@ public class RunRunnables extends Command {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("RunRunnables init.", this.getClass());
+        Shuffleboard.addEventMarker("RunRunnables init", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 
     /**
@@ -63,7 +64,7 @@ public class RunRunnables extends Command {
      */
     @Override
     protected void end() {
-        Logger.addEvent("RunRunnables end.", this.getClass());
+        Shuffleboard.addEventMarker("RunRunnables end", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 
     /**
@@ -71,6 +72,6 @@ public class RunRunnables extends Command {
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("RunRunnables Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("RunRunnables interrupted", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 }

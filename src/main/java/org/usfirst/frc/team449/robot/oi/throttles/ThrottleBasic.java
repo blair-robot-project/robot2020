@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 
@@ -58,6 +59,7 @@ public class ThrottleBasic implements Throttle, PIDSource {
      *
      * @return The raw joystick output, on [-1, 1].
      */
+    @Log
     public double getValue() {
         return (inverted ? -1 : 1) * stick.getRawAxis(axis);
     }
@@ -68,6 +70,7 @@ public class ThrottleBasic implements Throttle, PIDSource {
      * @return The output from [-1, 1].
      */
     @Override
+    @Log
     public double getValueCached() {
         return cachedOutput;
     }
@@ -86,6 +89,7 @@ public class ThrottleBasic implements Throttle, PIDSource {
      * @return the currently selected PID source parameter
      */
     @Override
+    @Log
     public PIDSourceType getPIDSourceType() {
         return null;
     }
@@ -106,44 +110,45 @@ public class ThrottleBasic implements Throttle, PIDSource {
      * @return the result to use in PIDController
      */
     @Override
+    @Log
     public double pidGet() {
         return (inverted ? -1 : 1) * stick.getRawAxis(axis);
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader() {
-        return new String[]{
-                "value"
-        };
-    }
-
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @NotNull
-    @Override
-    public Object[] getData() {
-        return new Object[]{
-                getValueCached()
-        };
-    }
-
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @NotNull
-    @Override
-    public String getLogName() {
-        return "Stick_" + stick.getPort() + "_Axis_" + axis;
-    }
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader() {
+//        return new String[]{
+//                "value"
+//        };
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @NotNull
+//    @Override
+//    public Object[] getData() {
+//        return new Object[]{
+//                getValueCached()
+//        };
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @NotNull
+//    @Override
+//    public String getLogName() {
+//        return "Stick_" + stick.getPort() + "_Axis_" + axis;
+//    }
 }

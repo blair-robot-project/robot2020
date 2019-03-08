@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.MappedVictor;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
@@ -18,7 +20,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSole
  * An intake with a piston that actuates it and a fixed and actuated motor.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class IntakeFixedAndActuated extends Subsystem implements SubsystemSolenoid, SubsystemIntake {
+public class IntakeFixedAndActuated extends Subsystem implements SubsystemSolenoid, SubsystemIntake, Loggable {
 
     /**
      * Motor for the fixed intake
@@ -104,6 +106,7 @@ public class IntakeFixedAndActuated extends Subsystem implements SubsystemSoleno
      * @return the current position of the solenoid.
      */
     @NotNull
+    @Log
     public DoubleSolenoid.Value getSolenoidPosition() {
         return pistonPos;
     }
@@ -123,6 +126,7 @@ public class IntakeFixedAndActuated extends Subsystem implements SubsystemSoleno
      */
     @NotNull
     @Override
+    @Log
     public SubsystemIntake.IntakeMode getMode() {
         return mode;
     }

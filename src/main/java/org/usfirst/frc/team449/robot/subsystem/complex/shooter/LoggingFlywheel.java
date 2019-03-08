@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
@@ -15,7 +15,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlyw
  * A flywheel multiSubsystem with a single flywheel and a single-motor feeder system.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class LoggingFlywheel extends Subsystem implements Loggable, SubsystemFlywheel {
+public class LoggingFlywheel extends Subsystem implements SubsystemFlywheel, io.github.oblarg.oblog.Loggable {
 
     /**
      * The flywheel's Talon
@@ -82,46 +82,46 @@ public class LoggingFlywheel extends Subsystem implements Loggable, SubsystemFly
         //Do nothing!
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader() {
-        return new String[]{"speed",
-                "setpoint",
-                "error",
-                "voltage",
-                "current"};
-    }
-
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @NotNull
-    @Override
-    public Object[] getData() {
-        return new Object[]{shooterTalon.getVelocity(),
-                shooterTalon.getSetpoint(),
-                shooterTalon.getError(),
-                shooterTalon.getOutputVoltage(),
-                shooterTalon.getOutputCurrent()};
-    }
-
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @NotNull
-    @Override
-    public String getLogName() {
-        return "loggingShooter";
-    }
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader() {
+//        return new String[]{"speed",
+//                "setpoint",
+//                "error",
+//                "voltage",
+//                "current"};
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @NotNull
+//    @Override
+//    public Object[] getData() {
+//        return new Object[]{shooterTalon.getVelocity(),
+//                shooterTalon.getSetpoint(),
+//                shooterTalon.getError(),
+//                shooterTalon.getOutputVoltage(),
+//                shooterTalon.getOutputCurrent()};
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @NotNull
+//    @Override
+//    public String getLogName() {
+//        return "loggingShooter";
+//    }
 
     /**
      * Turn the multiSubsystem on to a map-specified speed.
@@ -162,6 +162,7 @@ public class LoggingFlywheel extends Subsystem implements Loggable, SubsystemFly
      */
     @NotNull
     @Override
+    @Log
     public SubsystemFlywheel.FlywheelState getFlywheelState() {
         return state;
     }
@@ -178,6 +179,7 @@ public class LoggingFlywheel extends Subsystem implements Loggable, SubsystemFly
      * @return Time from giving the multiSubsystem voltage to being ready to fire, in seconds.
      */
     @Override
+    @Log
     public double getSpinUpTime() {
         return spinUpTime;
     }
