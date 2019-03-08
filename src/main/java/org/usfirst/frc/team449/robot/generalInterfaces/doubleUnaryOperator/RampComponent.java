@@ -1,7 +1,9 @@
 package org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.other.Clock;
 
 import java.util.function.DoubleUnaryOperator;
@@ -14,7 +16,7 @@ public class RampComponent implements DoubleUnaryOperator, Cloneable {
     /**
      * The maximum allowed change in the value per second.
      */
-    private final double maxChangePerMillis;
+    private final double maxIncreasePerMillis, maxDecreasePerMillis;
 
     /**
      * The value most recently returned.
@@ -29,11 +31,14 @@ public class RampComponent implements DoubleUnaryOperator, Cloneable {
     /**
      * Default constructor.
      *
-     * @param maxChangePerSecond The maximum allowed change in the value per second.
+     * @param maxIncreasePerSecond The maximum allowed increase in the value per second.
+     * @param maxDecreasePerSecond The maximum allowed decrease in the value per second. Should be positive. Defaults to maxIncreasePerSecond.
      */
     @JsonCreator
-    public RampComponent(double maxChangePerSecond) {
-        this.maxChangePerMillis = maxChangePerSecond / 1000.;
+    public RampComponent(@JsonProperty(required = true) double maxIncreasePerSecond,
+                         @Nullable Double maxDecreasePerSecond) {
+        this.maxIncreasePerMillis = maxIncreasePerSecond / 1000.;
+        this.maxDecreasePerMillis = maxDecreasePerSecond != null ? maxDecreasePerSecond / 1000. : maxIncreasePerMillis;
     }
 
     /**
@@ -45,9 +50,9 @@ public class RampComponent implements DoubleUnaryOperator, Cloneable {
     @Override
     public double applyAsDouble(double value) {
         if (value > lastValue) {
-            lastValue = Math.min(value, lastValue + (Clock.currentTimeMillis() - lastTime) * maxChangePerMillis);
+            lastValue = Math.min(value, lastValue + (Clock.currentTimeMillis() - lastTime) * maxIncreasePerMillis);
         } else {
-            lastValue = Math.max(value, lastValue - (Clock.currentTimeMillis() - lastTime) * maxChangePerMillis);
+            lastValue = Math.max(value, lastValue - (Clock.currentTimeMillis() - lastTime) * maxDecreasePerMillis);
         }
         lastTime = Clock.currentTimeMillis();
         return lastValue;
@@ -62,6 +67,6 @@ public class RampComponent implements DoubleUnaryOperator, Cloneable {
     @Override
     @NotNull
     public org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent clone() {
-        return new org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent(maxChangePerMillis * 1000.);
+        return new org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent(maxIncreasePerMillis * 1000., maxDecreasePerMillis * 1000.);
     }
 }
