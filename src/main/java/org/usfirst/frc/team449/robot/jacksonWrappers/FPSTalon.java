@@ -121,6 +121,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      */
     private double nativeSetpoint;
 
+    private boolean velocityPIDSet;
+
     /**
      * Default constructor.
      *
@@ -201,8 +203,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                     @Nullable Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
                     @Nullable Map<ControlFrame, Integer> controlFrameRatesMillis,
                     @Nullable List<SlaveTalon> slaveTalons,
-                    @Nullable List<SlaveVictor> slaveVictors,
-                    @Nullable MotionProfileData profile) {
+                    @Nullable List<SlaveVictor> slaveVictors) {
         //Instantiate the base CANTalon this is a wrapper on.
         canTalon = new TalonSRX(port);
         //Set the name to the given one or to talon_portnum
@@ -380,10 +381,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             }
         }
 
-        //Load motion profile
-        if (profile != null) {
-            loadProfile(profile);
-        }
+        velocityPIDSet = false;
+        setVelocityPID();
+        // velocityPIDSet is now true
     }
 
     /**
@@ -544,6 +544,24 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         return (RPS / 10) * (encoderCPR * 4); //4 edges per count, and 10 100ms per second.
     }
 
+    private void setVelocityPID(){
+        if (!velocityPIDSet) {
+            canTalon.config_kP(0, currentGearSettings.getkP());
+            canTalon.config_kI(0, currentGearSettings.getkI());
+            canTalon.config_kD(0, currentGearSettings.getkD());
+            velocityPIDSet = true;
+        }
+    }
+
+    private void setPositionPID(){
+        if (velocityPIDSet) {
+            canTalon.config_kP(0, currentGearSettings.getPosKP());
+            canTalon.config_kI(0, currentGearSettings.getPosKI());
+            canTalon.config_kD(0, currentGearSettings.getPosKD());
+            velocityPIDSet = false;
+        }
+    }
+
     /**
      * Set a position setpoint for the Talon.
      *
@@ -552,20 +570,15 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     public void setPositionSetpoint(double feet) {
         setpoint = feet;
         nativeSetpoint = feetToEncoder(feet);
+        setPositionPID();
+        canTalon.config_kF(0, 0);
         if (currentGearSettings.getMotionMagicMaxVel() != null) {
             motionMagicNotifier.stop();
-            //We don't know the setpoint for motion magic so we can't do fancy F stuff
-            canTalon.config_kF(0, 0, 0);
             canTalon.set(ControlMode.MotionMagic, nativeSetpoint);
             motionMagicNotifier.startPeriodic(updateMMPeriodSecs);
         } else {
-            if (nativeSetpoint == 0) {
-                canTalon.config_kF(0, 0, 0);
-            } else {
-                canTalon.config_kF(0,
-                        1023. / 12. / nativeSetpoint * currentGearSettings.getFeedForwardComponent().applyAsDouble(feet), 0);
-            }
-            canTalon.set(ControlMode.Position, nativeSetpoint);
+            canTalon.set(ControlMode.Position, nativeSetpoint, DemandType.ArbitraryFeedForward,
+                    currentGearSettings.getFeedForwardComponent().applyAsDouble(feet) / 12.);
         }
     }
 
@@ -612,9 +625,10 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     protected void setVelocityFPS(double velocity) {
         nativeSetpoint = FPSToEncoder(velocity);
         setpoint = velocity;
+        setVelocityPID();
         canTalon.config_kF(0, 0, 0);
         canTalon.set(ControlMode.Velocity, nativeSetpoint, DemandType.ArbitraryFeedForward,
-                currentGearSettings.getFeedForwardComponent().applyAsDouble(velocity) / 12.);
+                currentGearSettings.getFeedForwardComponent().calcVelVoltage(getPositionFeet(), velocity) / 12.);
     }
 
     /**
@@ -805,11 +819,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         //Reset the Talon
         clearMP();
 
-        //Declare this out here to avoid garbage collection
-        double feedforward;
-
         //Set proper PID constants
-        if (data.isInverted()) {
+        if (data.isBackwards()) {
             if (data.isVelocityOnly()) {
                 canTalon.config_kP(1, 0, 0);
                 canTalon.config_kI(1, 0, 0);
@@ -849,20 +860,14 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             point.profileSlotSelect0 = 1;        // gain selection, we always put MP gains in slot 1.
 
             // Set all the fields of the profile point
-            point.position = feetToEncoder(startPosition + (data.getData()[i][0] * (data.isInverted() ? -1 : 1)));
+            point.position = feetToEncoder(startPosition + data.getData()[i][0]);
 
-            if (data.isInverted()) {
-                feedforward = currentGearSettings.getFeedForwardComponent().calcMPVoltage(-data.getData()[i][0],
-                        -data.getData()[i][1], -data.getData()[i][2]);
-            } else {
-                feedforward = currentGearSettings.getFeedForwardComponent().calcMPVoltage(data.getData()[i][0],
-                        data.getData()[i][1], data.getData()[i][2]);
-            }
-            point.velocity = feedforward;
+            point.velocity = currentGearSettings.getFeedForwardComponent().calcMPVoltage(data.getData()[i][0],
+                    data.getData()[i][1], data.getData()[i][2]);;
 
             //Doing vel+accel shouldn't lead to impossible setpoints, so if it does, we log so we know to change
             // either the profile or kA.
-            if (Math.abs(feedforward) > 12) {
+            if (Math.abs(point.velocity) > 12) {
                 System.out.println("Point " + Arrays.toString(data.getData()[i]) + " has an unattainable " +
                         "velocity+acceleration setpoint!");
                 Logger.addEvent("Point " + Arrays.toString(data.getData()[i]) + " has an unattainable " +
@@ -877,6 +882,20 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     }
 
     /**
+     * Command the Talon to achieve a given position, velocity, and acceleration.
+     * @param pos The desired position in feet.
+     * @param vel The desired velocity in feet/second.
+     * @param acc The desired velocity in feet/second^2.
+     */
+    public void executeMPPoint(double pos, double vel, double acc) {
+        setpoint = pos;
+        setPositionPID();
+        canTalon.config_kF(0, 0);
+        canTalon.set(ControlMode.Position, feetToEncoder(pos), DemandType.ArbitraryFeedForward,
+                currentGearSettings.getFeedForwardComponent().calcMPVoltage(pos, vel, acc) / 12.);
+    }
+
+    /**
      * Process the motion profile buffer and stop when the top buffer is empty.
      */
     protected void processMotionProfileBuffer() {
@@ -884,17 +903,6 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         if (canTalon.getMotionProfileTopLevelBufferCount() == 0) {
             bottomBufferLoader.stop();
         }
-    }
-
-    /**
-     * Command the Talon to achieve a given position, velocity, and acceleration.
-     * @param pos The desired position in feet.
-     * @param vel The desired velocity in feet/second.
-     * @param acc The desired velocity in feet/second^2.
-     */
-    public void executeMPPoint(double pos, double vel, double acc) {
-        canTalon.set(ControlMode.Position, feetToEncoder(pos), DemandType.ArbitraryFeedForward,
-                currentGearSettings.getFeedForwardComponent().calcMPVoltage(pos, vel, acc) / 12);
     }
 
     /**
@@ -916,8 +924,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                 "control_mode",
                 "gear",
                 "resistance",
-                "forward_limit",
-                "reverse_limit"
+                "velocity_PID"
         };
     }
 
@@ -943,8 +950,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                 getControlMode(),
                 getGear(),
                 (voltagePerCurrentLinReg != null && PDP != null) ? -voltagePerCurrentLinReg.getSlope() : null,
-                this.getFwdLimitSwitch(),
-                this.getRevLimitSwitch()
+                velocityPIDSet
         };
     }
 
@@ -995,6 +1001,11 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
          * The PID constants for the motor in this gear. Ignored if maxSpeed is null.
          */
         private final double kP, kI, kD;
+
+        /**
+         * The position PID constants for the motor in this gear.
+         */
+        private final double posKP, posKI, posKD;
 
         /**
          * The forwards PID constants for motion profiles in this gear. Ignored if maxSpeed is null.
@@ -1048,6 +1059,12 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
          *                                null. Defaults to 0.
          * @param kD                      The derivative PID constant for the motor in this gear. Ignored if kVFwd is
          *                                null. Defaults to 0.
+         * @param posKP                   The proportional PID constant for position control on the motor in this gear. Ignored if kVFwd is
+         *                                null. Defaults to 0.
+         * @param posKI                   The integral PID constant for position control on the motor in this gear. Ignored if kVFwd is
+         *                                null. Defaults to 0.
+         * @param posKD                   The derivative PID constant for position control on the motor in this gear. Ignored if kVFwd is
+         *                                null. Defaults to 0.
          * @param motionProfilePFwd       The proportional PID constant for forwards motion profiles in this gear.
          *                                Ignored if kVFwd is null. Defaults to 0.
          * @param motionProfileIFwd       The integral PID constant for forwards motion profiles in this gear. Ignored
@@ -1078,6 +1095,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                                double kP,
                                double kI,
                                double kD,
+                               double posKP,
+                               double posKI,
+                               double posKD,
                                double motionProfilePFwd,
                                double motionProfileIFwd,
                                double motionProfileDFwd,
@@ -1098,6 +1118,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             this.kP = kP;
             this.kI = kI;
             this.kD = kD;
+            this.posKP = posKP;
+            this.posKI = posKI;
+            this.posKD = posKD;
             this.motionProfilePFwd = motionProfilePFwd;
             this.motionProfileIFwd = motionProfileIFwd;
             this.motionProfileDFwd = motionProfileDFwd;
@@ -1115,7 +1138,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
          * Empty constructor that uses all default options.
          */
         public PerGearSettings() {
-            this(0, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0, null, null, null, null, null, 0);
+            this(0, null, null, null, null, null, null, null, 0, 0, 0, 0, 0,0, 0, 0, 0, null, null, null, null, null, 0);
         }
 
         /**
@@ -1190,6 +1213,18 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
          */
         public double getkD() {
             return kD;
+        }
+
+        public double getPosKP() {
+            return posKP;
+        }
+
+        public double getPosKI() {
+            return posKI;
+        }
+
+        public double getPosKD() {
+            return posKD;
         }
 
         /**

@@ -91,17 +91,6 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
     }
 
     /**
-     * Clip a degree number to the NavX's -180 to 180 system.
-     *
-     * @param theta The angle to clip, in degrees.
-     * @return The equivalent of that number, clipped to be between -180 and 180.
-     */
-    @Contract(pure = true)
-    protected static double clipTo180(double theta) {
-        return (theta + 180) % 360 - 180;
-    }
-
-    /**
      * Set up the start time and setpoint.
      */
     @Override

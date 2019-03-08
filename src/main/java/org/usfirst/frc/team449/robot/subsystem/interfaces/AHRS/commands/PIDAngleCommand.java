@@ -5,8 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
@@ -14,7 +16,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
  * A command that uses a AHRS to turn to a certain angle.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT, property = "@class")
-public abstract class PIDAngleCommand extends PIDCommand {
+public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
 
     /**
      * The subsystem to execute this command on.
@@ -106,6 +108,17 @@ public abstract class PIDAngleCommand extends PIDCommand {
     }
 
     /**
+     * Clip a degree number to the NavX's -180 to 180 system.
+     *
+     * @param theta The angle to clip, in degrees.
+     * @return The equivalent of that number, clipped to be between -180 and 180.
+     */
+    @Contract(pure = true)
+    protected static double clipTo180(double theta) {
+        return (theta + 180) % 360 - 180;
+    }
+
+    /**
      * Process the output of the PID loop to account for minimum output and inversion.
      *
      * @param output The output from the WPILib angular PID loop.
@@ -171,5 +184,38 @@ public abstract class PIDAngleCommand extends PIDCommand {
     @Override
     protected void usePIDOutput(double output) {
         //Do nothing
+    }
+
+    /**
+     * Get the headers for the data this subsystem logs every loop.
+     *
+     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+     */
+    @NotNull
+    @Override
+    public String[] getHeader(){
+        return new String[]{"setpoint","error"};
+    }
+
+    /**
+     * Get the data this subsystem logs every loop.
+     *
+     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+     */
+    @Nullable
+    @Override
+    public Object[] getData(){
+        return new Object[]{getPIDController().getSetpoint(), getPIDController().getError()};
+    }
+
+    /**
+     * Get the name of this object.
+     *
+     * @return A string that will identify this object in the log file.
+     */
+    @NotNull
+    @Override
+    public String getLogName(){
+        return this.getClass().getSimpleName();
     }
 }
