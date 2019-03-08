@@ -90,7 +90,7 @@ public class Robot extends TimedRobot {
             CameraServer.getInstance().startAutomaticCapture();
         }
 
-        robotMap.getLogger().start();
+//        robotMap.getLogger().start();
 
         Logger.configureLoggingAndConfig(robotMap, false);
 

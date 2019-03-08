@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.components.ShiftComponent;
@@ -56,6 +57,7 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
      * @return true if currently overriding autoshifting, false otherwise.
      */
     @Override
+    @Log
     public boolean getOverrideAutoshift() {
         return overrideAutoshift;
     }
@@ -64,6 +66,7 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
      * @param override Whether or not to override autoshifting.
      */
     @Override
+    @Log
     public void setOverrideAutoshift(boolean override) {
         this.overrideAutoshift = override;
     }
@@ -92,6 +95,7 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
      * @return The gear this subsystem is currently in.
      */
     @Override
+    @Log
     public int getGear() {
         return shiftComponent.getCurrentGear();
     }
@@ -106,34 +110,34 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
         shiftComponent.shiftToGear(gear);
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @Override
-    @NotNull
-    @Contract(pure = true)
-    public String[] getHeader() {
-        return new String[]{
-                "override_gyro",
-                "override_autoshift",
-                "gear"
-        };
-    }
-
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @Override
-    @NotNull
-    public Object[] getData() {
-        return new Object[]{
-                getOverrideGyro(),
-                getOverrideAutoshift(),
-                getGear()
-        };
-    }
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @Override
+//    @NotNull
+//    @Contract(pure = true)
+//    public String[] getHeader() {
+//        return new String[]{
+//                "override_gyro",
+//                "override_autoshift",
+//                "gear"
+//        };
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @Override
+//    @NotNull
+//    public Object[] getData() {
+//        return new Object[]{
+//                getOverrideGyro(),
+//                getOverrideAutoshift(),
+//                getGear()
+//        };
+//    }
 }
