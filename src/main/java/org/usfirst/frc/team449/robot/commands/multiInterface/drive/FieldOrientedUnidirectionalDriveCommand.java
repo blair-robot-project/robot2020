@@ -2,12 +2,13 @@ package org.usfirst.frc.team449.robot.commands.multiInterface.drive;
 
 import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.oi.fieldoriented.OIFieldOriented;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands.PIDAngleCommand;
 
@@ -94,7 +95,8 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
         requires(this.subsystem);
 
         //Logging, but in Spanish.
-        Logger.addEvent("Drive Robot bueno", this.getClass());
+        Shuffleboard.addEventMarker("Drive Robot bueno", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("Drive Robot bueno", this.getClass());
     }
 
     /**
@@ -105,7 +107,8 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
         //Reset all values of the PIDController and enable it.
         this.getPIDController().reset();
         this.getPIDController().enable();
-        Logger.addEvent("FieldOrientedUnidirectionalDriveCommand init.", this.getClass());
+        Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommand init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("FieldOrientedUnidirectionalDriveCommand init.", this.getClass());
     }
 
     /**
@@ -149,7 +152,8 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
      */
     @Override
     protected void end() {
-        Logger.addEvent("FieldOrientedUnidirectionalDriveCommand End.", this.getClass());
+        Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommand End.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("FieldOrientedUnidirectionalDriveCommand End.", this.getClass());
     }
 
     /**
@@ -157,7 +161,8 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("FieldOrientedUnidirectionalDriveCommand Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommand Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("FieldOrientedUnidirectionalDriveCommand Interrupted!", this.getClass());
     }
 
     /**

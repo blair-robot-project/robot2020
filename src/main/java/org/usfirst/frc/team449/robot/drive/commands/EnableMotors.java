@@ -5,9 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.drive.DriveSubsystem;
-import org.usfirst.frc.team449.robot.other.Logger;
 
 /**
  * Enables the motors of the given drive subsystem.
@@ -36,7 +37,8 @@ public class EnableMotors extends InstantCommand {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("EnableMotors init.", this.getClass());
+        Shuffleboard.addEventMarker("EnableMotors init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("EnableMotors init.", this.getClass());
     }
 
     /**
@@ -52,7 +54,8 @@ public class EnableMotors extends InstantCommand {
      */
     @Override
     protected void end() {
-        Logger.addEvent("EnableMotors end.", this.getClass());
+        Shuffleboard.addEventMarker("EnableMotors end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("EnableMotors end.", this.getClass());
     }
 
     /**
@@ -60,6 +63,7 @@ public class EnableMotors extends InstantCommand {
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("EnableMotors Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("EnableMotors Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("EnableMotors Interrupted!", this.getClass());
     }
 }

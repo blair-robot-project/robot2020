@@ -5,12 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.oi.unidirectional.tank.OITank;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands.PIDAngleCommand;
 
@@ -125,7 +126,8 @@ public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & Subsy
      */
     @Override
     protected void end() {
-        Logger.addEvent("NavXDriveStraight end", this.getClass());
+        Shuffleboard.addEventMarker("NavXDriveStraight end", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("NavXDriveStraight end", this.getClass());
         this.getPIDController().disable();
     }
 
@@ -134,7 +136,8 @@ public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & Subsy
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("NavXDriveStraight interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("NavXDriveStraight interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("NavXDriveStraight interrupted!", this.getClass());
         this.getPIDController().disable();
     }
 }

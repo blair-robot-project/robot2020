@@ -5,12 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
 import org.usfirst.frc.team449.robot.other.Clock;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
 /**
@@ -64,7 +65,8 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
     protected void initialize() {
         //Setup start time
         this.startTime = Clock.currentTimeMillis();
-        Logger.addEvent("NavXRelativeTurnToAngle init.", this.getClass());
+        Shuffleboard.addEventMarker("NavXRelativeTurnToAngle init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("NavXRelativeTurnToAngle init.", this.getClass());
         //Do math to setup the setpoint.
         this.setSetpoint(clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() + setpoint));
         //Make sure to enable the controller!
@@ -76,7 +78,8 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
      */
     @Override
     protected void end() {
-        Logger.addEvent("NavXRelativeTurnToAngle end.", this.getClass());
+        Shuffleboard.addEventMarker("NavXRelativeTurnToAngle end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("NavXRelativeTurnToAngle end.", this.getClass());
         //Stop the controller
         this.getPIDController().disable();
     }
@@ -86,7 +89,8 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("NavXRelativeTurnToAngle interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("NavXRelativeTurnToAngle interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("NavXRelativeTurnToAngle interrupted!", this.getClass());
         //Stop the controller
         this.getPIDController().disable();
     }

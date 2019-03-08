@@ -2,6 +2,8 @@ package org.usfirst.frc.team449.robot.commands.multiInterface.drive;
 
 import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.AutoshiftComponent;
@@ -10,7 +12,6 @@ import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.oi.fieldoriented.OIFieldOriented;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
 import java.util.List;
@@ -132,7 +133,8 @@ public class FieldOrientedUnidirectionalDriveCommandShifting<T extends Subsystem
      */
     @Override
     protected void end() {
-        Logger.addEvent("FieldOrientedUnidirectionalDriveCommandShifting End.", this.getClass());
+        Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommandShifting End.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("FieldOrientedUnidirectionalDriveCommandShifting End.", this.getClass());
     }
 
     /**
@@ -140,7 +142,8 @@ public class FieldOrientedUnidirectionalDriveCommandShifting<T extends Subsystem
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("FieldOrientedUnidirectionalDriveCommandShifting Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommandShifting Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("FieldOrientedUnidirectionalDriveCommandShifting Interrupted!", this.getClass());
     }
 
 }
