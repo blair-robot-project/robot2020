@@ -225,4 +225,12 @@ public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMo
     protected void initDefaultCommand() {
         //Do nothing!
     }
+
+    public void setFrontVoltage(double voltage) {
+        frontTalon.setPercentVoltage(voltage/12.);
+    }
+
+    public void setBackVoltage(double voltage) {
+        backTalon.setPercentVoltage(voltage/12.);
+    }
 }
