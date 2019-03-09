@@ -6,8 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
 
 /**
@@ -47,7 +48,8 @@ public class SetIntakeMode<T extends Subsystem & SubsystemIntake> extends Instan
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("SetIntakeMode init.", this.getClass());
+        Shuffleboard.addEventMarker("SetIntakeMode init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SetIntakeMode init.", this.getClass());
     }
 
     /**
@@ -73,7 +75,8 @@ public class SetIntakeMode<T extends Subsystem & SubsystemIntake> extends Instan
      */
     @Override
     protected void end() {
-        Logger.addEvent("SetIntakeMode end.", this.getClass());
+        Shuffleboard.addEventMarker("SetIntakeMode end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SetIntakeMode end.", this.getClass());
     }
 
     /**
@@ -81,6 +84,7 @@ public class SetIntakeMode<T extends Subsystem & SubsystemIntake> extends Instan
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("SetIntakeMode Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("SetIntakeMode Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SetIntakeMode Interrupted!", this.getClass());
     }
 }

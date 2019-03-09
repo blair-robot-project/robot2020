@@ -6,9 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.other.Clock;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.SubsystemMP;
 
 /**
@@ -65,7 +66,8 @@ public class RunLoadedProfile<T extends Subsystem & SubsystemMP> extends Command
     protected void initialize() {
         //Record the start time.
         startTime = Clock.currentTimeMillis();
-        Logger.addEvent("RunLoadedProfile init", this.getClass());
+        Shuffleboard.addEventMarker("RunLoadedProfile init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("RunLoadedProfile init", this.getClass());
         runningProfile = false;
         startingFinished = subsystem.profileFinished();
     }
@@ -92,7 +94,8 @@ public class RunLoadedProfile<T extends Subsystem & SubsystemMP> extends Command
     @Override
     protected boolean isFinished() {
         if (Clock.currentTimeMillis() - startTime > timeout) {
-            Logger.addEvent("Command timed out", this.getClass());
+            Shuffleboard.addEventMarker("Command timed out", this.getClass().getSimpleName(), EventImportance.kNormal);
+            //Logger.addEvent("Command timed out", this.getClass());
             System.out.println("RunLoadedProfile timed out!");
             return true;
         }
@@ -105,7 +108,8 @@ public class RunLoadedProfile<T extends Subsystem & SubsystemMP> extends Command
     @Override
     protected void end() {
         subsystem.holdPosition();
-        Logger.addEvent("RunLoadedProfile end.", this.getClass());
+        Shuffleboard.addEventMarker("RunLoadedProfile end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("RunLoadedProfile end.", this.getClass());
     }
 
     /**
@@ -114,6 +118,7 @@ public class RunLoadedProfile<T extends Subsystem & SubsystemMP> extends Command
     @Override
     protected void interrupted() {
         subsystem.disable();
-        Logger.addEvent("RunLoadedProfile interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("RunLoadedProfile interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("RunLoadedProfile interrupted!", this.getClass());
     }
 }

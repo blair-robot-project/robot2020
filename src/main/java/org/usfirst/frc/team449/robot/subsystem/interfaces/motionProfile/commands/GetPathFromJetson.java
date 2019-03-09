@@ -2,11 +2,12 @@ package org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.command
 
 import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.PathRequester;
 import org.usfirst.frc.team449.robot.generalInterfaces.poseCommand.PoseCommand;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.other.MotionProfileData;
 import org.usfirst.frc.team449.robot.other.Waypoint;
 
@@ -97,7 +98,8 @@ public class GetPathFromJetson extends Command implements PoseCommand {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("GetPathFromJetson init", this.getClass());
+        Shuffleboard.addEventMarker("GetPathFromJetson init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("GetPathFromJetson init", this.getClass());
         //Check if we're using the supplier or the parameter
         if (waypointSupplier != null) {
             waypoints = waypointSupplier.get();
@@ -142,7 +144,8 @@ public class GetPathFromJetson extends Command implements PoseCommand {
      */
     @Override
     protected void end() {
-        Logger.addEvent("GetPathFromJetson end", this.getClass());
+        Shuffleboard.addEventMarker("GetPathFromJetson end", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("GetPathFromJetson end", this.getClass());
     }
 
     /**
@@ -150,7 +153,8 @@ public class GetPathFromJetson extends Command implements PoseCommand {
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("GetPathFromJetson interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("GetPathFromJetson interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("GetPathFromJetson interrupted!", this.getClass());
     }
 
     /**

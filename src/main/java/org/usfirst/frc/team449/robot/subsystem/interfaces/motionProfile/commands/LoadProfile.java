@@ -6,9 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.other.MotionProfileData;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.SubsystemMP;
 
@@ -71,7 +72,8 @@ public class LoadProfile<T extends Subsystem & SubsystemMP> extends InstantComma
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("LoadProfile init.", this.getClass());
+        Shuffleboard.addEventMarker("LoadProfile init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("LoadProfile init.", this.getClass());
     }
 
     /**
@@ -91,7 +93,8 @@ public class LoadProfile<T extends Subsystem & SubsystemMP> extends InstantComma
      */
     @Override
     protected void end() {
-        Logger.addEvent("LoadProfile end.", this.getClass());
+        Shuffleboard.addEventMarker("LoadProfile end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("LoadProfile end.", this.getClass());
     }
 
     /**
@@ -99,6 +102,7 @@ public class LoadProfile<T extends Subsystem & SubsystemMP> extends InstantComma
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("LoadProfile Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("LoadProfile Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("LoadProfile Interrupted!", this.getClass());
     }
 }
