@@ -744,12 +744,12 @@ buttons:
             org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
               hatchSolenoid
           sliderMotor:
-            org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-              lateralSlider
+            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+                sliderMotor
           cargoArm:
             org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
               cargoArmMotor
-          cargoInatke:
+          cargoIntake:
             org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
               cargoSubsystem
           maxVelExtend: 0.5
@@ -770,6 +770,9 @@ buttons:
           stallVoltageBack: 2
           stallVoltageFront: 4
           crawlVelocity: 0.1
+          pneumatics:
+            org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics:
+              pneumatics
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -826,9 +829,11 @@ autoStartupCommand:
     drive:
       org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
     hatchMech:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: stabber
+      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+        '@id': stabber
     angularCompliance:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: stabberBase
+      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+        '@id': stabberBase
     leftDriveCommand:
       org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: startToLeftCargoShip
     rightDriveCommand:
