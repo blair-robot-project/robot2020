@@ -79,7 +79,7 @@ public class DriveLegWheels extends Command {
     @Override
     protected void end() {
         Logger.addEvent("DriveLegWheels end, " + timeSinceInitialized(), this.getClass());
-        climber.fullStopDrive();
+//        climber.fullStopDrive();
     }
 
     /**

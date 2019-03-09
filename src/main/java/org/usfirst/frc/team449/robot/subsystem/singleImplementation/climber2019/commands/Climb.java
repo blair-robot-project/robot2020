@@ -90,7 +90,7 @@ public class Climb extends CommandGroup {
 	             double stallVoltageFront,
 	             double crawlVelocity) {
 		requires(climber);
-		climber.setCrawlVelocity(0);
+		climber.setCrawlVelocity(crawlVelocity * 0.6);
 
 
 		SolenoidReverse extendHatch = new SolenoidReverse(hatchExtender);
@@ -124,9 +124,9 @@ public class Climb extends CommandGroup {
 		TurnMotorOn crawlLeg = new TurnMotorOn(climber);
 
 		RunElevator retractBackLeg = new RunElevator(RunElevator.MoveType.BACK, maxVelRetract, maxAccelRetract,
-				extendDistance, 0, 0, 0, 0, null, climber);
+				extendDistance, -0.5, 0, 0, 0, null, climber);
 
-		TurnMotorOffWithRequires stopLegCrawl = new TurnMotorOffWithRequires<>(climber);
+//		TurnMotorOffWithRequires stopLegCrawl = new TurnMotorOffWithRequires<>(climber);
 
 		RunDriveMP nudgeDriveForwardLegsRetracted = new RunDriveMP<>(maxVelNudge, maxAccelNudge,
 				-nudge3Distance, drive);
