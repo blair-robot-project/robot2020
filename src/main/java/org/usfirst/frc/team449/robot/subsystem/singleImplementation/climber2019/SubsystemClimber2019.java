@@ -195,6 +195,7 @@ public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMo
      */
     @Override
     public void turnMotorOn() {
+        driveTalon.enable();
         driveTalon.setVelocity(crawlVelocity);
         motorOn = true;
     }
@@ -205,6 +206,7 @@ public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMo
     @Override
     public void turnMotorOff() {
         driveTalon.setVelocity(0);
+        driveTalon.disable();
         motorOn = false;
     }
 
