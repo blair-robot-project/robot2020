@@ -79,6 +79,7 @@ public class Robot extends TimedRobot {
             e.printStackTrace();
         }
 
+        System.out.println(this.robotMap == null);
         //Read sensors
         this.robotMap.getUpdater().run();
 

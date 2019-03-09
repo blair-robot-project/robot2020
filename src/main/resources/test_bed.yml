@@ -217,7 +217,7 @@ logger:
       highGearAngularCoefficient: 2
       rampComponent:
         org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent:
-          maxChangePerSecond: 3
+            maxIncreasePerSecond: 3
       driveStraightLoopEntryTimer:
         '@id': driveStraightLoopEntryTimer
         bufferTimeSeconds: 0.15
