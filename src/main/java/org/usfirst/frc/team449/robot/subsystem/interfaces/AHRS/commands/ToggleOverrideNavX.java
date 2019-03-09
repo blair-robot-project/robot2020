@@ -5,8 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
 /**
@@ -36,7 +37,8 @@ public class ToggleOverrideNavX extends InstantCommand {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("OverrideNavX init", this.getClass());
+        Shuffleboard.addEventMarker("OverrideNavX init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("OverrideNavX init", this.getClass());
     }
 
     /**
@@ -52,7 +54,8 @@ public class ToggleOverrideNavX extends InstantCommand {
      */
     @Override
     protected void end() {
-        Logger.addEvent("OverrideNavX end", this.getClass());
+        Shuffleboard.addEventMarker("OverrideNavX end", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("OverrideNavX end", this.getClass());
     }
 
     /**
@@ -60,7 +63,8 @@ public class ToggleOverrideNavX extends InstantCommand {
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("OverrideNavX Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("OverrideNavX Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("OverrideNavX Interrupted!", this.getClass());
     }
 }
 

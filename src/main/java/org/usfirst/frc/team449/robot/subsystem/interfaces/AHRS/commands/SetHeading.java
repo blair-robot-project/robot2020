@@ -5,8 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
 /**
@@ -44,7 +45,8 @@ public class SetHeading extends InstantCommand {
      */
     @Override
     public void initialize() {
-        Logger.addEvent("SetHeading init.", this.getClass());
+        Shuffleboard.addEventMarker("SetHeading init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SetHeading init.", this.getClass());
     }
 
     /**
@@ -60,6 +62,7 @@ public class SetHeading extends InstantCommand {
      */
     @Override
     public void end() {
-        Logger.addEvent("SetHeading end.", this.getClass());
+        Shuffleboard.addEventMarker("SetHeading end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SetHeading end.", this.getClass());
     }
 }

@@ -5,8 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.SubsystemBinaryMotor;
 
 /**
@@ -36,7 +37,8 @@ public class TurnMotorOn extends InstantCommand {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("TurnMotorOn init.", this.getClass());
+        Shuffleboard.addEventMarker("TurnMotorOn init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("TurnMotorOn init.", this.getClass());
     }
 
     /**
@@ -52,7 +54,8 @@ public class TurnMotorOn extends InstantCommand {
      */
     @Override
     protected void end() {
-        Logger.addEvent("TurnMotorOn end.", this.getClass());
+        Shuffleboard.addEventMarker("TurnMotorOn end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("TurnMotorOn end.", this.getClass());
     }
 
     /**
@@ -60,6 +63,7 @@ public class TurnMotorOn extends InstantCommand {
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("TurnMotorOn Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("TurnMotorOn Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("TurnMotorOn Interrupted!", this.getClass());
     }
 }

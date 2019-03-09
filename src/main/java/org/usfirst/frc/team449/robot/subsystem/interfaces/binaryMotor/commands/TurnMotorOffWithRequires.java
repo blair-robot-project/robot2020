@@ -5,8 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.SubsystemBinaryMotor;
 
 /**
@@ -32,7 +33,8 @@ public class TurnMotorOffWithRequires<T extends Subsystem & SubsystemBinaryMotor
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("TurnMotorOffWithRequires init.", this.getClass());
+        Shuffleboard.addEventMarker("TurnMotorOffWithRequires init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("TurnMotorOffWithRequires init.", this.getClass());
     }
 
     /**
@@ -40,7 +42,8 @@ public class TurnMotorOffWithRequires<T extends Subsystem & SubsystemBinaryMotor
      */
     @Override
     protected void end() {
-        Logger.addEvent("TurnMotorOffWithRequires end.", this.getClass());
+        Shuffleboard.addEventMarker("TurnMotorOffWithRequires end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("TurnMotorOffWithRequires end.", this.getClass());
     }
 
     /**
@@ -48,6 +51,7 @@ public class TurnMotorOffWithRequires<T extends Subsystem & SubsystemBinaryMotor
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("TurnMotorOffWithRequires Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("TurnMotorOffWithRequires Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("TurnMotorOffWithRequires Interrupted!", this.getClass());
     }
 }
