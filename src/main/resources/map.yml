@@ -412,9 +412,10 @@ teleopStartupCommand:
           '@id': runRunnables
           runnables:
             - org.usfirst.frc.team449.robot.components.TalonRumbleComponent:
+                '@id': rumbleComponent
                 talon:
                   org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-                    LimeLightMotor
+                      lateralSlider
                 joystick:
                   org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
                     driverGamepad
