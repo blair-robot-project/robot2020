@@ -357,6 +357,19 @@ teleopStartupCommand:
     subsystem:
       org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics:
         pneumatics
+  org.usfirst.frc.team449.robot.commands.general.RunRunnables:
+    '@id': runRunnables
+    runnables:
+      - org.usfirst.frc.team449.robot.components.TalonRumbleComponent:
+          talon:
+            org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+              LimeLightMotor
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              driverGamepad
+          inverted: false
+          rumbleAmount: 0.5
+
 updater:
   org.usfirst.frc.team449.robot.other.Updater:
     '@id': updater
