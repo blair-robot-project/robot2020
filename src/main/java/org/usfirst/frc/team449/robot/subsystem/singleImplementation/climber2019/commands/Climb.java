@@ -90,11 +90,11 @@ public class Climb extends CommandGroup {
 	             double stallVoltageFront,
 	             double crawlVelocity) {
 		requires(climber);
-		climber.setCrawlVelocity(crawlVelocity);
+		climber.setCrawlVelocity(0);
 
 
-		SolenoidForward extendHatch = new SolenoidForward(hatchExtender);
-		SetAnalogMotor retractCargo = new SetAnalogMotor(cargoArm, 0.3);
+		SolenoidReverse extendHatch = new SolenoidReverse(hatchExtender);
+		SetAnalogMotor retractCargo = new SetAnalogMotor(cargoArm, -0.3);
 		SetIntakeMode stopIntakingCargo = new SetIntakeMode<>(cargoIntake, SubsystemIntake.IntakeMode.OFF);
 		RequireSubsystem stopSlider = new RequireSubsystem(sliderMotor);
 		StopCompressor stopCompressor = pneumatics == null ? null : new StopCompressor(pneumatics);
@@ -111,7 +111,7 @@ public class Climb extends CommandGroup {
 		RunDriveMP nudgeDriveForwardLegsExtended = new RunDriveMP<>(maxVelNudge, maxAccelNudge,
 				-nudge1Distance, drive);
 
-//		SolenoidReverse retractHatch = new SolenoidReverse(hatchExtender);
+		SolenoidForward retractHatch = new SolenoidForward(hatchExtender);
 		RunElevator retractFrontLeg = new RunElevator(RunElevator.MoveType.FRONT, maxVelRetract, maxAccelRetract,
 				extendDistance + heightOffset, 0, 0, 0, 0, unstickTolerance, climber);
 
@@ -131,26 +131,26 @@ public class Climb extends CommandGroup {
 		RunDriveMP nudgeDriveForwardLegsRetracted = new RunDriveMP<>(maxVelNudge, maxAccelNudge,
 				-nudge3Distance, drive);
 
-		addParallel(extendHatch);
-		addParallel(retractCargo);
+		addSequential(extendHatch);
+		/*addParallel(retractCargo);
 		addParallel(stopIntakingCargo);
 		if (stopCompressor != null) {
 			addParallel(stopCompressor);
 		}
 		addSequential(stopSlider);
-		addSequential(pauseForPrep);
+		addSequential(pauseForPrep);*/
 		addSequential(extendLegs);
 		addSequential(stallElevators);
 		addParallel(nudgeLegsForwardLegsExtended);
 		addSequential(nudgeDriveForwardLegsExtended);
-//		addParallel(retractHatch);
+		addSequential(retractHatch);
 		addSequential(retractFrontLeg);
 		addParallel(nudgeLegsForwardFrontLegRetracted);
 		addSequential(nudgeDriveForwardFrontLegRetracted);
 		addParallel(crawlDrive);
-		addParallel(crawlLeg);
+		addSequential(crawlLeg);
 		addSequential(retractBackLeg);
-		addSequential(stopLegCrawl);
+//		addSequential(stopLegCrawl);
 		addSequential(nudgeDriveForwardLegsRetracted);
 	}
 }

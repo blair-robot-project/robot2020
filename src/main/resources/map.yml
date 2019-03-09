@@ -28,10 +28,10 @@ logger:
         perGearSettings:
           - maxSpeed: 30.5
             kP: 0.2
-#            feedForwardComponent:
-#              org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-#                kVFwd: 0.36
-#                interceptVoltageFwd: 0.52
+            feedForwardComponent:
+              org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
+                kVFwd: 0.36
+                interceptVoltageFwd: 0.52
     - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
         '@id': drive
         #Wheelbase: 2.14
@@ -69,7 +69,7 @@ logger:
                     kAFwd: 0.165688
                     kARev: 0.155610
                     interceptVoltageFwd: 0.960891
-                    interceptVoltageRev: 1.120689
+                    interceptVoltageRev: 0.95
               - &highGear
                 gear: HIGH
                 maxSpeed: 14
@@ -108,7 +108,7 @@ logger:
                     kAFwd: 0.224505
                     kARev: 0.181874
                     interceptVoltageFwd: 0.959980
-                    interceptVoltageRev: 1.120998
+                    interceptVoltageRev: 0.95
               - <<: *highGear
                 feedForwardComponent:
                   org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
@@ -359,6 +359,7 @@ logger:
           - motionProfilePFwd: 0.5
             maxSpeed: 7.5
             posKP: 0.5
+            kP: 0.1
             feedForwardComponent:
               org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                 kVFwd: 0.89457
@@ -618,7 +619,7 @@ buttons:
                         inverted: false
                         peakVoltageForward: 3.
                         peakVoltageRev: -3.
-                setpoint: 0.3
+                setpoint: 0.4
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -679,7 +680,7 @@ buttons:
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
               cargoArmMotor
-          setpoint: 0.3
+          setpoint: 0.4
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -705,7 +706,7 @@ buttons:
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
               cargoArmMotor
-          setpoint: -0.3
+          setpoint: -0.4
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -757,14 +758,14 @@ buttons:
               drive
           hatchExtender:
             org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-              hatchSolenoid
+              hatchMechExtenderSolenoid
           sliderMotor:
-            org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-              lateralSlider
+            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+              sliderMotor
           cargoArm:
             org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
               cargoArmMotor
-          cargoInatke:
+          cargoIntake:
             org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
               cargoSubsystem
           maxVelExtend: 0.5
@@ -785,6 +786,9 @@ buttons:
           stallVoltageBack: 2
           stallVoltageFront: 4
           crawlVelocity: 0.1
+          pneumatics:
+            org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics:
+              pneumatics
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -841,9 +845,9 @@ autoStartupCommand:
     drive:
       org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
     hatchMech:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: stabber
+      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: hatchSolenoid
     angularCompliance:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: stabberBase
+      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: hatchMechExtenderSolenoid
     leftDriveCommand:
       org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: startToLeftCargoShip
     rightDriveCommand:
