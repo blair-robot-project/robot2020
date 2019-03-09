@@ -6,10 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.other.Clock;
-import org.usfirst.frc.team449.robot.other.Logger;
 
 /**
  * Go at a certain velocity for a set number of seconds
@@ -54,7 +55,8 @@ public class DriveAtSpeed<T extends Subsystem & DriveUnidirectional> extends Com
         this.velocity = velocity;
         this.seconds = seconds;
         requires(subsystem);
-        Logger.addEvent("Drive Robot bueno", this.getClass());
+        Shuffleboard.addEventMarker("Drive Robot bueno", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("Drive Robot bueno", this.getClass());
     }
 
     /**
@@ -66,7 +68,8 @@ public class DriveAtSpeed<T extends Subsystem & DriveUnidirectional> extends Com
         startTime = Clock.currentTimeMillis();
         //Reset drive velocity (for safety reasons)
         subsystem.fullStop();
-        Logger.addEvent("DriveAtSpeed init", this.getClass());
+        Shuffleboard.addEventMarker("DriveAtSpeed init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("DriveAtSpeed init", this.getClass());
     }
 
     /**
@@ -96,7 +99,8 @@ public class DriveAtSpeed<T extends Subsystem & DriveUnidirectional> extends Com
         //Brake on exit. Yes this should be setOutput because often we'll be testing how well the PID loop handles a
         // full stop.
         subsystem.setOutput(0, 0);
-        Logger.addEvent("DriveAtSpeed end.", this.getClass());
+        Shuffleboard.addEventMarker("DriveAtSpeed end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("DriveAtSpeed end.", this.getClass());
     }
 
     /**
@@ -104,7 +108,8 @@ public class DriveAtSpeed<T extends Subsystem & DriveUnidirectional> extends Com
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("DriveAtSpeed Interrupted! Stopping the robot.", this.getClass());
+        Shuffleboard.addEventMarker("DriveAtSpeed Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("DriveAtSpeed Interrupted! Stopping the robot.", this.getClass());
         //Brake if we're interrupted
         subsystem.fullStop();
     }

@@ -6,10 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.other.Clock;
-import org.usfirst.frc.team449.robot.other.Logger;
 
 /**
  * A command to ramp up the motors to full power at a given voltage rate.
@@ -62,7 +63,8 @@ public class VoltageRamp<T extends Subsystem & DriveUnidirectional> extends Comm
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("VoltageRamp init.", this.getClass());
+        Shuffleboard.addEventMarker("VoltageRamp init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("VoltageRamp init.", this.getClass());
         lastTime = Clock.currentTimeMillis();
         output = 0;
     }
@@ -93,7 +95,8 @@ public class VoltageRamp<T extends Subsystem & DriveUnidirectional> extends Comm
     @Override
     protected void end() {
         subsystem.setOutput(0, 0);
-        Logger.addEvent("VoltageRamp end.", this.getClass());
+        Shuffleboard.addEventMarker("VoltageRamp end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("VoltageRamp end.", this.getClass());
     }
 
     /**
@@ -101,6 +104,7 @@ public class VoltageRamp<T extends Subsystem & DriveUnidirectional> extends Comm
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("VoltageRamp Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("VoltageRamp Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("VoltageRamp Interrupted!", this.getClass());
     }
 }

@@ -5,9 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.drive.shifting.DriveShiftable;
-import org.usfirst.frc.team449.robot.other.Logger;
+
+import java.awt.*;
 
 /**
  * Override or unoverride whether we're autoshifting. Used to stay in low gear for pushing matches and more!
@@ -36,7 +39,8 @@ public class ToggleOverrideAutoShift extends InstantCommand {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("OverrideAutoShift init", this.getClass());
+        Shuffleboard.addEventMarker("OverrideAutoShift init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("OverrideAutoShift init", this.getClass());
     }
 
     /**
@@ -53,7 +57,8 @@ public class ToggleOverrideAutoShift extends InstantCommand {
      */
     @Override
     protected void end() {
-        Logger.addEvent("OverrideAutoShift end", this.getClass());
+        Shuffleboard.addEventMarker("OverrideAutoShift end", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("OverrideAutoShift end", this.getClass());
     }
 
     /**
@@ -61,7 +66,8 @@ public class ToggleOverrideAutoShift extends InstantCommand {
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("OverrideAutoShift Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("OverrideAutoShift Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("OverrideAutoShift Interrupted!", this.getClass());
     }
 }
 

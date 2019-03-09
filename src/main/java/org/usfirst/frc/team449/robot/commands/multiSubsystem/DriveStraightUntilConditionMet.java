@@ -5,11 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands.PIDAngleCommand;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
@@ -89,7 +90,8 @@ public class DriveStraightUntilConditionMet<T extends Subsystem & DriveUnidirect
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("DriveStraightUntilConditionMet init", this.getClass());
+        Shuffleboard.addEventMarker("DriveStraightUntilConditionMet init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("DriveStraightUntilConditionMet init", this.getClass());
         this.getPIDController().setSetpoint(this.returnPIDInput());
         this.getPIDController().enable();
     }
@@ -120,7 +122,8 @@ public class DriveStraightUntilConditionMet<T extends Subsystem & DriveUnidirect
      */
     @Override
     protected void end() {
-        Logger.addEvent("DriveStraightUntilConditionMet end", this.getClass());
+        Shuffleboard.addEventMarker("DriveStraightUntilConditionMet end", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("DriveStraightUntilConditionMet end", this.getClass());
         this.getPIDController().disable();
         drive.fullStop();
     }
@@ -130,7 +133,8 @@ public class DriveStraightUntilConditionMet<T extends Subsystem & DriveUnidirect
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("DriveStraightUntilConditionMet interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("DriveStraightUntilConditionMet interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("DriveStraightUntilConditionMet interrupted!", this.getClass());
         this.getPIDController().disable();
     }
 }

@@ -3,12 +3,13 @@ package org.usfirst.frc.team449.robot.drive.unidirectional;
 import com.fasterxml.jackson.annotation.*;
 import com.team254.lib.util.motion.MotionState;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.other.MotionProfileData;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.SubsystemMPTwoSides;
@@ -391,9 +392,11 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
      * @param right The profile to load into the right side.
      */
     public void loadMotionProfile(@NotNull MotionProfileData left, @NotNull MotionProfileData right) {
-        Logger.addEvent("Loading left", this.getClass());
+        Shuffleboard.addEventMarker("Loading left", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("Loading left", this.getClass());
         leftMaster.loadProfile(left);
-        Logger.addEvent("Loading right", this.getClass());
+        Shuffleboard.addEventMarker("Loading right", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("Loading right", this.getClass());
         rightMaster.loadProfile(right);
     }
 
