@@ -2,6 +2,8 @@ package org.usfirst.frc.team449.robot.commands.multiInterface.drive;
 
 import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +12,6 @@ import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent;
 import org.usfirst.frc.team449.robot.oi.unidirectional.OIUnidirectional;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands.PIDAngleCommand;
 
@@ -115,7 +116,8 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
         requires(this.subsystem);
 
         //Logging, but in Spanish.
-        Logger.addEvent("Drive Robot bueno", this.getClass());
+        Shuffleboard.addEventMarker("Drive Robot bueno", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("Drive Robot bueno", this.getClass());
     }
 
     /**
@@ -126,7 +128,8 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
         //Reset all values of the PIDController and enable it.
         this.getPIDController().reset();
         this.getPIDController().enable();
-        Logger.addEvent("UnidirectionalNavXArcadeDrive init.", this.getClass());
+        Shuffleboard.addEventMarker("UnidirectionalNavXArcadeDrive init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("UnidirectionalNavXArcadeDrive init.", this.getClass());
 
         //Initial assignment
         drivingStraight = false;
@@ -204,7 +207,8 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
      */
     @Override
     protected void end() {
-        Logger.addEvent("UnidirectionalNavXArcadeDrive End.", this.getClass());
+        Shuffleboard.addEventMarker("UnidirectionalNavXArcadeDrive End.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("UnidirectionalNavXArcadeDrive End.", this.getClass());
     }
 
     /**
@@ -212,7 +216,8 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("UnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass());
+        Shuffleboard.addEventMarker("UnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("UnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass());
         subsystem.fullStop();
     }
 

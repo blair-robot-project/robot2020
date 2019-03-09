@@ -7,8 +7,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPosition;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
 
@@ -54,7 +55,8 @@ public class MoveThenActuate<T extends Subsystem & SubsystemPosition & Subsystem
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("GoToPose init.", this.getClass());
+        Shuffleboard.addEventMarker("GoToPose init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("GoToPose init.", this.getClass());
         subsystem.setPositionSetpoint(setpoint);
     }
 
@@ -83,7 +85,8 @@ public class MoveThenActuate<T extends Subsystem & SubsystemPosition & Subsystem
     protected void end() {
         subsystem.setSolenoid(setPistonTo);
         subsystem.disableMotor();
-        Logger.addEvent("GoToPose end.", this.getClass());
+        Shuffleboard.addEventMarker("GoToPose end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("GoToPose end.", this.getClass());
     }
 
     /**
@@ -91,6 +94,7 @@ public class MoveThenActuate<T extends Subsystem & SubsystemPosition & Subsystem
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("GoToPose interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("GoToPose interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("GoToPose interrupted!", this.getClass());
     }
 }

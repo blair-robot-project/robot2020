@@ -2,6 +2,8 @@ package org.usfirst.frc.team449.robot.commands.multiInterface.drive;
 
 import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.AutoshiftComponent;
@@ -11,8 +13,9 @@ import org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampC
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.oi.unidirectional.OIUnidirectional;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * Drive with arcade drive setup, autoshift, and when the driver isn't turning, use a NavX to stabilize the robot's
@@ -139,7 +142,8 @@ public class UnidirectionalNavXShiftingDefaultDrive<T extends Subsystem & DriveU
      */
     @Override
     protected void end() {
-        Logger.addEvent("ShiftingUnidirectionalNavXArcadeDrive End.", this.getClass());
+        Shuffleboard.addEventMarker("ShiftingUnidirectionalNavXArcadeDrive End.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("ShiftingUnidirectionalNavXArcadeDrive End.", this.getClass());
     }
 
     /**
@@ -147,7 +151,8 @@ public class UnidirectionalNavXShiftingDefaultDrive<T extends Subsystem & DriveU
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("ShiftingUnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass());
+        Shuffleboard.addEventMarker("ShiftingUnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("ShiftingUnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass());
         subsystem.fullStop();
     }
 }
