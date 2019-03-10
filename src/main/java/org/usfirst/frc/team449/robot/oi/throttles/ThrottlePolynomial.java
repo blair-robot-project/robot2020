@@ -21,6 +21,8 @@ public class ThrottlePolynomial extends ThrottleDeadbanded {
     @NotNull
     protected final Polynomial polynomial;
 
+    protected double scale;
+
     /**
      * A basic constructor.
      *
@@ -37,8 +39,11 @@ public class ThrottlePolynomial extends ThrottleDeadbanded {
                               double deadband,
                               @Nullable Double smoothingTimeSecs,
                               boolean inverted,
-                              @NotNull @JsonProperty(required = true) Polynomial polynomial) {
+                              @NotNull @JsonProperty(required = true) Polynomial polynomial,
+                              @Nullable Double scale) {
         super(stick, axis, deadband, smoothingTimeSecs, inverted);
+
+        this.scale = scale != null ? scale : 1;
 
         //Check for negative exponents
         for (Double power : polynomial.getPowerToCoefficientMap().keySet()) {
@@ -60,6 +65,6 @@ public class ThrottlePolynomial extends ThrottleDeadbanded {
      */
     @Override
     public double getValue() {
-        return polynomial.applyAsDouble(super.getValue());
+        return polynomial.applyAsDouble(super.getValue()) * scale;
     }
 }

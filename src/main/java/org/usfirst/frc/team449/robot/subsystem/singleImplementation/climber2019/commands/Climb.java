@@ -90,7 +90,7 @@ public class Climb extends CommandGroup {
 	             double stallVoltageFront,
 	             double crawlVelocity) {
 		requires(climber);
-		climber.setCrawlVelocity(crawlVelocity * 0.6);
+		climber.setCrawlVelocity(crawlVelocity * 0.75);
 
 
 		SolenoidReverse extendHatch = new SolenoidReverse(hatchExtender);
