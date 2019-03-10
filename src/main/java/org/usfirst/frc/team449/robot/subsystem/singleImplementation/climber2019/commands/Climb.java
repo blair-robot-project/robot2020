@@ -102,7 +102,7 @@ public class Climb extends CommandGroup {
 		MappedWaitCommand pauseForPrep = new MappedWaitCommand(0.5);
 
 		RunElevator extendLegs = new RunElevator(RunElevator.MoveType.BOTH, maxVelExtend, maxAccelExtend,
-				0, extendDistance, heightOffset, velReduction, accelReduction, null, climber);
+				0.0, extendDistance, heightOffset, velReduction, accelReduction, null, climber);
 
 		StallElevators stallElevators = new StallElevators(climber, stallVoltageBack, stallVoltageFront);
 

@@ -15,7 +15,7 @@ logger:
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         '@id': lateralSlider
         name: "lateralSlider"
-        port: 7
+        port: 20
         enableBrakeMode: false
         enableVoltageComp: true
         reverseSensor: false
@@ -202,7 +202,7 @@ logger:
             '@id': scaleRotByFwdPoly
             powerToCoefficientMap: !!map
               0.5: 0.4
-              0: 0.2
+            -  0: 0.2
               #1 : 0.25
               #2: 0.25
     - org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
@@ -300,10 +300,10 @@ logger:
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         &legElevator
         '@id': backLegElevatorTalon
-        port: 9
+        port: 7
         name: "backLegElevatorTalon"
-        reverseOutput: true
-        reverseSensor: false
+        reverseOutput: false
+        reverseSensor: true
         enableBrakeMode: true
         remoteLimitSwitchID: 4
         fwdLimitSwitchNormallyOpen: true
@@ -723,7 +723,7 @@ buttons:
       action: WHEN_RELEASED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': climbButton
+          '@id': climbButtonLevel3
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               '@id': climbOverrideController
@@ -731,7 +731,8 @@ buttons:
           buttonNumber: 4
       command:
         org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.Climb:
-          '@id': climb
+          &climbCommand
+          '@id': climbLevel3
           climber:
             org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
               '@id': climber
@@ -794,6 +795,22 @@ buttons:
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': climbButtonLevel2
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              climbOverrideController
+          buttonNumber: 2
+      command:
+        org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.Climb:
+          <<: *climbCommand
+          '@id': climbLevel2
+          climber:
+            org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
+              climber
+          extendDistance: 0.6
+      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': abortButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
@@ -809,6 +826,22 @@ buttons:
             org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
               drive
       action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': retractElevatorsButton
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              climbOverrideController
+#          buttonNumber: 3
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.AbortClimb:
+#          '@id': retractElevators
+#          climber:
+#            org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
+#              climber
+#          drive:
+#            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#              drive
 #    - button:
 #        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
 #          '@id': testLiftButton
