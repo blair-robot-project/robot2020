@@ -207,7 +207,7 @@ logger:
               #2: 0.25
     - org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
         rotThrottle
-    - org.usfirst.frc.team449`.robot.oi.throttles.ThrottlePolynomial:
+    - org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
         fwdThrottle
     - org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics:
         '@id': pneumatics
