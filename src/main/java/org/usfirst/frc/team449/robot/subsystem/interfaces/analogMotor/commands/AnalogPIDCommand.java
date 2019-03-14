@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.command.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.other.Clock;
-import org.usfirst.frc.team449.robot.other.Logger;
+
 import org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.SubsystemAnalogMotor;
 
 import java.util.function.DoubleSupplier;

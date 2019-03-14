@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedRunnable;
 import org.usfirst.frc.team449.robot.oi.buttons.CommandButton;
 import org.usfirst.frc.team449.robot.other.DefaultCommand;
-import org.usfirst.frc.team449.robot.other.Logger;
 
 import java.util.ArrayList;
 import java.util.List;

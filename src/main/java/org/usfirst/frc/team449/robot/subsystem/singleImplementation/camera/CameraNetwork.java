@@ -10,7 +10,7 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedUsbCamera;
-import org.usfirst.frc.team449.robot.other.Logger;
+
 
 import java.util.List;
 

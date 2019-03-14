@@ -6,8 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
 
 /**
@@ -37,7 +38,8 @@ public class SolenoidOff extends InstantCommand {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("SolenoidOff init.", this.getClass());
+        Shuffleboard.addEventMarker("SolenoidOff init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SolenoidOff init.", this.getClass());
     }
 
     /**
@@ -53,7 +55,8 @@ public class SolenoidOff extends InstantCommand {
      */
     @Override
     protected void end() {
-        Logger.addEvent("SolenoidOff end.", this.getClass());
+        Shuffleboard.addEventMarker("SolenoidOff end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SolenoidOff end.", this.getClass());
     }
 
     /**
@@ -61,6 +64,7 @@ public class SolenoidOff extends InstantCommand {
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("SolenoidOff Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("SolenoidOff Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SolenoidOff Interrupted!", this.getClass());
     }
 }

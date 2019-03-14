@@ -7,10 +7,13 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
+
+import java.nio.channels.ShutdownChannelGroupException;
 
 /**
  * Move the intake piston and change the intake state.
@@ -57,7 +60,8 @@ public class MovePistonAndRunIntake<T extends Subsystem & SubsystemIntake & Subs
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("MovePistonAndRunIntake init.", this.getClass());
+        Shuffleboard.addEventMarker("MovePistonAndRunIntake init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("MovePistonAndRunIntake init.", this.getClass());
     }
 
     /**
@@ -74,7 +78,8 @@ public class MovePistonAndRunIntake<T extends Subsystem & SubsystemIntake & Subs
      */
     @Override
     protected void end() {
-        Logger.addEvent("MovePistonAndRunIntake end.", this.getClass());
+        Shuffleboard.addEventMarker("MovePistonAndRunIntake end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("MovePistonAndRunIntake end.", this.getClass());
     }
 
     /**
@@ -82,6 +87,7 @@ public class MovePistonAndRunIntake<T extends Subsystem & SubsystemIntake & Subs
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("MovePistonAndRunIntake Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("MovePistonAndRunIntake Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("MovePistonAndRunIntake Interrupted!", this.getClass());
     }
 }

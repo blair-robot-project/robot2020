@@ -2,7 +2,7 @@ package org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.other.Logger;
+
 import org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019;
 
 public class StallElevators extends InstantCommand {

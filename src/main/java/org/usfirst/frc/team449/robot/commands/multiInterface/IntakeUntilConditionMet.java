@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
 
@@ -98,7 +97,8 @@ public class IntakeUntilConditionMet<T extends Subsystem & SubsystemIntake & Sub
     protected void interrupted() {
         //Stop the intake if this command is interrupted.
         subsystem.setMode(SubsystemIntake.IntakeMode.OFF);
-        Logger.addEvent("IntakeUntilConditionMet interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("IntakeUntilConditionMet interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("IntakeUntilConditionMet interrupted!", this.getClass());
     }
 
 }

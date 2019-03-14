@@ -6,10 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.oi.unidirectional.OIUnidirectional;
-import org.usfirst.frc.team449.robot.other.Logger;
 
 /**
  * Very simple unidirectional drive control.
@@ -75,7 +76,8 @@ public class SimpleUnidirectionalDrive<T extends Subsystem & DriveUnidirectional
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("SimpleUnidirectionalDrive Interrupted! Stopping the robot.", this.getClass());
+        Shuffleboard.addEventMarker("SimpleUnidirectionalDrive Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SimpleUnidirectionalDrive Interrupted! Stopping the robot.", this.getClass());
         //Brake for safety!
         subsystem.fullStop();
     }

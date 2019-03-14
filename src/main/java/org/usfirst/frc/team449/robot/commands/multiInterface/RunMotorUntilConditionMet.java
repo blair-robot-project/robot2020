@@ -6,8 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.SubsystemBinaryMotor;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
 
@@ -48,7 +49,8 @@ public class RunMotorUntilConditionMet<T extends Subsystem & SubsystemBinaryMoto
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("RunMotorUntilConditionMet init", this.getClass());
+        Shuffleboard.addEventMarker("RunMotorUntilConditionMet init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("RunMotorUntilConditionMet init", this.getClass());
     }
 
     /**
@@ -76,7 +78,8 @@ public class RunMotorUntilConditionMet<T extends Subsystem & SubsystemBinaryMoto
     protected void end() {
         //Stop the motor when we meet the condition.
         subsystem.turnMotorOff();
-        Logger.addEvent("RunMotorUntilConditionMet end", this.getClass());
+        Shuffleboard.addEventMarker("RunMotorUntilConditionMet end", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("RunMotorUntilConditionMet end", this.getClass());
     }
 
     /**
@@ -86,7 +89,8 @@ public class RunMotorUntilConditionMet<T extends Subsystem & SubsystemBinaryMoto
     protected void interrupted() {
         //Stop the motor if this command is interrupted.
         subsystem.turnMotorOff();
-        Logger.addEvent("RunMotorUntilConditionMet interrupted, stopping climb.", this.getClass());
+        Shuffleboard.addEventMarker("RunMotorUntilConditionMet interrupted, stopping climb.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("RunMotorUntilConditionMet interrupted, stopping climb.", this.getClass());
     }
 
 }

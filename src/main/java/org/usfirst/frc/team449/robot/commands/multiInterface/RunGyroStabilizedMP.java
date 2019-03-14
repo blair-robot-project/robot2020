@@ -7,11 +7,12 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
 import org.usfirst.frc.team449.robot.other.Clock;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.other.MotionProfileData;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands.PIDAngleCommand;
@@ -124,7 +125,8 @@ public class RunGyroStabilizedMP<T extends Subsystem & SubsystemMPManualTwoSides
         //Record the start time.
         startTime = Clock.currentTimeMillis();
         this.getPIDController().enable();
-        Logger.addEvent("RunProfile init", this.getClass());
+        Shuffleboard.addEventMarker("RunProfile init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("RunProfile init");
     }
 
     @Override
@@ -146,7 +148,8 @@ public class RunGyroStabilizedMP<T extends Subsystem & SubsystemMPManualTwoSides
         double rightPos = right.getData()[right.getData().length - 1][0];
         subsystem.holdPosition(leftPos, rightPos);
         this.getPIDController().disable();
-        Logger.addEvent("RunProfile end.", this.getClass());
+        Shuffleboard.addEventMarker("RunProfile end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("RunProfile end.", this.getClass());
     }
 
 }
