@@ -2,6 +2,8 @@ package org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.drive.DriveSubsystem;
 
@@ -41,7 +43,8 @@ public class StopClimb<T extends Subsystem & DriveSubsystem> extends InstantComm
 	 */
 	@Override
 	protected void initialize() {
-		Logger.addEvent("StopClimb init", this.getClass());
+		Shuffleboard.addEventMarker("StopClimb init", this.getClass().getSimpleName(), EventImportance.kNormal);
+		//Logger.addEvent("StopClimb init", this.getClass());
 	}
 
 	/**
@@ -59,7 +62,8 @@ public class StopClimb<T extends Subsystem & DriveSubsystem> extends InstantComm
 	 * Log on end.
 	 */
 	public void end() {
-		Logger.addEvent("StopClimb end", this.getClass());
+		Shuffleboard.addEventMarker("StopClimb end", this.getClass().getSimpleName(), EventImportance.kNormal);
+		//Logger.addEvent("StopClimb end", this.getClass());
 	}
 
 }

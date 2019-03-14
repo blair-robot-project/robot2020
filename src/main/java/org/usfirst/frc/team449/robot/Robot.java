@@ -11,7 +11,6 @@ import io.github.oblarg.oblog.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.yaml.snakeyaml.Yaml;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;

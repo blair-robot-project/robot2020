@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPosition;
 
@@ -35,7 +37,8 @@ public class EnableMotor extends Command {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("EnableMotor init.", this.getClass());
+        Shuffleboard.addEventMarker("EnableMotor init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("EnableMotor init.", this.getClass());
     }
 
     /**
@@ -61,7 +64,8 @@ public class EnableMotor extends Command {
      */
     @Override
     protected void end() {
-        Logger.addEvent("EnableMotor end.", this.getClass());
+        Shuffleboard.addEventMarker("EnableMotor end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("EnableMotor end.", this.getClass());
     }
 
     /**
@@ -69,6 +73,7 @@ public class EnableMotor extends Command {
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("EnableMotor interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("EnableMotor interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("EnableMotor interrupted!", this.getClass());
     }
 }

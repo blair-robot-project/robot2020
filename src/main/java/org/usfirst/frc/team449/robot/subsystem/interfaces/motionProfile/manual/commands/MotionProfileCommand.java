@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.other.MotionProfileData;
@@ -85,7 +87,8 @@ public class MotionProfileCommand<T extends Subsystem & SubsystemMPManual> exten
     protected void initialize() {
         //Record the start time.
         startTime = Clock.currentTimeMillis();
-        Logger.addEvent("RunLoadedProfile init", this.getClass());
+        //Logger.addEvent("RunLoadedProfile init", this.getClass());
+        Shuffleboard.addEventMarker("RunLoadedProfile init", this.getClass().getSimpleName(), EventImportance.kNormal);
 
     }
 
@@ -100,7 +103,8 @@ public class MotionProfileCommand<T extends Subsystem & SubsystemMPManual> exten
     protected void end() {
         double pos = data.getData()[data.getData().length - 1][0];
         subsystem.holdPosition(pos);
-        Logger.addEvent("RunLoadedProfile end.", this.getClass());
+        Shuffleboard.addEventMarker("RunLoadedProfile end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("RunLoadedProfile end.", this.getClass());
     }
 
 }

@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.intakeTwoSides.SubsystemIntakeTwoSides;
@@ -49,7 +51,8 @@ public class SetTwoSideIntakeMode<T extends Subsystem & SubsystemIntakeTwoSides>
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("SetTwoSideIntakeMode init.", this.getClass());
+        Shuffleboard.addEventMarker("SetTwoSideIntakeMode init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SetTwoSideIntakeMode init.", this.getClass());
     }
 
     /**
@@ -76,7 +79,8 @@ public class SetTwoSideIntakeMode<T extends Subsystem & SubsystemIntakeTwoSides>
      */
     @Override
     protected void end() {
-        Logger.addEvent("SetTwoSideIntakeMode end.", this.getClass());
+        Shuffleboard.addEventMarker("SetTwoSideIntakeMode end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SetTwoSideIntakeMode end.", this.getClass());
     }
 
     /**
@@ -84,6 +88,7 @@ public class SetTwoSideIntakeMode<T extends Subsystem & SubsystemIntakeTwoSides>
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("SetTwoSideIntakeMode Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("SetTwoSideIntakeMode Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SetTwoSideIntakeMode Interrupted!", this.getClass());
     }
 }

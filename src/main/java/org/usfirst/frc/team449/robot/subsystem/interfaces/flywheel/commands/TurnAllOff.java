@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
 
@@ -35,7 +37,8 @@ public class TurnAllOff extends InstantCommand {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("TurnAllOff init.", this.getClass());
+        Shuffleboard.addEventMarker("TurnAllOff init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("TurnAllOff init.", this.getClass());
     }
 
     /**
@@ -53,7 +56,8 @@ public class TurnAllOff extends InstantCommand {
      */
     @Override
     protected void end() {
-        Logger.addEvent("TurnAllOff end.", this.getClass());
+        Shuffleboard.addEventMarker("TurnAllOff end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("TurnAllOff end.", this.getClass());
     }
 
     /**
@@ -61,6 +65,7 @@ public class TurnAllOff extends InstantCommand {
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("TurnAllOff Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("TurnAllOff Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("TurnAllOff Interrupted!", this.getClass());
     }
 }

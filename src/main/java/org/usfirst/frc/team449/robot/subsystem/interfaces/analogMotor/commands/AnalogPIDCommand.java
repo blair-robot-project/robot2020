@@ -5,12 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.*;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.other.Clock;
-
 import org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.SubsystemAnalogMotor;
-
 import java.util.function.DoubleSupplier;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
 
@@ -208,7 +208,8 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("NavXTurnToAngle init.", this.getClass());
+        Shuffleboard.addEventMarker("NavXTurnToAngle init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("NavXTurnToAngle init.", this.getClass());
         //Set up start time
         this.startTime = Clock.currentTimeMillis();
         // We handle setpoint math here rather than in the PID Controller.

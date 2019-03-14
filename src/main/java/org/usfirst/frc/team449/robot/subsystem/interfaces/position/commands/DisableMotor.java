@@ -5,8 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPosition;
+
+import java.security.spec.ECField;
 
 /**
  * Disable the motors in the given subsystem.
@@ -35,7 +39,8 @@ public class DisableMotor extends Command {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("DisableMotor init.", this.getClass());
+        Shuffleboard.addEventMarker("DisableMotor init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("DisableMotor init.", this.getClass());
     }
 
     /**
@@ -61,7 +66,8 @@ public class DisableMotor extends Command {
      */
     @Override
     protected void end() {
-        Logger.addEvent("DisableMotor end.", this.getClass());
+        Shuffleboard.addEventMarker("DisableMotor end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("DisableMotor end.", this.getClass());
     }
 
     /**
@@ -69,6 +75,7 @@ public class DisableMotor extends Command {
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("DisableMotor interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("DisableMotor interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("DisableMotor interrupted!", this.getClass());
     }
 }

@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.oi.throttles.Throttle;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPosition;
@@ -47,7 +49,8 @@ public class ControlPositionSubsystemWithThrottle<T extends Subsystem & Subsyste
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("ControlPositionSubsystemWithThrottle init", this.getClass());
+        Shuffleboard.addEventMarker("ControlPositionSubsystemWithThrottle init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("ControlPositionSubsystemWithThrottle init", this.getClass());
     }
 
     /**
@@ -73,7 +76,8 @@ public class ControlPositionSubsystemWithThrottle<T extends Subsystem & Subsyste
      */
     @Override
     protected void end() {
-        Logger.addEvent("ControlPositionSubsystemWithThrottle end", this.getClass());
+        Shuffleboard.addEventMarker("ControlPositionSubsystemWithThrottle end", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("ControlPositionSubsystemWithThrottle end", this.getClass());
     }
 
     /**
@@ -81,7 +85,8 @@ public class ControlPositionSubsystemWithThrottle<T extends Subsystem & Subsyste
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("ControlPositionSubsystemWithThrottle interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("ControlPositionSubsystemWithThrottle interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("ControlPositionSubsystemWithThrottle interrupted!", this.getClass());
     }
 
 }

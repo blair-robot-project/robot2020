@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -155,7 +157,8 @@ public class IntakeFixedAndActuated extends Subsystem implements SubsystemSoleno
                 fixedMotor.setVelocity(fixedAgitateSpeed);
                 break;
             default:
-                Logger.addEvent("Unsupported mode!", this.getClass());
+                Shuffleboard.addEventMarker("Unsupported mode!", this.getClass().getSimpleName(), EventImportance.kNormal);
+                //Logger.addEvent("Unsupported mode!", this.getClass());
         }
     }
 }

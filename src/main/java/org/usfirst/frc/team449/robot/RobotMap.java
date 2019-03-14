@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedRunnable;
 import org.usfirst.frc.team449.robot.oi.buttons.CommandButton;
 import org.usfirst.frc.team449.robot.other.DefaultCommand;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,11 +22,11 @@ public class RobotMap {
     @NotNull
     private final List<CommandButton> buttons;
 
-    /**
-     * The logger for recording events and telemetry data.
-     */
-    @NotNull
-    private final Logger logger;
+//    /**
+//     * The logger for recording events and telemetry data.
+//     */
+//    @NotNull
+//    private final Logger logger;
 
     /**
      * A runnable that updates cached variables.
@@ -69,7 +68,7 @@ public class RobotMap {
      * Default constructor.
      *
      * @param buttons              The buttons for controlling this robot. Can be null for an empty list.
-     * @param logger               The logger for recording events and telemetry data.
+//     * @param logger               The logger for recording events and telemetry data.
      * @param updater              A runnable that updates cached variables.
      * @param defaultCommands      The default commands for various subsystems.
      * @param autoStartupCommand   The command to be run when first enabled in autonomous mode.
@@ -79,7 +78,7 @@ public class RobotMap {
      */
     @JsonCreator
     public RobotMap(@Nullable List<CommandButton> buttons,
-                    @NotNull @JsonProperty(required = true) Logger logger,
+//                    @NotNull @JsonProperty(required = true) Logger logger,
                     @NotNull @JsonProperty(required = true) MappedRunnable updater,
                     @Nullable List<DefaultCommand> defaultCommands,
                     @Nullable Command autoStartupCommand,
@@ -87,7 +86,7 @@ public class RobotMap {
                     @Nullable Command startupCommand,
                     boolean useCameraServer) {
         this.buttons = buttons != null ? buttons : new ArrayList<>();
-        this.logger = logger;
+//        this.logger = logger;
         this.updater = updater;
         this.defaultCommands = defaultCommands;
         this.autoStartupCommand = autoStartupCommand;
@@ -96,13 +95,13 @@ public class RobotMap {
         this.useCameraServer = useCameraServer;
     }
 
-    /**
-     * @return The logger for recording events and telemetry data.
-     */
-    @NotNull
-    public Logger getLogger() {
-        return logger;
-    }
+//    /**
+//     * @return The logger for recording events and telemetry data.
+//     */
+//    @NotNull
+//    public Logger getLogger() {
+//        return logger;
+//    }
 
     /**
      * @return The command to be run when first enabled in autonomous mode.

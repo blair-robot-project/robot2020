@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.oi.throttles.Throttle;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.SubsystemAnalogMotor;
@@ -47,7 +49,8 @@ public class ControlAnalogMotorWithThrottle<T extends Subsystem & SubsystemAnalo
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("ControlAnalogMotorWithThrottle init", this.getClass());
+        Shuffleboard.addEventMarker("ControlAnalogMotorWithThrottle init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("ControlAnalogMotorWithThrottle init", this.getClass());
     }
 
     /**
@@ -73,7 +76,8 @@ public class ControlAnalogMotorWithThrottle<T extends Subsystem & SubsystemAnalo
      */
     @Override
     protected void end() {
-        Logger.addEvent("ControlAnalogMotorWithThrottle end", this.getClass());
+        Shuffleboard.addEventMarker("ControlAnalogMotorWithThrottle end", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("ControlAnalogMotorWithThrottle end", this.getClass());
     }
 
     /**
@@ -81,7 +85,8 @@ public class ControlAnalogMotorWithThrottle<T extends Subsystem & SubsystemAnalo
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("ControlAnalogMotorWithThrottle interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("ControlAnalogMotorWithThrottle interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("ControlAnalogMotorWithThrottle interrupted!", this.getClass());
     }
 
 }

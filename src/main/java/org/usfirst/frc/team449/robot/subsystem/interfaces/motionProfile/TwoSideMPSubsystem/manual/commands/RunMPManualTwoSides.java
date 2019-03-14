@@ -7,9 +7,10 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.other.Clock;
-
 import org.usfirst.frc.team449.robot.other.MotionProfileData;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.manual.SubsystemMPManualTwoSides;
 
@@ -94,7 +95,8 @@ public class RunMPManualTwoSides<T extends Subsystem & SubsystemMPManualTwoSides
     protected void initialize() {
         //Record the start time.
         startTime = Clock.currentTimeMillis();
-        Logger.addEvent("RunProfile init", this.getClass());
+        Shuffleboard.addEventMarker("RunProfile init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("RunProfile init", this.getClass());
 
     }
 
@@ -112,7 +114,8 @@ public class RunMPManualTwoSides<T extends Subsystem & SubsystemMPManualTwoSides
         double leftPos = left.getData()[left.getData().length - 1][0];
         double rightPos = right.getData()[right.getData().length - 1][0];
         subsystem.holdPosition(leftPos, rightPos);
-        Logger.addEvent("RunProfile end.", this.getClass());
+        Shuffleboard.addEventMarker("RunProfile end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("RunProfile end.", this.getClass());
     }
 
 }

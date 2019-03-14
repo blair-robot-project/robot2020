@@ -6,9 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 
 import org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPosition;
+
+import java.security.spec.ECField;
 
 /**
  * Go to a given position
@@ -46,7 +50,8 @@ public class GoToPosition<T extends Subsystem & SubsystemPosition> extends Comma
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("GoToPosition init.", this.getClass());
+        Shuffleboard.addEventMarker("GoToPosition init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("GoToPosition init.", this.getClass());
         subsystem.setPositionSetpoint(setpoint);
     }
 
@@ -73,7 +78,8 @@ public class GoToPosition<T extends Subsystem & SubsystemPosition> extends Comma
      */
     @Override
     protected void end() {
-        Logger.addEvent("GoToPosition end.", this.getClass());
+        Shuffleboard.addEventMarker("GoToPosition end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("GoToPosition end.", this.getClass());
     }
 
     /**
@@ -81,6 +87,7 @@ public class GoToPosition<T extends Subsystem & SubsystemPosition> extends Comma
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("GoToPosition interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("GoToPosition interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("GoToPosition interrupted!", this.getClass());
     }
 }

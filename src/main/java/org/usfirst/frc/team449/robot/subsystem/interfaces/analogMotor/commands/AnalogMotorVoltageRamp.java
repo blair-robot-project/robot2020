@@ -6,10 +6,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.other.Clock;
-
 import org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.SubsystemAnalogMotor;
+
+import javax.lang.model.element.ElementVisitor;
+import java.security.spec.ECField;
 
 /**
  * Slowly increase the output to the motors in order to characterize the system.
@@ -60,7 +64,8 @@ public class AnalogMotorVoltageRamp<T extends Subsystem & SubsystemAnalogMotor> 
 	 */
 	@Override
 	protected void initialize() {
-		Logger.addEvent("AnalogMotorVoltageRamp init.", this.getClass());
+		Shuffleboard.addEventMarker("AnalogMotorVoltageRamp init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+		//Logger.addEvent("AnalogMotorVoltageRamp init.", this.getClass());
 		lastTime = Clock.currentTimeMillis();
 	}
 
@@ -90,7 +95,8 @@ public class AnalogMotorVoltageRamp<T extends Subsystem & SubsystemAnalogMotor> 
 	@Override
 	protected void end() {
 		subsystem.disable();
-		Logger.addEvent("AnalogMotorVoltageRamp end.", this.getClass());
+		Shuffleboard.addEventMarker("AnalogMotorVoltageRamp end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+		//Logger.addEvent("AnalogMotorVoltageRamp end.", this.getClass());
 	}
 
 	/**
@@ -98,6 +104,7 @@ public class AnalogMotorVoltageRamp<T extends Subsystem & SubsystemAnalogMotor> 
 	 */
 	@Override
 	protected void interrupted() {
-		Logger.addEvent("AnalogMotorVoltageRamp Interrupted!", this.getClass());
+		Shuffleboard.addEventMarker("AnalogMotorVoltageRamp Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+		//Logger.addEvent("AnalogMotorVoltageRamp Interrupted!", this.getClass());
 	}
 }

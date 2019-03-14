@@ -6,10 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.other.Clock;
 
 import org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPosition;
+import sun.awt.shell.ShellFolder;
 
 /**
  * Slowly increase the output to the motors in order to characterize the system.
@@ -60,7 +63,8 @@ public class PositionVoltageRamp<T extends Subsystem & SubsystemPosition> extend
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("PositionVoltageRamp init.", this.getClass());
+        Shuffleboard.addEventMarker("PositionVoltageRamp init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("PositionVoltageRamp init.", this.getClass());
         lastTime = Clock.currentTimeMillis();
     }
 
@@ -90,7 +94,8 @@ public class PositionVoltageRamp<T extends Subsystem & SubsystemPosition> extend
     @Override
     protected void end() {
         subsystem.disableMotor();
-        Logger.addEvent("PositionVoltageRamp end.", this.getClass());
+        Shuffleboard.addEventMarker("PositionVoltageRamp end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("PositionVoltageRamp end.", this.getClass());
     }
 
     /**
@@ -98,6 +103,7 @@ public class PositionVoltageRamp<T extends Subsystem & SubsystemPosition> extend
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("PositionVoltageRamp Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("PositionVoltageRamp Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("PositionVoltageRamp Interrupted!", this.getClass());
     }
 }

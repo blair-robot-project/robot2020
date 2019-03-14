@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPosition;
 
@@ -53,7 +55,8 @@ public class Home<T extends Subsystem & SubsystemPosition> extends Command {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("Home init", this.getClass());
+        Shuffleboard.addEventMarker("Home init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("Home init", this.getClass());
     }
 
     /**

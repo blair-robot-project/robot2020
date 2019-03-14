@@ -6,8 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
+
+import java.security.spec.ECField;
 
 /**
  * A command that sets a piston to a given position.
@@ -45,7 +49,8 @@ public class SetSolenoid extends InstantCommand {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("SetSolenoid init.", this.getClass());
+        Shuffleboard.addEventMarker("SetSolenoid init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SetSolenoid init.", this.getClass());
     }
 
     /**
@@ -61,7 +66,8 @@ public class SetSolenoid extends InstantCommand {
      */
     @Override
     protected void end() {
-        Logger.addEvent("SetSolenoid end.", this.getClass());
+        Shuffleboard.addEventMarker("SetSolenoid end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SetSolenoid end.", this.getClass());
     }
 
     /**
@@ -69,6 +75,7 @@ public class SetSolenoid extends InstantCommand {
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("SetSolenoid Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("SetSolenoid Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SetSolenoid Interrupted!", this.getClass());
     }
 }
