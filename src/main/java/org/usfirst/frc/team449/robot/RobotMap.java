@@ -3,6 +3,7 @@ package org.usfirst.frc.team449.robot;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedRunnable;
@@ -64,6 +65,9 @@ public class RobotMap {
      */
     private final boolean useCameraServer;
 
+    @Nullable
+    private List<Subsystem> subLog;
+
     /**
      * Default constructor.
      *
@@ -84,7 +88,8 @@ public class RobotMap {
                     @Nullable Command autoStartupCommand,
                     @Nullable Command teleopStartupCommand,
                     @Nullable Command startupCommand,
-                    boolean useCameraServer) {
+                    boolean useCameraServer,
+                    @Nullable List<Subsystem> subLog) {
         this.buttons = buttons != null ? buttons : new ArrayList<>();
 //        this.logger = logger;
         this.updater = updater;
@@ -93,6 +98,8 @@ public class RobotMap {
         this.teleopStartupCommand = teleopStartupCommand;
         this.startupCommand = startupCommand;
         this.useCameraServer = useCameraServer;
+
+        this.subLog = subLog;
     }
 
 //    /**
