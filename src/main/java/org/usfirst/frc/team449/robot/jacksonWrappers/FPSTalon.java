@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
@@ -394,7 +396,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     public void setPercentVoltage(double percentVoltage) {
         //Warn the user if they're setting Vbus to a number that's outside the range of values.
         if (Math.abs(percentVoltage) > 1.0) {
-            Logger.addEvent("WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage, this.getClass());
+            Shuffleboard.addEventMarker("WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT ", this.getClass().getSimpleName(), EventImportance.kNormal);
+            //Logger.addEvent("WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage, this.getClass());
             percentVoltage = Math.signum(percentVoltage);
         }
 
@@ -810,7 +813,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         double feedforward;
 
         //Set proper PID constants
-        if (data.isInverted()) {
+        if (data.isBackwards()) {
             if (data.isVelocityOnly()) {
                 canTalon.config_kP(1, 0, 0);
                 canTalon.config_kI(1, 0, 0);
@@ -850,9 +853,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             point.profileSlotSelect0 = 1;        // gain selection, we always put MP gains in slot 1.
 
             // Set all the fields of the profile point
-            point.position = feetToEncoder(startPosition + (data.getData()[i][0] * (data.isInverted() ? -1 : 1)));
+            point.position = feetToEncoder(startPosition + (data.getData()[i][0] * (data.isBackwards() ? -1 : 1)));
 
-            if (data.isInverted()) {
+            if (data.isBackwards()) {
                 feedforward = currentGearSettings.getFeedForwardComponent().calcMPVoltage(-data.getData()[i][0],
                         -data.getData()[i][1], -data.getData()[i][2]);
             } else {
@@ -866,8 +869,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             if (Math.abs(feedforward) > 12) {
                 System.out.println("Point " + Arrays.toString(data.getData()[i]) + " has an unattainable " +
                         "velocity+acceleration setpoint!");
-                Logger.addEvent("Point " + Arrays.toString(data.getData()[i]) + " has an unattainable " +
-                        "velocity+acceleration setpoint!", this.getClass());
+                Shuffleboard.addEventMarker("Point " + Arrays.toString(data.getData()[i]) + " has an unattainable " +
+                        "velocity+acceleration setpoint!", this.getClass().getSimpleName(), EventImportance.kNormal);
+                //Logger.addEvent("Point " + Arrays.toString(data.getData()[i]) + " has an unattainable " + "velocity+acceleration setpoint!", this.getClass());
             }
             point.zeroPos = i == 0 && data.resetPosition(); // If it's the first point, set the encoder position to 0.
             point.isLastPoint = (i + 1) == data.getData().length; // If it's the last point, isLastPoint = true

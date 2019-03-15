@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 
@@ -36,7 +38,8 @@ public class SwitchToLowGear extends InstantCommand {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("SwitchToLowGear init.", this.getClass());
+        Shuffleboard.addEventMarker("SwitchToLowGear init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SwitchToLowGear init.", this.getClass());
     }
 
     /**
@@ -52,7 +55,8 @@ public class SwitchToLowGear extends InstantCommand {
      */
     @Override
     protected void end() {
-        Logger.addEvent("SwitchToLowGear end.", this.getClass());
+        Shuffleboard.addEventMarker("SwitchToLowGear end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SwitchToLowGear end.", this.getClass());
     }
 
     /**
@@ -60,6 +64,7 @@ public class SwitchToLowGear extends InstantCommand {
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("SwitchToLowGear Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("SwitchToLowGear Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SwitchToLowGear Interrupted!", this.getClass());
     }
 }

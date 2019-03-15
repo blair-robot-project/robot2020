@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
@@ -37,7 +39,8 @@ public class ToggleSolenoid extends InstantCommand {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("ToggleSolenoid init.", this.getClass());
+        Shuffleboard.addEventMarker("ToggleSolenoid init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("ToggleSolenoid init.", this.getClass());
     }
 
     /**
@@ -57,7 +60,8 @@ public class ToggleSolenoid extends InstantCommand {
      */
     @Override
     protected void end() {
-        Logger.addEvent("ToggleSolenoid end.", this.getClass());
+        Shuffleboard.addEventMarker("ToggleSolenoid end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("ToggleSolenoid end.", this.getClass());
     }
 
     /**
@@ -65,6 +69,7 @@ public class ToggleSolenoid extends InstantCommand {
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("ToggleSolenoid Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("ToggleSolenoid Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("ToggleSolenoid Interrupted!", this.getClass());
     }
 }

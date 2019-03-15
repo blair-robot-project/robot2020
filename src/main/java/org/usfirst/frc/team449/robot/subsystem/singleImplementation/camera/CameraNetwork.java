@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.cscore.MjpegServer;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -49,9 +51,12 @@ public class CameraNetwork extends Subsystem implements Loggable {
                          @NotNull @JsonProperty(required = true) String serverName,
                          @NotNull @JsonProperty(required = true) List<MappedUsbCamera> cameras) {
         //Logging
-        Logger.addEvent("CameraSubsystem construct start", this.getClass());
-        Logger.addEvent("Set URL of MJPGServer to \"http://roboRIO-449-frc.local:" + serverPort +
-                "/stream.mjpg\"", this.getClass());
+        Shuffleboard.addEventMarker("CameraSubsystem construct start", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("CameraSubsystem construct start", this.getClass());
+
+        Shuffleboard.addEventMarker("Set URL of MJPGServer to \\\"http://roboRIO-449-frc.local:\" + serverPort +\n" +
+                "                \"/stream.mjpg\\\"", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("Set URL of MJPGServer to \"http://roboRIO-449-frc.local:" + serverPort + "/stream.mjpg\"", this.getClass());
 
         //Instantiates server
         server = new MjpegServer(serverName, serverPort);
@@ -64,7 +69,8 @@ public class CameraNetwork extends Subsystem implements Loggable {
         camNum = 0;
 
         //Logging
-        Logger.addEvent("CameraSubsystem construct end", this.getClass());
+        Shuffleboard.addEventMarker("CameraSubsystem construct end", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("CameraSubsystem construct end", this.getClass());
     }
 
     /**

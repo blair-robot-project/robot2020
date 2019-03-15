@@ -5,10 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
@@ -114,6 +115,7 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
      * @return The equivalent of that number, clipped to be between -180 and 180.
      */
     @Contract(pure = true)
+    @Log
     protected static double clipTo180(double theta) {
         return (theta + 180) % 360 - 180;
     }
@@ -125,6 +127,7 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
      * @return The processed output, ready to be subtracted from the left side of the drive output and added to the
      * right side.
      */
+    @Log
     protected double processPIDOutput(double output) {
         //Set the output to the minimum if it's too small.
         if (output > 0 && output < minimumOutput) {
@@ -145,6 +148,7 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
      * @param output The output from the WPILib angular PID loop.
      * @return That output after being deadbanded with the map-given deadband.
      */
+    @Log
     protected double deadbandOutput(double output) {
         return Math.abs(this.getPIDController().getError()) > deadband ? output : 0;
     }
@@ -158,6 +162,7 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
      * @return the value the pid loop should use as input
      */
     @Override
+    @Log
     protected double returnPIDInput() {
         return subsystem.getHeadingCached();
     }
@@ -168,6 +173,7 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
      *
      * @return True if on target, false otherwise.
      */
+    @Log
     protected boolean onTarget() {
         if (onTargetBuffer == null) {
             return this.getPIDController().onTarget();
@@ -186,36 +192,36 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
         //Do nothing
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader(){
-        return new String[]{"setpoint","error"};
-    }
-
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @Nullable
-    @Override
-    public Object[] getData(){
-        return new Object[]{getPIDController().getSetpoint(), getPIDController().getError()};
-    }
-
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @NotNull
-    @Override
-    public String getLogName(){
-        return this.getClass().getSimpleName();
-    }
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader(){
+//        return new String[]{"setpoint","error"};
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @Nullable
+//    @Override
+//    public Object[] getData(){
+//        return new Object[]{getPIDController().getSetpoint(), getPIDController().getError()};
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @NotNull
+//    @Override
+//    public String getLogName(){
+//        return this.getClass().getSimpleName();
+//    }
 }

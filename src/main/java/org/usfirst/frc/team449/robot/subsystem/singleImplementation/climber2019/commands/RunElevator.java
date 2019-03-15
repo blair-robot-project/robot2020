@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.team254.lib.util.motion.*;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -97,7 +99,8 @@ public class RunElevator extends Command {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("RunElevator initialize, " + moveType, this.getClass());
+        Shuffleboard.addEventMarker("RunElevator initialize, ", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("RunElevator initialize, " + moveType, this.getClass());
         doneUnsticking = unstickTolerance == null;
         initBackPos = climber.getBackPos();
         initFrontPos = climber.getFrontPos();
@@ -152,7 +155,8 @@ public class RunElevator extends Command {
      */
     @Override
     protected void end() {
-        Logger.addEvent("RunElevator end, " + timeSinceInitialized(), this.getClass());
+        Shuffleboard.addEventMarker("RunElevator end, ", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("RunElevator end, " + timeSinceInitialized(), this.getClass());
         System.out.println("END: " + timeSinceInitialized());
         switch (moveType) {
             case BACK:

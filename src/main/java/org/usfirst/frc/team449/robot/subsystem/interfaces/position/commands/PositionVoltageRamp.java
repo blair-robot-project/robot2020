@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.other.Clock;
 
 import org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPosition;
-import sun.awt.shell.ShellFolder;
 
 /**
  * Slowly increase the output to the motors in order to characterize the system.

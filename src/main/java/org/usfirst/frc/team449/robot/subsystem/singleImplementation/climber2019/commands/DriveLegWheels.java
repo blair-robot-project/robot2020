@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.team254.lib.util.motion.*;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 
 import org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019;
@@ -60,7 +62,8 @@ public class DriveLegWheels extends Command {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("DriveLegWheels initialize, ", this.getClass());
+        Shuffleboard.addEventMarker("DriveLegWheels initialize, ", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("DriveLegWheels initialize, ", this.getClass());
         initPos = climber.getDrivePos();
     }
 
@@ -78,7 +81,8 @@ public class DriveLegWheels extends Command {
      */
     @Override
     protected void end() {
-        Logger.addEvent("DriveLegWheels end, " + timeSinceInitialized(), this.getClass());
+        Shuffleboard.addEventMarker("DriveLegWheels end, ", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("DriveLegWheels end, " + timeSinceInitialized(), this.getClass());
         climber.fullStopDrive();
     }
 

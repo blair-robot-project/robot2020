@@ -1,6 +1,8 @@
 package org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 
 import org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019;
@@ -36,7 +38,8 @@ public class StallElevators extends InstantCommand {
 	 */
 	@Override
 	protected void initialize() {
-		Logger.addEvent("StallElevators init", this.getClass());
+		Shuffleboard.addEventMarker("StallElevators init", this.getClass().getSimpleName(), EventImportance.kNormal);
+		//Logger.addEvent("StallElevators init", this.getClass());
 	}
 
 	/**
@@ -52,7 +55,8 @@ public class StallElevators extends InstantCommand {
 	 * Log on end.
 	 */
 	public void end() {
-		Logger.addEvent("StallElevators end", this.getClass());
+		Shuffleboard.addEventMarker("StallElevators end", this.getClass().getSimpleName(), EventImportance.kNormal);
+		//Logger.addEvent("StallElevators end", this.getClass());
 	}
 
 }

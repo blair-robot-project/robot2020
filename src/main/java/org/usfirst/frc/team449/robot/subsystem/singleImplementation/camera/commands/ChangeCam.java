@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 
 import org.usfirst.frc.team449.robot.subsystem.singleImplementation.camera.CameraNetwork;
@@ -37,7 +39,8 @@ public class ChangeCam extends InstantCommand {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("ChangeCam init", this.getClass());
+        Shuffleboard.addEventMarker("ChangeCam init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("ChangeCam init", this.getClass());
     }
 
     /**
@@ -47,7 +50,8 @@ public class ChangeCam extends InstantCommand {
     protected void execute() {
         //Switches camNum to next camera, if applicable
         if (subsystem.getCameras().size() == 1) {
-            Logger.addEvent("You're trying to switch cameras, but your robot only has one camera!", this.getClass());
+            Shuffleboard.addEventMarker("You're trying to switch cameras, but your robot only has one camera!", this.getClass().getSimpleName(), EventImportance.kNormal);
+            //Logger.addEvent("You're trying to switch cameras, but your robot only has one camera!", this.getClass());
         } else {
             subsystem.setCamNum((subsystem.getCamNum() + 1) % subsystem.getCameras().size());
         }
@@ -61,7 +65,8 @@ public class ChangeCam extends InstantCommand {
      */
     @Override
     protected void end() {
-        Logger.addEvent("ChangeCam end", this.getClass());
+        Shuffleboard.addEventMarker("ChangeCam end", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("ChangeCam end", this.getClass());
     }
 
     /**
@@ -69,6 +74,7 @@ public class ChangeCam extends InstantCommand {
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("ChangeCam interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("ChangeCam interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("ChangeCam interrupted!", this.getClass());
     }
 }

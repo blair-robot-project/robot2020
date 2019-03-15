@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 
@@ -36,7 +38,8 @@ public class SwitchToHighGear extends InstantCommand {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("SwitchToHighGear init.", this.getClass());
+        Shuffleboard.addEventMarker("SwitchToHighGear init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SwitchToHighGear init.", this.getClass());
     }
 
     /**
@@ -52,7 +55,8 @@ public class SwitchToHighGear extends InstantCommand {
      */
     @Override
     protected void end() {
-        Logger.addEvent("SwitchToHighGear end.", this.getClass());
+        Shuffleboard.addEventMarker("SwitchToHighGear end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SwitchToHighGear end.", this.getClass());
     }
 
     /**
@@ -60,6 +64,7 @@ public class SwitchToHighGear extends InstantCommand {
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("SwitchToHighGear Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("SwitchToHighGear Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SwitchToHighGear Interrupted!", this.getClass());
     }
 }

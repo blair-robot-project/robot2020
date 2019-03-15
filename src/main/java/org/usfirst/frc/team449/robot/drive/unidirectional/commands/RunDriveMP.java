@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.team254.lib.util.motion.*;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
 
@@ -62,7 +64,8 @@ public class RunDriveMP<T extends DriveUnidirectionalWithGyro> extends Command {
 	 */
 	@Override
 	protected void initialize() {
-		Logger.addEvent("RunDriveMP initialize, ", this.getClass());
+		Shuffleboard.addEventMarker("RunDriveMP initialize, ", this.getClass().getSimpleName(), EventImportance.kNormal);
+		//Logger.addEvent("RunDriveMP initialize, ", this.getClass());
 		initPosLeft = subsystem.getLeftPosCached();
 		initPosRight = subsystem.getRightPosCached();
 	}
@@ -82,7 +85,8 @@ public class RunDriveMP<T extends DriveUnidirectionalWithGyro> extends Command {
 	 */
 	@Override
 	protected void end() {
-		Logger.addEvent("RunDriveMP end, " + timeSinceInitialized(), this.getClass());
+		Shuffleboard.addEventMarker("RunDriveMP end, ", this.getClass().getSimpleName(), EventImportance.kNormal);
+		//Logger.addEvent("RunDriveMP end, " + timeSinceInitialized(), this.getClass());
 		subsystem.fullStop();
 	}
 

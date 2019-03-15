@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.drive.DriveSubsystem;
 
@@ -36,7 +38,9 @@ public class StopMotors extends InstantCommand {
      */
     @Override
     protected void initialize() {
-        Logger.addEvent("StopMotors init.", this.getClass());
+        Shuffleboard.addEventMarker("StopMotors init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        Shuffleboard.addEventMarker("StopMotors init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("StopMotors init.", this.getClass());
     }
 
     /**
@@ -52,7 +56,8 @@ public class StopMotors extends InstantCommand {
      */
     @Override
     protected void end() {
-        Logger.addEvent("StopMotors end.", this.getClass());
+        Shuffleboard.addEventMarker("StopMotors end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("StopMotors end.", this.getClass());
     }
 
     /**
@@ -60,6 +65,7 @@ public class StopMotors extends InstantCommand {
      */
     @Override
     protected void interrupted() {
-        Logger.addEvent("StopMotors Interrupted!", this.getClass());
+        Shuffleboard.addEventMarker("StopMotors Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("StopMotors Interrupted!", this.getClass());
     }
 }
