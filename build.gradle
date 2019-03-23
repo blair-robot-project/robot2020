@@ -80,7 +80,9 @@ idea {
 /* ssh stuff */
 remotes {
     rio {
-        host = 'roboRIO-449-frc.local'
+//        host = 'roboRIO-449-frc.local'  //Default, sometimes doesn't work
+//        host = '172.22.11.2' //USB B cable
+        host = '10.4.49.2' //Radio/ethernet IP
         user = 'lvuser'
         knownHosts = allowAnyHosts
     }
