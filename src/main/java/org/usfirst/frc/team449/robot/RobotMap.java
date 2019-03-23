@@ -23,6 +23,9 @@ public class RobotMap {
     @NotNull
     private final List<CommandButton> buttons;
 
+    @NotNull
+    private List<Object> subLog;
+
 //    /**
 //     * The logger for recording events and telemetry data.
 //     */
@@ -65,9 +68,6 @@ public class RobotMap {
      */
     private final boolean useCameraServer;
 
-    @Nullable
-    private List<Subsystem> subLog;
-
     /**
      * Default constructor.
      *
@@ -81,15 +81,15 @@ public class RobotMap {
      * @param useCameraServer Whether the camera server should be run. Defaults to false.
      */
     @JsonCreator
-    public RobotMap(@Nullable List<CommandButton> buttons,
-//                    @NotNull @JsonProperty(required = true) Logger logger,
+    public RobotMap(@NotNull List<Object> subLog,
+                    @Nullable List<CommandButton> buttons,
+//                  @NotNull @JsonProperty(required = true) Logger logger,
                     @NotNull @JsonProperty(required = true) MappedRunnable updater,
                     @Nullable List<DefaultCommand> defaultCommands,
                     @Nullable Command autoStartupCommand,
                     @Nullable Command teleopStartupCommand,
                     @Nullable Command startupCommand,
-                    boolean useCameraServer,
-                    @Nullable List<Subsystem> subLog) {
+                    boolean useCameraServer) {
         this.buttons = buttons != null ? buttons : new ArrayList<>();
 //        this.logger = logger;
         this.updater = updater;

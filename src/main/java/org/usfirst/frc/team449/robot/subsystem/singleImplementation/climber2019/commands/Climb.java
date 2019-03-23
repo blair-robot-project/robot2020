@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand;
@@ -68,7 +69,7 @@ public class Climb extends CommandGroup {
 	public Climb(@JsonProperty(required = true) @NotNull SubsystemClimber2019 climber,
 	             @JsonProperty(required = true) @NotNull DriveUnidirectionalWithGyro drive,
 	             @JsonProperty(required = true) @NotNull SubsystemSolenoid hatchExtender,
-	             @JsonProperty(required = true) @NotNull AnalogMotorSimple sliderMotor,
+	             @JsonProperty(required = true) @NotNull Subsystem sliderMotor,
 	             @JsonProperty(required = true) @NotNull SubsystemAnalogMotor cargoArm,
 	             @JsonProperty(required = true) @NotNull IntakeSimple cargoIntake,
 	             @JsonProperty(required = true) Pneumatics pneumatics,
