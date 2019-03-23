@@ -15,13 +15,14 @@ logger:
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         '@id': lateralSlider
         name: "lateralSlider"
-        port: 7
+        port: 10
         enableBrakeMode: false
         enableVoltageComp: true
         reverseSensor: false
         currentLimit: 30
         fwdLimitSwitchNormallyOpen: true
         revLimitSwitchNormallyOpen: true
+        feetPerRotation: 0.05555556
         remoteLimitSwitchID: 1
         feedbackDevice: QuadEncoder
         encoderCPR: 256
