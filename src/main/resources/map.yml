@@ -15,7 +15,7 @@ logger:
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         '@id': lateralSlider
         name: "lateralSlider"
-        port: 10
+        port: 7
         enableBrakeMode: false
         enableVoltageComp: true
         reverseSensor: false
