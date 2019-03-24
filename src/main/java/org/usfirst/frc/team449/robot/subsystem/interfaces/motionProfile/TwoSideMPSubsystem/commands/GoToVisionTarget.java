@@ -8,6 +8,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.components.PathRequester;
 import org.usfirst.frc.team449.robot.other.Waypoint;
@@ -25,6 +26,7 @@ public class GoToVisionTarget<T extends Subsystem & SubsystemMPTwoSides & Subsys
      * The subsystem to run the path gotten from the Jetson on.
      */
     @NotNull
+    @Log.Exclude
     private final T subsystem;
     /**
      * Network table for pulling info from the Jetson

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.intakeTwoSides.SubsystemIntakeTwoSides;
@@ -21,6 +22,7 @@ public class SetTwoSideIntakeMode<T extends Subsystem & SubsystemIntakeTwoSides>
      * The subsystem to execute this command on.
      */
     @NotNull
+    @Log.Exclude
     private final T subsystem;
 
     /**

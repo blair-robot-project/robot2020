@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.SubsystemMP;
@@ -27,6 +28,7 @@ public class RunLoadedProfile<T extends Subsystem & SubsystemMP> extends Command
      * The subsystem to execute this command on.
      */
     @NotNull
+    @Log.Exclude
     private final SubsystemMP subsystem;
 
     /**

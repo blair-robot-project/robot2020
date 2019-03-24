@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.other.MotionProfileData;
@@ -28,6 +29,7 @@ public class MotionProfileCommand<T extends Subsystem & SubsystemMPManual> exten
     /**
      * The subsystem to run the motion profile on
      */
+    @Log.Exclude
     private T subsystem;
 
     /**

@@ -3,6 +3,7 @@ package org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSide
 import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.PathRequester;
@@ -30,6 +31,7 @@ public class GoToPose<T extends Subsystem & SubsystemMPTwoSides & SubsystemAHRS>
      * The subsystem to run the path gotten from the Jetson on.
      */
     @NotNull
+    @Log.Exclude
     private final T subsystem;
     /**
      * The points for the path to hit. Null to use lambdas.
