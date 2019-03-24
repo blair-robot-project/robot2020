@@ -69,7 +69,7 @@ public class Climb extends CommandGroup {
 	             @JsonProperty(required = true) @NotNull DriveUnidirectionalWithGyro drive,
 	             @JsonProperty(required = true) @NotNull SubsystemSolenoid hatchExtender,
 	             @JsonProperty(required = true) @NotNull AnalogMotorSimple sliderMotor,
-	             @JsonProperty(required = true) @NotNull SubsystemAnalogMotor cargoArm,
+	             @JsonProperty(required = true) @NotNull SubsystemSolenoid cargoArm,
 	             @JsonProperty(required = true) @NotNull IntakeSimple cargoIntake,
 	             @JsonProperty(required = true) Pneumatics pneumatics,
 	             @JsonProperty(required = true) double maxVelExtend,
@@ -94,7 +94,7 @@ public class Climb extends CommandGroup {
 
 
 		SolenoidReverse extendHatch = new SolenoidReverse(hatchExtender);
-		SetAnalogMotor retractCargo = new SetAnalogMotor(cargoArm, -0.3);
+		SolenoidReverse retractCargo = new SolenoidReverse(cargoArm);
 		SetIntakeMode stopIntakingCargo = new SetIntakeMode<>(cargoIntake, SubsystemIntake.IntakeMode.OFF);
 		RequireSubsystem stopSlider = new RequireSubsystem(sliderMotor);
 		StopCompressor stopCompressor = pneumatics == null ? null : new StopCompressor(pneumatics);
