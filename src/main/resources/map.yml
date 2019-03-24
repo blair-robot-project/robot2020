@@ -1,21 +1,11 @@
 ---
-<<<<<<< HEAD
-useCameraServer: false
+useCameraServer: true
 subLog:
 #  '@id': logger
 #  eventLogFilename: "/home/lvuser/logs/eventLog-"
 #  telemetryLogFilename: "/home/lvuser/logs/telemetryLog-"
 #  loopTimeMillis: 100
 #  loggables:
-=======
-useCameraServer: true
-logger:
-  '@id': logger
-  eventLogFilename: "/home/lvuser/logs/eventLog-"
-  telemetryLogFilename: "/home/lvuser/logs/telemetryLog-"
-  loopTimeMillis: 100
-  loggables:
->>>>>>> f7d548122b258755d5cb598cf37405c3baa4655f
     - org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
         '@id': PDP
         canID: 0
