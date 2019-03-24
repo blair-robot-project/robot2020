@@ -15,13 +15,14 @@ logger:
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         '@id': lateralSlider
         name: "lateralSlider"
-        port: 20
+        port: 5
         enableBrakeMode: false
         enableVoltageComp: true
         reverseSensor: false
         currentLimit: 30
         fwdLimitSwitchNormallyOpen: true
         revLimitSwitchNormallyOpen: true
+        feetPerRotation: 0.05555556
         remoteLimitSwitchID: 1
         feedbackDevice: QuadEncoder
         encoderCPR: 256
@@ -119,7 +120,7 @@ logger:
                     interceptVoltageFwd: 1.400309
                     interceptVoltageRev: 1.487342
             slaveVictors:
-              - port: 5
+              - port: 12
                 #inverted: false
               - port: 6
                 #inverted: false
@@ -608,40 +609,27 @@ buttons:
                     inSlowVel: -0.2
                     outFastVel: 1
                 mode: IN_FAST
-            - org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.SetAnalogMotor:
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
                 '@id': cargoArmDownCommand1
                 subsystem:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-                    '@id': cargoArmMotor
-                    motor:
-                      org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.MappedVictorSPX:
-                        '@id': cargoArmVictor
-                        port: 14
-                        brakeMode: true
-                        inverted: false
-                        peakVoltageForward: 3.
-                        peakVoltageRev: -3.
-                setpoint: 0.4
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+                    '@id': cargoArmSolenoid
+                    piston:
+                      '@id': cargoArmPiston
+                      module: 1
+                      forward: 3
+                      reverse: 2
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           cargoIntakeButton
       command:
-        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
-          '@id': stopLowerArmAndIntake
-          commandList:
-            - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
-                '@id': cargoIntakeOff
-                subsystem:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-                   cargoSubsystem
-                mode: IN_SLOW
-            - org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.SetAnalogMotor:
-                '@id': cargoArmStopCommand1
-                subsystem:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-                    cargoArmMotor
-                setpoint: 0
+        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
+          '@id': cargoIntakeOff
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+             cargoSubsystem
+          mode: IN_SLOW
       action: WHEN_RELEASED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -677,24 +665,12 @@ buttons:
               mechanismsGamepad
           buttonNumber: 5
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.SetAnalogMotor:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
           '@id': cargoArmUpCommand
           subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-              cargoArmMotor
-          setpoint: 0.4
+            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+              cargoArmSolenoid
       action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          cargoArmUpButton
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.SetAnalogMotor:
-          '@id': cargoArmUpOff
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-              cargoArmMotor
-          setpoint: 0.0
-      action: WHEN_RELEASED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': cargoArmDownButton
@@ -703,24 +679,12 @@ buttons:
               mechanismsGamepad
           buttonNumber: 6
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.SetAnalogMotor:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
           '@id': cargoArmDownCommand
           subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-              cargoArmMotor
-          setpoint: -0.4
+            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+              cargoArmSolenoid
       action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          cargoArmDownButton
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.SetAnalogMotor:
-          '@id': cargoArmDownOff
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-              cargoArmMotor
-          setpoint: 0.0
-      action: WHEN_RELEASED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': climbButtonLevel3
@@ -766,8 +730,8 @@ buttons:
             org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
               sliderMotor
           cargoArm:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-              cargoArmMotor
+            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+              cargoArmSolenoid
           cargoIntake:
             org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
               cargoSubsystem
