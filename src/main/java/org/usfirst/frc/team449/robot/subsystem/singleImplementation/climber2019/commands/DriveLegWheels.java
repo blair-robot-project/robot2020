@@ -81,9 +81,9 @@ public class DriveLegWheels extends Command {
      */
     @Override
     protected void end() {
-        Shuffleboard.addEventMarker("DriveLegWheels end, ", this.getClass().getSimpleName(), EventImportance.kNormal);
+        Shuffleboard.addEventMarker("DriveLegWheels end, " + timeSinceInitialized(), this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("DriveLegWheels end, " + timeSinceInitialized(), this.getClass());
-        climber.fullStopDrive();
+        //climber.fullStopDrive();
     }
 
     /**

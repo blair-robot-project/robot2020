@@ -90,6 +90,24 @@ public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMo
     }
 
     /**
+     * Give the back elevator a motion state to reach, but offset the desired position by a given value.
+     * @param motionState The desired motion state.
+     * @param offset      The position offset, in feet.
+     */
+    public void profileBackWithOffset(MotionState motionState, double offset) {
+        backTalon.executeMPPoint(motionState.pos() + offset, motionState.vel(), motionState.acc());
+    }
+
+    /**
+     * Give the back elevator a motion state to reach, but offset the desired position by a given value.
+     * @param motionState The desired motion state.
+     * @param offset      The position offset, in feet.
+     */
+    public void profileFrontWithOffset(MotionState motionState, double offset) {
+        frontTalon.executeMPPoint(motionState.pos() + offset, motionState.vel(), motionState.acc());
+    }
+
+    /**
      * Give the leg-drive a motion state to reach.
      * @param motionState The desired motion state.
      */
@@ -197,6 +215,7 @@ public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMo
      */
     @Override
     public void turnMotorOn() {
+        driveTalon.enable();
         driveTalon.setVelocity(crawlVelocity);
         motorOn = true;
     }
@@ -206,8 +225,9 @@ public class SubsystemClimber2019 extends Subsystem implements SubsystemBinaryMo
      */
     @Override
     public void turnMotorOff() {
-        driveTalon.setVelocity(0);
-        motorOn = false;
+//        driveTalon.setVelocity(0);
+//        driveTalon.disable();
+//        motorOn = false;
     }
 
     /**
