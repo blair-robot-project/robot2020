@@ -323,9 +323,9 @@ logger:
             posKP: 0.3
             feedForwardComponent:
               org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                kVFwd: 0.422
-                kAFwd: 0.004
-                interceptVoltageFwd: 1.5
+                kVFwd: 0.42
+                kAFwd: 0
+                interceptVoltageFwd: 1.66
                 interceptVoltageRev: 0
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         <<: *legElevator
@@ -340,9 +340,9 @@ logger:
             posKP: 0.3
             feedForwardComponent:
               org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                kVFwd: 0.422
-                kAFwd: 0.01416
-                interceptVoltageFwd: 5.467
+                kVFwd: 0.42
+                kAFwd: 0.01
+                interceptVoltageFwd: 5.54
                 interceptVoltageRev: 0
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         '@id': backLegDriveTalon
@@ -753,7 +753,7 @@ buttons:
           nudge3Distance: 1.1
           heightOffset: 0.0001
           velReduction: 0
-          stallVoltageBack: 2
+          stallVoltageBack: 1.5
           stallVoltageFront: 4
           crawlVelocity: 0.1
 #          bumperLipProtection: 0.04
