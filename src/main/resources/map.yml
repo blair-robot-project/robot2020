@@ -735,6 +735,9 @@ buttons:
           cargoIntake:
             org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
               cargoSubsystem
+          pneumatics:
+            org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics:
+              pneumatics
           maxVelExtend: 0.5
           maxAccelExtend: 0.5
           maxVelRetract: 4
@@ -753,9 +756,8 @@ buttons:
           stallVoltageBack: 2
           stallVoltageFront: 4
           crawlVelocity: 0.1
-          pneumatics:
-            org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics:
-              pneumatics
+#          bumperLipProtection: 0.04
+#          backLegLipProtection: 0.04
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
