@@ -205,16 +205,15 @@ logger:
       rightMaster
   - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS:
       navX
-  - org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
+  - org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXDefaultDrive:
       '@id': defaultDriveCommand
-      kP: 0.0075
+#      kP: 0.0075
       kI: 0.0
-      kD: 0.03
+#      kD: 0.03
       absoluteTolerance: 0
       deadband: 2
       maxAngularVelToEnterLoop: 15
       inverted: false
-      highGearAngularCoefficient: 2
       rampComponent:
         org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent:
             maxIncreasePerSecond: 3
@@ -227,14 +226,6 @@ logger:
       oi:
         org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad:
           oi
-      autoshiftComponent:
-        '@id': autoshiftComponent
-        upshiftSpeed: 5.5
-        downshiftSpeed: 3
-        upshiftDebouncer:
-          '@id': upshiftDebouncer
-          bufferTimeSeconds: 0.06
-        upshiftFwdThresh: 0.4
   - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         '@id': LimeLightMotor
         name: "LimeLightPos"
@@ -260,7 +251,7 @@ defaultCommands:
         org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
           drive
       command:
-        org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
+        org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXDefaultDrive:
           defaultDriveCommand
     - subsystem:
           org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
@@ -340,7 +331,7 @@ autoStartupCommand:
             filename: "/home/lvuser/449_resources/robot2019RightStartToLFProfile.csv"
             inverted: false
             resetPosition: true
-      - org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
+      - org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXDefaultDrive:
           defaultDriveCommand
 updater:
   org.usfirst.frc.team449.robot.other.Updater:
