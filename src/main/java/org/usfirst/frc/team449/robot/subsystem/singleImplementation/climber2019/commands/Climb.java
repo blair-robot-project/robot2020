@@ -97,10 +97,10 @@ public class Climb extends CommandGroup {
 		climber.setCrawlVelocity(crawlVelocity * 0.75);
 		
 		if (bumperLipProtection != null) {
-			nudge1Distance += bumperLipProtection
+			nudge1Distance += bumperLipProtection;
 		}
 		if (backLegLipProtection != null) {
-			nudge2Distance += backLegLipProtection
+			nudge2Distance += backLegLipProtection;
 		}
 
 
