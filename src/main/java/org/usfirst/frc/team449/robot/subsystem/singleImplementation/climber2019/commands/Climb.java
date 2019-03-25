@@ -63,8 +63,8 @@ public class Climb extends CommandGroup {
 	 * @param stallVoltageBack  The voltage to give to stall the back elevator.
 	 * @param stallVoltageFront The voltage to give to stall the front elevator.
 	 * @param crawlVelocity     The velocity at which to crawl the leg-drive and drive while the back elevator lifts.
-	 * @param bumperLipProtection  How far to back up before climbing.
-	 * @param backLegLipProtection How far to back up before retracting the back leg.
+	 * @param bumperLipAvoidance  How far to back up before climbing.
+	 * @param backLegLipAvoidance How far to back up before retracting the back leg.
 	 */
 	@JsonCreator
 	public Climb(@JsonProperty(required = true) @NotNull SubsystemClimber2019 climber,
@@ -91,16 +91,16 @@ public class Climb extends CommandGroup {
 	             double stallVoltageBack,
 	             double stallVoltageFront,
 	             double crawlVelocity,
-	             @Nullable Double bumperLipProtection,
-	             @Nullable Double backLegLipProtection) {
+	             @Nullable Double bumperLipAvoidance,
+	             @Nullable Double backLegLipAvoidance) {
 		requires(climber);
 		climber.setCrawlVelocity(crawlVelocity * 0.75);
 		
-		if (bumperLipProtection != null) {
-			nudge1Distance += bumperLipProtection;
+		if (bumperLipAvoidance != null) {
+			nudge1Distance += bumperLipAvoidance;
 		}
-		if (backLegLipProtection != null) {
-			nudge2Distance += backLegLipProtection;
+		if (backLegLipAvoidance != null) {
+			nudge3Distance += backLegLipAvoidance;
 		}
 
 
@@ -112,8 +112,8 @@ public class Climb extends CommandGroup {
 
 		MappedWaitCommand pauseForPrep = new MappedWaitCommand(0.5);
 
-		DriveLegWheels nudgeBackForBumperLip = bumperLipProtection == null ? null : new DriveLegWheels(maxVelNudge,
-				maxAccelNudge, -bumperLipProtection, climber);
+		RunDriveMP nudgeBackForBumperLip = bumperLipAvoidance == null ? null : new RunDriveMP<>(maxVelNudge,
+				maxAccelNudge, bumperLipAvoidance, drive);
 
 		RunElevator extendLegs = new RunElevator(RunElevator.MoveType.BOTH, maxVelExtend, maxAccelExtend,
 				0.0, extendDistance, heightOffset, velReduction, accelReduction, null, climber);
@@ -137,8 +137,8 @@ public class Climb extends CommandGroup {
 		DriveAtSpeed crawlDrive = new DriveAtSpeed<>(drive, -crawlVelocity / 3., 5);
 		TurnMotorOn crawlLeg = new TurnMotorOn(climber);
 
-		DriveLegWheels nudgeBackForBackLegLip = backLegLipProtection == null ? null : new DriveLegWheels(maxVelNudge,
-				maxAccelNudge, -backLegLipProtection, climber);
+		DriveLegWheels nudgeBackForBackLegLip = backLegLipAvoidance == null ? null : new DriveLegWheels(maxVelNudge,
+				maxAccelNudge, -backLegLipAvoidance, climber);
 
 		RunElevator retractBackLeg = new RunElevator(RunElevator.MoveType.BACK, maxVelRetract, maxAccelRetract,
 				extendDistance, -0.5, 0, 0, 0, null, climber);
