@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand;
@@ -35,7 +36,7 @@ import org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.c
  * Run a full 2019 climb sequence.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class Climb extends CommandGroup {
+public class Climb<T extends Subsystem & SubsystemAnalogMotor> extends CommandGroup {
 
 	/**
 	 * Default constructor.
@@ -70,7 +71,7 @@ public class Climb extends CommandGroup {
 	public Climb(@JsonProperty(required = true) @NotNull SubsystemClimber2019 climber,
 	             @JsonProperty(required = true) @NotNull DriveUnidirectionalWithGyro drive,
 	             @JsonProperty(required = true) @NotNull SubsystemSolenoid hatchExtender,
-	             @JsonProperty(required = true) @NotNull AnalogMotorSimple sliderMotor,
+	             @JsonProperty(required = true) @NotNull T sliderMotor,
 	             @JsonProperty(required = true) @NotNull SubsystemSolenoid cargoArm,
 	             @JsonProperty(required = true) @NotNull IntakeSimple cargoIntake,
 	             @JsonProperty(required = true) Pneumatics pneumatics,
@@ -103,11 +104,10 @@ public class Climb extends CommandGroup {
 			nudge3Distance += backLegLipAvoidance;
 		}
 
-
 		SolenoidReverse extendHatch = new SolenoidReverse(hatchExtender);
 		SolenoidReverse retractCargo = new SolenoidReverse(cargoArm);
 		SetIntakeMode stopIntakingCargo = new SetIntakeMode<>(cargoIntake, SubsystemIntake.IntakeMode.OFF);
-		RequireSubsystem stopSlider = new RequireSubsystem(sliderMotor);
+		RequireSubsystem stopSlider = new RequireSubsystem(sliderMotor); //sliderMotor
 		StopCompressor stopCompressor = pneumatics == null ? null : new StopCompressor(pneumatics);
 
 		MappedWaitCommand pauseForPrep = new MappedWaitCommand(0.5);

@@ -27,11 +27,11 @@ logger:
         feedbackDevice: QuadEncoder
         encoderCPR: 256
         perGearSettings:
-          - maxSpeed: 30.5
-            kP: 0.2
+          - maxSpeed: 1.7
+            posKP: 0.2
             feedForwardComponent:
               org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                kVFwd: 0.36
+                kVFwd: 6.48
                 interceptVoltageFwd: 0.52
     - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
         '@id': drive
@@ -374,33 +374,28 @@ defaultCommands:
       org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
         defaultDriveCommand
   - subsystem:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorRawPosition:
         '@id': sliderMotor
         motor:
           org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
             lateralSlider
     command:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
+      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.FollowDoubleSupplier:
         &autoadjust
         '@id': alignSlider
-        absoluteTolerance: 0
         subsystem:
-          org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+          org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorRawPosition:
             sliderMotor
-        inverted: true
-        processVariableSupplier:
+        doubleSupplier:
           org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
             angularInput:
               org.usfirst.frc.team449.robot.components.LimeLightComponent:
                 '@id': limelightX
                 value: x
             distanceToTarget:
-              org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentSimple: {}
-        deadband: 0
-        kP: .3
-        kI: 0
-        kD: 0
-        setpoint: 0
+              org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentTilted:
+                  limelightHeight: 0.5354
+                  limelightAngleDown: 25
 teleopStartupCommand:
   org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
     '@id': teleopStartupCommand
@@ -547,19 +542,11 @@ buttons:
             - org.usfirst.frc.team449.robot.commands.limelight.SetTracking:
                 '@id': disableLimelight
                 track: false
-            - org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.SetAnalogMotorWithRequires:
                 '@id': ResetSlider
-                processVariableSupplier:
-                  org.usfirst.frc.team449.robot.components.TalonDataComponent:
-                    talon:
-                      org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-                        lateralSlider
-                    value: position
-                kP: .1
                 setpoint: 0
-                deadband: 0.1
                 subsystem:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorRawPosition:
                     sliderMotor
       action: WHEN_PRESSED
     - button:
@@ -727,7 +714,7 @@ buttons:
             org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
               hatchMechExtenderSolenoid
           sliderMotor:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorRawPosition:
               sliderMotor
           cargoArm:
             org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
@@ -833,10 +820,10 @@ autoStartupCommand:
   org.usfirst.frc.team449.robot.commands.autonomous.Auto2018SingleHatch:
     '@id': autoCommand
     adjustCommand:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
+      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.FollowDoubleSupplier:
         <<: *autoadjust
         '@id': autoautoadjust
-        processVariableSupplier:
+        doubleSupplier:
           org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
             angularInput:
               org.usfirst.frc.team449.robot.components.LimeLightComponent:
@@ -869,7 +856,7 @@ autoStartupCommand:
 #  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogMotorVoltageRamp:
 #    '@id': characterizeSlider
 #    subsystem:
-#      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+#      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorRawPosition:
 #        sliderMotor
 #    voltsPerSecond: 0.5
 #autoStartupCommand:
