@@ -33,6 +33,8 @@ import java.util.Map;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
 
+    Faults faults = new Faults();
+
     /**
      * The CTRE CAN Talon SRX that this class is a wrapper on
      */
@@ -761,6 +763,17 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      */
     public boolean getRevLimitSwitch() {
         return revLimitSwitchNormallyOpen == canTalon.getSensorCollection().isRevLimitSwitchClosed();
+    }
+
+    public boolean isInhibitedForward() {
+
+        canTalon.getFaults(faults);
+        return faults.ForwardLimitSwitch;
+    }
+
+    public boolean isInhibitedReverse(){
+        canTalon.getFaults(faults);
+        return faults.ReverseLimitSwitch;
     }
 
     /**

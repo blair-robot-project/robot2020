@@ -64,13 +64,15 @@ public class Climb<T extends Subsystem & SubsystemAnalogMotor> extends CommandGr
 	 * @param stallVoltageBack  The voltage to give to stall the back elevator.
 	 * @param stallVoltageFront The voltage to give to stall the front elevator.
 	 * @param crawlVelocity     The velocity at which to crawl the leg-drive and drive while the back elevator lifts.
+	 * @param bumperLipAvoidance  How far to back up before climbing.
+	 * @param backLegLipAvoidance How far to back up before retracting the back leg.
 	 */
 	@JsonCreator
 	public Climb(@JsonProperty(required = true) @NotNull SubsystemClimber2019 climber,
 	             @JsonProperty(required = true) @NotNull DriveUnidirectionalWithGyro drive,
 	             @JsonProperty(required = true) @NotNull SubsystemSolenoid hatchExtender,
 	             @JsonProperty(required = true) @NotNull T sliderMotor,
-	             @JsonProperty(required = true) @NotNull SubsystemAnalogMotor cargoArm,
+	             @JsonProperty(required = true) @NotNull SubsystemSolenoid cargoArm,
 	             @JsonProperty(required = true) @NotNull IntakeSimple cargoIntake,
 	             @JsonProperty(required = true) Pneumatics pneumatics,
 	             @JsonProperty(required = true) double maxVelExtend,
@@ -89,20 +91,32 @@ public class Climb<T extends Subsystem & SubsystemAnalogMotor> extends CommandGr
 	             @Nullable Double unstickTolerance,
 	             double stallVoltageBack,
 	             double stallVoltageFront,
-	             double crawlVelocity) {
+	             double crawlVelocity,
+	             @Nullable Double bumperLipAvoidance,
+	             @Nullable Double backLegLipAvoidance) {
 		requires(climber);
-		climber.setCrawlVelocity(0);
+		climber.setCrawlVelocity(crawlVelocity * 0.75);
+		
+		if (bumperLipAvoidance != null) {
+			nudge1Distance += bumperLipAvoidance;
+		}
+		if (backLegLipAvoidance != null) {
+			nudge3Distance += backLegLipAvoidance;
+		}
 
 		SolenoidReverse extendHatch = new SolenoidReverse(hatchExtender);
-		SetAnalogMotor retractCargo = new SetAnalogMotor(cargoArm, -0.3);
+		SolenoidReverse retractCargo = new SolenoidReverse(cargoArm);
 		SetIntakeMode stopIntakingCargo = new SetIntakeMode<>(cargoIntake, SubsystemIntake.IntakeMode.OFF);
 		RequireSubsystem stopSlider = new RequireSubsystem(sliderMotor); //sliderMotor
 		StopCompressor stopCompressor = pneumatics == null ? null : new StopCompressor(pneumatics);
 
 		MappedWaitCommand pauseForPrep = new MappedWaitCommand(0.5);
 
+		RunDriveMP nudgeBackForBumperLip = bumperLipAvoidance == null ? null : new RunDriveMP<>(maxVelNudge,
+				maxAccelNudge, bumperLipAvoidance, drive);
+
 		RunElevator extendLegs = new RunElevator(RunElevator.MoveType.BOTH, maxVelExtend, maxAccelExtend,
-				0, extendDistance, heightOffset, velReduction, accelReduction, null, climber);
+				0.0, extendDistance, heightOffset, velReduction, accelReduction, null, climber);
 
 		StallElevators stallElevators = new StallElevators(climber, stallVoltageBack, stallVoltageFront);
 
@@ -123,10 +137,13 @@ public class Climb<T extends Subsystem & SubsystemAnalogMotor> extends CommandGr
 		DriveAtSpeed crawlDrive = new DriveAtSpeed<>(drive, -crawlVelocity / 3., 5);
 		TurnMotorOn crawlLeg = new TurnMotorOn(climber);
 
-		RunElevator retractBackLeg = new RunElevator(RunElevator.MoveType.BACK, maxVelRetract, maxAccelRetract,
-				extendDistance, 0, 0, 0, 0, null, climber);
+		DriveLegWheels nudgeBackForBackLegLip = backLegLipAvoidance == null ? null : new DriveLegWheels(maxVelNudge,
+				maxAccelNudge, -backLegLipAvoidance, climber);
 
-		TurnMotorOffWithRequires stopLegCrawl = new TurnMotorOffWithRequires<>(climber);
+		RunElevator retractBackLeg = new RunElevator(RunElevator.MoveType.BACK, maxVelRetract, maxAccelRetract,
+				extendDistance, -0.5, 0, 0, 0, null, climber);
+
+//		TurnMotorOffWithRequires stopLegCrawl = new TurnMotorOffWithRequires<>(climber);
 
 		RunDriveMP nudgeDriveForwardLegsRetracted = new RunDriveMP<>(maxVelNudge, maxAccelNudge,
 				-nudge3Distance, drive);
@@ -139,6 +156,7 @@ public class Climb<T extends Subsystem & SubsystemAnalogMotor> extends CommandGr
 		}
 		addSequential(stopSlider);
 		addSequential(pauseForPrep);*/
+		if (nudgeBackForBumperLip != null) addSequential(nudgeBackForBumperLip);
 		addSequential(extendLegs);
 		addSequential(stallElevators);
 		addParallel(nudgeLegsForwardLegsExtended);
@@ -147,8 +165,12 @@ public class Climb<T extends Subsystem & SubsystemAnalogMotor> extends CommandGr
 		addSequential(retractFrontLeg);
 		addParallel(nudgeLegsForwardFrontLegRetracted);
 		addSequential(nudgeDriveForwardFrontLegRetracted);
-		addParallel(crawlDrive);
-		addSequential(crawlLeg);
+		if (nudgeBackForBackLegLip == null) {
+			addParallel(crawlDrive);
+			addSequential(crawlLeg);
+		} else {
+			addSequential(nudgeBackForBackLegLip);
+		}
 		addSequential(retractBackLeg);
 //		addSequential(stopLegCrawl);
 		addSequential(nudgeDriveForwardLegsRetracted);
