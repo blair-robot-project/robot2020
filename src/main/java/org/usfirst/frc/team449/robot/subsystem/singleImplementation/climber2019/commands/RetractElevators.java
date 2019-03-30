@@ -19,11 +19,11 @@ public class RetractElevators<T extends Subsystem & DriveSubsystem> extends Comm
                             @Nullable Double unstickTolerance) {
         requires(climber);
 
-        StopClimb stopClimb = new StopClimb<>(climber, drive);
+        //StopClimb stopClimb = new StopClimb<>(climber, drive);
         RunElevator retractLegs = new RunElevator(RunElevator.MoveType.BOTH, maxVelRetract, maxAccelRetract,
                 null, 0, 0, 0, 0, unstickTolerance, climber);
 
-        addSequential(stopClimb);
+        //addSequential(stopClimb);
         addSequential(retractLegs);
     }
 
