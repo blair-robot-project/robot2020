@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
@@ -104,7 +105,7 @@ public class Climb<T extends Subsystem & SubsystemAnalogMotor> extends CommandGr
 			nudge3Distance += backLegLipAvoidance;
 		}
 
-		SolenoidReverse extendHatch = new SolenoidReverse(hatchExtender);
+		Command extendHatch = new SolenoidForward(hatchExtender);
 		SolenoidReverse retractCargo = new SolenoidReverse(cargoArm);
 		SetIntakeMode stopIntakingCargo = new SetIntakeMode<>(cargoIntake, SubsystemIntake.IntakeMode.OFF);
 		RequireSubsystem stopSlider = new RequireSubsystem(sliderMotor); //sliderMotor
@@ -125,7 +126,7 @@ public class Climb<T extends Subsystem & SubsystemAnalogMotor> extends CommandGr
 		RunDriveMP nudgeDriveForwardLegsExtended = new RunDriveMP<>(maxVelNudge, maxAccelNudge,
 				-nudge1Distance, drive);
 
-		SolenoidForward retractHatch = new SolenoidForward(hatchExtender);
+		Command retractHatch = new SolenoidReverse(hatchExtender);
 		RunElevator retractFrontLeg = new RunElevator(RunElevator.MoveType.FRONT, maxVelRetract, maxAccelRetract,
 				extendDistance + heightOffset, 0, 0, 0, 0, unstickTolerance, climber);
 

@@ -50,16 +50,21 @@ public class Auto2018SingleHatch<T extends Subsystem & SubsystemAHRS & Subsystem
                                @NotNull @JsonProperty(required = true) Command rightDriveCommand,
                                @NotNull @JsonProperty(required = true) MappedDigitalInput startingSideSwitch,
                                @NotNull @JsonProperty(required = true) Command driveDefaultCommand,
-                               @Nullable Pneumatics compressor) {
+                               @Nullable Pneumatics compressor,
+                               boolean useLimelight) {
         if (compressor != null) {
             addParallel(new StopCompressor(compressor));
         }
         if (adjustCommand != null) {
             addParallel(adjustCommand);
         }
-        addParallel(new SetTracking(true));
-//        addParallel(new SolenoidForward(angularCompliance));
+        if (useLimelight) {
+            addParallel(new SetTracking(true));
+        }
+
+        addParallel(new SolenoidForward(angularCompliance));
         addParallel(new SolenoidForward(hatchMech));
+
         addSequential(new SetHeading(drive, 0));
         addSequential(new ConditionalCommandDigitalInputBased(leftDriveCommand, rightDriveCommand, startingSideSwitch));
         addSequential(new SolenoidReverse(hatchMech));

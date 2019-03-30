@@ -373,29 +373,6 @@ defaultCommands:
     command:
       org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
         defaultDriveCommand
-  - subsystem:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorRawPosition:
-        '@id': sliderMotor
-        motor:
-          org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-            lateralSlider
-    command:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.FollowDoubleSupplier:
-        &autoadjust
-        '@id': alignSlider
-        subsystem:
-          org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorRawPosition:
-            sliderMotor
-        doubleSupplier:
-          org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
-            angularInput:
-              org.usfirst.frc.team449.robot.components.LimeLightComponent:
-                '@id': limelightX
-                value: x
-            distanceToTarget:
-              org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentTilted:
-                  limelightHeight: 0.5354
-                  limelightAngleDown: 25
 teleopStartupCommand:
   org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
     '@id': teleopStartupCommand
@@ -494,7 +471,7 @@ buttons:
           throttle:
             org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
               '@id': mechRightTrigger
-              axis: 3
+              axis: 2
               stick:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
                   mechanismsGamepad
@@ -507,8 +484,8 @@ buttons:
               piston:
                 '@id': hatchMechExtenderPiston
                 module: 0
-                forward: 2
-                reverse: 3
+                forward: 3
+                reverse: 2
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.TriggerButton:
@@ -517,7 +494,7 @@ buttons:
           throttle:
             org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
               '@id': mechLeftTrigger
-              axis: 2
+              axis: 3
               stick:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
                   mechanismsGamepad
@@ -564,23 +541,23 @@ buttons:
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': disableSliderButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsGamepad
-          buttonNumber: 2
+          enableSlider
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
-          disableTrackingSequence
-      action: CANCEL_WHEN_PRESSED
+        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.SetAnalogMotorWithRequires:
+          '@id': centerHatchMech
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorRawPosition:
+              sliderMotor
+          setpoint: 0
+      action: WHEN_RELEASED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          stopResetSlider
+          enableSlider
       command:
         org.usfirst.frc.team449.robot.commands.limelight.SetTracking:
-          '@id': enableLimelight
-          track: true
-      action: WHEN_PRESSED
+          '@id': disableLimelight
+          track: false
+      action: WHEN_RELEASED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': cargoIntakeButton
@@ -837,6 +814,9 @@ autoStartupCommand:
       org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.FollowDoubleSupplier:
         <<: *autoadjust
         '@id': autoautoadjust
+        subsystem:
+          org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorRawPosition:
+            sliderMotor
         doubleSupplier:
           org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
             angularInput:
