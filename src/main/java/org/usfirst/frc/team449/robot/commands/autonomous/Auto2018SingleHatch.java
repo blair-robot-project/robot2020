@@ -66,6 +66,7 @@ public class Auto2018SingleHatch<T extends Subsystem & SubsystemAHRS & Subsystem
         if (compressor != null) {
             addSequential(new StartCompressor(compressor));
         }
+        addSequential(new SetTracking(false));
         addSequential(driveDefaultCommand);
     }
 }

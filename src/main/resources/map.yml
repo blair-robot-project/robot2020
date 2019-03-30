@@ -530,28 +530,41 @@ buttons:
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': resetSlider
+          '@id': enableSlider
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               mechanismsGamepad
           buttonNumber: 1
       command:
         org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
-          '@id': disableTrackingSequence
+          '@id': enableTrackingSequence
           commandSet:
             - org.usfirst.frc.team449.robot.commands.limelight.SetTracking:
-                '@id': disableLimelight
-                track: false
-            - org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.SetAnalogMotorWithRequires:
-                '@id': ResetSlider
-                setpoint: 0
+                '@id': enableLimelight
+                track: true
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.FollowDoubleSupplier:
+                &autoadjust
+                '@id': alignSlider
                 subsystem:
                   org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorRawPosition:
-                    sliderMotor
+                    '@id': sliderMotor
+                    motor:
+                      org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+                        lateralSlider
+                doubleSupplier:
+                  org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
+                    angularInput:
+                      org.usfirst.frc.team449.robot.components.LimeLightComponent:
+                        '@id': limelightX
+                        value: x
+                    distanceToTarget:
+                      org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentTilted:
+                        limelightHeight: 0.5354
+                        limelightAngleDown: 25
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': stopResetSlider
+          '@id': disableSliderButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               mechanismsGamepad
