@@ -165,7 +165,7 @@ logger:
                 powerToCoefficientMap: !!map
                   1 : .5
                   3 : .5
-            scale: .7
+            scale: .65
         fwdThrottle:
           org.usfirst.frc.team449.robot.oi.throttles.ThrottleSum:
             '@id': fwdThrottle
