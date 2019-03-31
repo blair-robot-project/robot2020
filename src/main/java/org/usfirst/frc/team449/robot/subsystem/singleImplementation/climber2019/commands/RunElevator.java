@@ -20,7 +20,7 @@ public class RunElevator extends Command {
     /**
      * The profiles for the back and front elevators, respectively.
      */
-    private final MotionProfile backProfile, frontProfile;
+    private MotionProfile backProfile, frontProfile;
 
     /**
      * An enum to select whether we want to move just the back elevator, just the front, or both.
@@ -51,6 +51,8 @@ public class RunElevator extends Command {
      * Whether we are done unsticking the brake.
      */
     private boolean doneUnsticking;
+
+    private final MotionProfileConstraints backConstraints, frontConstraints;
 
     @Nullable
     private Double startPos;
@@ -86,16 +88,11 @@ public class RunElevator extends Command {
         this.unstickTolerance = unstickTolerance;
         this.startPos = startPos;
 
-        MotionProfileConstraints backConstraints = new MotionProfileConstraints((1 - velReduction) * maxVel,
+        backConstraints = new MotionProfileConstraints((1 - velReduction) * maxVel,
                                                                                 (1 - accelReduction) * maxAccel);
-        MotionProfileConstraints frontConstraints = new MotionProfileConstraints(maxVel, maxAccel);
+        frontConstraints = new MotionProfileConstraints(maxVel, maxAccel);
 
-        if (startPos == null) {
-            backProfile = MotionProfileGenerator.generateProfile(backConstraints, new MotionProfileGoal(endPos),
-                    new MotionState(0,0,0,0));
-            frontProfile = MotionProfileGenerator.generateProfile(frontConstraints, new MotionProfileGoal(endPos + offset),
-                    new MotionState(0,0,0,0));
-        } else {
+        if (startPos != null) {
             backProfile = MotionProfileGenerator.generateProfile(backConstraints, new MotionProfileGoal(endPos),
                     new MotionState(0, startPos, 0, 0));
             frontProfile = MotionProfileGenerator.generateProfile(frontConstraints, new MotionProfileGoal(endPos + offset),
@@ -112,7 +109,12 @@ public class RunElevator extends Command {
         doneUnsticking = unstickTolerance == null;
         initBackPos = climber.getBackPos();
         initFrontPos = climber.getFrontPos();
-        System.out.println("START: " + timeSinceInitialized());
+        if (startPos == null) {
+            backProfile = MotionProfileGenerator.generateProfile(backConstraints, new MotionProfileGoal(0),
+                    new MotionState(0, initBackPos, 0, 0));
+            frontProfile = MotionProfileGenerator.generateProfile(frontConstraints, new MotionProfileGoal(0),
+                    new MotionState(0, initFrontPos, 0, 0));
+        }
     }
 
     /**
@@ -142,36 +144,19 @@ public class RunElevator extends Command {
         }
 
         double t = timeSinceInitialized();
-        if (startPos == null) {
-            switch (moveType) {
-                case BACK:
-                    climber.profileBackWithOffset(backProfile.stateByTimeClamped(t), initBackPos);
-                    break;
-                case FRONT:
-                    climber.profileFrontWithOffset(frontProfile.stateByTimeClamped(t), initFrontPos);
-                    break;
-                case BOTH:
-                    climber.profileBackWithOffset(backProfile.stateByTimeClamped(t), initBackPos);
-                    climber.profileFrontWithOffset(frontProfile.stateByTimeClamped(t), initFrontPos);
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            switch (moveType) {
-                case BACK:
-                    climber.profileBack(backProfile.stateByTimeClamped(t));
-                    break;
-                case FRONT:
-                    climber.profileFront(frontProfile.stateByTimeClamped(t));
-                    break;
-                case BOTH:
-                    climber.profileBack(backProfile.stateByTimeClamped(t));
-                    climber.profileFront(frontProfile.stateByTimeClamped(t));
-                    break;
-                default:
-                    break;
-            }
+        switch (moveType) {
+            case BACK:
+                climber.profileBack(backProfile.stateByTimeClamped(t));
+                break;
+            case FRONT:
+                climber.profileFront(frontProfile.stateByTimeClamped(t));
+                break;
+            case BOTH:
+                climber.profileBack(backProfile.stateByTimeClamped(t));
+                climber.profileFront(frontProfile.stateByTimeClamped(t));
+                break;
+            default:
+                break;
         }
     }
 

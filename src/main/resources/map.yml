@@ -769,23 +769,33 @@ buttons:
             org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
               drive
       action: WHEN_PRESSED
-#    - button:
-#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-#          '@id': retractElevatorsButton
-#          joystick:
-#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-#              climbOverrideController
-#          buttonNumber: 3
-#      command:
-#        org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.AbortClimb:
-#          '@id': retractElevators
-#          climber:
-#            org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
-#              climber
-#          drive:
-#            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-#              drive
-#      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': retractElevatorsButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              climbOverrideController
+          buttonNumber: 3
+      command:
+        org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.RetractElevators:
+          '@id': retractElevators
+          climber:
+            org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
+              climber
+          drive:
+            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+              drive
+          driveCommand:
+            org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
+              <<: *defaultDriveCommand
+              '@id': reenableDefaultDriveCommand
+              driveStraightLoopEntryTimer:
+                driveStraightLoopEntryTimer
+              autoshiftComponent:
+                autoshiftComponent
+          maxVelRetract: 4
+          maxAccelRetract: 6
+      action: WHEN_PRESSED
 #    - button:
 #        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
 #          '@id': testLiftButton
