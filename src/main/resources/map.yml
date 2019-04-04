@@ -890,7 +890,44 @@ buttons:
             org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
               drive
       action: WHEN_PRESSED
-
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.dPadButton:
+          '@id': secondHatchAutoButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsGamepad
+          angle: 0
+      command:
+        org.usfirst.frc.team449.robot.commands.autonomous.Auto2019DoubleHatch:
+          '@id': secondHatchAuto
+          hatchMech:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: hatchSolenoid
+          leftToLoadRevCommand:
+            org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: leftCargoShipToLoadRev
+          rightToLoadRevCommand:
+            org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: rightCargoShipToLoadRev
+          toLoadFwdCommand:
+            org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: cargoShipToLoadFwd
+          leftLoadToFwdCommand:
+            org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: leftLoadToCargoShipFwd
+          rightLoadToFwdCommand:
+            org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: rightLoadToCargoShipFwd
+          leftLoadToRevCommand:
+            org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: leftLoadToCargoShipRev
+          rightLoadToRevCommand:
+            org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: rightLoadToCargoShipRev
+          NavXTurnToAngleCommand:
+            org.usfirst.frc.team449.robot.commands.multiInterface.drive.NavXTurnToAngle:
+              '@id': autoToLoadTurn
+              setpoint: 180
+              subsystem:
+                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                  drive
+              timeout: 2
+              absoluteTolerance: 1
+          startingSideSwitch:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput: digitalInput
+      action: WHEN_PRESSED
 #    - button:
 #        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
 #          '@id': retractElevatorsButton
