@@ -205,11 +205,19 @@ logger:
       rightMaster
   - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS:
       navX
-  - org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXDefaultDrive:
+  - org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
       '@id': defaultDriveCommand
 #      kP: 0.0075
       kI: 0.0
 #      kD: 0.03
+      autoshiftComponent:
+        '@id': defaultDriveShiftComponent
+        upshiftSpeed: 4.0
+        downshiftSpeed: 2.0
+        upshiftDebouncer:
+          '@id': upshiftDebouncer
+          bufferTimeSeconds: 0.06
+        upshiftFwdThresh: 0.4
       absoluteTolerance: 0
       deadband: 2
       maxAngularVelToEnterLoop: 15
@@ -323,12 +331,12 @@ autoStartupCommand:
             org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
           left:
             '@id': LeftFLtoLoad
-            filename: "/home/lvuser/449_resources/robot2019LeftStartToLFProfile.csv"
+            filename: "/home/lvuser/449_resources/robot2019LeftStartToFLProfile.csv"
             inverted: false
             resetPosition: true
           right:
             '@id': RightFLtoLoad
-            filename: "/home/lvuser/449_resources/robot2019RightStartToLFProfile.csv"
+            filename: "/home/lvuser/449_resources/robot2019RightStartToFLProfile.csv"
             inverted: false
             resetPosition: true
       - org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXDefaultDrive:
