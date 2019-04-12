@@ -440,7 +440,7 @@ logger:
               org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                 kVFwd: 0.42
                 kAFwd: 0.01
-                interceptVoltageFwd: 5.54
+                interceptVoltageFwd: 6.14
                 interceptVoltageRev: 0
     - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
         '@id': backLegDriveTalon
@@ -849,6 +849,12 @@ buttons:
             org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
               climber
           extendDistance: 0.6
+#          maxVelExtend: 0.75
+#          maxAccelExtend: 0.75
+          maxVelRetract: 6
+          maxAccelRetract: 8
+          maxVelNudge: 1.2
+          maxAccelNudge: 1.2
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -954,44 +960,48 @@ buttons:
 #              climber
 #      action: WHEN_PRESSED
 autoStartupCommand:
-  org.usfirst.frc.team449.robot.commands.autonomous.Auto2018SingleHatch:
-    '@id': autoCommand
-    adjustCommand:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.FollowDoubleSupplier:
-        <<: *autoadjust
-        '@id': autoautoadjust
-        subsystem:
-          org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorRawPosition:
-            sliderMotor
-        doubleSupplier:
-          org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
-            angularInput:
-              org.usfirst.frc.team449.robot.components.LimeLightComponent:
-                limelightX
-            distanceToTarget:
-              org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentSimple: {}
-    drive:
-      org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
-    hatchMech:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: hatchSolenoid
-    angularCompliance:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: hatchMechExtenderSolenoid
-    leftDriveCommand:
-      org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: startToLeftCargoShip
-    rightDriveCommand:
-      org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: startToRightCargoShip
-    startingSideSwitch:
-      org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput: digitalInput
-    driveDefaultCommand:
-      org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
-        <<: *defaultDriveCommand
-        '@id': autoDefaultDriveCommand
-        driveStraightLoopEntryTimer:
-          driveStraightLoopEntryTimer
-        autoshiftComponent:
-          autoshiftComponent
-    compressor:
-      org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics: pneumatics
+  org.usfirst.frc.team449.robot.commands.limelight.SetTracking:
+    '@id': tracking
+    track: false
+#autoStartupCommand:
+#  org.usfirst.frc.team449.robot.commands.autonomous.Auto2018SingleHatch:
+#    '@id': autoCommand
+#    adjustCommand:
+#      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.FollowDoubleSupplier:
+#        <<: *autoadjust
+#        '@id': autoautoadjust
+#        subsystem:
+#          org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorRawPosition:
+#            sliderMotor
+#        doubleSupplier:
+#          org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
+#            angularInput:
+#              org.usfirst.frc.team449.robot.components.LimeLightComponent:
+#                limelightX
+#            distanceToTarget:
+#              org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentSimple: {}
+#    drive:
+#      org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
+#    hatchMech:
+#      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: hatchSolenoid
+#    angularCompliance:
+#      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: hatchMechExtenderSolenoid
+#    leftDriveCommand:
+#      org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: startToLeftCargoShip
+#    rightDriveCommand:
+#      org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: startToRightCargoShip
+#    startingSideSwitch:
+#      org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput: digitalInput
+#    driveDefaultCommand:
+#      org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
+#        <<: *defaultDriveCommand
+#        '@id': autoDefaultDriveCommand
+#        driveStraightLoopEntryTimer:
+#          driveStraightLoopEntryTimer
+#        autoshiftComponent:
+#          autoshiftComponent
+#    compressor:
+#      org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics: pneumatics
 #autoStartupCommand:
 #  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogMotorVoltageRamp:
 #    '@id': characterizeSlider

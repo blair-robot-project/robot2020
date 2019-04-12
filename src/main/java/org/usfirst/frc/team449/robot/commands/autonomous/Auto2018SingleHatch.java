@@ -67,7 +67,7 @@ public class Auto2018SingleHatch<T extends Subsystem & SubsystemAHRS & Subsystem
 
         addSequential(new SetHeading(drive, 0));
         addSequential(new ConditionalCommandDigitalInputBased(leftDriveCommand, rightDriveCommand, startingSideSwitch));
-        addSequential(new SolenoidReverse(hatchMech));
+//        addSequential(new SolenoidReverse(hatchMech));
         if (compressor != null) {
             addSequential(new StartCompressor(compressor));
         }
