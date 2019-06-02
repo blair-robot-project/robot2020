@@ -3,6 +3,7 @@ package org.usfirst.frc.team449.robot;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj.command.Command;
+import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedRunnable;
@@ -23,7 +24,7 @@ public class RobotMap {
     private final List<CommandButton> buttons;
 
     @NotNull
-    private List<Object> subLog;
+    private List<Loggable> subLog;
 
 //    /**
 //     * The logger for recording events and telemetry data.
@@ -80,7 +81,7 @@ public class RobotMap {
      * @param useCameraServer Whether the camera server should be run. Defaults to false.
      */
     @JsonCreator
-    public RobotMap(@NotNull List<Object> subLog,
+    public RobotMap(@NotNull List<Loggable> subLog,
                     @Nullable List<CommandButton> buttons,
 //                  @NotNull @JsonProperty(required = true) Logger logger,
                     @NotNull @JsonProperty(required = true) MappedRunnable updater,

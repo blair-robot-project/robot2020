@@ -14,6 +14,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.SubsystemA
 import java.util.function.DoubleSupplier;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
 
+
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extends PIDCommand {
 

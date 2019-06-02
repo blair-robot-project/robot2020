@@ -381,7 +381,6 @@ defaultCommands:
             lateralSlider
     command:
       org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
-        &autoadjust
         '@id': alignSlider
         absoluteTolerance: 0
         subsystem:
@@ -827,42 +826,42 @@ buttons:
 #            org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
 #              climber
 #      action: WHEN_PRESSED
-autoStartupCommand:
-  org.usfirst.frc.team449.robot.commands.autonomous.Auto2018SingleHatch:
-    '@id': autoCommand
-    adjustCommand:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
-        <<: *autoadjust
-        '@id': autoautoadjust
-        processVariableSupplier:
-          org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
-            angularInput:
-              org.usfirst.frc.team449.robot.components.LimeLightComponent:
-                limelightX
-            distanceToTarget:
-              org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentSimple: {}
-    drive:
-      org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
-    hatchMech:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: hatchSolenoid
-    angularCompliance:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: hatchMechExtenderSolenoid
-    leftDriveCommand:
-      org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: startToLeftCargoShip
-    rightDriveCommand:
-      org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: startToRightCargoShip
-    startingSideSwitch:
-      org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput: digitalInput
-    driveDefaultCommand:
-      org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
-        <<: *defaultDriveCommand
-        '@id': autoDefaultDriveCommand
-        driveStraightLoopEntryTimer:
-          driveStraightLoopEntryTimer
-        autoshiftComponent:
-          autoshiftComponent
-    compressor:
-      org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics: pneumatics
+#autoStartupCommand:
+#  org.usfirst.frc.team449.robot.commands.autonomous.Auto2018SingleHatch:
+#    '@id': autoCommand
+#    adjustCommand:
+#      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
+#        <<: *autoadjust
+#        '@id': autoautoadjust
+#        processVariableSupplier:
+#          org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
+#            angularInput:
+#              org.usfirst.frc.team449.robot.components.LimeLightComponent:
+#                limelightX
+#            distanceToTarget:
+#              org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentSimple: {}
+#    drive:
+#      org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
+#    hatchMech:
+#      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: hatchSolenoid
+#    angularCompliance:
+#      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: hatchMechExtenderSolenoid
+#    leftDriveCommand:
+#      org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: startToLeftCargoShip
+#    rightDriveCommand:
+#      org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: startToRightCargoShip
+#    startingSideSwitch:
+#      org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput: digitalInput
+#    driveDefaultCommand:
+#      org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
+#        <<: *defaultDriveCommand
+#        '@id': autoDefaultDriveCommand
+#        driveStraightLoopEntryTimer:
+#          driveStraightLoopEntryTimer
+#        autoshiftComponent:
+#          autoshiftComponent
+#    compressor:
+#      org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics: pneumatics
 #autoStartupCommand:
 #  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogMotorVoltageRamp:
 #    '@id': characterizeSlider
