@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import io.github.oblarg.oblog.Logger;
@@ -21,10 +22,22 @@ import java.util.Map;
 public class Robot extends TimedRobot {
 
     /**
+     * The absolute filepath to the resources folder containing the config files when the robot is real.
+     */
+    @NotNull
+    public static final String RESOURCES_PATH_REAL = "/home/lvuser/449_resources/";
+
+    /**
+     * The absolute filepath to the resources folder containing the config files when the robot is simulated.
+     */
+    @NotNull
+    public static final String RESOURCES_PATH_SIMULATED = "./src/main/resources/";
+
+    /**
      * The absolute filepath to the resources folder containing the config files.
      */
     @NotNull
-    public static final String RESOURCES_PATH = "/home/lvuser/449_resources/";
+    public static String RESOURCES_PATH;
 
     /**
      * The name of the map to read from. Should be overriden by a subclass to change the name.
@@ -60,7 +73,10 @@ public class Robot extends TimedRobot {
         //Yes this should be a print statement, it's useful to know that robotInit started.
         System.out.println("Started robotInit.");
 
+        RESOURCES_PATH = RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
+
         Yaml yaml = new Yaml();
+
         try {
             //Read the yaml file with SnakeYaml so we can use anchors and merge syntax.
             Map<?, ?> normalized = (Map<?, ?>) yaml.load(new FileReader(RESOURCES_PATH + mapName));
