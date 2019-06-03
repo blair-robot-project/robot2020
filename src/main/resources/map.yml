@@ -320,7 +320,7 @@ subLog:
         encoderCPR: 1024
         perGearSettings:
           - maxSpeed: 17
-            posKP: 0.3
+            kP: 0.3
             feedForwardComponent:
               org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                 kVFwd: 0.422
@@ -337,7 +337,7 @@ subLog:
         remoteLimitSwitchID: 11
         perGearSettings:
           - maxSpeed: 17
-            posKP: 0.3
+            kP: 0.3
             feedForwardComponent:
               org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                 kVFwd: 0.422
@@ -360,8 +360,7 @@ subLog:
         perGearSettings:
           - motionProfilePFwd: 0.5
             maxSpeed: 7.5
-            posKP: 0.5
-            kP: 0.1
+            kP: 0.5
             feedForwardComponent:
               org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
                 kVFwd: 0.89457

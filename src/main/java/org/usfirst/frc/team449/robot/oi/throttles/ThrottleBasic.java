@@ -89,7 +89,6 @@ public class ThrottleBasic implements Throttle, PIDSource {
      * @return the currently selected PID source parameter
      */
     @Override
-    @Log
     public PIDSourceType getPIDSourceType() {
         return null;
     }
