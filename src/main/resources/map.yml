@@ -274,12 +274,12 @@ subLog:
             drive
         left:
           '@id': startToLeftCargoShipLeft
-          filename: "/home/lvuser/449_resources/robot2019LeftStartToFLProfile.csv"
+          filename: "robot2019LeftStartToFLProfile.csv"
           inverted: false
           resetPosition: true
         right:
           '@id': startToLeftCargoShipRight
-          filename: "/home/lvuser/449_resources/robot2019RightStartToFLProfile.csv"
+          filename: "robot2019RightStartToFLProfile.csv"
           inverted: false
           resetPosition: true
         timeout: 10
@@ -289,12 +289,12 @@ subLog:
         '@id': startToRightCargoShip
         left:
           '@id': startToRightCargoShipLeft
-          filename: "/home/lvuser/449_resources/robot2019LeftStartToFRProfile.csv"
+          filename: "robot2019LeftStartToFRProfile.csv"
           inverted: false
           resetPosition: true
         right:
           '@id': startToRightCargoShipRight
-          filename: "/home/lvuser/449_resources/robot2019RightStartToFRProfile.csv"
+          filename: "robot2019RightStartToFRProfile.csv"
           inverted: false
           resetPosition: true
         startAngle: 0

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.jetbrains.annotations.NotNull;
+import org.usfirst.frc.team449.robot.Robot;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -136,7 +137,7 @@ public class MotionProfileData {
      */
     private void readFile(@NotNull String filename) throws IOException {
         //Instantiate the reader
-        BufferedReader br = new BufferedReader(new FileReader(filename));
+        BufferedReader br = new BufferedReader(new FileReader(Robot.RESOURCES_PATH + filename));
         int numLines = Integer.parseInt(br.readLine());
 
         //Instantiate data
