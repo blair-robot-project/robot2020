@@ -23,6 +23,7 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
      * The subsystem to execute this command on.
      */
     @NotNull
+    @Log.Exclude
     protected final SubsystemAHRS subsystem;
 
     /**
@@ -115,7 +116,6 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
      * @return The equivalent of that number, clipped to be between -180 and 180.
      */
     @Contract(pure = true)
-    @Log
     protected static double clipTo180(double theta) {
         return (theta + 180) % 360 - 180;
     }
@@ -127,7 +127,6 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
      * @return The processed output, ready to be subtracted from the left side of the drive output and added to the
      * right side.
      */
-    @Log
     protected double processPIDOutput(double output) {
         //Set the output to the minimum if it's too small.
         if (output > 0 && output < minimumOutput) {
@@ -148,7 +147,6 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
      * @param output The output from the WPILib angular PID loop.
      * @return That output after being deadbanded with the map-given deadband.
      */
-    @Log
     protected double deadbandOutput(double output) {
         return Math.abs(this.getPIDController().getError()) > deadband ? output : 0;
     }

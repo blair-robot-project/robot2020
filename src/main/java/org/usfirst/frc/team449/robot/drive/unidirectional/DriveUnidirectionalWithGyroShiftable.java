@@ -66,7 +66,6 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
      * @param override Whether or not to override autoshifting.
      */
     @Override
-    @Log
     public void setOverrideAutoshift(boolean override) {
         this.overrideAutoshift = override;
     }

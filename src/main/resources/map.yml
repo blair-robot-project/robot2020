@@ -263,6 +263,7 @@ subLog:
     - org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP:
         &gyroMP
         '@id': startToLeftCargoShip
+        name: startToLeftCargoShip
         absoluteTolerance: 2
         deadband: 2
         inverted: false
@@ -284,510 +285,511 @@ subLog:
           resetPosition: true
         timeout: 10
         startAngle: 0
-    - org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP:
-        <<: *gyroMP
-        '@id': startToRightCargoShip
-        left:
-          '@id': startToRightCargoShipLeft
-          filename: "robot2019LeftStartToFRProfile.csv"
-          inverted: false
-          resetPosition: true
-        right:
-          '@id': startToRightCargoShipRight
-          filename: "robot2019RightStartToFRProfile.csv"
-          inverted: false
-          resetPosition: true
-        startAngle: 0
-    - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-        &legElevator
-        '@id': backLegElevatorTalon
-        port: 7
-        name: "backLegElevatorTalon"
-        reverseOutput: false
-        reverseSensor: true
-        enableBrakeMode: true
-        remoteLimitSwitchID: 4
-        fwdLimitSwitchNormallyOpen: true
-        revLimitSwitchNormallyOpen: true
-        #1/7, 7:1
-        postEncoderGearing: 0.142857
-        #2.256*pi/12
-        feetPerRotation: 0.59061941887
-        currentLimit: 40
-        minNumPointsInBottomBuffer: 40
-        enableVoltageComp: true
-        feedbackDevice: QuadEncoder
-        encoderCPR: 1024
-        perGearSettings:
-          - maxSpeed: 17
-            kP: 0.3
-            feedForwardComponent:
-              org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                kVFwd: 0.422
-                kAFwd: 0.004
-                interceptVoltageFwd: 1.5
-                interceptVoltageRev: 0
-    - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-        <<: *legElevator
-        '@id': frontLegElevatorTalon
-        port: 8
-        name: "frontLegElevatorTalon"
-        reverseOutput: true
-        reverseSensor: false
-        remoteLimitSwitchID: 11
-        perGearSettings:
-          - maxSpeed: 17
-            kP: 0.3
-            feedForwardComponent:
-              org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                kVFwd: 0.422
-                kAFwd: 0.01416
-                interceptVoltageFwd: 5.467
-                interceptVoltageRev: 0
-    - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-        '@id': backLegDriveTalon
-        port: 10
-        name: "backLegDriveTalon"
-        reverseOutput: true
-        reverseSensor: true
-        enableBrakeMode: true
-        feetPerRotation: 1.047198
-        currentLimit: 30
-        minNumPointsInBottomBuffer: 40
-        enableVoltageComp: true
-        feedbackDevice: QuadEncoder
-        encoderCPR: 1024
-        perGearSettings:
-          - motionProfilePFwd: 0.5
-            maxSpeed: 7.5
-            kP: 0.5
-            feedForwardComponent:
-              org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
-                kVFwd: 0.89457
-                interceptVoltageFwd: 3.1415
-defaultCommands:
-  - subsystem:
-      org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-        drive
-    command:
-      org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
-        defaultDriveCommand
-  - subsystem:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-        '@id': sliderMotor
-        motor:
-          org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-            lateralSlider
-    command:
-      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
-        '@id': alignSlider
-        absoluteTolerance: 0
-        subsystem:
-          org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-            sliderMotor
-        inverted: true
-        processVariableSupplier:
-          org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
-            angularInput:
-              org.usfirst.frc.team449.robot.components.LimeLightComponent:
-                '@id': limelightX
-                value: x
-            distanceToTarget:
-              org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentSimple: {}
-        deadband: 0
-        kP: .3
-        kI: 0
-        kD: 0
-        setpoint: 0
-teleopStartupCommand:
-  org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
-    '@id': teleopStartupCommand
-    commandSet:
-      - org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.commands.StartCompressor:
-          '@id': startCompressor
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics:
-              pneumatics
-#      - org.usfirst.frc.team449.robot.commands.general.RunRunnables:
-#          '@id': runRunnables
-#          runnables:
-#            - org.usfirst.frc.team449.robot.components.TalonRumbleComponent:
-#                '@id': rumbleComponent
-#                talon:
-#                  org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-#                      lateralSlider
-#                joystick:
-#                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-#                    driverGamepad
-#                inverted: false
-#                rumbleAmount: 0.5
-buttons:
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.dPadButton:
-          '@id': forceLowGear
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              '@id': mechanismsGamepad
-              port: 2
-          angle: 180
-      command:
-        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
-          '@id': overrideAndShift
-          commandList:
-            - org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
-                '@id': overrideAutoshift
-                drive:
-                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-                    drive
-                override: true
-            - org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToLowGear:
-                '@id': downshift
-                subsystem:
-                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-                    drive
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.dPadButton:
-          forceLowGear
-      command:
-        org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
-          '@id': unoverrideAutoshift
-          drive:
-            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-              drive
-          override: false
-      action: WHEN_RELEASED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': releaseHatchButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              driverGamepad
-          buttonNumber: 1
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
-          '@id': releaseHatch
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-              '@id': hatchSolenoid
-              piston:
-                '@id': hatchPiston
-                module: 0
-                forward: 5
-                reverse: 4
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': secureHatchButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              driverGamepad
-          buttonNumber: 2
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
-          '@id': secureHatch
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-              hatchSolenoid
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.TriggerButton:
-          '@id': extendHatchMechButton
-          triggerAt: 0.5
-          throttle:
-            org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
-              '@id': mechRightTrigger
-              axis: 3
-              stick:
-                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                  mechanismsGamepad
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
-          '@id': extendHatchMech
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-              '@id': hatchMechExtenderSolenoid
-              piston:
-                '@id': hatchMechExtenderPiston
-                module: 0
-                forward: 2
-                reverse: 3
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.TriggerButton:
-          '@id': retractHatchMechButton
-          triggerAt: 0.5
-          throttle:
-            org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
-              '@id': mechLeftTrigger
-              axis: 2
-              stick:
-                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                  mechanismsGamepad
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
-          '@id': retractHatchMech
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-              hatchMechExtenderSolenoid
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': resetSlider
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsGamepad
-          buttonNumber: 1
-      command:
-        org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
-          '@id': disableTrackingSequence
-          commandSet:
-            - org.usfirst.frc.team449.robot.commands.limelight.SetTracking:
-                '@id': disableLimelight
-                track: false
-            - org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
-                '@id': ResetSlider
-                processVariableSupplier:
-                  org.usfirst.frc.team449.robot.components.TalonDataComponent:
-                    talon:
-                      org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-                        lateralSlider
-                    value: position
-                kP: .1
-                setpoint: 0
-                deadband: 0.1
-                subsystem:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-                    sliderMotor
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': stopResetSlider
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsGamepad
-          buttonNumber: 2
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
-          disableTrackingSequence
-      action: CANCEL_WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          stopResetSlider
-      command:
-        org.usfirst.frc.team449.robot.commands.limelight.SetTracking:
-          '@id': enableLimelight
-          track: true
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': cargoIntakeButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsGamepad
-          buttonNumber: 3
-      command:
-        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
-          '@id': lowerArmAndIntake
-          commandList:
-            - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
-                '@id': cargoIntakeCommand
-                subsystem:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-                    '@id': cargoSubsystem
-                    motor:
-                      org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-                        '@id': cargoMotor
-                        port: 11
-                        enableBrakeMode: false
-                        enableVoltageComp: true
-                        currentLimit: 30
-                        reverseOutput: false
-                    inFastVel: -1
-                    inSlowVel: -0.2
-                    outFastVel: 1
-                mode: IN_FAST
-            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
-                '@id': cargoArmDownCommand1
-                subsystem:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-                    '@id': cargoArmSolenoid
-                    piston:
-                      '@id': cargoArmPiston
-                      module: 1
-                      forward: 3
-                      reverse: 2
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          cargoIntakeButton
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
-          '@id': cargoIntakeOff
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-             cargoSubsystem
-          mode: IN_SLOW
-      action: WHEN_RELEASED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': cargoOutButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsGamepad
-          buttonNumber: 4
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
-          '@id': cargoOutCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-              cargoSubsystem
-          mode: OUT_FAST
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          cargoOutButton
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
-          '@id': cargoOutOff
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-              cargoSubsystem
-          mode: "OFF"
-      action: WHEN_RELEASED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': cargoArmUpButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsGamepad
-          buttonNumber: 5
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
-          '@id': cargoArmUpCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-              cargoArmSolenoid
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': cargoArmDownButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsGamepad
-          buttonNumber: 6
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
-          '@id': cargoArmDownCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-              cargoArmSolenoid
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': climbButtonLevel3
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              '@id': climbOverrideController
-              port: 3
-          buttonNumber: 4
-      command:
-        org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.Climb:
-          &climbCommand
-          '@id': climbLevel3
-          climber:
-            org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
-              '@id': climber
-              crawlVelocity: 0.1
-              backTalon:
-                org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-                  backLegElevatorTalon
-              frontTalon:
-                org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-                  frontLegElevatorTalon
-              driveTalon:
-                org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
-                  backLegDriveTalon
-              brakeBack:
-                '@id': backElevatorBrake
-                module: 0
-                forward: 7
-                reverse: 6
-              brakeFront:
-                '@id': frontElevatorBrake
-                module: 1
-                forward: 1
-                reverse: 0
-          drive:
-            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-              drive
-          hatchExtender:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-              hatchMechExtenderSolenoid
-          sliderMotor:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
-              sliderMotor
-          cargoArm:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
-              cargoArmSolenoid
-          cargoIntake:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-              cargoSubsystem
-          maxVelExtend: 0.5
-          maxAccelExtend: 0.5
-          maxVelRetract: 4
-          maxAccelRetract: 6
-          maxVelNudge: 0.7
-          maxAccelNudge: 0.7
-          #1.7 for level 3, 0.6 for level 2
-          extendDistance: 1.7
-          #12.169 / 12
-          nudge1Distance: 1.014
-          #11.072 / 12
-          nudge2Distance: 0.923
-          nudge3Distance: 1.1
-          heightOffset: 0.0001
-          velReduction: 0
-          stallVoltageBack: 2
-          stallVoltageFront: 4
-          crawlVelocity: 0.1
-          pneumatics:
-            org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics:
-              pneumatics
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': climbButtonLevel2
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              climbOverrideController
-          buttonNumber: 2
-      command:
-        org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.Climb:
-          <<: *climbCommand
-          '@id': climbLevel2
-          climber:
-            org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
-              climber
-          extendDistance: 0.6
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': abortButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              climbOverrideController
-          buttonNumber: 1
-      command:
-        org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.AbortClimb:
-          '@id': abortClimb
-          climber:
-            org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
-              climber
-          drive:
-            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-              drive
-      action: WHEN_PRESSED
+#    - org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP:
+#        <<: *gyroMP
+#        '@id': startToRightCargoShip
+#        name: startToRightCargoShip
+#        left:
+#          '@id': startToRightCargoShipLeft
+#          filename: "robot2019LeftStartToFRProfile.csv"
+#          inverted: false
+#          resetPosition: true
+#        right:
+#          '@id': startToRightCargoShipRight
+#          filename: "robot2019RightStartToFRProfile.csv"
+#          inverted: false
+#          resetPosition: true
+#        startAngle: 0
+#    - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+#        &legElevator
+#        '@id': backLegElevatorTalon
+#        port: 7
+#        name: "backLegElevatorTalon"
+#        reverseOutput: false
+#        reverseSensor: true
+#        enableBrakeMode: true
+#        remoteLimitSwitchID: 4
+#        fwdLimitSwitchNormallyOpen: true
+#        revLimitSwitchNormallyOpen: true
+#        #1/7, 7:1
+#        postEncoderGearing: 0.142857
+#        #2.256*pi/12
+#        feetPerRotation: 0.59061941887
+#        currentLimit: 40
+#        minNumPointsInBottomBuffer: 40
+#        enableVoltageComp: true
+#        feedbackDevice: QuadEncoder
+#        encoderCPR: 1024
+#        perGearSettings:
+#          - maxSpeed: 17
+#            kP: 0.3
+#            feedForwardComponent:
+#              org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
+#                kVFwd: 0.422
+#                kAFwd: 0.004
+#                interceptVoltageFwd: 1.5
+#                interceptVoltageRev: 0
+#    - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+#        <<: *legElevator
+#        '@id': frontLegElevatorTalon
+#        port: 8
+#        name: "frontLegElevatorTalon"
+#        reverseOutput: true
+#        reverseSensor: false
+#        remoteLimitSwitchID: 11
+#        perGearSettings:
+#          - maxSpeed: 17
+#            kP: 0.3
+#            feedForwardComponent:
+#              org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
+#                kVFwd: 0.422
+#                kAFwd: 0.01416
+#                interceptVoltageFwd: 5.467
+#                interceptVoltageRev: 0
+#    - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+#        '@id': backLegDriveTalon
+#        port: 10
+#        name: "backLegDriveTalon"
+#        reverseOutput: true
+#        reverseSensor: true
+#        enableBrakeMode: true
+#        feetPerRotation: 1.047198
+#        currentLimit: 30
+#        minNumPointsInBottomBuffer: 40
+#        enableVoltageComp: true
+#        feedbackDevice: QuadEncoder
+#        encoderCPR: 1024
+#        perGearSettings:
+#          - motionProfilePFwd: 0.5
+#            maxSpeed: 7.5
+#            kP: 0.5
+#            feedForwardComponent:
+#              org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardKaKvComponent:
+#                kVFwd: 0.89457
+#                interceptVoltageFwd: 3.1415
+#defaultCommands:
+#  - subsystem:
+#      org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#        drive
+#    command:
+#      org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
+#        defaultDriveCommand
+#  - subsystem:
+#      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+#        '@id': sliderMotor
+#        motor:
+#          org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+#            lateralSlider
+#    command:
+#      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
+#        '@id': alignSlider
+#        absoluteTolerance: 0
+#        subsystem:
+#          org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+#            sliderMotor
+#        inverted: true
+#        processVariableSupplier:
+#          org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
+#            angularInput:
+#              org.usfirst.frc.team449.robot.components.LimeLightComponent:
+#                '@id': limelightX
+#                value: x
+#            distanceToTarget:
+#              org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentSimple: {}
+#        deadband: 0
+#        kP: .3
+#        kI: 0
+#        kD: 0
+#        setpoint: 0
+#teleopStartupCommand:
+#  org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
+#    '@id': teleopStartupCommand
+#    commandSet:
+#      - org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.commands.StartCompressor:
+#          '@id': startCompressor
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics:
+#              pneumatics
+##      - org.usfirst.frc.team449.robot.commands.general.RunRunnables:
+##          '@id': runRunnables
+##          runnables:
+##            - org.usfirst.frc.team449.robot.components.TalonRumbleComponent:
+##                '@id': rumbleComponent
+##                talon:
+##                  org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+##                      lateralSlider
+##                joystick:
+##                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+##                    driverGamepad
+##                inverted: false
+##                rumbleAmount: 0.5
+#buttons:
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.dPadButton:
+#          '@id': forceLowGear
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              '@id': mechanismsGamepad
+#              port: 2
+#          angle: 180
+#      command:
+#        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+#          '@id': overrideAndShift
+#          commandList:
+#            - org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
+#                '@id': overrideAutoshift
+#                drive:
+#                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#                    drive
+#                override: true
+#            - org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToLowGear:
+#                '@id': downshift
+#                subsystem:
+#                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#                    drive
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.dPadButton:
+#          forceLowGear
+#      command:
+#        org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
+#          '@id': unoverrideAutoshift
+#          drive:
+#            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#              drive
+#          override: false
+#      action: WHEN_RELEASED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': releaseHatchButton
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              driverGamepad
+#          buttonNumber: 1
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+#          '@id': releaseHatch
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+#              '@id': hatchSolenoid
+#              piston:
+#                '@id': hatchPiston
+#                module: 0
+#                forward: 5
+#                reverse: 4
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': secureHatchButton
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              driverGamepad
+#          buttonNumber: 2
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+#          '@id': secureHatch
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+#              hatchSolenoid
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.TriggerButton:
+#          '@id': extendHatchMechButton
+#          triggerAt: 0.5
+#          throttle:
+#            org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+#              '@id': mechRightTrigger
+#              axis: 3
+#              stick:
+#                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#                  mechanismsGamepad
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+#          '@id': extendHatchMech
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+#              '@id': hatchMechExtenderSolenoid
+#              piston:
+#                '@id': hatchMechExtenderPiston
+#                module: 0
+#                forward: 2
+#                reverse: 3
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.TriggerButton:
+#          '@id': retractHatchMechButton
+#          triggerAt: 0.5
+#          throttle:
+#            org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+#              '@id': mechLeftTrigger
+#              axis: 2
+#              stick:
+#                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#                  mechanismsGamepad
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+#          '@id': retractHatchMech
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+#              hatchMechExtenderSolenoid
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': resetSlider
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              mechanismsGamepad
+#          buttonNumber: 1
+#      command:
+#        org.usfirst.frc.team449.robot.commands.general.ParallelCommandGroup:
+#          '@id': disableTrackingSequence
+#          commandSet:
+#            - org.usfirst.frc.team449.robot.commands.limelight.SetTracking:
+#                '@id': disableLimelight
+#                track: false
+#            - org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
+#                '@id': ResetSlider
+#                processVariableSupplier:
+#                  org.usfirst.frc.team449.robot.components.TalonDataComponent:
+#                    talon:
+#                      org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+#                        lateralSlider
+#                    value: position
+#                kP: .1
+#                setpoint: 0
+#                deadband: 0.1
+#                subsystem:
+#                  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+#                    sliderMotor
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': stopResetSlider
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              mechanismsGamepad
+#          buttonNumber: 2
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogPIDCommand:
+#          disableTrackingSequence
+#      action: CANCEL_WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          stopResetSlider
+#      command:
+#        org.usfirst.frc.team449.robot.commands.limelight.SetTracking:
+#          '@id': enableLimelight
+#          track: true
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': cargoIntakeButton
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              mechanismsGamepad
+#          buttonNumber: 3
+#      command:
+#        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+#          '@id': lowerArmAndIntake
+#          commandList:
+#            - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
+#                '@id': cargoIntakeCommand
+#                subsystem:
+#                  org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+#                    '@id': cargoSubsystem
+#                    motor:
+#                      org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+#                        '@id': cargoMotor
+#                        port: 11
+#                        enableBrakeMode: false
+#                        enableVoltageComp: true
+#                        currentLimit: 30
+#                        reverseOutput: false
+#                    inFastVel: -1
+#                    inSlowVel: -0.2
+#                    outFastVel: 1
+#                mode: IN_FAST
+#            - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+#                '@id': cargoArmDownCommand1
+#                subsystem:
+#                  org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+#                    '@id': cargoArmSolenoid
+#                    piston:
+#                      '@id': cargoArmPiston
+#                      module: 1
+#                      forward: 3
+#                      reverse: 2
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          cargoIntakeButton
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
+#          '@id': cargoIntakeOff
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+#             cargoSubsystem
+#          mode: IN_SLOW
+#      action: WHEN_RELEASED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': cargoOutButton
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              mechanismsGamepad
+#          buttonNumber: 4
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
+#          '@id': cargoOutCommand
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+#              cargoSubsystem
+#          mode: OUT_FAST
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          cargoOutButton
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
+#          '@id': cargoOutOff
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+#              cargoSubsystem
+#          mode: "OFF"
+#      action: WHEN_RELEASED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': cargoArmUpButton
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              mechanismsGamepad
+#          buttonNumber: 5
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse:
+#          '@id': cargoArmUpCommand
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+#              cargoArmSolenoid
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': cargoArmDownButton
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              mechanismsGamepad
+#          buttonNumber: 6
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidForward:
+#          '@id': cargoArmDownCommand
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+#              cargoArmSolenoid
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': climbButtonLevel3
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              '@id': climbOverrideController
+#              port: 3
+#          buttonNumber: 4
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.Climb:
+#          &climbCommand
+#          '@id': climbLevel3
+#          climber:
+#            org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
+#              '@id': climber
+#              crawlVelocity: 0.1
+#              backTalon:
+#                org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+#                  backLegElevatorTalon
+#              frontTalon:
+#                org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+#                  frontLegElevatorTalon
+#              driveTalon:
+#                org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+#                  backLegDriveTalon
+#              brakeBack:
+#                '@id': backElevatorBrake
+#                module: 0
+#                forward: 7
+#                reverse: 6
+#              brakeFront:
+#                '@id': frontElevatorBrake
+#                module: 1
+#                forward: 1
+#                reverse: 0
+#          drive:
+#            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#              drive
+#          hatchExtender:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+#              hatchMechExtenderSolenoid
+#          sliderMotor:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+#              sliderMotor
+#          cargoArm:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+#              cargoArmSolenoid
+#          cargoIntake:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+#              cargoSubsystem
+#          maxVelExtend: 0.5
+#          maxAccelExtend: 0.5
+#          maxVelRetract: 4
+#          maxAccelRetract: 6
+#          maxVelNudge: 0.7
+#          maxAccelNudge: 0.7
+#          #1.7 for level 3, 0.6 for level 2
+#          extendDistance: 1.7
+#          #12.169 / 12
+#          nudge1Distance: 1.014
+#          #11.072 / 12
+#          nudge2Distance: 0.923
+#          nudge3Distance: 1.1
+#          heightOffset: 0.0001
+#          velReduction: 0
+#          stallVoltageBack: 2
+#          stallVoltageFront: 4
+#          crawlVelocity: 0.1
+#          pneumatics:
+#            org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics:
+#              pneumatics
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': climbButtonLevel2
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              climbOverrideController
+#          buttonNumber: 2
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.Climb:
+#          <<: *climbCommand
+#          '@id': climbLevel2
+#          climber:
+#            org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
+#              climber
+#          extendDistance: 0.6
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': abortButton
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              climbOverrideController
+#          buttonNumber: 1
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.commands.AbortClimb:
+#          '@id': abortClimb
+#          climber:
+#            org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
+#              climber
+#          drive:
+#            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#              drive
+#      action: WHEN_PRESSED
 #    - button:
 #        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
 #          '@id': retractElevatorsButton
@@ -899,5 +901,5 @@ updater:
       - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
       - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS: navX
       - org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
-      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic: mechRightTrigger
-      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic: mechLeftTrigger
+#      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic: mechRightTrigger
+#      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic: mechLeftTrigger

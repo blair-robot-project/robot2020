@@ -100,7 +100,6 @@ public class OIArcadeWithDPad extends OIArcade {
      * both from [-1, 1]
      */
     @Override
-    @Log
     public double[] getFwdRotOutput() {
         fwd = fwdThrottle.getValue();
 

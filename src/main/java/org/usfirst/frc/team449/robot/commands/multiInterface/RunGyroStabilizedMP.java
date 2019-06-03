@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
@@ -20,6 +21,11 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideM
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class RunGyroStabilizedMP<T extends Subsystem & SubsystemMPManualTwoSides & SubsystemAHRS> extends PIDAngleCommand {
+
+    /**
+     * The name of this command.
+     */
+    private String name;
 
     /**
      * The output of the PID loop. Field to avoid garbage collection.
@@ -34,6 +40,7 @@ public class RunGyroStabilizedMP<T extends Subsystem & SubsystemMPManualTwoSides
     /**
      * The subsystem to run this command on
      */
+    @Log.Exclude
     protected final T subsystem;
 
     /**
@@ -79,7 +86,8 @@ public class RunGyroStabilizedMP<T extends Subsystem & SubsystemMPManualTwoSides
      * @param startAngle The angle that the profile starts at. Defaults to 0.
      */
     @JsonCreator
-    public RunGyroStabilizedMP(double absoluteTolerance,
+    public RunGyroStabilizedMP(@Nullable String name,
+                               double absoluteTolerance,
                                @Nullable BufferTimer onTargetBuffer,
                                double minimumOutput,
                                @Nullable Double maximumOutput,
@@ -95,6 +103,7 @@ public class RunGyroStabilizedMP<T extends Subsystem & SubsystemMPManualTwoSides
                                double startAngle) {
         super(absoluteTolerance, onTargetBuffer, minimumOutput, maximumOutput, loopTimeMillis, deadband, inverted, subsystem, kP, kI, kD);
 
+        this.name = name != null ? name : getClass().getSimpleName();
         this.subsystem = subsystem;
         this.timeout = (long) (timeout * 1000.);
         this.left = left;
@@ -152,4 +161,8 @@ public class RunGyroStabilizedMP<T extends Subsystem & SubsystemMPManualTwoSides
         //Logger.addEvent("RunProfile end.", this.getClass());
     }
 
+    @Override
+    public String configureLogName() {
+        return this.name;
+    }
 }

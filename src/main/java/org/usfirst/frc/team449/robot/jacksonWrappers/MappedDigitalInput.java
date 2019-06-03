@@ -30,6 +30,7 @@ public class MappedDigitalInput extends DigitalInput implements Loggable {
      * @return the status of the digital input
      */
     @Override
+    @Log
     public boolean get() {
         return !super.get(); //true is off by default in WPILib, and that's dumb
     }
@@ -66,9 +67,4 @@ public class MappedDigitalInput extends DigitalInput implements Loggable {
 //    public String getLogName() {
 //        return "DigitalInput" + this.getChannel();
 //    }
-
-    @Log
-    public Object[] getStatusOfTheDigitalInput (){
-        return new Object[]{this.get()};
-    }
 }

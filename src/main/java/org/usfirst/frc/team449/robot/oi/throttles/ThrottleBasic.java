@@ -114,7 +114,12 @@ public class ThrottleBasic implements Throttle, PIDSource {
         return (inverted ? -1 : 1) * stick.getRawAxis(axis);
     }
 
-//    /**
+    @Override
+    public String configureLogName() {
+        return "Throttle " + stick.getName() + " axis " + axis;
+    }
+
+    //    /**
 //     * Get the headers for the data this subsystem logs every loop.
 //     *
 //     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().

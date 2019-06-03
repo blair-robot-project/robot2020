@@ -105,11 +105,11 @@ public class Pneumatics extends Subsystem implements Loggable {
 //    }
 
     @Log
-    public Object[] getPressure(){
+    public double getPressure(){
         if (pressureSensor == null) {
-            return new Object[]{-1};
+            return -1;
         } else {
-            return new Object[]{pressureSensor.getPressure()};
+            return pressureSensor.getPressure();
         }
     }
 }

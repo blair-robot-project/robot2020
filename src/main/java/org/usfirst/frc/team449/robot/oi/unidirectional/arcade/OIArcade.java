@@ -56,7 +56,6 @@ public abstract class OIArcade implements OIUnidirectional {
      * @return An array of length 2, where the 1st element is the output for the left and the second for the right, both
      * from [-1, 1].
      */
-    @Log
     public double[] getLeftRightOutput() {
         fwdRotOutputCached = getFwdRotOutput();
         tmpLeft = fwdRotOutputCached[0] + fwdRotOutputCached[1];
@@ -90,7 +89,6 @@ public abstract class OIArcade implements OIUnidirectional {
      * @return An array of length 2, where the 1st element is the output for the left and the second for the right, both
      * from [-1, 1].
      */
-    @Log
     public double[] getLeftRightOutputCached() {
         return leftRightOutputCached;
     }
@@ -102,7 +100,6 @@ public abstract class OIArcade implements OIUnidirectional {
      * both from [-1, 1]
      */
     @Override
-    @Log
     public double[] getFwdRotOutputCached() {
         return fwdRotOutputCached;
     }

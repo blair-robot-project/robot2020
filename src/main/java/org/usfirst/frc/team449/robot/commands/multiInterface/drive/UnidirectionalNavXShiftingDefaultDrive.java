@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.AutoshiftComponent;
@@ -29,6 +30,7 @@ public class UnidirectionalNavXShiftingDefaultDrive<T extends Subsystem & DriveU
      * The drive to execute this command on.
      */
     @NotNull
+    @Log.Exclude
     protected final T subsystem;
 
     /**

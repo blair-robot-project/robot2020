@@ -27,6 +27,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
      * The drive this command is controlling.
      */
     @NotNull
+    @Log.Exclude
     protected final T subsystem;
     /**
      * The OI giving the input stick values.
@@ -270,11 +271,6 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
     @Log
     public boolean isDrivingStraight(){
         return drivingStraight;
-    }
-
-    @Log
-    public boolean thusIsRunning(){
-        return this.isRunning();
     }
 
     @Log
