@@ -28,7 +28,7 @@ public class Robot extends TimedRobot {
     public static final String RESOURCES_PATH_REAL = "/home/lvuser/449_resources/";
 
     /**
-     * The absolute filepath to the resources folder containing the config files when the robot is simulated.
+     * The relative filepath to the resources folder containing the config files when the robot is simulated.
      */
     @NotNull
     public static final String RESOURCES_PATH_SIMULATED = "./src/main/resources/";
