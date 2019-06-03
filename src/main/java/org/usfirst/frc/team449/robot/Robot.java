@@ -34,7 +34,7 @@ public class Robot extends TimedRobot {
     public static final String RESOURCES_PATH_SIMULATED = "./src/main/resources/";
 
     /**
-     * The absolute filepath to the resources folder containing the config files.
+     * The filepath to the resources folder containing the config files.
      */
     @NotNull
     public static String RESOURCES_PATH;
