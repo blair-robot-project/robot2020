@@ -500,7 +500,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     protected Double encoderToFPS(double encoderReading) {
         RPS = nativeToRPS(encoderReading);
         if (RPS == null) {
-            return null;
+            return Double.NaN;
         }
         return RPS * postEncoderGearing * feetPerRotation;
     }
@@ -590,7 +590,6 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
      */
-    @Nullable
     @Log
     public Double getVelocity() {
         return encoderToFPS(canTalon.getSelectedSensorVelocity(0));

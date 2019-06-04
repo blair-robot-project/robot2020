@@ -131,8 +131,8 @@ public class Robot extends TimedRobot {
 
         //Run startup command if we start in teleop.
         if (!enabled) {
-            if (robotMap.getStartupCommand() != null) {
-                robotMap.getStartupCommand().start();
+            if (robotMap.getRobotStartupCommand() != null) {
+                robotMap.getRobotStartupCommand().start();
             }
             enabled = true;
         }
@@ -165,8 +165,8 @@ public class Robot extends TimedRobot {
 
         //Run startup command if we start in auto.
         if (!enabled) {
-            if (robotMap.getStartupCommand() != null) {
-                robotMap.getStartupCommand().start();
+            if (robotMap.getRobotStartupCommand() != null) {
+                robotMap.getRobotStartupCommand().start();
             }
             enabled = true;
         }
@@ -211,8 +211,8 @@ public class Robot extends TimedRobot {
     public void testInit() {
         //Run startup command if we start in test mode.
         if (!enabled) {
-            if (robotMap.getStartupCommand() != null) {
-                robotMap.getStartupCommand().start();
+            if (robotMap.getRobotStartupCommand() != null) {
+                robotMap.getRobotStartupCommand().start();
             }
             enabled = true;
         }

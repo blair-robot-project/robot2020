@@ -31,6 +31,6 @@ public class JavaModule extends SimpleModule {
         super.setupModule(context);
         context.setMixInAnnotations(DoubleUnaryOperator.class, DoubleUnaryOperatorMixIn.class);
         context.setMixInAnnotations(DoubleSupplier.class, DoubleSupplierMixIn.class);
-        context.setMixInAnnotations(Loggable.class, LoggableMixIn.class);
+//        context.setMixInAnnotations(Loggable.class, LoggableMixIn.class);
     }
 }
