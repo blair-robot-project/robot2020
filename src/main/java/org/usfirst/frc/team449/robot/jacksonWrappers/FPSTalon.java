@@ -10,7 +10,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -28,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Objects.requireNonNullElse;
+
 /**
  * Component wrapper on the CTRE {@link TalonSRX}, with unit conversions to/from FPS built in. Every non-unit-conversion
  * in this class takes arguments in post-gearing FPS.
@@ -42,10 +46,12 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      */
     @NotNull
     protected final TalonSRX canTalon;
+
     /**
      * The PDP this Talon is connected to.
      */
     @Nullable
+    @Log.Exclude
     protected final PDP PDP;
     /**
      * The counts per rotation of the encoder being used, or null if there is no encoder.
@@ -322,13 +328,13 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             //Only enable the software limits if they were given a value and there's an encoder.
             if (fwdSoftLimit != null) {
                 canTalon.configForwardSoftLimitEnable(true, 0);
-                canTalon.configForwardSoftLimitThreshold(feetToEncoder(fwdSoftLimit).intValue(), 0);
+                canTalon.configForwardSoftLimitThreshold((int) feetToEncoder(fwdSoftLimit), 0);
             } else {
                 canTalon.configForwardSoftLimitEnable(false, 0);
             }
             if (revSoftLimit != null) {
                 canTalon.configReverseSoftLimitEnable(true, 0);
-                canTalon.configReverseSoftLimitThreshold(feetToEncoder(revSoftLimit).intValue(), 0);
+                canTalon.configReverseSoftLimitThreshold((int) feetToEncoder(revSoftLimit), 0);
             } else {
                 canTalon.configReverseSoftLimitEnable(false, 0);
             }
@@ -412,6 +418,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @return The gear this subsystem is currently in.
      */
     @Override
+    @Log
     public int getGear() {
         return currentGearSettings.getGear();
     }
@@ -445,9 +452,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
 
         //Set motion magic stuff
         if (currentGearSettings.motionMagicMaxVel != null) {
-            canTalon.configMotionCruiseVelocity(FPSToEncoder(currentGearSettings.getMotionMagicMaxVel()).intValue(), 0);
+            canTalon.configMotionCruiseVelocity((int) FPSToEncoder(currentGearSettings.getMotionMagicMaxVel()), 0);
             //We can convert accel the same way we do vel because both are per second.
-            canTalon.configMotionAcceleration(FPSToEncoder(currentGearSettings.getMotionMagicMaxAccel()).intValue(), 0);
+            canTalon.configMotionAcceleration((int) FPSToEncoder(currentGearSettings.getMotionMagicMaxAccel()), 0);
         }
 
         //Set PID stuff
@@ -465,10 +472,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @param nativeUnits A distance native units as measured by the encoder.
      * @return That distance in feet, or null if no encoder CPR was given.
      */
-    @Nullable
-    protected Double encoderToFeet(double nativeUnits) {
+    protected double encoderToFeet(double nativeUnits) {
         if (encoderCPR == null) {
-            return null;
+            return Double.NaN;
         }
         return nativeUnits / (encoderCPR * 4) * postEncoderGearing * feetPerRotation;
     }
@@ -480,10 +486,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @param feet A distance in feet.
      * @return That distance in native units as measured by the encoder, or null if no encoder CPR was given.
      */
-    @Nullable
-    protected Double feetToEncoder(double feet) {
+    protected double feetToEncoder(double feet) {
         if (encoderCPR == null) {
-            return null;
+            return Double.NaN;
         }
         return feet / feetPerRotation * (encoderCPR * 4) / postEncoderGearing;
     }
@@ -496,8 +501,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if no encoder CPR
      * was given.
      */
-    @Nullable
-    protected Double encoderToFPS(double encoderReading) {
+    protected double encoderToFPS(double encoderReading) {
         RPS = nativeToRPS(encoderReading);
         if (RPS == null) {
             return Double.NaN;
@@ -512,8 +516,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @param FPS The velocity of the output shaft, in FPS.
      * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was given.
      */
-    @Nullable
-    protected Double FPSToEncoder(double FPS) {
+    protected double FPSToEncoder(double FPS) {
         return RPSToNative((FPS / postEncoderGearing) / feetPerRotation);
     }
 
@@ -541,10 +544,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @return That velocity in CANTalon native units, or null if no encoder CPR was given.
      */
     @Contract(pure = true)
-    @Nullable
-    private Double RPSToNative(double RPS) {
+    private double RPSToNative(double RPS) {
         if (encoderCPR == null) {
-            return null;
+            return Double.NaN;
         }
         return (RPS / 10) * (encoderCPR * 4); //4 edges per count, and 10 100ms per second.
     }
@@ -557,7 +559,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     public void setPositionSetpoint(double feet) {
         setpoint = feet;
         nativeSetpoint = feetToEncoder(feet);
-        if (currentGearSettings.getMotionMagicMaxVel() != null) {
+        if (currentGearSettings.getMotionMagicMaxVel() != Double.NaN) {
             motionMagicNotifier.stop();
             //We don't know the setpoint for motion magic so we can't do fancy F stuff
             canTalon.config_kF(0, 0, 0);
@@ -627,8 +629,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return The closed-loop error in FPS, or null if no encoder CPR was given.
      */
-    @Nullable
-    public Double getError() {
+    @Log
+    public double getError() {
         if (canTalon.getControlMode().equals(ControlMode.Velocity)) {
             return encoderToFPS(canTalon.getClosedLoopError(0));
         } else {
@@ -642,6 +644,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @return The setpoint in sensible units for the current control mode.
      */
     @Nullable
+    @Log
     public Double getSetpoint() {
         return setpoint;
     }
@@ -651,6 +654,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return Voltage in volts.
      */
+    @Log
     public double getOutputVoltage() {
         return canTalon.getMotorOutputVoltage();
     }
@@ -660,6 +664,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return Voltage in volts.
      */
+    @Log
     public double getBatteryVoltage() {
         return canTalon.getBusVoltage();
     }
@@ -669,6 +674,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return Current in amps.
      */
+    @Log
     public double getOutputCurrent() {
         return canTalon.getOutputCurrent();
     }
@@ -678,6 +684,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return Control mode as a string.
      */
+    @Log
     public String getControlMode() {
         return String.valueOf(canTalon.getControlMode());
     }
@@ -725,6 +732,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     /**
      * @return the position of the talon in feet, or null of inches per rotation wasn't given.
      */
+    @Log
     public Double getPositionFeet() {
         return encoderToFeet(canTalon.getSelectedSensorPosition(0));
     }
@@ -741,6 +749,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return True if the forwards limit switch is closed, false if it's open or doesn't exist.
      */
+    @Log
     public boolean getFwdLimitSwitch() {
         return fwdLimitSwitchNormallyOpen == canTalon.getSensorCollection().isFwdLimitSwitchClosed();
     }
@@ -750,16 +759,19 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return True if the reverse limit switch is closed, false if it's open or doesn't exist.
      */
+    @Log
     public boolean getRevLimitSwitch() {
         return revLimitSwitchNormallyOpen == canTalon.getSensorCollection().isRevLimitSwitchClosed();
     }
 
+    @Log
     public boolean isInhibitedForward() {
 
         canTalon.getFaults(faults);
         return faults.ForwardLimitSwitch;
     }
 
+    @Log
     public boolean isInhibitedReverse(){
         canTalon.getFaults(faults);
         return faults.ReverseLimitSwitch;
@@ -1262,9 +1274,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         /**
          * @return The maximum velocity for motion magic mode, in FPS. Can be null to not use motion magic.
          */
-        @Nullable
-        public Double getMotionMagicMaxVel() {
-            return motionMagicMaxVel;
+        public double getMotionMagicMaxVel() {
+            return requireNonNullElse(motionMagicMaxVel, Double.NaN);
         }
 
         /**
@@ -1278,5 +1289,10 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     @Override
     public String configureLogName() {
         return name;
+    }
+
+    @Override
+    public LayoutType configureLayoutType() {
+        return BuiltInLayouts.kGrid;
     }
 }
