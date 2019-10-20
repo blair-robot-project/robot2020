@@ -959,10 +959,26 @@ buttons:
 #            org.usfirst.frc.team449.robot.subsystem.singleImplementation.climber2019.SubsystemClimber2019:
 #              climber
 #      action: WHEN_PRESSED
+#autoStartupCommand:
+#  org.usfirst.frc.team449.robot.commands.limelight.SetTracking:
+#    '@id': tracking
+#    track: false
 autoStartupCommand:
-  org.usfirst.frc.team449.robot.commands.limelight.SetTracking:
-    '@id': tracking
-    track: false
+  org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.GetPathFromJetson:
+    '@id': getPath
+    pathRequester:
+      '@id': pathRequester
+      address: "tcp://10.4.49.2:5800"
+      wheelbase: 2.4
+    waypoints:
+      - x: 10
+        y: 0
+        theta: 0
+    maxVel: 7
+    maxAccel: 12
+    maxJerk: 16
+    deltaTime: 0.02
+    resetPosition: true
 #autoStartupCommand:
 #  org.usfirst.frc.team449.robot.commands.autonomous.Auto2018SingleHatch:
 #    '@id': autoCommand

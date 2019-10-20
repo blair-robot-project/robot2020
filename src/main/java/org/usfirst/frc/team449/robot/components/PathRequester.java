@@ -68,19 +68,35 @@ public class PathRequester {
      * @param maxJerk   The maximum jerk, in units/(second^3)
      */
     public void requestPath(Waypoint[] waypoints, double deltaTime, double maxVel, double maxAccel, double maxJerk) {
+        System.out.println("+++REQUEST PATH&&&&&&&&&&&&&&&++++++++++++++++&&&&&&&&&&&&++++++++++++");
+
         //Send the request
         pathRequest = PathRequestOuterClass.PathRequest.newBuilder();
+        System.out.println(1);
         for (Waypoint waypoint : waypoints) {
+            System.out.println(2);
             pathRequest.addX(waypoint.getX());
+            System.out.println(3);
             pathRequest.addY(waypoint.getY());
+            System.out.println(4);
             pathRequest.addTheta(waypoint.getThetaRadians());
+            System.out.println(5);
         }
+        System.out.println(6);
         pathRequest.setDt((int) (deltaTime * 1000)); //Convert to milliseconds
+        System.out.println(7);
         pathRequest.setMaxVel(maxVel);
+        System.out.println(8);
         pathRequest.setMaxAccel(maxAccel);
+        System.out.println(9);
         pathRequest.setMaxJerk(maxJerk);
+        System.out.println(10);
         pathRequest.setWheelbase(wheelbase);
-        socket.send(pathRequest.build().toByteArray());
+        System.out.println(11);
+        byte[] bytes = pathRequest.build().toByteArray();
+        System.out.println(12);
+        socket.send(bytes);
+        System.out.println("+++!!!!!END REQUEST PATH&&&&&&&&&&&&&&&++++++++++++++++&&&&&&&&&&&&++++++++++++");
     }
 
     /**
@@ -93,6 +109,7 @@ public class PathRequester {
      */
     @Nullable
     public MotionProfileData[] getPath(boolean inverted, boolean resetPosition) {
+        System.out.println("++++++GET PATH++++++++++++++++++++++++++++++++");
         //Read from Jetson
         output = socket.recv(ZMQ.NOBLOCK);
         if (output == null) {
@@ -115,6 +132,18 @@ public class PathRequester {
             System.out.println("Error reading proto!");
             e.printStackTrace();
             return null;
+        }
+
+        // code for path gen
+        double[][] leftData = leftMotionProfileData.getData();
+        double[][] rightData = rightMotionProfileData.getData();
+        for (double[] leftDataRow : leftData) {
+            System.out.println(Arrays.toString(leftDataRow));
+        }
+        if (rightMotionProfileData != null) {
+            for (double[] rightDataRow : rightData) {
+                System.out.println(Arrays.toString(rightDataRow));
+            }
         }
 
         //Return stuff
