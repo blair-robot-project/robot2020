@@ -13,6 +13,9 @@ import org.zeromq.ZMQ;
 import proto.PathOuterClass;
 import proto.PathRequestOuterClass;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Arrays;
 
 /**
@@ -137,14 +140,29 @@ public class PathRequester {
         // code for path gen
         double[][] leftData = leftMotionProfileData.getData();
         double[][] rightData = rightMotionProfileData.getData();
+
+        File pathOutput = new File("/home/lvuser/test/pathOutput.txt");
+        PrintWriter pathOutputWriter = null;
+        try {
+            pathOutput.createNewFile();
+            pathOutputWriter = new PrintWriter(pathOutput);
+            pathOutputWriter.flush();
+        } catch (IOException e) {}
+
         for (double[] leftDataRow : leftData) {
+            pathOutputWriter.println(Arrays.toString(leftDataRow));
             System.out.println(Arrays.toString(leftDataRow));
         }
+        pathOutputWriter.println("----------------------");
+        System.out.println("----------------------");
         if (rightMotionProfileData != null) {
             for (double[] rightDataRow : rightData) {
+                pathOutputWriter.println(Arrays.toString(rightDataRow));
                 System.out.println(Arrays.toString(rightDataRow));
             }
         }
+
+        pathOutputWriter.close();
 
         //Return stuff
         if (rightMotionProfileData == null) {

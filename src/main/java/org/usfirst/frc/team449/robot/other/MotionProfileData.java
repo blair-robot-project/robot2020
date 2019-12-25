@@ -118,7 +118,7 @@ public class MotionProfileData {
         this.velocityOnly = velocityOnly;
         this.resetPosition = resetPosition;
         this.pointTimeMillis = (int) (deltaTime * 1000.);
-        data = new double[pos.size()][3];
+        data = new double[pos.size()][4];
         for (int i = 0; i < pos.size(); i++) {
             data[i][0] = pos.get(i) * invertMult;
             data[i][1] = vel.get(i) * invertMult;

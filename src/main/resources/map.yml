@@ -900,44 +900,6 @@ buttons:
           maxVelRetract: 4
           maxAccelRetract: 6
       action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.dPadButton:
-          '@id': secondHatchAutoButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsGamepad
-          angle: 0
-      command:
-        org.usfirst.frc.team449.robot.commands.autonomous.Auto2019SecondHatch:
-          '@id': secondHatchAuto
-          hatchMech:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: hatchSolenoid
-          leftToLoadRevCommand:
-            org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: leftCargoShipToLoadRev
-          rightToLoadRevCommand:
-            org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: rightCargoShipToLoadRev
-          toLoadFwdCommand:
-            org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: cargoShipToLoadFwd
-          leftLoadToFwdCommand:
-            org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: leftLoadToCargoShipFwd
-          rightLoadToFwdCommand:
-            org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: rightLoadToCargoShipFwd
-          leftLoadToRevCommand:
-            org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: leftLoadToCargoShipRev
-          rightLoadToRevCommand:
-            org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: rightLoadToCargoShipRev
-          navXTurnToAngleCommand:
-            org.usfirst.frc.team449.robot.commands.multiInterface.drive.NavXTurnToAngle:
-              '@id': autoToLoadTurnCommand
-              setpoint: 180
-              subsystem:
-                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-                  drive
-              timeout: 2
-              absoluteTolerance: 2
-          startingSideSwitch:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput: digitalInput
-      action: WHEN_PRESSED
 #    - button:
 #        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
 #          '@id': testLiftButton
@@ -963,6 +925,22 @@ buttons:
 #  org.usfirst.frc.team449.robot.commands.limelight.SetTracking:
 #    '@id': tracking
 #    track: false
+#autoStartupCommand:
+#  org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.GetPathFromJetson:
+#    '@id': getPath
+#    pathRequester:
+#      '@id': pathRequester
+#      address: "tcp://10.4.49.2:5800"
+#      wheelbase: 2.4
+#    waypoints:
+#      - x: 20
+#        y: 10
+#        theta: 5
+#    maxVel: 7
+#    maxAccel: 12
+#    maxJerk: 16
+#    deltaTime: 0.02
+#    resetPosition: true
 autoStartupCommand:
   org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.GetPathFromJetson:
     '@id': getPath
@@ -970,61 +948,23 @@ autoStartupCommand:
       '@id': pathRequester
       address: "tcp://10.4.49.2:5800"
       wheelbase: 2.4
-    waypoints:
-      - x: 10
-        y: 0
-        theta: 0
     maxVel: 7
     maxAccel: 12
     maxJerk: 16
     deltaTime: 0.02
     resetPosition: true
-#autoStartupCommand:
-#  org.usfirst.frc.team449.robot.commands.autonomous.Auto2018SingleHatch:
-#    '@id': autoCommand
-#    adjustCommand:
-#      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.FollowDoubleSupplier:
-#        <<: *autoadjust
-#        '@id': autoautoadjust
-#        subsystem:
-#          org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorRawPosition:
-#            sliderMotor
-#        doubleSupplier:
-#          org.usfirst.frc.team449.robot.components.LimeLightAngularToDistanceComponent:
-#            angularInput:
-#              org.usfirst.frc.team449.robot.components.LimeLightComponent:
-#                limelightX
-#            distanceToTarget:
-#              org.usfirst.frc.team449.robot.components.LimeLightDistanceComponentSimple: {}
-#    drive:
-#      org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
-#    hatchMech:
-#      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: hatchSolenoid
-#    angularCompliance:
-#      org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple: hatchMechExtenderSolenoid
-#    leftDriveCommand:
-#      org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: startToLeftCargoShip
-#    rightDriveCommand:
-#      org.usfirst.frc.team449.robot.commands.multiInterface.RunGyroStabilizedMP: startToRightCargoShip
-#    startingSideSwitch:
-#      org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput: digitalInput
-#    driveDefaultCommand:
-#      org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
-#        <<: *defaultDriveCommand
-#        '@id': autoDefaultDriveCommand
-#        driveStraightLoopEntryTimer:
-#          driveStraightLoopEntryTimer
-#        autoshiftComponent:
-#          autoshiftComponent
-#    compressor:
-#      org.usfirst.frc.team449.robot.subsystem.singleImplementation.pneumatics.Pneumatics: pneumatics
-#autoStartupCommand:
-#  org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.commands.AnalogMotorVoltageRamp:
-#    '@id': characterizeSlider
-#    subsystem:
-#      org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorRawPosition:
-#        sliderMotor
-#    voltsPerSecond: 0.5
+    xSupplier:
+      org.usfirst.frc.team449.robot.components.LimeLightComponent:
+        '@id': limelightX
+        value: x
+    ySupplier:
+      org.usfirst.frc.team449.robot.components.LimeLightComponent:
+        '@id': limelightY
+        value: y
+    thetaSupplier:
+      org.usfirst.frc.team449.robot.components.LimeLightComponent:
+        '@id': limelightYaw
+        value: yaw
 #autoStartupCommand:
 #    org.usfirst.frc.team449.robot.commands.general.CommandSequence:
 #        '@id': characterizeDrive
