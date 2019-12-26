@@ -942,29 +942,40 @@ buttons:
 #    deltaTime: 0.02
 #    resetPosition: true
 autoStartupCommand:
-  org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.GetPathFromJetson:
+  org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.GetPathFromWPI:
     '@id': getPath
-    pathRequester:
-      '@id': pathRequester
-      address: "tcp://10.4.49.2:5800"
-      wheelbase: 2.4
+    waypoints:
+      - x: 20
+        y: 10
+        theta: 5
     maxVel: 7
     maxAccel: 12
-    maxJerk: 16
     deltaTime: 0.02
     resetPosition: true
-    xSupplier:
-      org.usfirst.frc.team449.robot.components.LimeLightComponent:
-        '@id': limelightX
-        value: x
-    ySupplier:
-      org.usfirst.frc.team449.robot.components.LimeLightComponent:
-        '@id': limelightY
-        value: y
-    thetaSupplier:
-      org.usfirst.frc.team449.robot.components.LimeLightComponent:
-        '@id': limelightYaw
-        value: yaw
+#autoStartupCommand:
+#  org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.commands.GetPathFromJetson:
+#    '@id': getPath
+#    pathRequester:
+#      '@id': pathRequester
+#      address: "tcp://10.4.49.2:5800"
+#      wheelbase: 2.4
+#    maxVel: 7
+#    maxAccel: 12
+#    maxJerk: 16
+#    deltaTime: 0.02
+#    resetPosition: true
+#    xSupplier:
+#      org.usfirst.frc.team449.robot.components.LimeLightComponent:
+#        '@id': limelightX
+#        value: x
+#    ySupplier:
+#      org.usfirst.frc.team449.robot.components.LimeLightComponent:
+#        '@id': limelightY
+#        value: y
+#    thetaSupplier:
+#      org.usfirst.frc.team449.robot.components.LimeLightComponent:
+#        '@id': limelightYaw
+#        value: yaw
 #autoStartupCommand:
 #    org.usfirst.frc.team449.robot.commands.general.CommandSequence:
 #        '@id': characterizeDrive

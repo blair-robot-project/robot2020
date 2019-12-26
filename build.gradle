@@ -37,6 +37,7 @@ dependencies {
     compile group: 'org.zeromq', name: 'jeromq', version: '0.4.3'
     compile wpi.deps.wpilib()
     compile wpi.deps.vendor.java()
+    compile group: 'org.ejml', name: 'ejml-all', version: '0.38'
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
 }
