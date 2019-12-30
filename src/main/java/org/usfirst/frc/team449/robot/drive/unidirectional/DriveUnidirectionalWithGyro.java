@@ -1,19 +1,17 @@
 package org.usfirst.frc.team449.robot.drive.unidirectional;
 
 import com.fasterxml.jackson.annotation.*;
-import com.team254.lib.util.motion.MotionState;
+
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
-import org.usfirst.frc.team449.robot.other.MotionProfileData;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
-import org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.SubsystemMPTwoSides;
-import org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideMPSubsystem.manual.SubsystemMPManualTwoSides;
 
 
 /**
@@ -21,8 +19,8 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.motionProfile.TwoSideM
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT, property = "@class")
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemAHRS, DriveUnidirectional,
-        SubsystemMPTwoSides, SubsystemMPManualTwoSides, io.github.oblarg.oblog.Loggable {
+public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemAHRS, DriveUnidirectional, Loggable {
+
 
     /**
      * Right master Talon
@@ -83,40 +81,6 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
         //scale by the max speed
         leftMaster.setVelocity(left);
         rightMaster.setVelocity(right);
-    }
-
-    /**
-     * Give the left side of the drive a motion state to reach.
-     * @param motionState The desired motion state.
-     */
-    public void profileLeft(MotionState motionState) {
-        leftMaster.executeMPPoint(motionState.pos(), motionState.vel(), motionState.acc());
-    }
-
-    /**
-     * Give the right side of the drive a motion state to reach.
-     * @param motionState The desired motion state.
-     */
-    public void profileRight(MotionState motionState) {
-        rightMaster.executeMPPoint(motionState.pos(), motionState.vel(), motionState.acc());
-    }
-
-    /**
-     * Give the left side of the drive a motion state to reach, but offset the desired position by a given value.
-     * @param motionState The desired motion state.
-     * @param offset      The position offset, in feet.
-     */
-    public void profileLeftWithOffset(MotionState motionState, double offset) {
-        leftMaster.executeMPPoint(motionState.pos() + offset, motionState.vel(), motionState.acc());
-    }
-
-    /**
-     * Give the right side of the drive a motion state to reach, but offset the desired position by a given value.
-     * @param motionState The desired motion state.
-     * @param offset      The position offset, in feet.
-     */
-    public void profileRightWithOffset(MotionState motionState, double offset) {
-        rightMaster.executeMPPoint(motionState.pos() + offset, motionState.vel(), motionState.acc());
     }
 
     /**
@@ -376,63 +340,8 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
 //    }
 
     /**
-     * Loads a profile into the MP buffer.
-     *
-     * @param profile The profile to be loaded.
-     */
-    public void loadMotionProfile(@NotNull MotionProfileData profile) {
-        leftMaster.loadProfile(profile);
-        rightMaster.loadProfile(profile);
-    }
-
-    /**
-     * Loads given profiles into the left and right sides of the drive.
-     *
-     * @param left  The profile to load into the left side.
-     * @param right The profile to load into the right side.
-     */
-    public void loadMotionProfile(@NotNull MotionProfileData left, @NotNull MotionProfileData right) {
-        Shuffleboard.addEventMarker("Loading left", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("Loading left", this.getClass());
-        leftMaster.loadProfile(left);
-        Shuffleboard.addEventMarker("Loading right", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("Loading right", this.getClass());
-        rightMaster.loadProfile(right);
-    }
-
-    /**
-     * Start running the profile that's currently loaded into the MP buffer.
-     */
-    public void startRunningLoadedProfile() {
-        leftMaster.startRunningMP();
-        rightMaster.startRunningMP();
-    }
-
-    /**
-     * Get whether this subsystem has finished running the profile loaded in it.
-     *
-     * @return true if there's no profile loaded and no profile running, false otherwise.
-     */
-    public boolean profileFinished() {
-        return leftMaster.MPIsFinished() && rightMaster.MPIsFinished();
-    }
-
-    /**
-     * Run trajectory point
-     *
-     * @param pos   the position at the trajectory point
-     * @param vel   the velocity at the trajectory point
-     * @param accel the acceleration at the trajectory point
-     */
-    @Override
-    public void runMPPoint(double pos, double vel, double accel) {
-        runMPPoint(pos, vel, accel, pos, vel, accel);
-    }
-
-    /**
      * Disable the motors.
      */
-    @Override
     public void disable() {
         leftMaster.disable();
         rightMaster.disable();
@@ -443,18 +352,8 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
      *
      * @param pos the position to stop at
      */
-    @Override
     public void holdPosition(double pos) {
         holdPosition(pos, pos);
-    }
-
-    /**
-     * Get whether the subsystem is ready to run the loaded profile.
-     *
-     * @return true if a profile is loaded and ready to run, false otherwise.
-     */
-    public boolean readyToRunProfile() {
-        return leftMaster.readyForMP() && rightMaster.readyForMP();
     }
 
     /**
@@ -479,37 +378,11 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
 
 
     /**
-     * Runs a trajectory point on left and right sides
-     *
-     * @param leftPos    position from the left profile
-     * @param leftVel    velocity from the left profile
-     * @param leftAccel  acceleration from the left profile
-     * @param rightPos   position from the right profile
-     * @param rightVel   velocity from the right profile
-     * @param rightAccel acceleration from the right profile
-     */
-    @Override
-    public void runMPPoint(double leftPos, double leftVel, double leftAccel, double rightPos, double rightVel, double rightAccel) {
-        rightMaster.executeMPPoint(rightPos, rightVel, rightAccel);
-        leftMaster.executeMPPoint(leftPos, leftVel, leftAccel);
-    }
-
-    /**
-     * Hold the current position.
-     */
-    @Override
-    public void holdPosition() {
-        leftMaster.holdPositionMP();
-        rightMaster.holdPositionMP();
-    }
-
-    /**
      * Hold the current position.
      *
      * @param leftPos the position to stop the left side at
      * @param rightPos the position to stop the right side at
      */
-    @Override
     public void holdPosition(double leftPos, double rightPos){
         leftMaster.setPositionSetpoint(leftPos);
         rightMaster.setPositionSetpoint(rightPos);

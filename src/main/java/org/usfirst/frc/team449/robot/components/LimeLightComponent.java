@@ -10,12 +10,38 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import org.jetbrains.annotations.NotNull;
 import java.util.function.DoubleSupplier;
 
+/**
+ * The component that supplies distances from the limelight to a vision target
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class LimeLightComponent implements DoubleSupplier {
 
+    /**
+     * The NetworkTableEntry that supplies the desired value
+     * Determined by the ReturnValue value
+     */
     @NotNull NetworkTableEntry entry;
+    /**
+     * Whether the limelight has a valid target in sight. Will return 0 for no, 1 for yes
+     */
     private final NetworkTableEntry tv;
+    /**
+     * Which value to ask from the limelight
+     * Can be:
+     *  x: x distance from target
+     *  y: y distance from target
+     *  area: area of the target seen (0% to 100% of the whole target seen)
+     *  poseX: x position of the target in a 3D model
+     *  poseY: y position of the target in a 3D model
+     *  poseZ: z position of the target in a 3D model
+     *  pitch: angle from limelight to target on x-z coordinate plane, determined by the 3D model from camtran
+     *  yaw: same as pitch, but on x-y coordinate plane
+     *  roll: same as pitch, on y-z coordinate plane
+     */
     private final ReturnValue value;
+    /**
+     * Added to the output double
+     */
     private final double offset;
 
     enum ReturnValue {

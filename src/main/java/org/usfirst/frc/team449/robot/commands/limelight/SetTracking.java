@@ -21,12 +21,12 @@ public class SetTracking extends InstantCommand {
     public void execute(){
         if (track){
             // Turn on LEDs
-            NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(0);
+            NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(1);
             // Switch to vision processing mode
             NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(0);
         } else {
             // Turn off LEDs
-            NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+            NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
             // Switch to driver camera mode to increase exposure
             NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(1);
         }
