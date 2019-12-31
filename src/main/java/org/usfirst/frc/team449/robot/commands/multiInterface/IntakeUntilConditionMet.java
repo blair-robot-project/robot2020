@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +17,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake
  * Run a BinaryMotor while a condition is true.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class IntakeUntilConditionMet<T extends Subsystem & SubsystemIntake & SubsystemConditional> extends Command {
+public class IntakeUntilConditionMet<T extends Subsystem & SubsystemIntake & SubsystemConditional> extends CommandBase {
 
     /**
      * The subsystem to execute this command on
@@ -48,7 +48,7 @@ public class IntakeUntilConditionMet<T extends Subsystem & SubsystemIntake & Sub
     public IntakeUntilConditionMet(@NotNull @JsonProperty(required = true) T subsystem,
                                    @NotNull @JsonProperty(required = true) SubsystemIntake.IntakeMode intakeMode,
                                    @Nullable SubsystemIntake.IntakeMode stopMode) {
-        requires(subsystem);
+        addRequirements(subsystem);
         this.subsystem = subsystem;
         this.intakeMode = intakeMode;
         this.stopMode = stopMode != null ? stopMode : SubsystemIntake.IntakeMode.OFF;
@@ -58,7 +58,7 @@ public class IntakeUntilConditionMet<T extends Subsystem & SubsystemIntake & Sub
      * Log when this command is initialized
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         Shuffleboard.addEventMarker("init", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 
@@ -66,7 +66,7 @@ public class IntakeUntilConditionMet<T extends Subsystem & SubsystemIntake & Sub
      * Run the intake in the given mode
      */
     @Override
-    protected void execute() {
+    public void execute() {
         subsystem.setMode(intakeMode);
     }
 
@@ -76,7 +76,7 @@ public class IntakeUntilConditionMet<T extends Subsystem & SubsystemIntake & Sub
      * @return true if the condition is met, false otherwise.
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return subsystem.isConditionTrueCached();
     }
 
@@ -84,21 +84,14 @@ public class IntakeUntilConditionMet<T extends Subsystem & SubsystemIntake & Sub
      * Stop the intake and log that the command has ended.
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
         //Stop the intake when we meet the condition.
+        if(interrupted){
+            subsystem.setMode(SubsystemIntake.IntakeMode.OFF);
+            Shuffleboard.addEventMarker("IntakeUntilConditionMet interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         subsystem.setMode(stopMode);
         Shuffleboard.addEventMarker("Command end", this.getClass().getSimpleName(), EventImportance.kNormal);
-    }
-
-    /**
-     * Stop the intake and log that the command has been interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        //Stop the intake if this command is interrupted.
-        subsystem.setMode(SubsystemIntake.IntakeMode.OFF);
-        Shuffleboard.addEventMarker("IntakeUntilConditionMet interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("IntakeUntilConditionMet interrupted!", this.getClass());
     }
 
 }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
@@ -82,14 +82,14 @@ public class DriveStraightUntilConditionMet<T extends Subsystem & DriveUnidirect
         this.drive = drive;
         this.subsystemConditional = subsystemConditional;
         this.driveVelocity = driveVelocity;
-        requires(this.drive);
+        addRequirements(this.drive);
     }
 
     /**
      * Log and set the setpoint of the angle PID to the current heading.
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         Shuffleboard.addEventMarker("DriveStraightUntilConditionMet init", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("DriveStraightUntilConditionMet init", this.getClass());
         this.getPIDController().setSetpoint(this.returnPIDInput());
@@ -113,7 +113,7 @@ public class DriveStraightUntilConditionMet<T extends Subsystem & DriveUnidirect
      * @return True if the condition is met, false otherwise.
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return subsystemConditional.isConditionTrue();
     }
 
@@ -121,20 +121,13 @@ public class DriveStraightUntilConditionMet<T extends Subsystem & DriveUnidirect
      * Log when this command ends
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("DriveStraightUntilConditionMet interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         Shuffleboard.addEventMarker("DriveStraightUntilConditionMet end", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("DriveStraightUntilConditionMet end", this.getClass());
         this.getPIDController().disable();
         drive.fullStop();
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("DriveStraightUntilConditionMet interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("DriveStraightUntilConditionMet interrupted!", this.getClass());
-        this.getPIDController().disable();
     }
 }

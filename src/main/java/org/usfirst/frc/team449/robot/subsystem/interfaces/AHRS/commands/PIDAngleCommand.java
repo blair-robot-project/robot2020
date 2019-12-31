@@ -3,8 +3,9 @@ package org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import edu.wpi.first.wpilibj.command.PIDCommand;
-import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
@@ -25,6 +26,11 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
     @NotNull
     @Log.Exclude
     protected final SubsystemAHRS subsystem;
+
+    /**
+     * The on-board PID controller
+     */
+    private final PIDController controller;
 
     /**
      * The minimum the robot should be able to output, to overcome friction.
@@ -77,11 +83,12 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
                            double kI,
                            double kD) {
         //Set P, I and D. I and D will normally be 0 if you're using cascading control, like you should be.
-        super(kP, kI, kD, loopTimeMillis != null ? loopTimeMillis / 1000. : 20. / 1000.);
+        this.controller = new PIDController(kP, kI, kD, loopTimeMillis != null ? loopTimeMillis / 1000. : 20. / 1000.);
+
         this.subsystem = subsystem;
 
         //Navx reads from -180 to 180.
-        setInputRange(-180, 180);
+        this.getPIDController().setInputRange(-180, 180);
 
         //It's a circle, so it's continuous
         this.getPIDController().setContinuous(true);
@@ -107,6 +114,14 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
 
         //Set whether or not to invert the loop.
         this.inverted = inverted;
+    }
+
+    /**
+     * allow access to controller variable
+     * @return on-board PID controller
+     */
+    public PIDController getPIDController(){
+        return this.controller;
     }
 
     /**
@@ -154,7 +169,7 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
     /**
      * Returns the input for the pid loop. <p> It returns the input for the pid loop, so if this command was based off
      * of a gyro, then it should return the angle of the gyro </p> <p> All subclasses of {@link PIDCommand} must
-     * override this method. </p> <p> This method will be called in a different thread then the {@link Scheduler}
+     * override this method. </p> <p> This method will be called in a different thread then the {@link CommandScheduler}
      * thread. </p>
      *
      * @return the value the pid loop should use as input
@@ -176,7 +191,7 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
         if (onTargetBuffer == null) {
             return this.getPIDController().onTarget();
         } else {
-            return onTargetBuffer.get(this.getPIDController().onTarget());
+            return onTargetBuffer.get(this.controller.onTarget());
         }
     }
 

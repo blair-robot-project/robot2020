@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.CommandGroup;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
@@ -16,7 +16,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
  * Rotates the robot back and forth in order to dislodge any stuck balls.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class JiggleRobot<T extends Subsystem & DriveUnidirectional & SubsystemAHRS> extends CommandGroup {
+public class JiggleRobot<T extends Subsystem & DriveUnidirectional & SubsystemAHRS> extends SequentialCommandGroup {
 
     /**
      * Instantiate the CommandGroup
@@ -47,9 +47,12 @@ public class JiggleRobot<T extends Subsystem & DriveUnidirectional & SubsystemAH
                        int kI,
                        int kD,
                        @NotNull @JsonProperty(required = true) T subsystem) {
-        addSequential(new NavXTurnToAngleRelative<>(absoluteTolerance, onTargetBuffer, minimumOutput, maximumOutput,
-                loopTimeMillis, deadband, inverted, kP, kI, kD, 10, subsystem, 3));
-        addSequential(new NavXTurnToAngleRelative<>(absoluteTolerance, onTargetBuffer, minimumOutput, maximumOutput,
-                loopTimeMillis, deadband, inverted, kP, kI, kD, -10, subsystem, 3));
+        addCommands(
+                new NavXTurnToAngleRelative<>(absoluteTolerance, onTargetBuffer, minimumOutput, maximumOutput,
+                loopTimeMillis, deadband, inverted, kP, kI, kD, 10, subsystem, 3),
+
+                new NavXTurnToAngleRelative<>(absoluteTolerance, onTargetBuffer, minimumOutput, maximumOutput,
+                        loopTimeMillis, deadband, inverted, kP, kI, kD, -10, subsystem, 3)
+        );
     }
 }

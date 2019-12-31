@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
@@ -87,14 +87,14 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
         this.setpoint = setpoint;
         //Convert from seconds to milliseconds
         this.timeout = (long) (timeout * 1000);
-        requires(subsystem);
+        addRequirements(subsystem);
     }
 
     /**
      * Set up the start time and setpoint.
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         Shuffleboard.addEventMarker("NavXTurnToAngle init.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("NavXTurnToAngle init.", this.getClass());
         //Set up start time
@@ -122,7 +122,7 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
      * @return True if timeout seconds have passed or the robot is on target, false otherwise.
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         //The PIDController onTarget() is crap and sometimes never returns true because of floating point errors, so
         // we need a timeout
         return onTarget() || Clock.currentTimeMillis() - startTime > timeout;
@@ -132,19 +132,11 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
      * Log when the command ends.
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("NavXTurnToAngle interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         Shuffleboard.addEventMarker("NavXTurnToAngle end.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("NavXTurnToAngle end.", this.getClass());
-        this.getPIDController().disable();
-    }
-
-    /**
-     * Log when the command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("NavXTurnToAngle interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("NavXTurnToAngle interrupted!", this.getClass());
         this.getPIDController().disable();
     }
 }

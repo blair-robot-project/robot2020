@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
@@ -63,7 +63,7 @@ public class SetHeading extends InstantCommand {
      * Log on exit.
      */
     @Override
-    public void end() {
+    public void end(boolean interrupted) {
         Shuffleboard.addEventMarker("SetHeading end.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("SetHeading end.", this.getClass());
     }

@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.BooleanSupplier;
 
 /**
  * A ConditionalCommand that chooses which command to run based off of alliance.
@@ -24,16 +26,7 @@ public class ConditionalCommandAllianceBased extends ConditionalCommand {
     @JsonCreator
     public ConditionalCommandAllianceBased(@NotNull @JsonProperty(required = true) Command redCommand,
                                            @NotNull @JsonProperty(required = true) Command blueCommand) {
-        super(redCommand, blueCommand);
+        super(redCommand, blueCommand, () -> DriverStation.getInstance().getAlliance().equals(DriverStation.Alliance.Red));
     }
 
-    /**
-     * The Condition to test to determine which Command to run.
-     *
-     * @return true if m_onTrue should be run or false if m_onFalse should be run.
-     */
-    @Override
-    protected boolean condition() {
-        return DriverStation.getInstance().getAlliance().equals(DriverStation.Alliance.Red);
-    }
 }

@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
 
 /**
  * Sets the mode of the intake.
@@ -40,7 +41,7 @@ public class SetIntakeMode<T extends Subsystem & SubsystemIntake> extends Instan
     @JsonCreator
     public SetIntakeMode(@NotNull @JsonProperty(required = true) T subsystem,
                          @NotNull @JsonProperty(required = true) SubsystemIntake.IntakeMode mode) {
-        requires(subsystem);
+        addRequirements(subsystem);
         this.subsystem = subsystem;
         this.mode = mode;
     }
@@ -49,7 +50,7 @@ public class SetIntakeMode<T extends Subsystem & SubsystemIntake> extends Instan
      * Log when this command is initialized
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         Shuffleboard.addEventMarker("SetIntakeMode init.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("SetIntakeMode init.", this.getClass());
     }
@@ -58,35 +59,18 @@ public class SetIntakeMode<T extends Subsystem & SubsystemIntake> extends Instan
      * Set the intake to the given mode.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         subsystem.setMode(mode);
-    }
-
-    /**
-     * Finish immediately because this is a state-change command.
-     *
-     * @return true
-     */
-    @Override
-    protected boolean isFinished() {
-        return true;
     }
 
     /**
      * Log when this command ends
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("SetIntakeMode Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         Shuffleboard.addEventMarker("SetIntakeMode end.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("SetIntakeMode end.", this.getClass());
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("SetIntakeMode Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("SetIntakeMode Interrupted!", this.getClass());
     }
 }

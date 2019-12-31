@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.other.Clock;
@@ -43,7 +44,6 @@ public class Robot extends TimedRobot {
      * The name of the map to read from. Should be overriden by a subclass to change the name.
      */
     protected String mapName = "map.yml";
-//    protected String mapName = "map.yml";
 
     /**
      * The object constructed directly from the yaml map.
@@ -152,7 +152,7 @@ public class Robot extends TimedRobot {
         this.robotMap.getUpdater().run();
 
         //Run all commands. This is a WPILib thing you don't really have to worry about.
-        Scheduler.getInstance().run();
+        CommandScheduler.getInstance().run();
     }
 
     /**
@@ -193,7 +193,7 @@ public class Robot extends TimedRobot {
         }
 
         //Run all commands. This is a WPILib thing you don't really have to worry about.
-        Scheduler.getInstance().run();
+        CommandScheduler.getInstance().run();
     }
 
     /**

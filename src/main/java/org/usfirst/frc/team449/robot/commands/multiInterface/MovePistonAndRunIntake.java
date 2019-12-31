@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
@@ -59,7 +59,7 @@ public class MovePistonAndRunIntake<T extends Subsystem & SubsystemIntake & Subs
      * Log when this command is initialized
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         Shuffleboard.addEventMarker("MovePistonAndRunIntake init.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("MovePistonAndRunIntake init.", this.getClass());
     }
@@ -68,7 +68,7 @@ public class MovePistonAndRunIntake<T extends Subsystem & SubsystemIntake & Subs
      * Move the piston and change the intake.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         subsystem.setSolenoid(pistonPos);
         subsystem.setMode(intakeMode);
     }
@@ -77,17 +77,11 @@ public class MovePistonAndRunIntake<T extends Subsystem & SubsystemIntake & Subs
      * Log when this command ends
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("MovePistonAndRunIntake Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         Shuffleboard.addEventMarker("MovePistonAndRunIntake end.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("MovePistonAndRunIntake end.", this.getClass());
     }
 
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("MovePistonAndRunIntake Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("MovePistonAndRunIntake Interrupted!", this.getClass());
-    }
 }

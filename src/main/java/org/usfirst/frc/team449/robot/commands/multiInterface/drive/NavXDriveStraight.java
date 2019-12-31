@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
@@ -83,14 +83,14 @@ public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & Subsy
         this.subsystem = subsystem;
         this.useLeft = useLeft;
         //This is likely to need to interrupt the DefaultCommand and therefore should require its subsystem.
-        requires(subsystem);
+        addRequirements(subsystem);
     }
 
     /**
      * Set the setpoint of the angle PID.
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         this.getPIDController().setSetpoint(this.returnPIDInput());
         this.getPIDController().enable();
     }
@@ -117,7 +117,7 @@ public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & Subsy
      * @return false
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return false;
     }
 
@@ -125,19 +125,11 @@ public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & Subsy
      * Log when this command ends
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("NavXDriveStraight interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         Shuffleboard.addEventMarker("NavXDriveStraight end", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("NavXDriveStraight end", this.getClass());
-        this.getPIDController().disable();
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("NavXDriveStraight interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("NavXDriveStraight interrupted!", this.getClass());
         this.getPIDController().disable();
     }
 }

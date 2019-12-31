@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
@@ -13,13 +13,11 @@ import org.jetbrains.annotations.NotNull;
 
 import org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPosition;
 
-import java.security.spec.ECField;
-
 /**
  * Go to a given position
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class GoToPosition<T extends Subsystem & SubsystemPosition> extends Command {
+public class GoToPosition<T extends Subsystem & SubsystemPosition> extends CommandBase {
 
     /**
      * The subsystem to execute this command on.
@@ -42,7 +40,7 @@ public class GoToPosition<T extends Subsystem & SubsystemPosition> extends Comma
     @JsonCreator
     public GoToPosition(@NotNull @JsonProperty(required = true) T subsystem,
                         @JsonProperty(required = true) double setpoint) {
-        requires(subsystem);
+        addRequirements(subsystem);
         this.subsystem = subsystem;
         this.setpoint = setpoint;
     }
@@ -51,7 +49,7 @@ public class GoToPosition<T extends Subsystem & SubsystemPosition> extends Comma
      * Log and set setpoint when this command is initialized
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         Shuffleboard.addEventMarker("GoToPosition init.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("GoToPosition init.", this.getClass());
         subsystem.setPositionSetpoint(setpoint);
@@ -61,7 +59,7 @@ public class GoToPosition<T extends Subsystem & SubsystemPosition> extends Comma
      * Does nothing, don't want to spam position setpoints.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         // Do nothing
     }
 
@@ -71,7 +69,7 @@ public class GoToPosition<T extends Subsystem & SubsystemPosition> extends Comma
      * @return true if the setpoint is reached, false otherwise.
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return subsystem.onTarget();
     }
 
@@ -79,17 +77,10 @@ public class GoToPosition<T extends Subsystem & SubsystemPosition> extends Comma
      * Log when this command ends
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("GoToPosition interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         Shuffleboard.addEventMarker("GoToPosition end.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("GoToPosition end.", this.getClass());
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("GoToPosition interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("GoToPosition interrupted!", this.getClass());
     }
 }

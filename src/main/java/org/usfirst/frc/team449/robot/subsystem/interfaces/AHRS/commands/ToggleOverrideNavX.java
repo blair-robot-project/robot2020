@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
@@ -38,7 +38,7 @@ public class ToggleOverrideNavX extends InstantCommand {
      * Log when this command is initialized
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         Shuffleboard.addEventMarker("OverrideNavX init", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("OverrideNavX init", this.getClass());
     }
@@ -47,7 +47,7 @@ public class ToggleOverrideNavX extends InstantCommand {
      * Toggle whether or not we're overriding the AHRS
      */
     @Override
-    protected void execute() {
+    public void execute() {
         subsystem.setOverrideGyro(!subsystem.getOverrideGyro());
     }
 
@@ -55,18 +55,12 @@ public class ToggleOverrideNavX extends InstantCommand {
      * Log when this command ends
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if (interrupted) {
+            Shuffleboard.addEventMarker("OverrideNavX Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         Shuffleboard.addEventMarker("OverrideNavX end", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("OverrideNavX end", this.getClass());
     }
 
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("OverrideNavX Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("OverrideNavX Interrupted!", this.getClass());
-    }
 }
 

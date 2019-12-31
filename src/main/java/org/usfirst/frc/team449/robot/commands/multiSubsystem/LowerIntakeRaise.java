@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.command.CommandGroup;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.commands.multiInterface.IntakeUntilConditionMet;
@@ -24,7 +24,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SetS
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class LowerIntakeRaise<T extends Subsystem & SubsystemIntake & SubsystemSolenoid,
         U extends Subsystem & SubsystemIntake & SubsystemConditional,
-        V extends Subsystem & SubsystemPosition> extends CommandGroup {
+        V extends Subsystem & SubsystemPosition> extends SequentialCommandGroup {
 
     /**
      * Default constructor.
@@ -54,16 +54,18 @@ public class LowerIntakeRaise<T extends Subsystem & SubsystemIntake & SubsystemS
                             @NotNull @JsonProperty(required = true) SubsystemIntake.IntakeMode carriageIntakeMode,
                             @Nullable SubsystemIntake.IntakeMode carriageHoldMode,
                             @Nullable Boolean raiseIntake) {
-        addSequential(new SetSolenoid(actuatedIntake, intakeSolenoidPos));
-        addSequential(new GoToPosition<>(elevator, elevatorIntakePos));
-        addSequential(new SetIntakeMode(actuatedIntake, actuatedIntakeMode));
-        addSequential(new SetIntakeMode(carriage, carriageIntakeMode));
-        addSequential(new IntakeUntilConditionMet<>(carriage, carriageIntakeMode, carriageHoldMode));
-        addSequential(new SetIntakeMode(actuatedIntake, SubsystemIntake.IntakeMode.OFF));
-        addSequential(new GoToPosition<>(elevator, elevatorUpPos));
+        addCommands(
+                new SetSolenoid(actuatedIntake, intakeSolenoidPos),
+                new GoToPosition<>(elevator, elevatorIntakePos),
+                new SetIntakeMode(actuatedIntake, actuatedIntakeMode),
+                new SetIntakeMode(carriage, carriageIntakeMode),
+                new IntakeUntilConditionMet<>(carriage, carriageIntakeMode, carriageHoldMode),
+                new SetIntakeMode(actuatedIntake, SubsystemIntake.IntakeMode.OFF),
+                new GoToPosition<>(elevator, elevatorUpPos)
+        );
         //Retract the intake by setting the piston to the opposite
         if (raiseIntake != null && raiseIntake) {
-            addSequential(new SetSolenoid(actuatedIntake,
+            addCommands(new SetSolenoid(actuatedIntake,
                     intakeSolenoidPos == DoubleSolenoid.Value.kForward ? DoubleSolenoid.Value.kReverse :
                             DoubleSolenoid.Value.kForward));
         }

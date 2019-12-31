@@ -1,7 +1,7 @@
 package org.usfirst.frc.team449.robot.commands.multiInterface.drive;
 
 import com.fasterxml.jackson.annotation.*;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
@@ -92,7 +92,7 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
         this.snapPoints = snapPoints != null ? snapPoints : new ArrayList<>();
 
         //Needs a requires because it's a default command.
-        requires(this.subsystem);
+        addRequirements(this.subsystem);
 
         //Logging, but in Spanish.
         Shuffleboard.addEventMarker("Drive Robot bueno", this.getClass().getSimpleName(), EventImportance.kNormal);

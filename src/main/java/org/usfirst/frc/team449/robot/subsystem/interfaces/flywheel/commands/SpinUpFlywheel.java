@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
@@ -38,7 +38,7 @@ public class SpinUpFlywheel extends InstantCommand {
      * Log when this command is initialized
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         Shuffleboard.addEventMarker("SpinUpFlywheel init.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("SpinUpFlywheel init.", this.getClass());
     }
@@ -47,7 +47,7 @@ public class SpinUpFlywheel extends InstantCommand {
      * Turn the feeder off and the flywheel on.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         subsystem.turnFeederOff();
         subsystem.turnFlywheelOn();
         subsystem.setFlywheelState(SubsystemFlywheel.FlywheelState.SPINNING_UP);
@@ -57,17 +57,10 @@ public class SpinUpFlywheel extends InstantCommand {
      * Log when this command ends
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("SpinUpFlywheel Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         Shuffleboard.addEventMarker("SpinUpFlywheel end.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("SpinUpFlywheel end.", this.getClass());
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("SpinUpFlywheel Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("SpinUpFlywheel Interrupted!", this.getClass());
     }
 }
