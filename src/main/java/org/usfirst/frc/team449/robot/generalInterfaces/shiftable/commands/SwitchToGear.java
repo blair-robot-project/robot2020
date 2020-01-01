@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
@@ -52,7 +52,7 @@ public class SwitchToGear extends InstantCommand {
      * Log when this command is initialized
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         Shuffleboard.addEventMarker("SwitchToGear init.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("SwitchToGear init.", this.getClass());
     }
@@ -61,7 +61,7 @@ public class SwitchToGear extends InstantCommand {
      * Switch to the specified gear
      */
     @Override
-    protected void execute() {
+    public void execute() {
         subsystem.setGear(switchTo);
     }
 
@@ -69,17 +69,10 @@ public class SwitchToGear extends InstantCommand {
      * Log when this command ends
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("SwitchToGear Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         Shuffleboard.addEventMarker("SwitchToGear end.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("SwitchToGear end.", this.getClass());
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("SwitchToGear Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("SwitchToGear Interrupted!", this.getClass());
     }
 }
