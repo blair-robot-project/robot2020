@@ -62,7 +62,7 @@ dependencies {
     compile 'io.grpc:grpc-protobuf:1.0.0-pre2'
     // https://mvnrepository.com/artifact/org.zeromq/jeromq
     compile group: 'org.zeromq', name: 'jeromq', version: '0.4.3'
-    compile 'com.github.Oblarg:Oblog:2.12.8'
+    compile 'com.github.Oblarg:Oblog:3.0.1'
 
 
     implementation wpi.deps.wpilib()

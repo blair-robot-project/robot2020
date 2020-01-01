@@ -131,14 +131,14 @@ public class Robot extends TimedRobot {
         //Run startup command if we start in teleop.
         if (!enabled) {
             if (robotMap.getRobotStartupCommand() != null) {
-                robotMap.getRobotStartupCommand().start();
+                robotMap.getRobotStartupCommand().schedule();
             }
             enabled = true;
         }
 
         //Run the teleop startup command
         if (robotMap.getTeleopStartupCommand() != null) {
-            robotMap.getTeleopStartupCommand().start();
+            robotMap.getTeleopStartupCommand().schedule();
         }
     }
 
@@ -165,14 +165,14 @@ public class Robot extends TimedRobot {
         //Run startup command if we start in auto.
         if (!enabled) {
             if (robotMap.getRobotStartupCommand() != null) {
-                robotMap.getRobotStartupCommand().start();
+                robotMap.getRobotStartupCommand().schedule();
             }
             enabled = true;
         }
 
         //Run the auto startup command
         if (shouldStartAuto) {
-            robotMap.getAutoStartupCommand().start();
+            robotMap.getAutoStartupCommand().schedule();
             shouldStartAuto = false;
         }
     }
@@ -187,7 +187,7 @@ public class Robot extends TimedRobot {
 
         //Start auto if the game-specific message has been set
         if (shouldStartAuto && !DriverStation.getInstance().getGameSpecificMessage().isEmpty()) {
-            robotMap.getAutoStartupCommand().start();
+            robotMap.getAutoStartupCommand().schedule();
             shouldStartAuto = false;
         }
 
@@ -211,7 +211,7 @@ public class Robot extends TimedRobot {
         //Run startup command if we start in test mode.
         if (!enabled) {
             if (robotMap.getRobotStartupCommand() != null) {
-                robotMap.getRobotStartupCommand().start();
+                robotMap.getRobotStartupCommand().schedule();
             }
             enabled = true;
         }

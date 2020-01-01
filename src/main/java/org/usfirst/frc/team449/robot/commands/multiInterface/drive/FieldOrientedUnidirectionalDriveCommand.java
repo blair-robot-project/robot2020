@@ -103,7 +103,7 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
      * Initialize PIDController and variables.
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         //Reset all values of the PIDController and enable it.
         this.getPIDController().reset();
         this.getPIDController().enable();
@@ -115,7 +115,7 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
      * Set PID setpoint to processed controller setpoint.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         theta = oi.getThetaCached();
 
         if (theta != null) {
@@ -143,7 +143,7 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
      * @return false
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return false;
     }
 
@@ -151,18 +151,12 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
      * Log when this command ends
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommand Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommand End.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("FieldOrientedUnidirectionalDriveCommand End.", this.getClass());
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommand Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("FieldOrientedUnidirectionalDriveCommand Interrupted!", this.getClass());
     }
 
     /**

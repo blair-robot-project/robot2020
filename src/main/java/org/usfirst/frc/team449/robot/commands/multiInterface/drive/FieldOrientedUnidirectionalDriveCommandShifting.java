@@ -105,7 +105,7 @@ public class FieldOrientedUnidirectionalDriveCommandShifting<T extends Subsystem
      * Set PID setpoint to processed controller setpoint and autoshift.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         if (!subsystem.getOverrideAutoshift()) {
             autoshiftComponent.autoshift(oi.getVelCached(), subsystem.getLeftVelCached(),
                     subsystem.getRightVelCached(), gear -> subsystem.setGear(gear));
@@ -132,18 +132,12 @@ public class FieldOrientedUnidirectionalDriveCommandShifting<T extends Subsystem
      * Log when this command ends
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommandShifting Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommandShifting End.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("FieldOrientedUnidirectionalDriveCommandShifting End.", this.getClass());
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommandShifting Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("FieldOrientedUnidirectionalDriveCommandShifting Interrupted!", this.getClass());
     }
 
 }
