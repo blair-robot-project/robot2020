@@ -46,14 +46,6 @@ public class IntakeSensored extends IntakeSimple implements SubsystemIntake, Sub
     }
 
     /**
-     * No default command.
-     */
-    @Override
-    protected void initDefaultCommand() {
-        //Do nothing
-    }
-
-    /**
      * @return true if the condition is met, false otherwise
      */
     @Override

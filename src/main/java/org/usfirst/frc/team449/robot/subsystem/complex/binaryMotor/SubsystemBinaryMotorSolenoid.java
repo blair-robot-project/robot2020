@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +19,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSole
  * A subsystem with a solenoid and a motor that can be turned on and off.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class SubsystemBinaryMotorSolenoid extends Subsystem implements SubsystemBinaryMotor, SubsystemSolenoid, Loggable {
+public class SubsystemBinaryMotorSolenoid extends SubsystemBase implements SubsystemBinaryMotor, SubsystemSolenoid, Loggable {
 
     /**
      * The motor that this subsystem controls.
@@ -62,16 +62,6 @@ public class SubsystemBinaryMotorSolenoid extends Subsystem implements Subsystem
         this.piston = piston;
         motorOn = false;
         pistonPos = DoubleSolenoid.Value.kOff;
-    }
-
-    /**
-     * Initialize the default command for a subsystem. By default subsystems have no default command, but if they do,
-     * the default command is set with this method. It is called on all Subsystems by CommandBase in the users program
-     * after all the Subsystems are created.
-     */
-    @Override
-    protected void initDefaultCommand() {
-        //Do nothing!
     }
 
     /**

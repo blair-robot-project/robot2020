@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
@@ -25,14 +25,14 @@ public class TurnMotorOffWithRequires<T extends Subsystem & SubsystemBinaryMotor
     @JsonCreator
     public TurnMotorOffWithRequires(@NotNull @JsonProperty(required = true) T subsystem) {
         super(subsystem);
-        requires(subsystem);
+        addRequirements(subsystem);
     }
 
     /**
      * Log when this command is initialized
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         Shuffleboard.addEventMarker("TurnMotorOffWithRequires init.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("TurnMotorOffWithRequires init.", this.getClass());
     }
@@ -41,17 +41,11 @@ public class TurnMotorOffWithRequires<T extends Subsystem & SubsystemBinaryMotor
      * Log when this command ends
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("TurnMotorOffWithRequires Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         Shuffleboard.addEventMarker("TurnMotorOffWithRequires end.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("TurnMotorOffWithRequires end.", this.getClass());
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("TurnMotorOffWithRequires Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("TurnMotorOffWithRequires Interrupted!", this.getClass());
     }
 }

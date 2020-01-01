@@ -62,7 +62,7 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
      * Set up the start time and setpoint.
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         //Setup start time
         this.startTime = Clock.currentTimeMillis();
         Shuffleboard.addEventMarker("NavXRelativeTurnToAngle init.", this.getClass().getSimpleName(), EventImportance.kNormal);
@@ -77,20 +77,11 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
      * Log when the command ends.
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("NavXRelativeTurnToAngle interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         Shuffleboard.addEventMarker("NavXRelativeTurnToAngle end.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("NavXRelativeTurnToAngle end.", this.getClass());
-        //Stop the controller
-        this.getPIDController().disable();
-    }
-
-    /**
-     * Log when the command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("NavXRelativeTurnToAngle interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("NavXRelativeTurnToAngle interrupted!", this.getClass());
         //Stop the controller
         this.getPIDController().disable();
     }

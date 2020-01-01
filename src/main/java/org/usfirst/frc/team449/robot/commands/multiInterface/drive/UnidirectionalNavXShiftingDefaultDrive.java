@@ -143,18 +143,12 @@ public class UnidirectionalNavXShiftingDefaultDrive<T extends Subsystem & DriveU
      * Log when this command ends
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("ShiftingUnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
+        subsystem.fullStop();
         Shuffleboard.addEventMarker("ShiftingUnidirectionalNavXArcadeDrive End.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("ShiftingUnidirectionalNavXArcadeDrive End.", this.getClass());
-    }
-
-    /**
-     * Stop the motors and log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("ShiftingUnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("ShiftingUnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass());
-        subsystem.fullStop();
     }
 }

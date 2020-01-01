@@ -114,7 +114,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
         this.maxAngularVelToEnterLoop = maxAngularVelToEnterLoop != null ? maxAngularVelToEnterLoop : 180;
 
         //Needs a requires because it's a default command.
-        requires(this.subsystem);
+        addRequirements(this.subsystem);
 
         //Logging, but in Spanish.
         Shuffleboard.addEventMarker("Drive Robot bueno", this.getClass().getSimpleName(), EventImportance.kNormal);
@@ -125,7 +125,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
      * Initialize PIDController and variables.
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         //Reset all values of the PIDController and enable it.
         this.getPIDController().reset();
         this.getPIDController().enable();
@@ -140,7 +140,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
      * Decide whether or not we should be in free drive or straight drive.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         //If we're driving straight but the driver tries to turn or overrides the AHRS:
         if (drivingStraight && (!oi.commandingStraight() || subsystem.getOverrideGyro())) {
             //Switch to free drive
@@ -199,7 +199,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
      */
     @Override
     @Log
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return false;
     }
 
@@ -207,19 +207,13 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
      * Log when this command ends
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("UnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
+        subsystem.fullStop();
         Shuffleboard.addEventMarker("UnidirectionalNavXArcadeDrive End.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("UnidirectionalNavXArcadeDrive End.", this.getClass());
-    }
-
-    /**
-     * Stop the motors and log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("UnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("UnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass());
-        subsystem.fullStop();
     }
 
 //    /**

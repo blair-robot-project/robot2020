@@ -43,14 +43,6 @@ public class IntakeSensoredTwoSides extends IntakeTwoSidesSimple implements Subs
     }
 
     /**
-     * No default command.
-     */
-    @Override
-    protected void initDefaultCommand() {
-        //Do nothing
-    }
-
-    /**
      * @return true if the condition is met, false otherwise
      */
     @Override

@@ -100,7 +100,7 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
                             @Nullable DoubleSupplier setpointSupplier) {
         //Set P, I and D
         super(kP, kI, kD, loopTimeMillis != null ? loopTimeMillis / 1000. : 20. / 1000.);
-        requires(subsystem);
+        addRequirements(subsystem);
 
         //The drive subsystem to execute this command on and to get the gyro reading from.
         this.subsystem = subsystem;

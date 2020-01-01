@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.other.Clock;
@@ -18,7 +18,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPosi
  * Slowly increase the output to the motors in order to characterize the system.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class PositionVoltageRamp<T extends Subsystem & SubsystemPosition> extends Command {
+public class PositionVoltageRamp<T extends Subsystem & SubsystemPosition> extends CommandBase {
 
     /**
      * The subsystem to execute this command on.
@@ -53,7 +53,7 @@ public class PositionVoltageRamp<T extends Subsystem & SubsystemPosition> extend
     public PositionVoltageRamp(@NotNull @JsonProperty(required = true) T subsystem,
                                @JsonProperty(required = true) double voltsPerSecond,
                                double startingVoltage) {
-        requires(subsystem);
+        addRequirements(subsystem);
         this.subsystem = subsystem;
         this.percentPerMillis = voltsPerSecond / 12. / 1000.;
         this.output = startingVoltage;
@@ -63,7 +63,7 @@ public class PositionVoltageRamp<T extends Subsystem & SubsystemPosition> extend
      * Reset the output
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         Shuffleboard.addEventMarker("PositionVoltageRamp init.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("PositionVoltageRamp init.", this.getClass());
         lastTime = Clock.currentTimeMillis();
@@ -73,7 +73,7 @@ public class PositionVoltageRamp<T extends Subsystem & SubsystemPosition> extend
      * Update the output based on how long it's been since execute() was last run.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         output += percentPerMillis * (Clock.currentTimeMillis() - lastTime);
         subsystem.setMotorOutput(output);
         lastTime = Clock.currentTimeMillis();
@@ -85,7 +85,7 @@ public class PositionVoltageRamp<T extends Subsystem & SubsystemPosition> extend
      * @return true if the output is greater than or equal to 1, false otherwise.
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return output >= 1.;
     }
 
@@ -93,18 +93,13 @@ public class PositionVoltageRamp<T extends Subsystem & SubsystemPosition> extend
      * Log and stop on end.
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("PositionVoltageRamp Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         subsystem.disableMotor();
         Shuffleboard.addEventMarker("PositionVoltageRamp end.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("PositionVoltageRamp end.", this.getClass());
     }
 
-    /**
-     * Log on interrupt.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("PositionVoltageRamp Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("PositionVoltageRamp Interrupted!", this.getClass());
-    }
 }

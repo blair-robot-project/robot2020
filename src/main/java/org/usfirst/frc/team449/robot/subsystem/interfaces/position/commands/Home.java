@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPosition;
@@ -16,7 +16,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPosi
  * Move the motor until it hits a limit switch in order to "zero" it.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class Home<T extends Subsystem & SubsystemPosition> extends Command {
+public class Home<T extends Subsystem & SubsystemPosition> extends CommandBase {
 
     /**
      * The subsystem to execute this command on.
@@ -46,7 +46,7 @@ public class Home<T extends Subsystem & SubsystemPosition> extends Command {
     public Home(@NotNull @JsonProperty(required = true) T subsystem,
                 @JsonProperty(required = true) double speed,
                 boolean useForward) {
-        requires(subsystem);
+        addRequirements(subsystem);
         this.subsystem = subsystem;
         this.speed = speed;
         this.useForward = useForward;
@@ -56,7 +56,7 @@ public class Home<T extends Subsystem & SubsystemPosition> extends Command {
      * Log on init
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         Shuffleboard.addEventMarker("Home init", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("Home init", this.getClass());
     }
@@ -65,7 +65,7 @@ public class Home<T extends Subsystem & SubsystemPosition> extends Command {
      * Set the setpoint
      */
     @Override
-    protected void execute() {
+    public void execute() {
         if (useForward) {
             subsystem.setMotorOutput(speed);
         } else {
@@ -79,7 +79,7 @@ public class Home<T extends Subsystem & SubsystemPosition> extends Command {
      * @return True if the given limit switch is triggered, false otherwise
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         if (useForward) {
             return subsystem.getForwardLimit();
         } else {
@@ -91,7 +91,7 @@ public class Home<T extends Subsystem & SubsystemPosition> extends Command {
      * Disable the motor and set the position to zero on end.
      */
     @Override
-    public void end() {
+    public void end(boolean interrupted) {
         subsystem.resetPosition();
         subsystem.disableMotor();
     }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +15,7 @@ import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
  * A simple flywheel subsystem.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class FlywheelSimple extends Subsystem implements SubsystemFlywheel, Loggable {
+public class FlywheelSimple extends SubsystemBase implements SubsystemFlywheel, Loggable {
 
     /**
      * The motor that controls the flywheel.
@@ -71,16 +71,6 @@ public class FlywheelSimple extends Subsystem implements SubsystemFlywheel, Logg
         this.feederVelocity = feederVelocity != null ? feederVelocity : 1;
         this.spinUpTime = spinUpTime;
         this.state = FlywheelState.OFF;
-    }
-
-    /**
-     * Initialize the default command for a subsystem. By default subsystems have no default command, but if they do,
-     * the default command is set with this method. It is called on all Subsystems by CommandBase in the users program
-     * after all the Subsystems are created.
-     */
-    @Override
-    protected void initDefaultCommand() {
-        //Do nothing!
     }
 
     /**

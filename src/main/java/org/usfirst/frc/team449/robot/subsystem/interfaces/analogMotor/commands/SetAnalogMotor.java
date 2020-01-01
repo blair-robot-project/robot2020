@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
@@ -47,7 +47,7 @@ public class SetAnalogMotor extends InstantCommand {
      * Log when this command is initialized
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         Shuffleboard.addEventMarker("DisableAnalogMotor init.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("DisableAnalogMotor init.", this.getClass());
     }
@@ -56,7 +56,7 @@ public class SetAnalogMotor extends InstantCommand {
      * Set the setpoint.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         subsystem.set(setpoint);
     }
 
@@ -64,17 +64,10 @@ public class SetAnalogMotor extends InstantCommand {
      * Log when this command ends
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("SetAnalogMotor Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         Shuffleboard.addEventMarker("SetAnalogMotor end.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("SetAnalogMotor end.", this.getClass());
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("SetAnalogMotor Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("SetAnalogMotor Interrupted!", this.getClass());
     }
 }

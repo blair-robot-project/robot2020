@@ -1,8 +1,8 @@
 package org.usfirst.frc.team449.robot;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.usfirst.frc.team449.robot.mixIn.CommandMixIn;
 import org.usfirst.frc.team449.robot.mixIn.SubsystemMixIn;
 

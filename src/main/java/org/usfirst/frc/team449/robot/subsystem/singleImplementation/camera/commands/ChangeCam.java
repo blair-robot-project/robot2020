@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
@@ -33,14 +33,14 @@ public class ChangeCam extends InstantCommand {
     @JsonCreator
     public ChangeCam(@NotNull @JsonProperty(required = true) CameraNetwork subsystem) {
         this.subsystem = subsystem;
-        requires(subsystem);
+        addRequirements(subsystem);
     }
 
     /**
      * Log when this command is initialized
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         Shuffleboard.addEventMarker("ChangeCam init", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("ChangeCam init", this.getClass());
     }
@@ -49,7 +49,7 @@ public class ChangeCam extends InstantCommand {
      * Switch the MjpegServer to use the next camera in the list
      */
     @Override
-    protected void execute() {
+    public void execute() {
         //Switches camNum to next camera, if applicable
         if (subsystem.getCameras().size() == 1) {
             Shuffleboard.addEventMarker("You're trying to switch cameras, but your robot only has one camera!", this.getClass().getSimpleName(), EventImportance.kNormal);
@@ -66,17 +66,10 @@ public class ChangeCam extends InstantCommand {
      * Log when this command ends
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("ChangeCam interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         Shuffleboard.addEventMarker("ChangeCam end", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("ChangeCam end", this.getClass());
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("ChangeCam interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("ChangeCam interrupted!", this.getClass());
     }
 }

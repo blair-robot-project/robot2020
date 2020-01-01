@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
@@ -13,7 +13,7 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
  * A simple SubsystemPosition that uses a {@link FPSTalon}.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class SubsystemPositionSimple extends Subsystem implements SubsystemPosition, Loggable {
+public class SubsystemPositionSimple extends SubsystemBase implements SubsystemPosition, Loggable {
 
     /**
      * Motor that controls the subsystem
@@ -37,14 +37,6 @@ public class SubsystemPositionSimple extends Subsystem implements SubsystemPosit
                                    @JsonProperty(required = true) double onTargetTolerance) {
         this.motor = talon;
         this.onTargetTolerance = onTargetTolerance;
-    }
-
-    /**
-     * Initialize the default command to do nothing.
-     */
-    @Override
-    protected void initDefaultCommand() {
-        //Do nothing!
     }
 
     /**

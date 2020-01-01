@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.cscore.MjpegServer;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +20,7 @@ import java.util.List;
  * Subsystem to initialize cameras and put video on Shuffleboard.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class CameraNetwork extends Subsystem implements Loggable {
+public class CameraNetwork extends SubsystemBase implements Loggable {
 
     /**
      * Video server to view on Shuffleboard.
@@ -71,16 +71,6 @@ public class CameraNetwork extends Subsystem implements Loggable {
         //Logging
         Shuffleboard.addEventMarker("CameraSubsystem construct end", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("CameraSubsystem construct end", this.getClass());
-    }
-
-    /**
-     * Initialize the default command for a subsystem. By default subsystems have no default command, but if they do,
-     * the default command is set with this method. It is called on all Subsystems by CommandBase in the users program
-     * after all the Subsystems are created.
-     */
-    @Override
-    protected void initDefaultCommand() {
-        //Do nothing!
     }
 
     /**
