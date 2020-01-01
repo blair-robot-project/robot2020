@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ import org.usfirst.frc.team449.robot.oi.unidirectional.OIUnidirectional;
  * Very simple unidirectional drive control.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class SimpleUnidirectionalDrive<T extends Subsystem & DriveUnidirectional> extends Command {
+public class SimpleUnidirectionalDrive<T extends Subsystem & DriveUnidirectional> extends CommandBase {
 
     /**
      * The OI used for input.
@@ -42,14 +42,14 @@ public class SimpleUnidirectionalDrive<T extends Subsystem & DriveUnidirectional
         this.oi = oi;
         this.subsystem = subsystem;
         //Default commands need to require their subsystems.
-        requires(subsystem);
+        addRequirements(subsystem);
     }
 
     /**
      * Stop the drive for safety reasons.
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         subsystem.fullStop();
     }
 
@@ -57,7 +57,7 @@ public class SimpleUnidirectionalDrive<T extends Subsystem & DriveUnidirectional
      * Give output to the motors based on the stick inputs.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         subsystem.setOutput(oi.getLeftRightOutputCached()[0], oi.getLeftRightOutputCached()[1]);
     }
 
@@ -67,7 +67,7 @@ public class SimpleUnidirectionalDrive<T extends Subsystem & DriveUnidirectional
      * @return false
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return false;
     }
 
@@ -75,9 +75,10 @@ public class SimpleUnidirectionalDrive<T extends Subsystem & DriveUnidirectional
      * Log and brake when interrupted.
      */
     @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("SimpleUnidirectionalDrive Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("SimpleUnidirectionalDrive Interrupted! Stopping the robot.", this.getClass());
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("SimpleUnidirectionalDrive Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         //Brake for safety!
         subsystem.fullStop();
     }

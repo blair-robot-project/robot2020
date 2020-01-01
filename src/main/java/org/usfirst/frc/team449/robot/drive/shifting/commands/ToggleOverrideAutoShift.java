@@ -4,13 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.drive.shifting.DriveShiftable;
-
-import java.awt.*;
 
 /**
  * Override or unoverride whether we're autoshifting. Used to stay in low gear for pushing matches and more!
@@ -38,7 +36,7 @@ public class ToggleOverrideAutoShift extends InstantCommand {
      * Log on initialization
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         Shuffleboard.addEventMarker("OverrideAutoShift init", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("OverrideAutoShift init", this.getClass());
     }
@@ -47,7 +45,7 @@ public class ToggleOverrideAutoShift extends InstantCommand {
      * Toggle overriding autoshifting.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         //Set whether or not we're overriding
         subsystem.setOverrideAutoshift(!subsystem.getOverrideAutoshift());
     }
@@ -56,18 +54,12 @@ public class ToggleOverrideAutoShift extends InstantCommand {
      * Log when this command ends.
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if (interrupted) {
+            Shuffleboard.addEventMarker("OverrideAutoShift Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         Shuffleboard.addEventMarker("OverrideAutoShift end", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("OverrideAutoShift end", this.getClass());
-    }
-
-    /**
-     * Log when interrupted
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("OverrideAutoShift Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("OverrideAutoShift Interrupted!", this.getClass());
     }
 }
 

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ import org.usfirst.frc.team449.robot.oi.unidirectional.tank.OITank;
  * Drives straight when using a tank drive.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class DriveStraight<T extends Subsystem & DriveUnidirectional> extends Command {
+public class DriveStraight<T extends Subsystem & DriveUnidirectional> extends CommandBase {
 
     /**
      * The oi that this command gets input from.
@@ -49,7 +49,7 @@ public class DriveStraight<T extends Subsystem & DriveUnidirectional> extends Co
         this.subsystem = subsystem;
         this.oi = oi;
         this.useLeft = useLeft;
-        requires(subsystem);
+        addRequirements(subsystem);
         Shuffleboard.addEventMarker("Drive Robot bueno", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("Drive Robot bueno", this.getClass());
     }
@@ -58,7 +58,7 @@ public class DriveStraight<T extends Subsystem & DriveUnidirectional> extends Co
      * Stop the drive for safety reasons.
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         subsystem.fullStop();
     }
 
@@ -66,7 +66,7 @@ public class DriveStraight<T extends Subsystem & DriveUnidirectional> extends Co
      * Give output to the motors based on the joystick input.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         if (useLeft) {
             subsystem.setOutput(oi.getLeftRightOutputCached()[0], oi.getLeftRightOutputCached()[0]);
         } else {
@@ -80,7 +80,7 @@ public class DriveStraight<T extends Subsystem & DriveUnidirectional> extends Co
      * @return false
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return false;
     }
 
@@ -88,9 +88,10 @@ public class DriveStraight<T extends Subsystem & DriveUnidirectional> extends Co
      * Log and brake when interrupted.
      */
     @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("DriveStraight Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("DriveStraight Interrupted! Stopping the robot.", this.getClass());
+    public void end(boolean interrupted) {
+        if(interrupted) {
+            Shuffleboard.addEventMarker("DriveStraight Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         subsystem.fullStop();
     }
 }

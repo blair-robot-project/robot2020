@@ -41,7 +41,8 @@ public class LowerIntakeRaise<T extends Subsystem & SubsystemIntake & SubsystemS
      * @param carriageIntakeMode The mode for the carriage intake to be in to intake game pieces.
      * @param carriageHoldMode   The mode for the carriage intake to be in to hold game pieces after intaking them.
      *                           Defaults to off.
-     * @param raiseIntake        Whether to raise the intake after the condition is met. Defaults to false.
+     * @param raiseIntake        Whether to raise the intake after t
+     *                           he condition is met. Defaults to false.
      */
     @JsonCreator
     public LowerIntakeRaise(@NotNull @JsonProperty(required = true) T actuatedIntake,

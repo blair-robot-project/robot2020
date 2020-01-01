@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ import org.usfirst.frc.team449.robot.other.Clock;
  * Go at a certain velocity for a set number of seconds
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class DriveAtSpeed<T extends Subsystem & DriveUnidirectional> extends Command {
+public class DriveAtSpeed<T extends Subsystem & DriveUnidirectional> extends CommandBase {
 
     /**
      * Speed to go at
@@ -54,7 +54,7 @@ public class DriveAtSpeed<T extends Subsystem & DriveUnidirectional> extends Com
         this.subsystem = subsystem;
         this.velocity = velocity;
         this.seconds = seconds;
-        requires(subsystem);
+        addRequirements(subsystem);
         Shuffleboard.addEventMarker("Drive Robot bueno", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("Drive Robot bueno", this.getClass());
     }
@@ -63,7 +63,7 @@ public class DriveAtSpeed<T extends Subsystem & DriveUnidirectional> extends Com
      * Set up start time.
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         //Set up start time
         startTime = Clock.currentTimeMillis();
         //Reset drive velocity (for safety reasons)
@@ -76,7 +76,7 @@ public class DriveAtSpeed<T extends Subsystem & DriveUnidirectional> extends Com
      * Send output to motors and log data
      */
     @Override
-    protected void execute() {
+    public void execute() {
         //Set the velocity
         subsystem.setOutput(velocity, velocity);
     }
@@ -87,7 +87,7 @@ public class DriveAtSpeed<T extends Subsystem & DriveUnidirectional> extends Com
      * @return True if timeout has been reached, false otherwise
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return (Clock.currentTimeMillis() - startTime) * 1e-3 > seconds;
     }
 
@@ -95,22 +95,14 @@ public class DriveAtSpeed<T extends Subsystem & DriveUnidirectional> extends Com
      * Stop the drive when the command ends.
      */
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("DriveAtSpeed Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         //Brake on exit. Yes this should be setOutput because often we'll be testing how well the PID loop handles a
         // full stop.
-        subsystem.setOutput(0, 0);
+        subsystem.fullStop();
         Shuffleboard.addEventMarker("DriveAtSpeed end.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("DriveAtSpeed end.", this.getClass());
-    }
-
-    /**
-     * Log and stop the drive when the command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Shuffleboard.addEventMarker("DriveAtSpeed Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("DriveAtSpeed Interrupted! Stopping the robot.", this.getClass());
-        //Brake if we're interrupted
-        subsystem.fullStop();
     }
 }

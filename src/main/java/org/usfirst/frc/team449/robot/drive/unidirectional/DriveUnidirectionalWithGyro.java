@@ -1,10 +1,7 @@
 package org.usfirst.frc.team449.robot.drive.unidirectional;
 
 import com.fasterxml.jackson.annotation.*;
-
-import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +16,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT, property = "@class")
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemAHRS, DriveUnidirectional, Loggable {
+public class DriveUnidirectionalWithGyro extends SubsystemBase implements SubsystemAHRS, DriveUnidirectional, Loggable {
 
 
     /**
@@ -187,14 +184,6 @@ public class DriveUnidirectionalWithGyro extends Subsystem implements SubsystemA
     public void enableMotors() {
         leftMaster.enable();
         rightMaster.enable();
-    }
-
-    /**
-     * Stuff run on first enable.
-     */
-    @Override
-    protected void initDefaultCommand() {
-        //Do nothing, the default command gets set with setDefaultCommandManual
     }
 
     /**

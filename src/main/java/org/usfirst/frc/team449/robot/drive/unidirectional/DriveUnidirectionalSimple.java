@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +15,7 @@ import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
  * A simple unidirectional drive with no encoders.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class DriveUnidirectionalSimple extends Subsystem implements DriveUnidirectional, Loggable {
+public class DriveUnidirectionalSimple extends SubsystemBase implements DriveUnidirectional, Loggable {
 
     /**
      * The motor for the left side of the drive.
@@ -40,16 +40,6 @@ public class DriveUnidirectionalSimple extends Subsystem implements DriveUnidire
                                      @NotNull @JsonProperty(required = true) SimpleMotor rightMotor) {
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
-    }
-
-    /**
-     * Initialize the default command for a subsystem. By default subsystems have no default command, but if they do,
-     * the default command is set with this method. It is called on all Subsystems by CommandBase in the users program
-     * after all the Subsystems are created.
-     */
-    @Override
-    protected void initDefaultCommand() {
-        //Do nothing!
     }
 
     /**
