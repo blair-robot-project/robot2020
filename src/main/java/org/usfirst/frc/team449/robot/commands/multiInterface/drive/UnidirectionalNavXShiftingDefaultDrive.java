@@ -124,13 +124,13 @@ public class UnidirectionalNavXShiftingDefaultDrive<T extends Subsystem & DriveU
         //Gain schedule the loop if we shifted
         if (lastGear != subsystem.getGear()) {
             if (subsystem.getGear() == Shiftable.gear.LOW.getNumVal()) {
-                this.getPIDController().setP(kP);
-                this.getPIDController().setI(kI);
-                this.getPIDController().setD(kD);
+                this.getController().setP(kP);
+                this.getController().setI(kI);
+                this.getController().setD(kD);
             } else {
-                this.getPIDController().setP(kP * highGearAngularCoefficient);
-                this.getPIDController().setI(kI * highGearAngularCoefficient);
-                this.getPIDController().setD(kD * highGearAngularCoefficient);
+                this.getController().setP(kP * highGearAngularCoefficient);
+                this.getController().setI(kI * highGearAngularCoefficient);
+                this.getController().setD(kD * highGearAngularCoefficient);
             }
             lastGear = subsystem.getGear();
         }

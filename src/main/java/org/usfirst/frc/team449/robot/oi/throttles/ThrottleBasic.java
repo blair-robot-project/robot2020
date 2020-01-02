@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
@@ -15,7 +13,7 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
  * A class representing a single axis on a joystick.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class ThrottleBasic implements Throttle, PIDSource {
+public class ThrottleBasic implements Throttle {
 
     /**
      * The stick we're using
@@ -84,31 +82,10 @@ public class ThrottleBasic implements Throttle, PIDSource {
     }
 
     /**
-     * Get which parameter of the device you are using as a process control variable.
-     *
-     * @return the currently selected PID source parameter
-     */
-    @Override
-    public PIDSourceType getPIDSourceType() {
-        return null;
-    }
-
-    /**
-     * Set which parameter of the device you are using as a process control variable.
-     *
-     * @param pidSource An enum to select the parameter.
-     */
-    @Override
-    public void setPIDSourceType(PIDSourceType pidSource) {
-        //Do nothing
-    }
-
-    /**
      * Get the result to use in PIDController.
      *
      * @return the result to use in PIDController
      */
-    @Override
     @Log
     public double pidGet() {
         return (inverted ? -1 : 1) * stick.getRawAxis(axis);

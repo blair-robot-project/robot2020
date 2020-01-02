@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.*;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.other.Clock;
@@ -16,7 +18,13 @@ import org.usfirst.frc.team449.robot.other.BufferTimer;
 
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extends PIDCommand {
+public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extends CommandBase {
+
+    /**
+     * On-board PID controller
+     */
+
+    protected final PIDController pidController;
 
     /**
      * The measurement of the process variable
@@ -99,7 +107,7 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
                             @NotNull @JsonProperty(required = true) DoubleSupplier processVariableSupplier,
                             @Nullable DoubleSupplier setpointSupplier) {
         //Set P, I and D
-        super(kP, kI, kD, loopTimeMillis != null ? loopTimeMillis / 1000. : 20. / 1000.);
+        this.pidController = new PIDController(kP, kI, kD, loopTimeMillis != null ? loopTimeMillis / 1000. : 20. / 1000.);
         addRequirements(subsystem);
 
         //The drive subsystem to execute this command on and to get the gyro reading from.
@@ -115,7 +123,7 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
         this.onTargetBuffer = onTargetBuffer;
 
         //Set the absolute tolerance to be considered on target within.
-        this.getPIDController().setAbsoluteTolerance(absoluteTolerance);
+        this.getController().setTolerance(absoluteTolerance);
 
         this.minimumOutput = minimumOutput;
 
@@ -138,21 +146,21 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
         //This caps the output we can give. One way to set up closed-loop is to make P large and then use this to
         // prevent overshoot.
         if (maximumOutput != null) {
-            this.getPIDController().setOutputRange(-maximumOutput, maximumOutput);
+            this.getController().enableContinuousInput(-maximumOutput, maximumOutput);
         }
     }
 
     /**
-     * Whether or not the loop is on target. Use this instead of {@link edu.wpi.first.wpilibj.PIDController}'s
+     * Whether or not the loop is on target. Use this instead of {@link edu.wpi.first.wpilibj.controller.PIDController}'s
      * onTarget.
      *
      * @return True if on target, false otherwise.
      */
     protected boolean onTarget() {
         if (onTargetBuffer == null) {
-            return this.getPIDController().onTarget();
+            return this.getController().atSetpoint();
         } else {
-            return onTargetBuffer.get(this.getPIDController().onTarget());
+            return onTargetBuffer.get(this.getController().atSetpoint());
         }
     }
 
@@ -163,7 +171,15 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
      * @return That output after being deadbanded with the map-given deadband.
      */
     protected double deadbandOutput(double output) {
-        return Math.abs(this.getPIDController().getError()) > deadband ? output : 0;
+        return Math.abs(this.getController().getPositionError()) > deadband ? output : 0;
+    }
+
+    /**
+     * Set setpoint for PID loop to use
+     *
+     */
+    protected void setSetpoint(double setpoint){
+        this.getController().setSetpoint(setpoint);
     }
 
     /**
@@ -172,13 +188,8 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
      * <p>It returns the input for the pid loop, so if this command was based off of a gyro, then it
      * should return the angle of the gyro.
      *
-     * <p>All subclasses of {@link PIDCommand} must override this method.
-     *
-     * <p>This method will be called in a different thread then the {@link Scheduler} thread.
-     *
      * @return the value the pid loop should use as input
      */
-    @Override
     protected double returnPIDInput() {
         double value = processVariableSupplier.getAsDouble();
         if(Double.isNaN(value)){
@@ -192,13 +203,9 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
      * This method is a good time to set motor values, maybe something along the lines of
      * <code>driveline.tankDrive(output, -output)</code>
      *
-     * <p>All subclasses of {@link PIDCommand} must override this method.
-     *
-     * <p>This method will be called in a different thread then the {@link Scheduler} thread.
      *
      * @param output the value the pid loop calculated
      */
-    @Override
     protected void usePIDOutput(double output) {
         output = deadbandOutput(output);
         subsystem.set(output);
@@ -208,15 +215,13 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
      * Set up the start time and setpoint.
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         Shuffleboard.addEventMarker("NavXTurnToAngle init.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("NavXTurnToAngle init.", this.getClass());
         //Set up start time
         this.startTime = Clock.currentTimeMillis();
         // We handle setpoint math here rather than in the PID Controller.
         this.setSetpoint(0);
-        //Make sure to enable the controller!
-        this.getPIDController().enable();
     }
 
     /**
@@ -225,7 +230,7 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
      * @return True if timeout seconds have passed or the robot is on target, false otherwise.
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         //The PIDController onTarget() is crap and sometimes never returns true because of floating point errors, so
         // we need a timeout
         return onTarget() || (timeout != null && Clock.currentTimeMillis() - startTime > timeout);
@@ -251,5 +256,15 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
 
         return output;
     }
+
+    /**
+     * Returns the PIDController used by the command.
+     *
+     * @return The PIDController
+     */
+    public PIDController getController() {
+        return this.pidController;
+    }
+
 
 }

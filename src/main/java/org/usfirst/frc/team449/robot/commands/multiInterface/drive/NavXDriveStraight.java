@@ -91,8 +91,7 @@ public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & Subsy
      */
     @Override
     public void initialize() {
-        this.getPIDController().setSetpoint(this.returnPIDInput());
-        this.getPIDController().enable();
+        this.setSetpoint(subsystem.getHeadingCached());
     }
 
     /**
@@ -101,7 +100,7 @@ public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & Subsy
     @Override
     public void execute() {
         //Process the PID output with deadband, minimum output, etc.
-        output = processPIDOutput(this.getPIDController().get());
+        output = this.getOutput();
 
         //Set throttle to the specified stick.
         if (useLeft) {
@@ -129,7 +128,7 @@ public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & Subsy
         if(interrupted){
             Shuffleboard.addEventMarker("NavXDriveStraight interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
         }
+        subsystem.fullStop();
         Shuffleboard.addEventMarker("NavXDriveStraight end", this.getClass().getSimpleName(), EventImportance.kNormal);
-        this.getPIDController().disable();
     }
 }

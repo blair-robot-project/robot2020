@@ -127,8 +127,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
     @Override
     public void initialize() {
         //Reset all values of the PIDController and enable it.
-        this.getPIDController().reset();
-        this.getPIDController().enable();
+        this.getController().reset();
         Shuffleboard.addEventMarker("UnidirectionalNavXArcadeDrive init.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("UnidirectionalNavXArcadeDrive init.", this.getClass());
 
@@ -152,13 +151,12 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
             //Switch to driving straight
             drivingStraight = true;
             //Set the setpoint to the current heading and reset the AHRS
-            this.getPIDController().reset();
-            this.getPIDController().setSetpoint(subsystem.getHeadingCached());
-            this.getPIDController().enable();
+            this.getController().reset();
+            this.setSetpoint(subsystem.getHeadingCached());
         }
 
         //Get the outputs
-        rawOutput = this.getPIDController().get();
+        rawOutput = this.getRawOutput();
         leftOutput = oi.getLeftRightOutputCached()[0];
         rightOutput = oi.getLeftRightOutputCached()[1];
 
@@ -171,7 +169,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
         //If we're driving straight..
         if (drivingStraight) {
             //Process the output (minimumOutput, deadband, etc.)
-            processedOutput = processPIDOutput(rawOutput);
+            processedOutput = getOutput();
 
             //Deadband if we're stationary
             if (leftOutput == 0 && rightOutput == 0) {

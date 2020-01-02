@@ -69,8 +69,6 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
         //Logger.addEvent("NavXRelativeTurnToAngle init.", this.getClass());
         //Do math to setup the setpoint.
         this.setSetpoint(clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() + setpoint));
-        //Make sure to enable the controller!
-        this.getPIDController().enable();
     }
 
     /**
@@ -81,8 +79,7 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
         if(interrupted){
             Shuffleboard.addEventMarker("NavXRelativeTurnToAngle interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
         }
+        //how the heck do we stop this thing help
         Shuffleboard.addEventMarker("NavXRelativeTurnToAngle end.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Stop the controller
-        this.getPIDController().disable();
     }
 }

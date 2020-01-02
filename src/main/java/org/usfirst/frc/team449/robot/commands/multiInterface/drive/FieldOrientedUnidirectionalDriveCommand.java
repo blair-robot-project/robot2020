@@ -105,8 +105,7 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
     @Override
     public void initialize() {
         //Reset all values of the PIDController and enable it.
-        this.getPIDController().reset();
-        this.getPIDController().enable();
+        this.getController().reset();
         Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommand init.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("FieldOrientedUnidirectionalDriveCommand init.", this.getClass());
     }
@@ -127,11 +126,11 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
                     break;
                 }
             }
-            this.getPIDController().setSetpoint(theta);
+            this.setSetpoint(theta);
         }
 
         //Process or zero the input depending on whether the NavX is being overriden.
-        output = subsystem.getOverrideGyro() ? 0 : processPIDOutput(this.getPIDController().get());
+        output = subsystem.getOverrideGyro() ? 0 : this.getOutput();
 
         //Adjust the heading according to the PID output, it'll be positive if we want to go right.
         subsystem.setOutput(oi.getVelCached() - output, oi.getVelCached() + output);

@@ -92,8 +92,7 @@ public class DriveStraightUntilConditionMet<T extends Subsystem & DriveUnidirect
     public void initialize() {
         Shuffleboard.addEventMarker("DriveStraightUntilConditionMet init", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("DriveStraightUntilConditionMet init", this.getClass());
-        this.getPIDController().setSetpoint(this.returnPIDInput());
-        this.getPIDController().enable();
+        this.setSetpoint(subsystem.getHeadingCached());
     }
 
     /**
@@ -102,7 +101,7 @@ public class DriveStraightUntilConditionMet<T extends Subsystem & DriveUnidirect
     @Override
     public void execute() {
         //Process the PID output with deadband, minimum output, etc.
-        output = processPIDOutput(this.getPIDController().get());
+        output = this.getOutput();
 
         drive.setOutput(driveVelocity - output, driveVelocity + output);
     }
@@ -125,9 +124,7 @@ public class DriveStraightUntilConditionMet<T extends Subsystem & DriveUnidirect
         if(interrupted){
             Shuffleboard.addEventMarker("DriveStraightUntilConditionMet interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
         }
-        Shuffleboard.addEventMarker("DriveStraightUntilConditionMet end", this.getClass().getSimpleName(), EventImportance.kNormal);
-        //Logger.addEvent("DriveStraightUntilConditionMet end", this.getClass());
-        this.getPIDController().disable();
         drive.fullStop();
+        Shuffleboard.addEventMarker("DriveStraightUntilConditionMet end", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 }

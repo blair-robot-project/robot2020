@@ -100,8 +100,6 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
         //Set up start time
         this.startTime = Clock.currentTimeMillis();
         this.setSetpoint(clipTo180(setpoint));
-        //Make sure to enable the controller!
-        this.getPIDController().enable();
     }
 
     /**
@@ -110,7 +108,7 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
     @Override
     public void execute() {
         //Process the output with deadband, minimum output, etc.
-        output = processPIDOutput(this.getPIDController().get());
+        output = this.getOutput();
 
         //spin to the right angle
         subsystem.setOutput(-output, output);
@@ -136,7 +134,7 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
         if(interrupted){
             Shuffleboard.addEventMarker("NavXTurnToAngle interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
         }
+        subsystem.fullStop();
         Shuffleboard.addEventMarker("NavXTurnToAngle end.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        this.getPIDController().disable();
     }
 }
