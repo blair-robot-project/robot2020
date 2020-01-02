@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
@@ -17,7 +18,7 @@ import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
  * A Jackson-compatible, invertible wrapper for the NavX.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MappedAHRS implements Updatable, io.github.oblarg.oblog.Loggable {
+public class MappedAHRS implements Updatable, Loggable {
 
     /**
      * The AHRS this class is a wrapper on.

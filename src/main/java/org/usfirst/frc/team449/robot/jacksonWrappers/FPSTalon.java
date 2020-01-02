@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
@@ -804,6 +805,12 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         private final double posKP, posKI, posKD;
 
         /**
+         * WPI object for calculating feed forward constants given a max achievable velocity
+         * and acceleration
+         */
+        private SimpleMotorFeedforward feedForwardCalculator;
+
+        /**
          * Default constructor.
          *
          * @param gearNum                 The gear number this is the settings for. Ignored if gear isn't null.
@@ -818,6 +825,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
          * @param revNominalOutputVoltage The minimum output voltage for closed-loop modes in the reverse direction.
          *                                This does not rescale, it just sets any output below this voltage to this
          *                                voltage. Defaults to -fwdNominalOutputVoltage.
+         *
+         * @param feedForwardCalculator   The component for calculating feedforwards in closed-loop control modes.
+         *
          * @param rampRate                The ramp rate, in volts/sec. Can be null, and if it is, no ramp rate is used.
          * @param maxSpeed                The maximum speed of the motor in this gear, in FPS. Used for throttle
          *                                scaling. Ignored if kVFwd is null. Calculated from the drive characterization
@@ -842,6 +852,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                                @Nullable Double revPeakOutputVoltage,
                                @Nullable Double fwdNominalOutputVoltage,
                                @Nullable Double revNominalOutputVoltage,
+                               @Nullable SimpleMotorFeedforward feedForwardCalculator,
                                @Nullable Double rampRate,
                                @Nullable Double maxSpeed,
                                double kP,
@@ -857,6 +868,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             this.fwdNominalOutputVoltage = fwdNominalOutputVoltage != null ? fwdNominalOutputVoltage : 0;
             this.revNominalOutputVoltage = revNominalOutputVoltage != null ? revNominalOutputVoltage :
                     -this.fwdNominalOutputVoltage;
+            this.feedForwardCalculator = feedForwardCalculator != null ? feedForwardCalculator :
+                    new SimpleMotorFeedforward(0,0);
             this.rampRate = rampRate;
             this.kP = kP;
             this.kI = kI;
@@ -871,7 +884,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
          * Empty constructor that uses all default options.
          */
         public PerGearSettings() {
-            this(0, null, null, null, null, null, null, null, 0, 0, 0, 0, 0 ,0);
+            this(0, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0 ,0);
         }
 
         /**
