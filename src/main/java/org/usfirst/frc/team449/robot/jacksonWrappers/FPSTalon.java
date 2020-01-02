@@ -218,12 +218,13 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         if (perGearSettings == null || perGearSettings.size() == 0) {
             this.perGearSettings.put(0, new PerGearSettings());
             //this.perGearSettings.get(0).getFeedForwardComponent().setTalon(this);
-            //todo add this capability to new feedforward file
+            //todo wrap around feedforward file to allow talon storage
         }
         //Otherwise, map the settings to the gear they are.
         else {
             for (PerGearSettings settings : perGearSettings) {
                 //settings.getFeedForwardComponent().setTalon(this);
+                //todo wrap around feedforward file to allow talon storage
                 this.perGearSettings.put(settings.getGear(), settings);
             }
         }
@@ -652,6 +653,14 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         setGearScaledVelocity(velocity, gear.getNumVal());
     }
 
+
+    /**
+     * @return Feedforward calculator for this gear
+     */
+    public SimpleMotorFeedforward getCurrentGearFeedForward(){
+        return currentGearSettings.getFeedForwardCalculator();
+    }
+
     /**
      * @return the position of the talon in feet, or null of inches per rotation wasn't given.
      */
@@ -922,6 +931,13 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
          */
         public double getRevNominalOutputVoltage() {
             return revNominalOutputVoltage;
+        }
+
+        /**
+         * @return Feedforward calculator for this gear
+         */
+        public SimpleMotorFeedforward getFeedForwardCalculator(){
+            return feedForwardCalculator;
         }
 
         /**

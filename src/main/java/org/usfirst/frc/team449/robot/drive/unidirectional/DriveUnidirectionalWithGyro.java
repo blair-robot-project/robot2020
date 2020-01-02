@@ -1,6 +1,12 @@
 package org.usfirst.frc.team449.robot.drive.unidirectional;
 
 import com.fasterxml.jackson.annotation.*;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -38,6 +44,16 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     private final MappedAHRS ahrs;
 
     /**
+     * Drivetrain kinematics processor for measuring individual wheel speeds
+     */
+    private final DifferentialDriveKinematics driveKinematics;
+
+    /**
+     * Drivetrain odometry tracker for tracking position
+     */
+    private final DifferentialDriveOdometry driveOdometry;
+
+    /**
      * Whether or not to use the NavX for driving straight
      */
     private boolean overrideGyro;
@@ -54,17 +70,21 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * @param leftMaster  The master talon on the left side of the drive.
      * @param rightMaster The master talon on the right side of the drive.
      * @param ahrs        The NavX gyro for calculating this drive's heading and angular velocity.
+     * @param trackWidthMeters The width between the left and right wheels in meters
      */
     @JsonCreator
     public DriveUnidirectionalWithGyro(@NotNull @JsonProperty(required = true) FPSTalon leftMaster,
                                        @NotNull @JsonProperty(required = true) FPSTalon rightMaster,
-                                       @NotNull @JsonProperty(required = true) MappedAHRS ahrs) {
+                                       @NotNull @JsonProperty(required = true) MappedAHRS ahrs,
+                                       @NotNull @JsonProperty(required = true) double trackWidthMeters) {
         super();
         //Initialize stuff
         this.rightMaster = rightMaster;
         this.leftMaster = leftMaster;
         this.ahrs = ahrs;
         this.overrideGyro = false;
+        this.driveKinematics = new DifferentialDriveKinematics(trackWidthMeters);
+        this.driveOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
     }
 
     /**
@@ -166,6 +186,20 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Override
     public Double getRightPosCached() {
         return cachedRightPos;
+    }
+
+    /**
+     * @return The feedforward calculator for left motors
+     */
+    public SimpleMotorFeedforward getLeftFeedforwardCalculator(){
+        return leftMaster.getCurrentGearFeedForward();
+    }
+
+    /**
+     * @return The feedforward calculator for right motors
+     */
+    public SimpleMotorFeedforward getRightFeedforwardCalculator(){
+        return rightMaster.getCurrentGearFeedForward();
     }
 
     /**
@@ -291,6 +325,44 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Override
     public void setOverrideGyro(boolean override) {
         overrideGyro = override;
+    }
+
+    /**
+     * Reset odometry tracker to current robot pose
+     */
+    @Log
+    public void resetOdometry(){
+        driveOdometry.resetPosition(getCurrentPose(), Rotation2d.fromDegrees(getHeading()));
+    }
+
+    /**
+     * Update odometry tracker with current heading, and encoder readings
+     */
+    public void updateOdometry(){
+        //need to convert to meters
+        driveOdometry.update(Rotation2d.fromDegrees(getHeading()), getLeftPos(), getRightPos());
+    }
+
+    /**
+     * @return Current estimated pose based on odometry tracker data
+     */
+    public Pose2d getCurrentPose(){
+        return driveOdometry.getPoseMeters();
+    }
+
+    /**
+     * @return Current wheel speeds based on encoder readings for future pose correction
+     */
+    public DifferentialDriveWheelSpeeds getWheelSpeeds(){
+        //need to convert to meters
+        return new DifferentialDriveWheelSpeeds(getLeftVel(), getRightVel());
+    }
+
+    /**
+     * @return Kinematics processor for wheel speeds
+     */
+    public DifferentialDriveKinematics getDriveKinematics(){
+        return driveKinematics;
     }
 //
 //    /**

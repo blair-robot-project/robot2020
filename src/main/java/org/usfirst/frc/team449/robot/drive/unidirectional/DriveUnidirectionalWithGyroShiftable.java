@@ -35,6 +35,7 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
      * @param leftMaster                The master talon on the left side of the drive.
      * @param rightMaster               The master talon on the right side of the drive.
      * @param ahrs                      The NavX on this drive.
+     * @param trackWidthMeters The width between the left and right wheels in meters
      * @param shiftComponent            The component that controls shifting.
      * @param startingOverrideAutoshift Whether to start with autoshift disabled. Defaults to false.
      */
@@ -42,9 +43,10 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
     public DriveUnidirectionalWithGyroShiftable(@NotNull @JsonProperty(required = true) FPSTalon leftMaster,
                                                 @NotNull @JsonProperty(required = true) FPSTalon rightMaster,
                                                 @NotNull @JsonProperty(required = true) MappedAHRS ahrs,
+                                                @NotNull @JsonProperty(required = true) double trackWidthMeters,
                                                 @NotNull @JsonProperty(required = true) ShiftComponent shiftComponent,
                                                 boolean startingOverrideAutoshift) {
-        super(leftMaster, rightMaster, ahrs);
+        super(leftMaster, rightMaster, ahrs, trackWidthMeters);
         //Initialize stuff
         this.shiftComponent = shiftComponent;
 
