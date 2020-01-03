@@ -57,7 +57,6 @@ subsystems:
                   kS: 1.40187
                   kV: 0.59688
                   kA: 0.15676
-          minNumPointsInBottomBuffer: 10
           updaterProcessPeriodSecs: 0.005
           statusFrameRatesMillis: !!map
             Status_4_AinTempVbat: 15
@@ -98,6 +97,7 @@ subsystems:
           '@id': navX
           port: kMXP
           invertYaw: true
+      trackWidthMeters: 0.6
       shiftComponent:
         org.usfirst.frc.team449.robot.components.ShiftComponent:
           '@id': driveShiftComponent
