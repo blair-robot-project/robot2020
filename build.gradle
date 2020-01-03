@@ -168,3 +168,5 @@ jar {
 wrapper {
     gradleVersion = '6.0'
 }
+
+compileJava.options.compilerArgs.add '-parameters'

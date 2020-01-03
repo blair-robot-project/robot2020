@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -25,13 +26,13 @@ public class Robot extends TimedRobot {
      * The absolute filepath to the resources folder containing the config files when the robot is real.
      */
     @NotNull
-    public static final String RESOURCES_PATH_REAL = "/home/lvuser/449_resources/";
+    public static final String RESOURCES_PATH_REAL = Filesystem.getDeployDirectory().getAbsolutePath();
 
     /**
      * The relative filepath to the resources folder containing the config files when the robot is simulated.
      */
     @NotNull
-    public static final String RESOURCES_PATH_SIMULATED = "./src/main/resources/";
+    public static final String RESOURCES_PATH_SIMULATED = "./src/main/deploy/";
 
     /**
      * The filepath to the resources folder containing the config files.

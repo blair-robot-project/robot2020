@@ -861,7 +861,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                                @Nullable Double revPeakOutputVoltage,
                                @Nullable Double fwdNominalOutputVoltage,
                                @Nullable Double revNominalOutputVoltage,
-                               @Nullable SimpleMotorFeedforward feedForwardCalculator,
+                               @Nullable MappedFeedForwardCalculator feedForwardCalculator,
                                @Nullable Double rampRate,
                                @Nullable Double maxSpeed,
                                double kP,
