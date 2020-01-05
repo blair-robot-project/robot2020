@@ -332,6 +332,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Log
     public void resetOdometry(){
+        resetPosition();;
         driveOdometry.resetPosition(getCurrentPose(), Rotation2d.fromDegrees(getHeading()));
     }
 
@@ -340,7 +341,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     public void updateOdometry(){
         //need to convert to meters
-        driveOdometry.update(Rotation2d.fromDegrees(getHeading()), getLeftPos(), getRightPos());
+        driveOdometry.update(Rotation2d.fromDegrees(getHeading()), getLeftPos() / 3.281, getRightPos() / 3.281);
     }
 
     /**
@@ -355,7 +356,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     public DifferentialDriveWheelSpeeds getWheelSpeeds(){
         //need to convert to meters
-        return new DifferentialDriveWheelSpeeds(getLeftVel(), getRightVel());
+        return new DifferentialDriveWheelSpeeds(getLeftVel() / 3.281, getRightVel() / 3.281);
     }
 
     /**

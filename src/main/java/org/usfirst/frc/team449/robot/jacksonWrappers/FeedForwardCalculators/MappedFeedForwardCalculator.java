@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot.jacksonWrappers;
+package org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators;
 
 import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
@@ -22,4 +22,5 @@ public class MappedFeedForwardCalculator extends SimpleMotorFeedforward {
                                 @JsonProperty(required = true) double kA) {
         super(kS, kV, kA);
     }
+
 }

@@ -1,8 +1,8 @@
 ---
-## WHETHER TO USE THE CAMERA SERVER
+# WHETHER TO USE THE CAMERA SERVER
 useCameraServer: true
 
-## PDP
+# PDP
 pdp:
   org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
     '@id': PDP
@@ -11,9 +11,9 @@ pdp:
       bufferSize: 250
       rSquaredThreshhold: 0.75
 
-## ROBOT SUBSYSTEMS
+# ROBOT SUBSYSTEMS
 subsystems:
-  ## ROBOT DRIVE
+  # ROBOT DRIVE
   - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
       '@id': drive
       #Wheelbase: 2.14
@@ -44,7 +44,7 @@ subsystems:
               maxSpeed: 7.0
               kP: 0.15
               feedForwardCalculator:
-                org.usfirst.frc.team449.robot.jacksonWrappers.MappedFeedForwardCalculator:
+                org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                   kS: 0.960891
                   kV: 1.433226
                   kA: 0.165688
@@ -53,7 +53,7 @@ subsystems:
               maxSpeed: 14
               kP: 0.3
               feedForwardCalculator:
-                org.usfirst.frc.team449.robot.jacksonWrappers.MappedFeedForwardCalculator:
+                org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                   kS: 1.40187
                   kV: 0.59688
                   kA: 0.15676
@@ -76,13 +76,13 @@ subsystems:
           perGearSettings:
             - <<: *lowGear
               feedForwardCalculator:
-                org.usfirst.frc.team449.robot.jacksonWrappers.MappedFeedForwardCalculator:
+                org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                   kS: 0.959980
                   kV: 1.460269
                   kA: 0.224505
             - <<: *highGear
               feedForwardCalculator:
-                org.usfirst.frc.team449.robot.jacksonWrappers.MappedFeedForwardCalculator:
+                org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                   kS: 1.400309
                   kV: 0.631419
                   kA: 0.151538
@@ -113,11 +113,11 @@ subsystems:
             reverse: 1
           startingGear: LOW
 
-## COMMANDS
+# COMMANDS
 commands:
-  ## DEFAULT COMMANDS
+  # DEFAULT COMMANDS
   defaultCommands:
-    ## DEFAULT DRIVE COMMAND
+    # DEFAULT DRIVE COMMAND
     - subsystem:
         org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
           drive
@@ -213,8 +213,15 @@ commands:
               '@id': upshiftDebouncer
               bufferTimeSeconds: 0.06
             upshiftFwdThresh: 0.4
+#  autoStartupCommand:
+#    org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerUnidirectionalDrive:
+#      '@id':testDriveCommand
+#      drivetrain:
+#        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
+#      P: 0.15
+#      D: 0
 
-## UPDATER
+# UPDATER
 updater:
   org.usfirst.frc.team449.robot.other.Updater:
     '@id': updater

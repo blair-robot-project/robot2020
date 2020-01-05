@@ -79,7 +79,7 @@ public class Robot extends TimedRobot {
 
         try {
             //Read the yaml file with SnakeYaml so we can use anchors and merge syntax.
-            Map<?, ?> normalized = (Map<?, ?>) yaml.load(new FileReader(RESOURCES_PATH + mapName));
+            Map<?, ?> normalized = (Map<?, ?>) yaml.load(new FileReader(RESOURCES_PATH + "/" + mapName));
             YAMLMapper mapper = new YAMLMapper();
             //Turn the Map read by SnakeYaml into a String so Jackson can read it.
             String fixed = mapper.writeValueAsString(normalized);
