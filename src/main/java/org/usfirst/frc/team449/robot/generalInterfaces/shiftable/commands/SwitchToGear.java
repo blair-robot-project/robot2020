@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
-import org.usfirst.frc.team449.robot.other.Logger;
+
 
 /**
  * Switches to a specified gear.
@@ -50,15 +52,16 @@ public class SwitchToGear extends InstantCommand {
      * Log when this command is initialized
      */
     @Override
-    protected void initialize() {
-        Logger.addEvent("SwitchToGear init.", this.getClass());
+    public void initialize() {
+        Shuffleboard.addEventMarker("SwitchToGear init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SwitchToGear init.", this.getClass());
     }
 
     /**
      * Switch to the specified gear
      */
     @Override
-    protected void execute() {
+    public void execute() {
         subsystem.setGear(switchTo);
     }
 
@@ -66,15 +69,10 @@ public class SwitchToGear extends InstantCommand {
      * Log when this command ends
      */
     @Override
-    protected void end() {
-        Logger.addEvent("SwitchToGear end.", this.getClass());
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Logger.addEvent("SwitchToGear Interrupted!", this.getClass());
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("SwitchToGear Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
+        Shuffleboard.addEventMarker("SwitchToGear end.", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 }

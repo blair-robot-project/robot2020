@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 
@@ -12,7 +14,7 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
  * A binary motor subsystem that uses PID to go to a given position when turned on.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class BinaryMotorGoToPos extends Subsystem implements SubsystemBinaryMotor {
+public class BinaryMotorGoToPos extends SubsystemBase implements SubsystemBinaryMotor, Loggable {
 
     /**
      * The talon to move to the given position.
@@ -45,13 +47,6 @@ public class BinaryMotorGoToPos extends Subsystem implements SubsystemBinaryMoto
     }
 
     /**
-     * Do nothing.
-     */
-    @Override
-    protected void initDefaultCommand() {
-    }
-
-    /**
      * Turns the motor on, and sets it to a map-specified position.
      */
     @Override
@@ -74,6 +69,7 @@ public class BinaryMotorGoToPos extends Subsystem implements SubsystemBinaryMoto
      * @return true if the motor is on, false otherwise.
      */
     @Override
+    @Log
     public boolean isMotorOn() {
         return motorOn;
     }

@@ -1,7 +1,9 @@
 package org.usfirst.frc.team449.robot.commands.multiInterface.drive;
 
 import com.fasterxml.jackson.annotation.*;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.AutoshiftComponent;
@@ -10,7 +12,6 @@ import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.oi.fieldoriented.OIFieldOriented;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
 import java.util.List;
@@ -104,7 +105,7 @@ public class FieldOrientedUnidirectionalDriveCommandShifting<T extends Subsystem
      * Set PID setpoint to processed controller setpoint and autoshift.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         if (!subsystem.getOverrideAutoshift()) {
             autoshiftComponent.autoshift(oi.getVelCached(), subsystem.getLeftVelCached(),
                     subsystem.getRightVelCached(), gear -> subsystem.setGear(gear));
@@ -113,13 +114,13 @@ public class FieldOrientedUnidirectionalDriveCommandShifting<T extends Subsystem
         //Gain schedule the loop if we shifted
         if (lastGear != subsystem.getGear()) {
             if (subsystem.getGear() == Shiftable.gear.LOW.getNumVal()) {
-                this.getPIDController().setP(kP);
-                this.getPIDController().setI(kI);
-                this.getPIDController().setD(kD);
+                this.getController().setP(kP);
+                this.getController().setI(kI);
+                this.getController().setD(kD);
             } else {
-                this.getPIDController().setP(kP * highGearAngularCoefficient);
-                this.getPIDController().setI(kI * highGearAngularCoefficient);
-                this.getPIDController().setD(kD * highGearAngularCoefficient);
+                this.getController().setP(kP * highGearAngularCoefficient);
+                this.getController().setI(kI * highGearAngularCoefficient);
+                this.getController().setD(kD * highGearAngularCoefficient);
             }
             lastGear = subsystem.getGear();
         }
@@ -131,16 +132,12 @@ public class FieldOrientedUnidirectionalDriveCommandShifting<T extends Subsystem
      * Log when this command ends
      */
     @Override
-    protected void end() {
-        Logger.addEvent("FieldOrientedUnidirectionalDriveCommandShifting End.", this.getClass());
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Logger.addEvent("FieldOrientedUnidirectionalDriveCommandShifting Interrupted!", this.getClass());
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommandShifting Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
+        Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommandShifting End.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("FieldOrientedUnidirectionalDriveCommandShifting End.", this.getClass());
     }
 
 }

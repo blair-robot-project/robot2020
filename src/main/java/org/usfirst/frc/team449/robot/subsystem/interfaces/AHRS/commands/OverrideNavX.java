@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
 /**
@@ -24,6 +26,7 @@ public class OverrideNavX extends InstantCommand {
      * The subsystem to execute this command on.
      */
     @NotNull
+    @Log.Exclude
     private final SubsystemAHRS subsystem;
 
     /**
@@ -43,15 +46,16 @@ public class OverrideNavX extends InstantCommand {
      * Log when this command is initialized
      */
     @Override
-    protected void initialize() {
-        Logger.addEvent("OverrideNavX init", this.getClass());
+    public void initialize() {
+        Shuffleboard.addEventMarker("OverrideNavX init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("OverrideNavX init", this.getClass());
     }
 
     /**
      * Set whether or not we're overriding the AHRS
      */
     @Override
-    protected void execute() {
+    public void execute() {
         subsystem.setOverrideGyro(override);
     }
 
@@ -59,16 +63,11 @@ public class OverrideNavX extends InstantCommand {
      * Log when this command ends
      */
     @Override
-    protected void end() {
-        Logger.addEvent("OverrideNavX end", this.getClass());
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Logger.addEvent("OverrideNavX Interrupted!", this.getClass());
+    public void end(boolean interrupt) {
+        if (interrupt) {
+            Shuffleboard.addEventMarker("OverrideNavX Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
+        Shuffleboard.addEventMarker("OverrideNavX end", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 }
 

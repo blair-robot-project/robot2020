@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.oi.unidirectional.tank.OITank;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands.PIDAngleCommand;
 
@@ -82,16 +83,15 @@ public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & Subsy
         this.subsystem = subsystem;
         this.useLeft = useLeft;
         //This is likely to need to interrupt the DefaultCommand and therefore should require its subsystem.
-        requires(subsystem);
+        addRequirements(subsystem);
     }
 
     /**
      * Set the setpoint of the angle PID.
      */
     @Override
-    protected void initialize() {
-        this.getPIDController().setSetpoint(this.returnPIDInput());
-        this.getPIDController().enable();
+    public void initialize() {
+        this.setSetpoint(subsystem.getHeadingCached());
     }
 
     /**
@@ -100,7 +100,7 @@ public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & Subsy
     @Override
     public void execute() {
         //Process the PID output with deadband, minimum output, etc.
-        output = processPIDOutput(this.getPIDController().get());
+        output = this.getOutput();
 
         //Set throttle to the specified stick.
         if (useLeft) {
@@ -116,7 +116,7 @@ public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & Subsy
      * @return false
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return false;
     }
 
@@ -124,17 +124,11 @@ public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & Subsy
      * Log when this command ends
      */
     @Override
-    protected void end() {
-        Logger.addEvent("NavXDriveStraight end", this.getClass());
-        this.getPIDController().disable();
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Logger.addEvent("NavXDriveStraight interrupted!", this.getClass());
-        this.getPIDController().disable();
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("NavXDriveStraight interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
+        subsystem.fullStop();
+        Shuffleboard.addEventMarker("NavXDriveStraight end", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 }

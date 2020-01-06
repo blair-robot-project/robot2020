@@ -1,8 +1,10 @@
 package org.usfirst.frc.team449.robot;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import io.github.oblarg.oblog.Loggable;
 import org.usfirst.frc.team449.robot.mixIn.DoubleSupplierMixIn;
 import org.usfirst.frc.team449.robot.mixIn.DoubleUnaryOperatorMixIn;
+import org.usfirst.frc.team449.robot.mixIn.LoggableMixIn;
 
 import java.util.function.DoubleSupplier;
 import java.util.function.DoubleUnaryOperator;
@@ -29,5 +31,6 @@ public class JavaModule extends SimpleModule {
         super.setupModule(context);
         context.setMixInAnnotations(DoubleUnaryOperator.class, DoubleUnaryOperatorMixIn.class);
         context.setMixInAnnotations(DoubleSupplier.class, DoubleSupplierMixIn.class);
+//        context.setMixInAnnotations(Loggable.class, LoggableMixIn.class);
     }
 }

@@ -5,10 +5,14 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.cscore.MjpegServer;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedUsbCamera;
-import org.usfirst.frc.team449.robot.other.Logger;
+
 
 import java.util.List;
 
@@ -16,7 +20,7 @@ import java.util.List;
  * Subsystem to initialize cameras and put video on Shuffleboard.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class CameraNetwork extends Subsystem {
+public class CameraNetwork extends SubsystemBase implements Loggable {
 
     /**
      * Video server to view on Shuffleboard.
@@ -47,9 +51,12 @@ public class CameraNetwork extends Subsystem {
                          @NotNull @JsonProperty(required = true) String serverName,
                          @NotNull @JsonProperty(required = true) List<MappedUsbCamera> cameras) {
         //Logging
-        Logger.addEvent("CameraSubsystem construct start", this.getClass());
-        Logger.addEvent("Set URL of MJPGServer to \"http://roboRIO-449-frc.local:" + serverPort +
-                "/stream.mjpg\"", this.getClass());
+        Shuffleboard.addEventMarker("CameraSubsystem construct start", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("CameraSubsystem construct start", this.getClass());
+
+        Shuffleboard.addEventMarker("Set URL of MJPGServer to \\\"http://roboRIO-449-frc.local:\" + serverPort +\n" +
+                "                \"/stream.mjpg\\\"", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("Set URL of MJPGServer to \"http://roboRIO-449-frc.local:" + serverPort + "/stream.mjpg\"", this.getClass());
 
         //Instantiates server
         server = new MjpegServer(serverName, serverPort);
@@ -62,23 +69,15 @@ public class CameraNetwork extends Subsystem {
         camNum = 0;
 
         //Logging
-        Logger.addEvent("CameraSubsystem construct end", this.getClass());
-    }
-
-    /**
-     * Initialize the default command for a subsystem. By default subsystems have no default command, but if they do,
-     * the default command is set with this method. It is called on all Subsystems by CommandBase in the users program
-     * after all the Subsystems are created.
-     */
-    @Override
-    protected void initDefaultCommand() {
-        //Do nothing!
+        Shuffleboard.addEventMarker("CameraSubsystem construct end", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("CameraSubsystem construct end", this.getClass());
     }
 
     /**
      * @return Video server to view on Shuffleboard.
      */
     @NotNull
+    @Log
     public MjpegServer getServer() {
         return server;
     }
@@ -87,6 +86,7 @@ public class CameraNetwork extends Subsystem {
      * @return List of cameras used on the robot.
      */
     @NotNull
+    @Log
     public List<MappedUsbCamera> getCameras() {
         return cameras;
     }
@@ -94,6 +94,7 @@ public class CameraNetwork extends Subsystem {
     /**
      * @return The index of the active camera in the list of cameras.
      */
+    @Log
     public int getCamNum() {
         return camNum;
     }

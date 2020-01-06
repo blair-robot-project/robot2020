@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import org.jetbrains.annotations.Contract;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.components.ShiftComponent;
 import org.usfirst.frc.team449.robot.drive.shifting.DriveShiftable;
@@ -35,6 +35,7 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
      * @param leftMaster                The master talon on the left side of the drive.
      * @param rightMaster               The master talon on the right side of the drive.
      * @param ahrs                      The NavX on this drive.
+     * @param trackWidthMeters The width between the left and right wheels in meters
      * @param shiftComponent            The component that controls shifting.
      * @param startingOverrideAutoshift Whether to start with autoshift disabled. Defaults to false.
      */
@@ -42,9 +43,10 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
     public DriveUnidirectionalWithGyroShiftable(@NotNull @JsonProperty(required = true) FPSTalon leftMaster,
                                                 @NotNull @JsonProperty(required = true) FPSTalon rightMaster,
                                                 @NotNull @JsonProperty(required = true) MappedAHRS ahrs,
+                                                @NotNull @JsonProperty(required = true) double trackWidthMeters,
                                                 @NotNull @JsonProperty(required = true) ShiftComponent shiftComponent,
                                                 boolean startingOverrideAutoshift) {
-        super(leftMaster, rightMaster, ahrs);
+        super(leftMaster, rightMaster, ahrs, trackWidthMeters);
         //Initialize stuff
         this.shiftComponent = shiftComponent;
 
@@ -56,6 +58,7 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
      * @return true if currently overriding autoshifting, false otherwise.
      */
     @Override
+    @Log
     public boolean getOverrideAutoshift() {
         return overrideAutoshift;
     }
@@ -92,6 +95,7 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
      * @return The gear this subsystem is currently in.
      */
     @Override
+    @Log
     public int getGear() {
         return shiftComponent.getCurrentGear();
     }
@@ -106,34 +110,34 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
         shiftComponent.shiftToGear(gear);
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @Override
-    @NotNull
-    @Contract(pure = true)
-    public String[] getHeader() {
-        return new String[]{
-                "override_gyro",
-                "override_autoshift",
-                "gear"
-        };
-    }
-
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @Override
-    @NotNull
-    public Object[] getData() {
-        return new Object[]{
-                getOverrideGyro(),
-                getOverrideAutoshift(),
-                getGear()
-        };
-    }
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @Override
+//    @NotNull
+//    @Contract(pure = true)
+//    public String[] getHeader() {
+//        return new String[]{
+//                "override_gyro",
+//                "override_autoshift",
+//                "gear"
+//        };
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @Override
+//    @NotNull
+//    public Object[] getData() {
+//        return new Object[]{
+//                getOverrideGyro(),
+//                getOverrideAutoshift(),
+//                getGear()
+//        };
+//    }
 }

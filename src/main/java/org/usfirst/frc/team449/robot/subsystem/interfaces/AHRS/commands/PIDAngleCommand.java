@@ -3,12 +3,13 @@ package org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import edu.wpi.first.wpilibj.command.PIDCommand;
-import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
@@ -16,13 +17,20 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
  * A command that uses a AHRS to turn to a certain angle.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT, property = "@class")
-public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
+public abstract class PIDAngleCommand extends CommandBase implements Loggable {
 
     /**
      * The subsystem to execute this command on.
      */
     @NotNull
+    @Log.Exclude
     protected final SubsystemAHRS subsystem;
+
+    /**
+     * On-board PID controller
+     */
+
+    protected final PIDController pidController;
 
     /**
      * The minimum the robot should be able to output, to overcome friction.
@@ -74,18 +82,17 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
                            double kP,
                            double kI,
                            double kD) {
+
         //Set P, I and D. I and D will normally be 0 if you're using cascading control, like you should be.
-        super(kP, kI, kD, loopTimeMillis != null ? loopTimeMillis / 1000. : 20. / 1000.);
+        this.pidController = new PIDController(kP, kI, kD, loopTimeMillis != null ? loopTimeMillis / 1000. : 20. / 1000.);
+
         this.subsystem = subsystem;
 
-        //Navx reads from -180 to 180.
-        setInputRange(-180, 180);
-
         //It's a circle, so it's continuous
-        this.getPIDController().setContinuous(true);
+        this.getController().enableContinuousInput(-180, 180);
 
         //Set the absolute tolerance to be considered on target within.
-        this.getPIDController().setAbsoluteTolerance(absoluteTolerance);
+        this.getController().setTolerance(absoluteTolerance);
 
         //This is how long we have to be within the tolerance band. Multiply by loop period for time in ms.
         this.onTargetBuffer = onTargetBuffer;
@@ -97,7 +104,7 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
         //This caps the output we can give. One way to set up closed-loop is to make P large and then use this to
         // prevent overshoot.
         if (maximumOutput != null) {
-            this.getPIDController().setOutputRange(-maximumOutput, maximumOutput);
+            this.getController().enableContinuousInput(-maximumOutput, maximumOutput);
         }
 
         //Set a deadband around the setpoint, in degrees, within which don't move, to avoid "dancing"
@@ -119,24 +126,42 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
     }
 
     /**
+     * Set setpoint for PID loop to use
+     *
+     */
+    protected void setSetpoint(double setpoint){
+        this.getController().setSetpoint(setpoint);
+    }
+
+    /**
+     * Raw output of the PID loop for later processing
+     *
+     * @return standard output
+     */
+
+    protected double getRawOutput(){
+        return this.getController().calculate(subsystem.getHeadingCached());
+    }
+
+    /**
      * Process the output of the PID loop to account for minimum output and inversion.
      *
-     * @param output The output from the WPILib angular PID loop.
      * @return The processed output, ready to be subtracted from the left side of the drive output and added to the
      * right side.
      */
-    protected double processPIDOutput(double output) {
+    protected double getOutput() {
+        double controllerOutput = getRawOutput();
         //Set the output to the minimum if it's too small.
-        if (output > 0 && output < minimumOutput) {
-            output = minimumOutput;
-        } else if (output < 0 && output > -minimumOutput) {
-            output = -minimumOutput;
+        if (controllerOutput > 0 && controllerOutput < minimumOutput) {
+            controllerOutput = minimumOutput;
+        } else if (controllerOutput < 0 && controllerOutput > -minimumOutput) {
+            controllerOutput = -minimumOutput;
         }
         if (inverted) {
-            output *= -1;
+            controllerOutput *= -1;
         }
 
-        return output;
+        return controllerOutput;
     }
 
     /**
@@ -146,76 +171,63 @@ public abstract class PIDAngleCommand extends PIDCommand implements Loggable {
      * @return That output after being deadbanded with the map-given deadband.
      */
     protected double deadbandOutput(double output) {
-        return Math.abs(this.getPIDController().getError()) > deadband ? output : 0;
+        return Math.abs(this.getController().getPositionError()) > deadband ? output : 0;
     }
 
     /**
-     * Returns the input for the pid loop. <p> It returns the input for the pid loop, so if this command was based off
-     * of a gyro, then it should return the angle of the gyro </p> <p> All subclasses of {@link PIDCommand} must
-     * override this method. </p> <p> This method will be called in a different thread then the {@link Scheduler}
-     * thread. </p>
-     *
-     * @return the value the pid loop should use as input
-     */
-    @Override
-    protected double returnPIDInput() {
-        return subsystem.getHeadingCached();
-    }
-
-    /**
-     * Whether or not the loop is on target. Use this instead of {@link edu.wpi.first.wpilibj.PIDController}'s
+     * Whether or not the loop is on target. Use this instead of {@link edu.wpi.first.wpilibj.controller.PIDController}'s
      * onTarget.
      *
      * @return True if on target, false otherwise.
      */
+    @Log
     protected boolean onTarget() {
         if (onTargetBuffer == null) {
-            return this.getPIDController().onTarget();
+            return this.getController().atSetpoint();
         } else {
-            return onTargetBuffer.get(this.getPIDController().onTarget());
+            return onTargetBuffer.get(this.getController().atSetpoint());
         }
     }
 
     /**
-     * Do nothing in the usePIDOutput thread to keep code clean.
+     * Returns the PIDController used by the command.
      *
-     * @param output The output of the PID loop.
+     * @return The PIDController
      */
-    @Override
-    protected void usePIDOutput(double output) {
-        //Do nothing
+    public PIDController getController() {
+        return this.pidController;
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader(){
-        return new String[]{"setpoint","error"};
-    }
-
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @Nullable
-    @Override
-    public Object[] getData(){
-        return new Object[]{getPIDController().getSetpoint(), getPIDController().getError()};
-    }
-
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @NotNull
-    @Override
-    public String getLogName(){
-        return this.getClass().getSimpleName();
-    }
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader(){
+//        return new String[]{"setpoint","error"};
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @Nullable
+//    @Override
+//    public Object[] getData(){
+//        return new Object[]{getPIDController().getSetpoint(), getPIDController().getError()};
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @NotNull
+//    @Override
+//    public String getLogName(){
+//        return this.getClass().getSimpleName();
+//    }
 }

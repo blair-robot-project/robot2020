@@ -4,23 +4,26 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.oi.throttles.Throttle;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPosition;
 
 /**
  * A command to control a position subsystem with a throttle.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class ControlPositionSubsystemWithThrottle<T extends Subsystem & SubsystemPosition> extends Command {
+public class ControlPositionSubsystemWithThrottle<T extends Subsystem & SubsystemPosition> extends CommandBase {
 
     /**
      * The subsystem to execute this command on
      */
     @NotNull
+    @Log.Exclude
     private final T subsystem;
 
     /**
@@ -39,7 +42,7 @@ public class ControlPositionSubsystemWithThrottle<T extends Subsystem & Subsyste
     public ControlPositionSubsystemWithThrottle(@NotNull @JsonProperty(required = true) T subsystem,
                                                 @NotNull @JsonProperty(required = true) Throttle throttle) {
         this.subsystem = subsystem;
-        requires(subsystem);
+        addRequirements(subsystem);
         this.throttle = throttle;
     }
 
@@ -47,15 +50,16 @@ public class ControlPositionSubsystemWithThrottle<T extends Subsystem & Subsyste
      * Log when this command is initialized
      */
     @Override
-    protected void initialize() {
-        Logger.addEvent("ControlPositionSubsystemWithThrottle init", this.getClass());
+    public void initialize() {
+        Shuffleboard.addEventMarker("ControlPositionSubsystemWithThrottle init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("ControlPositionSubsystemWithThrottle init", this.getClass());
     }
 
     /**
      * Set the motor output to the throttle output.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         subsystem.setMotorOutput(throttle.getValueCached());
     }
 
@@ -65,7 +69,7 @@ public class ControlPositionSubsystemWithThrottle<T extends Subsystem & Subsyste
      * @return true if finished, false otherwise.
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return false;
     }
 
@@ -73,16 +77,11 @@ public class ControlPositionSubsystemWithThrottle<T extends Subsystem & Subsyste
      * Log that the command has ended.
      */
     @Override
-    protected void end() {
-        Logger.addEvent("ControlPositionSubsystemWithThrottle end", this.getClass());
-    }
-
-    /**
-     * Log that the command has been interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Logger.addEvent("ControlPositionSubsystemWithThrottle interrupted!", this.getClass());
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("ControlPositionSubsystemWithThrottle interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
+        Shuffleboard.addEventMarker("ControlPositionSubsystemWithThrottle end", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 
 }

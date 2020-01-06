@@ -4,9 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.other.Logger;
+
 import org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPosition;
 
 /**
@@ -19,6 +22,7 @@ public class SetSubsystemPositionVelocity extends InstantCommand {
      * The subsystem to execute this command on.
      */
     @NotNull
+    @Log.Exclude
     private final SubsystemPosition subsystem;
 
     /**
@@ -43,15 +47,16 @@ public class SetSubsystemPositionVelocity extends InstantCommand {
      * Log when this command is initialized
      */
     @Override
-    protected void initialize() {
-        Logger.addEvent("SetSubsystemPositionVelocity init.", this.getClass());
+    public void initialize() {
+        Shuffleboard.addEventMarker("SetSubsystemPositionVelocity init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SetSubsystemPositionVelocity init.", this.getClass());
     }
 
     /**
      * Set the setpoint.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         subsystem.setMotorOutput(setpoint);
     }
 
@@ -59,15 +64,10 @@ public class SetSubsystemPositionVelocity extends InstantCommand {
      * Log when this command ends
      */
     @Override
-    protected void end() {
-        Logger.addEvent("SetSubsystemPositionVelocity end.", this.getClass());
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Logger.addEvent("SetSubsystemPositionVelocity Interrupted!", this.getClass());
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("SetSubsystemPositionVelocity Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
+        Shuffleboard.addEventMarker("SetSubsystemPositionVelocity end.", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 }

@@ -4,21 +4,25 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.position.SubsystemPosition;
+
 
 /**
  * Disable the motors in the given subsystem.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class DisableMotor extends Command {
+public class DisableMotor extends InstantCommand {
 
     /**
      * The subsystem to execute this command on.
      */
     @NotNull
+    @Log.Exclude
     private final SubsystemPosition subsystem;
 
     /**
@@ -35,41 +39,29 @@ public class DisableMotor extends Command {
      * Log when this command is initialized
      */
     @Override
-    protected void initialize() {
-        Logger.addEvent("DisableMotor init.", this.getClass());
+    public void initialize() {
+        Shuffleboard.addEventMarker("DisableMotor init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("DisableMotor init.", this.getClass());
     }
 
     /**
      * Disables the motor.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         subsystem.disableMotor();
-    }
-
-    /**
-     * Finish immediately because this is a state-change command.
-     *
-     * @return false
-     */
-    @Override
-    protected boolean isFinished() {
-        return true;
     }
 
     /**
      * Log when this command ends
      */
     @Override
-    protected void end() {
-        Logger.addEvent("DisableMotor end.", this.getClass());
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("DisableMotor interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
+        Shuffleboard.addEventMarker("DisableMotor end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("DisableMotor end.", this.getClass());
     }
 
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Logger.addEvent("DisableMotor interrupted!", this.getClass());
-    }
 }

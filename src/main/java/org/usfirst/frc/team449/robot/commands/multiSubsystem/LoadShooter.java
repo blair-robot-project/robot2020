@@ -3,8 +3,8 @@ package org.usfirst.frc.team449.robot.commands.multiSubsystem;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.CommandGroup;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOff;
@@ -18,7 +18,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.Sole
  * intake, and stops feeder.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class LoadShooter<T extends Subsystem & SubsystemIntake & SubsystemSolenoid> extends CommandGroup {
+public class LoadShooter<T extends Subsystem & SubsystemIntake & SubsystemSolenoid> extends ParallelCommandGroup {
 
     /**
      * Constructs a LoadShooter command group
@@ -30,11 +30,13 @@ public class LoadShooter<T extends Subsystem & SubsystemIntake & SubsystemSoleno
     public LoadShooter(@Nullable SubsystemFlywheel subsystemFlywheel,
                        @Nullable T subsystemIntake) {
         if (subsystemFlywheel != null) {
-            addParallel(new TurnAllOff(subsystemFlywheel));
+            addCommands(new TurnAllOff(subsystemFlywheel));
         }
         if (subsystemIntake != null) {
-            addParallel(new SolenoidReverse(subsystemIntake));
-            addParallel(new SetIntakeMode(subsystemIntake, SubsystemIntake.IntakeMode.IN_FAST));
+            addCommands(
+                    new SolenoidReverse(subsystemIntake),
+                    new SetIntakeMode(subsystemIntake, SubsystemIntake.IntakeMode.IN_FAST)
+            );
         }
     }
 }

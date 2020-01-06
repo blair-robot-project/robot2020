@@ -4,12 +4,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands.PIDAngleCommand;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
@@ -81,17 +82,17 @@ public class DriveStraightUntilConditionMet<T extends Subsystem & DriveUnidirect
         this.drive = drive;
         this.subsystemConditional = subsystemConditional;
         this.driveVelocity = driveVelocity;
-        requires(this.drive);
+        addRequirements(this.drive);
     }
 
     /**
      * Log and set the setpoint of the angle PID to the current heading.
      */
     @Override
-    protected void initialize() {
-        Logger.addEvent("DriveStraightUntilConditionMet init", this.getClass());
-        this.getPIDController().setSetpoint(this.returnPIDInput());
-        this.getPIDController().enable();
+    public void initialize() {
+        Shuffleboard.addEventMarker("DriveStraightUntilConditionMet init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("DriveStraightUntilConditionMet init", this.getClass());
+        this.setSetpoint(subsystem.getHeadingCached());
     }
 
     /**
@@ -100,7 +101,7 @@ public class DriveStraightUntilConditionMet<T extends Subsystem & DriveUnidirect
     @Override
     public void execute() {
         //Process the PID output with deadband, minimum output, etc.
-        output = processPIDOutput(this.getPIDController().get());
+        output = this.getOutput();
 
         drive.setOutput(driveVelocity - output, driveVelocity + output);
     }
@@ -111,7 +112,7 @@ public class DriveStraightUntilConditionMet<T extends Subsystem & DriveUnidirect
      * @return True if the condition is met, false otherwise.
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return subsystemConditional.isConditionTrue();
     }
 
@@ -119,18 +120,11 @@ public class DriveStraightUntilConditionMet<T extends Subsystem & DriveUnidirect
      * Log when this command ends
      */
     @Override
-    protected void end() {
-        Logger.addEvent("DriveStraightUntilConditionMet end", this.getClass());
-        this.getPIDController().disable();
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("DriveStraightUntilConditionMet interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         drive.fullStop();
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Logger.addEvent("DriveStraightUntilConditionMet interrupted!", this.getClass());
-        this.getPIDController().disable();
+        Shuffleboard.addEventMarker("DriveStraightUntilConditionMet end", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 }

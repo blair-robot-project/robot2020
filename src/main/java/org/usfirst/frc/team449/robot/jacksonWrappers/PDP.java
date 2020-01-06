@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
-import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 
 /**
@@ -55,6 +56,7 @@ public class PDP implements Loggable, Updatable {
      *
      * @return The voltage of the PDP in volts
      */
+    @Log
     public double getVoltage() {
         return voltage;
     }
@@ -64,6 +66,7 @@ public class PDP implements Loggable, Updatable {
      *
      * @return The current of all the channels in Amperes
      */
+    @Log
     public double getTotalCurrent() {
         return totalCurrent;
     }
@@ -73,6 +76,7 @@ public class PDP implements Loggable, Updatable {
      *
      * @return The temperature of the PDP in degrees Celsius.
      */
+    @Log
     public double getTemperature() {
         return temperature;
     }
@@ -83,6 +87,7 @@ public class PDP implements Loggable, Updatable {
      * @return Resistance in ohms, or null if not calculating resistance.
      */
     @Nullable
+    @Log
     public Double getResistance() {
         return voltagePerCurrentLinReg == null ? null : resistance;
     }
@@ -93,54 +98,55 @@ public class PDP implements Loggable, Updatable {
      * @return Voltage in volts when there's 0 amps of current draw, or null if not calculating resistance.
      */
     @Nullable
+    @Log
     public Double getUnloadedVoltage() {
         return voltagePerCurrentLinReg == null ? null : unloadedVoltage;
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader() {
-        return new String[]{
-                "current",
-                "voltage",
-                "temperature",
-                "resistance",
-                "unloaded_voltage"
-        };
-    }
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader() {
+//        return new String[]{
+//                "current",
+//                "voltage",
+//                "temperature",
+//                "resistance",
+//                "unloaded_voltage"
+//        };
+//    }
 
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @Nullable
-    @Override
-    public Object[] getData() {
-        return new Object[]{
-                getTotalCurrent(),
-                getVoltage(),
-                getTemperature(),
-                getResistance(),
-                getUnloadedVoltage()
-        };
-    }
-
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @NotNull
-    @Override
-    public String getLogName() {
-        return "PDP";
-    }
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @Nullable
+//    @Override
+//    public Object[] getData() {
+//        return new Object[]{
+//                getTotalCurrent(),
+//                getVoltage(),
+//                getTemperature(),
+//                getResistance(),
+//                getUnloadedVoltage()
+//        };
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @NotNull
+//    @Override
+//    public String getLogName() {
+//        return "PDP";
+//    }
 
     /**
      * Updates all cached values with current ones.

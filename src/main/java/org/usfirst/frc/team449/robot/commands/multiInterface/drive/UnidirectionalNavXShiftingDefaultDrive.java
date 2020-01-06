@@ -1,7 +1,10 @@
 package org.usfirst.frc.team449.robot.commands.multiInterface.drive;
 
 import com.fasterxml.jackson.annotation.*;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.AutoshiftComponent;
@@ -11,8 +14,9 @@ import org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampC
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.oi.unidirectional.OIUnidirectional;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * Drive with arcade drive setup, autoshift, and when the driver isn't turning, use a NavX to stabilize the robot's
@@ -26,6 +30,7 @@ public class UnidirectionalNavXShiftingDefaultDrive<T extends Subsystem & DriveU
      * The drive to execute this command on.
      */
     @NotNull
+    @Log.Exclude
     protected final T subsystem;
 
     /**
@@ -119,13 +124,13 @@ public class UnidirectionalNavXShiftingDefaultDrive<T extends Subsystem & DriveU
         //Gain schedule the loop if we shifted
         if (lastGear != subsystem.getGear()) {
             if (subsystem.getGear() == Shiftable.gear.LOW.getNumVal()) {
-                this.getPIDController().setP(kP);
-                this.getPIDController().setI(kI);
-                this.getPIDController().setD(kD);
+                this.getController().setP(kP);
+                this.getController().setI(kI);
+                this.getController().setD(kD);
             } else {
-                this.getPIDController().setP(kP * highGearAngularCoefficient);
-                this.getPIDController().setI(kI * highGearAngularCoefficient);
-                this.getPIDController().setD(kD * highGearAngularCoefficient);
+                this.getController().setP(kP * highGearAngularCoefficient);
+                this.getController().setI(kI * highGearAngularCoefficient);
+                this.getController().setD(kD * highGearAngularCoefficient);
             }
             lastGear = subsystem.getGear();
         }
@@ -138,16 +143,12 @@ public class UnidirectionalNavXShiftingDefaultDrive<T extends Subsystem & DriveU
      * Log when this command ends
      */
     @Override
-    protected void end() {
-        Logger.addEvent("ShiftingUnidirectionalNavXArcadeDrive End.", this.getClass());
-    }
-
-    /**
-     * Stop the motors and log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Logger.addEvent("ShiftingUnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass());
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("ShiftingUnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         subsystem.fullStop();
+        Shuffleboard.addEventMarker("ShiftingUnidirectionalNavXArcadeDrive End.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("ShiftingUnidirectionalNavXArcadeDrive End.", this.getClass());
     }
 }

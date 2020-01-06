@@ -1,6 +1,7 @@
 package org.usfirst.frc.team449.robot.oi.unidirectional.tank;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.oi.unidirectional.OIUnidirectional;
 
@@ -25,6 +26,7 @@ public abstract class OITank implements OIUnidirectional {
      *
      * @return percent of max speed for left motor cluster from [-1.0, 1.0]
      */
+    @Log
     public abstract double getLeftThrottle();
 
     /**
@@ -32,6 +34,7 @@ public abstract class OITank implements OIUnidirectional {
      *
      * @return percent of max speed for right motor cluster from [-1.0, 1.0]
      */
+    @Log
     public abstract double getRightThrottle();
 
     /**
@@ -41,6 +44,7 @@ public abstract class OITank implements OIUnidirectional {
      * from [-1, 1].
      */
     @Override
+    @Log
     public double[] getLeftRightOutput() {
         return new double[]{getLeftThrottle(), getRightThrottle()};
     }
@@ -52,6 +56,7 @@ public abstract class OITank implements OIUnidirectional {
      * from [-1, 1].
      */
     @Override
+    @Log
     public double[] getLeftRightOutputCached() {
         return leftRightOutputCached;
     }
@@ -63,6 +68,7 @@ public abstract class OITank implements OIUnidirectional {
      * both from [-1, 1]
      */
     @Override
+    @Log
     public double[] getFwdRotOutput() {
         return new double[]{(getLeftThrottle() + getRightThrottle()) / 2.,
                 (getLeftThrottle() - getRightThrottle()) / 2.};
@@ -75,6 +81,7 @@ public abstract class OITank implements OIUnidirectional {
      * both from [-1, 1]
      */
     @Override
+    @Log
     public double[] getFwdRotOutputCached() {
         return fwdRotOutputCached;
     }
@@ -88,33 +95,33 @@ public abstract class OITank implements OIUnidirectional {
         fwdRotOutputCached = getFwdRotOutput();
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader() {
-        return new String[]{
-                "left",
-                "right",
-                "commandingStraight"
-        };
-    }
-
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @NotNull
-    @Override
-    public Object[] getData() {
-        return new Object[]{
-                getLeftRightOutputCached()[0],
-                getLeftRightOutputCached()[1],
-                commandingStraight()
-        };
-    }
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader() {
+//        return new String[]{
+//                "left",
+//                "right",
+//                "commandingStraight"
+//        };
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @NotNull
+//    @Override
+//    public Object[] getData() {
+//        return new Object[]{
+//                getLeftRightOutputCached()[0],
+//                getLeftRightOutputCached()[1],
+//                commandingStraight()
+//        };
+//    }
 }

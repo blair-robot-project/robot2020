@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Subsystem;
-import org.jetbrains.annotations.Contract;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
 import org.usfirst.frc.team449.robot.other.Clock;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands.PIDAngleCommand;
 
@@ -87,20 +87,19 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
         this.setpoint = setpoint;
         //Convert from seconds to milliseconds
         this.timeout = (long) (timeout * 1000);
-        requires(subsystem);
+        addRequirements(subsystem);
     }
 
     /**
      * Set up the start time and setpoint.
      */
     @Override
-    protected void initialize() {
-        Logger.addEvent("NavXTurnToAngle init.", this.getClass());
+    public void initialize() {
+        Shuffleboard.addEventMarker("NavXTurnToAngle init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("NavXTurnToAngle init.", this.getClass());
         //Set up start time
         this.startTime = Clock.currentTimeMillis();
         this.setSetpoint(clipTo180(setpoint));
-        //Make sure to enable the controller!
-        this.getPIDController().enable();
     }
 
     /**
@@ -109,7 +108,7 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
     @Override
     public void execute() {
         //Process the output with deadband, minimum output, etc.
-        output = processPIDOutput(this.getPIDController().get());
+        output = this.getOutput();
 
         //spin to the right angle
         subsystem.setOutput(-output, output);
@@ -121,7 +120,7 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
      * @return True if timeout seconds have passed or the robot is on target, false otherwise.
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         //The PIDController onTarget() is crap and sometimes never returns true because of floating point errors, so
         // we need a timeout
         return onTarget() || Clock.currentTimeMillis() - startTime > timeout;
@@ -131,17 +130,11 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
      * Log when the command ends.
      */
     @Override
-    protected void end() {
-        Logger.addEvent("NavXTurnToAngle end.", this.getClass());
-        this.getPIDController().disable();
-    }
-
-    /**
-     * Log when the command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Logger.addEvent("NavXTurnToAngle interrupted!", this.getClass());
-        this.getPIDController().disable();
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("NavXTurnToAngle interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
+        subsystem.fullStop();
+        Shuffleboard.addEventMarker("NavXTurnToAngle end.", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 }

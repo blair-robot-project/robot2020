@@ -5,12 +5,14 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import io.github.oblarg.oblog.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.yaml.snakeyaml.Yaml;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
@@ -21,16 +23,27 @@ import java.util.Map;
 public class Robot extends TimedRobot {
 
     /**
-     * The absolute filepath to the resources folder containing the config files.
+     * The absolute filepath to the resources folder containing the config files when the robot is real.
      */
     @NotNull
-    public static final String RESOURCES_PATH = "/home/lvuser/449_resources/";
+    public static final String RESOURCES_PATH_REAL = Filesystem.getDeployDirectory().getAbsolutePath();
+
+    /**
+     * The relative filepath to the resources folder containing the config files when the robot is simulated.
+     */
+    @NotNull
+    public static final String RESOURCES_PATH_SIMULATED = "./src/main/deploy/";
+
+    /**
+     * The filepath to the resources folder containing the config files.
+     */
+    @NotNull
+    public static String RESOURCES_PATH;
 
     /**
      * The name of the map to read from. Should be overriden by a subclass to change the name.
      */
     protected String mapName = "map.yml";
-//    protected String mapName = "test_bed.yml";
 
     /**
      * The object constructed directly from the yaml map.
@@ -60,10 +73,13 @@ public class Robot extends TimedRobot {
         //Yes this should be a print statement, it's useful to know that robotInit started.
         System.out.println("Started robotInit.");
 
+        RESOURCES_PATH = RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
+
         Yaml yaml = new Yaml();
+
         try {
             //Read the yaml file with SnakeYaml so we can use anchors and merge syntax.
-            Map<?, ?> normalized = (Map<?, ?>) yaml.load(new FileReader(RESOURCES_PATH + mapName));
+            Map<?, ?> normalized = (Map<?, ?>) yaml.load(new FileReader(RESOURCES_PATH + "/" + mapName));
             YAMLMapper mapper = new YAMLMapper();
             //Turn the Map read by SnakeYaml into a String so Jackson can read it.
             String fixed = mapper.writeValueAsString(normalized);
@@ -90,7 +106,15 @@ public class Robot extends TimedRobot {
             CameraServer.getInstance().startAutomaticCapture();
         }
 
-        robotMap.getLogger().start();
+//        robotMap.getLogger().start();
+
+        Logger.configureLoggingAndConfig(robotMap, false);
+
+    }
+
+    @Override
+    public void robotPeriodic() {
+        Logger.updateEntries();
     }
 
     /**
@@ -107,15 +131,15 @@ public class Robot extends TimedRobot {
 
         //Run startup command if we start in teleop.
         if (!enabled) {
-            if (robotMap.getStartupCommand() != null) {
-                robotMap.getStartupCommand().start();
+            if (robotMap.getRobotStartupCommand() != null) {
+                robotMap.getRobotStartupCommand().schedule();
             }
             enabled = true;
         }
 
         //Run the teleop startup command
         if (robotMap.getTeleopStartupCommand() != null) {
-            robotMap.getTeleopStartupCommand().start();
+            robotMap.getTeleopStartupCommand().schedule();
         }
     }
 
@@ -128,7 +152,7 @@ public class Robot extends TimedRobot {
         this.robotMap.getUpdater().run();
 
         //Run all commands. This is a WPILib thing you don't really have to worry about.
-        Scheduler.getInstance().run();
+        CommandScheduler.getInstance().run();
     }
 
     /**
@@ -141,15 +165,15 @@ public class Robot extends TimedRobot {
 
         //Run startup command if we start in auto.
         if (!enabled) {
-            if (robotMap.getStartupCommand() != null) {
-                robotMap.getStartupCommand().start();
+            if (robotMap.getRobotStartupCommand() != null) {
+                robotMap.getRobotStartupCommand().schedule();
             }
             enabled = true;
         }
 
         //Run the auto startup command
         if (shouldStartAuto) {
-            robotMap.getAutoStartupCommand().start();
+            robotMap.getAutoStartupCommand().schedule();
             shouldStartAuto = false;
         }
     }
@@ -164,12 +188,12 @@ public class Robot extends TimedRobot {
 
         //Start auto if the game-specific message has been set
         if (shouldStartAuto && !DriverStation.getInstance().getGameSpecificMessage().isEmpty()) {
-            robotMap.getAutoStartupCommand().start();
+            robotMap.getAutoStartupCommand().schedule();
             shouldStartAuto = false;
         }
 
         //Run all commands. This is a WPILib thing you don't really have to worry about.
-        Scheduler.getInstance().run();
+        CommandScheduler.getInstance().run();
     }
 
     /**
@@ -187,8 +211,8 @@ public class Robot extends TimedRobot {
     public void testInit() {
         //Run startup command if we start in test mode.
         if (!enabled) {
-            if (robotMap.getStartupCommand() != null) {
-                robotMap.getStartupCommand().start();
+            if (robotMap.getRobotStartupCommand() != null) {
+                robotMap.getRobotStartupCommand().schedule();
             }
             enabled = true;
         }

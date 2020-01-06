@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
@@ -13,7 +15,7 @@ import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
  * A simple unidirectional drive with no encoders.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class DriveUnidirectionalSimple extends Subsystem implements DriveUnidirectional {
+public class DriveUnidirectionalSimple extends SubsystemBase implements DriveUnidirectional, Loggable {
 
     /**
      * The motor for the left side of the drive.
@@ -41,16 +43,6 @@ public class DriveUnidirectionalSimple extends Subsystem implements DriveUnidire
     }
 
     /**
-     * Initialize the default command for a subsystem. By default subsystems have no default command, but if they do,
-     * the default command is set with this method. It is called on all Subsystems by CommandBase in the users program
-     * after all the Subsystems are created.
-     */
-    @Override
-    protected void initDefaultCommand() {
-        //Do nothing!
-    }
-
-    /**
      * Set the output of each side of the drive.
      *
      * @param left  The output for the left side of the drive, from [-1, 1]
@@ -69,6 +61,7 @@ public class DriveUnidirectionalSimple extends Subsystem implements DriveUnidire
      */
     @Nullable
     @Override
+    @Log
     public Double getLeftVel() {
         return null;
     }
@@ -80,6 +73,7 @@ public class DriveUnidirectionalSimple extends Subsystem implements DriveUnidire
      */
     @Nullable
     @Override
+    @Log
     public Double getRightVel() {
         return null;
     }
@@ -91,6 +85,7 @@ public class DriveUnidirectionalSimple extends Subsystem implements DriveUnidire
      */
     @Nullable
     @Override
+    @Log
     public Double getLeftPos() {
         return null;
     }
@@ -102,6 +97,7 @@ public class DriveUnidirectionalSimple extends Subsystem implements DriveUnidire
      */
     @Nullable
     @Override
+    @Log
     public Double getRightPos() {
         return null;
     }
@@ -113,6 +109,7 @@ public class DriveUnidirectionalSimple extends Subsystem implements DriveUnidire
      */
     @Nullable
     @Override
+    @Log
     public Double getLeftVelCached() {
         return null;
     }
@@ -124,6 +121,7 @@ public class DriveUnidirectionalSimple extends Subsystem implements DriveUnidire
      */
     @Nullable
     @Override
+    @Log
     public Double getRightVelCached() {
         return null;
     }
@@ -135,6 +133,7 @@ public class DriveUnidirectionalSimple extends Subsystem implements DriveUnidire
      */
     @Nullable
     @Override
+    @Log
     public Double getLeftPosCached() {
         return null;
     }
@@ -146,6 +145,7 @@ public class DriveUnidirectionalSimple extends Subsystem implements DriveUnidire
      */
     @Nullable
     @Override
+    @Log
     public Double getRightPosCached() {
         return null;
     }

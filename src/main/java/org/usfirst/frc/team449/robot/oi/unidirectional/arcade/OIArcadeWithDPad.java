@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Joystick;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial;
-import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 import org.usfirst.frc.team449.robot.oi.throttles.Throttle;
 
@@ -16,7 +16,7 @@ import org.usfirst.frc.team449.robot.oi.throttles.Throttle;
  * An arcade OI with an option to use the D-pad for turning.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class OIArcadeWithDPad extends OIArcade implements Loggable {
+public class OIArcadeWithDPad extends OIArcade {
 
     /**
      * How much the D-pad moves the robot rotationally on a 0 to 1 scale, equivalent to pushing the turning stick that
@@ -116,14 +116,14 @@ public class OIArcadeWithDPad extends OIArcade implements Loggable {
         }
     }
 
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @NotNull
-    @Override
-    public String getLogName() {
-        return "OI";
-    }
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @NotNull
+//    @Override
+//    public String getLogName() {
+//        return "OI";
+//    }
 }

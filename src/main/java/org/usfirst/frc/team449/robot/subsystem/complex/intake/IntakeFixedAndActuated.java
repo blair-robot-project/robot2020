@@ -5,12 +5,15 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.MappedVictor;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDoubleSolenoid;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
 
@@ -18,7 +21,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSole
  * An intake with a piston that actuates it and a fixed and actuated motor.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class IntakeFixedAndActuated extends Subsystem implements SubsystemSolenoid, SubsystemIntake {
+public class IntakeFixedAndActuated extends SubsystemBase implements SubsystemSolenoid, SubsystemIntake, Loggable {
 
     /**
      * Motor for the fixed intake
@@ -104,18 +107,9 @@ public class IntakeFixedAndActuated extends Subsystem implements SubsystemSoleno
      * @return the current position of the solenoid.
      */
     @NotNull
+    @Log
     public DoubleSolenoid.Value getSolenoidPosition() {
         return pistonPos;
-    }
-
-    /**
-     * Initialize the default command for a subsystem. By default subsystems have no default command, but if they do,
-     * the default command is set with this method. It is called on all Subsystems by CommandBase in the users program
-     * after all the Subsystems are created.
-     */
-    @Override
-    protected void initDefaultCommand() {
-        //Do nothing!
     }
 
     /**
@@ -123,6 +117,7 @@ public class IntakeFixedAndActuated extends Subsystem implements SubsystemSoleno
      */
     @NotNull
     @Override
+    @Log
     public SubsystemIntake.IntakeMode getMode() {
         return mode;
     }
@@ -152,7 +147,8 @@ public class IntakeFixedAndActuated extends Subsystem implements SubsystemSoleno
                 fixedMotor.setVelocity(fixedAgitateSpeed);
                 break;
             default:
-                Logger.addEvent("Unsupported mode!", this.getClass());
+                Shuffleboard.addEventMarker("Unsupported mode!", this.getClass().getSimpleName(), EventImportance.kNormal);
+                //Logger.addEvent("Unsupported mode!", this.getClass());
         }
     }
 }

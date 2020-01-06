@@ -1,13 +1,14 @@
 package org.usfirst.frc.team449.robot.commands.multiInterface.drive;
 
 import com.fasterxml.jackson.annotation.*;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.oi.fieldoriented.OIFieldOriented;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands.PIDAngleCommand;
 
@@ -91,28 +92,29 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
         this.snapPoints = snapPoints != null ? snapPoints : new ArrayList<>();
 
         //Needs a requires because it's a default command.
-        requires(this.subsystem);
+        addRequirements(this.subsystem);
 
         //Logging, but in Spanish.
-        Logger.addEvent("Drive Robot bueno", this.getClass());
+        Shuffleboard.addEventMarker("Drive Robot bueno", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("Drive Robot bueno", this.getClass());
     }
 
     /**
      * Initialize PIDController and variables.
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         //Reset all values of the PIDController and enable it.
-        this.getPIDController().reset();
-        this.getPIDController().enable();
-        Logger.addEvent("FieldOrientedUnidirectionalDriveCommand init.", this.getClass());
+        this.getController().reset();
+        Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommand init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("FieldOrientedUnidirectionalDriveCommand init.", this.getClass());
     }
 
     /**
      * Set PID setpoint to processed controller setpoint.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         theta = oi.getThetaCached();
 
         if (theta != null) {
@@ -124,11 +126,11 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
                     break;
                 }
             }
-            this.getPIDController().setSetpoint(theta);
+            this.setSetpoint(theta);
         }
 
         //Process or zero the input depending on whether the NavX is being overriden.
-        output = subsystem.getOverrideGyro() ? 0 : processPIDOutput(this.getPIDController().get());
+        output = subsystem.getOverrideGyro() ? 0 : this.getOutput();
 
         //Adjust the heading according to the PID output, it'll be positive if we want to go right.
         subsystem.setOutput(oi.getVelCached() - output, oi.getVelCached() + output);
@@ -140,7 +142,7 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
      * @return false
      */
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return false;
     }
 
@@ -148,16 +150,12 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
      * Log when this command ends
      */
     @Override
-    protected void end() {
-        Logger.addEvent("FieldOrientedUnidirectionalDriveCommand End.", this.getClass());
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Logger.addEvent("FieldOrientedUnidirectionalDriveCommand Interrupted!", this.getClass());
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommand Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
+        Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommand End.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("FieldOrientedUnidirectionalDriveCommand End.", this.getClass());
     }
 
     /**

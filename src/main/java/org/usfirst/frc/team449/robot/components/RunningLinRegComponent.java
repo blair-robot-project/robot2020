@@ -3,7 +3,7 @@ package org.usfirst.frc.team449.robot.components;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import edu.wpi.first.wpilibj.CircularBuffer;
+import edu.wpi.first.wpiutil.CircularBuffer;
 import org.jetbrains.annotations.NotNull;
 
 /**

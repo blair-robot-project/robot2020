@@ -1,8 +1,5 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers;
 
-import com.ctre.phoenix.motion.MotionProfileStatus;
-import com.ctre.phoenix.motion.SetValueMotionProfile;
-import com.ctre.phoenix.motion.TrajectoryPoint;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -10,18 +7,22 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
-import org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.feedForwardComponent.FeedForwardComponent;
-import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
-import org.usfirst.frc.team449.robot.other.Logger;
-import org.usfirst.frc.team449.robot.other.MotionProfileData;
+import org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
 
-import java.util.Arrays;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +41,12 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      */
     @NotNull
     protected final TalonSRX canTalon;
+
     /**
      * The PDP this Talon is connected to.
      */
     @Nullable
+    @Log.Exclude
     protected final PDP PDP;
     /**
      * The counts per rotation of the encoder being used, or null if there is no encoder.
@@ -59,19 +62,6 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * The number of feet travelled per rotation of the motor this is attached to, or null if there is no encoder.
      */
     private final double feetPerRotation;
-    /**
-     * The minimum number of points that must be in the bottom-level MP buffer before starting a profile.
-     */
-    private final int minNumPointsInBottomBuffer;
-    /**
-     * The motion profile motionProfileStatus of the Talon.
-     */
-    @NotNull
-    private final MotionProfileStatus motionProfileStatus;
-    /**
-     * A notifier that moves points from the API-level buffer to the talon-level one.
-     */
-    private final Notifier bottomBufferLoader;
     /**
      * The period for bottomBufferLoader, in seconds.
      */
@@ -96,15 +86,6 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      */
     private final boolean fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen;
     /**
-     * A notifier that updates the motion magic feedforward based on the current setpoint.
-     */
-    private final Notifier motionMagicNotifier;
-
-    /**
-     * The period for the {@link Notifier} that updates the feedforward based on the current motion magic velocity setpoint.
-     */
-    private final double updateMMPeriodSecs;
-    /**
      * The settings currently being used by this Talon.
      */
     @NotNull
@@ -122,8 +103,6 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * The setpoint in native units. Field to avoid garbage collection.
      */
     private double nativeSetpoint;
-
-    private boolean velocityPIDSet;
 
     /**
      * Default constructor.
@@ -165,11 +144,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @param startingGear               The gear to start in. Can be null to use startingGearNum instead.
      * @param startingGearNum            The number of the gear to start in. Ignored if startingGear isn't null.
      *                                   Defaults to the lowest gear.
-     * @param minNumPointsInBottomBuffer The minimum number of points that must be in the bottom-level MP buffer before
-     *                                   starting a profile. Defaults to 20.
      * @param updaterProcessPeriodSecs   The period for the {@link Notifier} that moves points between the MP buffers, in
      *                                   seconds. Defaults to 0.005.
-     * @param updateMMPeriodSecs         The period for the {@link Notifier} that updates the feedforward based on the current motion magic velocity setpoint. Defaults to 0.05.
      * @param statusFrameRatesMillis     The update rates, in millis, for each of the Talon status frames.
      * @param controlFrameRatesMillis    The update rate, in milliseconds, for each of the control frame.
      * @param slaveTalons                The other {@link TalonSRX}s that are slaved to this one.
@@ -199,9 +175,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                     @Nullable List<PerGearSettings> perGearSettings,
                     @Nullable Shiftable.gear startingGear,
                     @Nullable Integer startingGearNum,
-                    @Nullable Integer minNumPointsInBottomBuffer,
                     @Nullable Double updaterProcessPeriodSecs,
-                    @Nullable Double updateMMPeriodSecs,
                     @Nullable Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
                     @Nullable Map<ControlFrame, Integer> controlFrameRatesMillis,
                     @Nullable List<SlaveTalon> slaveTalons,
@@ -235,22 +209,21 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         //Set fields
         this.feetPerRotation = feetPerRotation != null ? feetPerRotation : 1;
         this.updaterProcessPeriodSecs = updaterProcessPeriodSecs != null ? updaterProcessPeriodSecs : 0.005;
-        this.updateMMPeriodSecs = updateMMPeriodSecs != null ? updateMMPeriodSecs : 0.05;
-        this.minNumPointsInBottomBuffer = minNumPointsInBottomBuffer != null ? minNumPointsInBottomBuffer : 20;
 
         //Initialize
-        this.motionProfileStatus = new MotionProfileStatus();
         this.perGearSettings = new HashMap<>();
 
         //If given no gear settings, use the default values.
         if (perGearSettings == null || perGearSettings.size() == 0) {
             this.perGearSettings.put(0, new PerGearSettings());
-            this.perGearSettings.get(0).getFeedForwardComponent().setTalon(this);
+            //this.perGearSettings.get(0).getFeedForwardComponent().setTalon(this);
+            //todo wrap around feedforward file to allow talon storage
         }
         //Otherwise, map the settings to the gear they are.
         else {
             for (PerGearSettings settings : perGearSettings) {
-                settings.getFeedForwardComponent().setTalon(this);
+                //settings.getFeedForwardComponent().setTalon(this);
+                //todo wrap around feedforward file to allow talon storage
                 this.perGearSettings.put(settings.getGear(), settings);
             }
         }
@@ -321,13 +294,13 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             //Only enable the software limits if they were given a value and there's an encoder.
             if (fwdSoftLimit != null) {
                 canTalon.configForwardSoftLimitEnable(true, 0);
-                canTalon.configForwardSoftLimitThreshold(feetToEncoder(fwdSoftLimit).intValue(), 0);
+                canTalon.configForwardSoftLimitThreshold((int) feetToEncoder(fwdSoftLimit), 0);
             } else {
                 canTalon.configForwardSoftLimitEnable(false, 0);
             }
             if (revSoftLimit != null) {
                 canTalon.configReverseSoftLimitEnable(true, 0);
-                canTalon.configReverseSoftLimitThreshold(feetToEncoder(revSoftLimit).intValue(), 0);
+                canTalon.configReverseSoftLimitThreshold((int) feetToEncoder(revSoftLimit), 0);
             } else {
                 canTalon.configReverseSoftLimitEnable(false, 0);
             }
@@ -360,10 +333,6 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         int notNullVoltageCompSamples = voltageCompSamples != null ? voltageCompSamples : 32;
         canTalon.configVoltageMeasurementFilter(notNullVoltageCompSamples, 0);
 
-        //Set up MP notifier
-        bottomBufferLoader = new Notifier(this::processMotionProfileBuffer);
-        motionMagicNotifier = new Notifier(this::updateMotionMagicSetpoint);
-
         //Use slot 0
         canTalon.selectProfileSlot(0, 0);
 
@@ -382,10 +351,6 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                         enableVoltageComp ? notNullVoltageCompSamples : null);
             }
         }
-
-        velocityPIDSet = false;
-        setVelocityPID();
-        // velocityPIDSet is now true
     }
 
     /**
@@ -396,7 +361,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     public void setPercentVoltage(double percentVoltage) {
         //Warn the user if they're setting Vbus to a number that's outside the range of values.
         if (Math.abs(percentVoltage) > 1.0) {
-            Logger.addEvent("WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage, this.getClass());
+            Shuffleboard.addEventMarker("WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage, this.getClass().getSimpleName(), EventImportance.kNormal);
+            //Logger.addEvent("WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage, this.getClass());
             percentVoltage = Math.signum(percentVoltage);
         }
 
@@ -409,6 +375,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @return The gear this subsystem is currently in.
      */
     @Override
+    @Log
     public int getGear() {
         return currentGearSettings.getGear();
     }
@@ -440,20 +407,11 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             canTalon.configOpenloopRamp(0, 0);
         }
 
-        //Set motion magic stuff
-        if (currentGearSettings.motionMagicMaxVel != null) {
-            canTalon.configMotionCruiseVelocity(FPSToEncoder(currentGearSettings.getMotionMagicMaxVel()).intValue(), 0);
-            //We can convert accel the same way we do vel because both are per second.
-            canTalon.configMotionAcceleration(FPSToEncoder(currentGearSettings.getMotionMagicMaxAccel()).intValue(), 0);
-        }
-
         //Set PID stuff
         //Slot 0 velocity gains. We don't set F yet because that changes based on setpoint.
         canTalon.config_kP(0, currentGearSettings.getkP(), 0);
         canTalon.config_kI(0, currentGearSettings.getkI(), 0);
         canTalon.config_kD(0, currentGearSettings.getkD(), 0);
-
-        //We set the MP gains when loading a profile so no need to do it here.
     }
 
     /**
@@ -462,10 +420,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @param nativeUnits A distance native units as measured by the encoder.
      * @return That distance in feet, or null if no encoder CPR was given.
      */
-    @Nullable
-    protected Double encoderToFeet(double nativeUnits) {
+    protected double encoderToFeet(double nativeUnits) {
         if (encoderCPR == null) {
-            return null;
+            return Double.NaN;
         }
         return nativeUnits / (encoderCPR * 4) * postEncoderGearing * feetPerRotation;
     }
@@ -477,10 +434,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @param feet A distance in feet.
      * @return That distance in native units as measured by the encoder, or null if no encoder CPR was given.
      */
-    @Nullable
-    protected Double feetToEncoder(double feet) {
+    protected double feetToEncoder(double feet) {
         if (encoderCPR == null) {
-            return null;
+            return Double.NaN;
         }
         return feet / feetPerRotation * (encoderCPR * 4) / postEncoderGearing;
     }
@@ -493,11 +449,10 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if no encoder CPR
      * was given.
      */
-    @Nullable
-    protected Double encoderToFPS(double encoderReading) {
+    protected double encoderToFPS(double encoderReading) {
         RPS = nativeToRPS(encoderReading);
         if (RPS == null) {
-            return null;
+            return Double.NaN;
         }
         return RPS * postEncoderGearing * feetPerRotation;
     }
@@ -509,8 +464,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @param FPS The velocity of the output shaft, in FPS.
      * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was given.
      */
-    @Nullable
-    protected Double FPSToEncoder(double FPS) {
+    protected double FPSToEncoder(double FPS) {
         return RPSToNative((FPS / postEncoderGearing) / feetPerRotation);
     }
 
@@ -538,30 +492,11 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @return That velocity in CANTalon native units, or null if no encoder CPR was given.
      */
     @Contract(pure = true)
-    @Nullable
-    private Double RPSToNative(double RPS) {
+    private double RPSToNative(double RPS) {
         if (encoderCPR == null) {
-            return null;
+            return Double.NaN;
         }
         return (RPS / 10) * (encoderCPR * 4); //4 edges per count, and 10 100ms per second.
-    }
-
-    private void setVelocityPID(){
-        if (!velocityPIDSet) {
-            canTalon.config_kP(0, currentGearSettings.getkP());
-            canTalon.config_kI(0, currentGearSettings.getkI());
-            canTalon.config_kD(0, currentGearSettings.getkD());
-            velocityPIDSet = true;
-        }
-    }
-
-    private void setPositionPID(){
-        if (velocityPIDSet) {
-            canTalon.config_kP(0, currentGearSettings.getPosKP());
-            canTalon.config_kI(0, currentGearSettings.getPosKI());
-            canTalon.config_kD(0, currentGearSettings.getPosKD());
-            velocityPIDSet = false;
-        }
     }
 
     /**
@@ -572,27 +507,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     public void setPositionSetpoint(double feet) {
         setpoint = feet;
         nativeSetpoint = feetToEncoder(feet);
-        setPositionPID();
         canTalon.config_kF(0, 0);
-        if (currentGearSettings.getMotionMagicMaxVel() != null) {
-            motionMagicNotifier.stop();
-            canTalon.set(ControlMode.MotionMagic, nativeSetpoint);
-            motionMagicNotifier.startPeriodic(updateMMPeriodSecs);
-        } else {
-            canTalon.set(ControlMode.Position, nativeSetpoint, DemandType.ArbitraryFeedForward,
-                    currentGearSettings.getFeedForwardComponent().applyAsDouble(feet) / 12.);
-        }
-    }
-
-    private void updateMotionMagicSetpoint() {
-        if (!canTalon.getControlMode().equals(ControlMode.MotionMagic)) {
-            motionMagicNotifier.stop();
-        } else {
-            nativeSetpoint = feetToEncoder(setpoint);
-            //TODO check that this actually works
-            canTalon.set(ControlMode.MotionMagic, nativeSetpoint, DemandType.ArbitraryFeedForward,
-                    currentGearSettings.getFeedForwardComponent().calcMPVoltage(canTalon.getActiveTrajectoryPosition(), canTalon.getActiveTrajectoryVelocity(), 0) / 12.);
-        }
+        //todo make this work again with WPI stuff
     }
 
     /**
@@ -600,7 +516,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
      */
-    @Nullable
+    @Log
     public Double getVelocity() {
         return encoderToFPS(canTalon.getSelectedSensorVelocity(0));
     }
@@ -627,10 +543,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     protected void setVelocityFPS(double velocity) {
         nativeSetpoint = FPSToEncoder(velocity);
         setpoint = velocity;
-        setVelocityPID();
         canTalon.config_kF(0, 0, 0);
-        canTalon.set(ControlMode.Velocity, nativeSetpoint, DemandType.ArbitraryFeedForward,
-                currentGearSettings.getFeedForwardComponent().calcVelVoltage(getPositionFeet(), velocity) / 12.);
+        //todo make this work again with wpi stuff
     }
 
     /**
@@ -638,8 +552,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return The closed-loop error in FPS, or null if no encoder CPR was given.
      */
-    @Nullable
-    public Double getError() {
+    @Log
+    public double getError() {
         if (canTalon.getControlMode().equals(ControlMode.Velocity)) {
             return encoderToFPS(canTalon.getClosedLoopError(0));
         } else {
@@ -648,11 +562,12 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     }
 
     /**
-     * Get the current velocity setpoint of the Talon in FPS, the position setpoint in feet, or the {@link SetValueMotionProfile} in MP mode.
+     * Get the current velocity setpoint of the Talon in FPS, the position setpoint in feet
      *
      * @return The setpoint in sensible units for the current control mode.
      */
     @Nullable
+    @Log
     public Double getSetpoint() {
         return setpoint;
     }
@@ -662,6 +577,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return Voltage in volts.
      */
+    @Log
     public double getOutputVoltage() {
         return canTalon.getMotorOutputVoltage();
     }
@@ -671,6 +587,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return Voltage in volts.
      */
+    @Log
     public double getBatteryVoltage() {
         return canTalon.getBusVoltage();
     }
@@ -680,6 +597,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return Current in amps.
      */
+    @Log
     public double getOutputCurrent() {
         return canTalon.getOutputCurrent();
     }
@@ -689,6 +607,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return Control mode as a string.
      */
+    @Log
     public String getControlMode() {
         return String.valueOf(canTalon.getControlMode());
     }
@@ -733,9 +652,18 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         setGearScaledVelocity(velocity, gear.getNumVal());
     }
 
+
+    /**
+     * @return Feedforward calculator for this gear
+     */
+    public SimpleMotorFeedforward getCurrentGearFeedForward(){
+        return currentGearSettings.getFeedForwardCalculator();
+    }
+
     /**
      * @return the position of the talon in feet, or null of inches per rotation wasn't given.
      */
+    @Log
     public Double getPositionFeet() {
         return encoderToFeet(canTalon.getSelectedSensorPosition(0));
     }
@@ -752,6 +680,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return True if the forwards limit switch is closed, false if it's open or doesn't exist.
      */
+    @Log
     public boolean getFwdLimitSwitch() {
         return fwdLimitSwitchNormallyOpen == canTalon.getSensorCollection().isFwdLimitSwitchClosed();
     }
@@ -761,222 +690,85 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return True if the reverse limit switch is closed, false if it's open or doesn't exist.
      */
+    @Log
     public boolean getRevLimitSwitch() {
         return revLimitSwitchNormallyOpen == canTalon.getSensorCollection().isRevLimitSwitchClosed();
     }
 
+    @Log
     public boolean isInhibitedForward() {
 
         canTalon.getFaults(faults);
         return faults.ForwardLimitSwitch;
     }
 
+    @Log
     public boolean isInhibitedReverse(){
         canTalon.getFaults(faults);
         return faults.ReverseLimitSwitch;
     }
 
-    /**
-     * Whether this talon is ready to start running a profile.
-     *
-     * @return True if minNumPointsInBottomBuffer points have been loaded or the top buffer is empty, false otherwise.
-     */
-    public boolean readyForMP() {
-        canTalon.getMotionProfileStatus(motionProfileStatus);
-        return motionProfileStatus.topBufferCnt == 0 || motionProfileStatus.btmBufferCnt >= minNumPointsInBottomBuffer;
-    }
-
-    /**
-     * Whether this talon has finished running a profile.
-     *
-     * @return True if the active point in the talon is the last point, false otherwise.
-     */
-    public boolean MPIsFinished() {
-        canTalon.getMotionProfileStatus(motionProfileStatus);
-        return motionProfileStatus.isLast;
-    }
-
-    /**
-     * Reset all MP-related stuff, including all points loaded in both the API and bottom-level buffers.
-     */
-    private void clearMP() {
-        canTalon.clearMotionProfileHasUnderrun(0);
-        canTalon.clearMotionProfileTrajectories();
-    }
-
-    /**
-     * Starts running the loaded motion profile.
-     */
-    public void startRunningMP() {
-        setpoint = SetValueMotionProfile.Enable.value;
-        canTalon.set(ControlMode.MotionProfile, SetValueMotionProfile.Enable.value);
-    }
-
-    /**
-     * Holds the current position point in MP mode.
-     */
-    public void holdPositionMP() {
-        setpoint = SetValueMotionProfile.Hold.value;
-        canTalon.set(ControlMode.MotionProfile, SetValueMotionProfile.Hold.value);
-    }
-
-    /**
-     * Disables the talon and loads the given profile into the talon.
-     *
-     * @param data The profile to load.
-     */
-    public void loadProfile(MotionProfileData data) {
-        bottomBufferLoader.stop();
-        setpoint = SetValueMotionProfile.Disable.value;
-        canTalon.set(ControlMode.MotionProfile, SetValueMotionProfile.Disable.value);
-        //Reset the Talon
-        clearMP();
-
-        //Set proper PID constants
-        if (data.isBackwards()) {
-            if (data.isVelocityOnly()) {
-                canTalon.config_kP(1, 0, 0);
-                canTalon.config_kI(1, 0, 0);
-                canTalon.config_kD(1, 0, 0);
-            } else {
-                canTalon.config_kP(1, currentGearSettings.getMotionProfilePRev(), 0);
-                canTalon.config_kI(1, currentGearSettings.getMotionProfileIRev(), 0);
-                canTalon.config_kD(1, currentGearSettings.getMotionProfileDRev(), 0);
-            }
-        } else {
-            if (data.isVelocityOnly()) {
-                canTalon.config_kP(1, 0, 0);
-                canTalon.config_kI(1, 0, 0);
-                canTalon.config_kD(1, 0, 0);
-            } else {
-                canTalon.config_kP(1, currentGearSettings.getMotionProfilePFwd(), 0);
-                canTalon.config_kI(1, currentGearSettings.getMotionProfileIFwd(), 0);
-                canTalon.config_kD(1, currentGearSettings.getMotionProfileDFwd(), 0);
-            }
-        }
-
-        canTalon.config_kF(1, 1023. / 12., 0);
-
-        //Only call position getter once
-        double startPosition = data.resetPosition() ? 0 : getPositionFeet();
-
-        //Set point time
-        canTalon.configMotionProfileTrajectoryPeriod(data.getPointTimeMillis(), 0);
-
-        //Load in profiles
-        for (int i = 0; i < data.getData().length; ++i) {
-            TrajectoryPoint point = new TrajectoryPoint();
-            //Have to set this so the Talon doesn't throw a null pointer. May be fixed in a future release.
-            point.timeDur = 0;
-
-            //Set parameters that are true for all points
-            point.profileSlotSelect0 = 1;        // gain selection, we always put MP gains in slot 1.
-
-            // Set all the fields of the profile point
-            point.position = feetToEncoder(startPosition + data.getData()[i][0]);
-
-            point.velocity = currentGearSettings.getFeedForwardComponent().calcMPVoltage(data.getData()[i][0],
-                    data.getData()[i][1], data.getData()[i][2]);;
-
-            //Doing vel+accel shouldn't lead to impossible setpoints, so if it does, we log so we know to change
-            // either the profile or kA.
-            if (Math.abs(point.velocity) > 12) {
-                System.out.println("Point " + Arrays.toString(data.getData()[i]) + " has an unattainable " +
-                        "velocity+acceleration setpoint!");
-                Logger.addEvent("Point " + Arrays.toString(data.getData()[i]) + " has an unattainable " +
-                        "velocity+acceleration setpoint!", this.getClass());
-            }
-            point.zeroPos = i == 0 && data.resetPosition(); // If it's the first point, set the encoder position to 0.
-            point.isLastPoint = (i + 1) == data.getData().length; // If it's the last point, isLastPoint = true
-            // Send the point to the Talon's buffer
-            canTalon.pushMotionProfileTrajectory(point);
-        }
-        bottomBufferLoader.startPeriodic(updaterProcessPeriodSecs);
-    }
-
-    /**
-     * Command the Talon to achieve a given position, velocity, and acceleration.
-     * @param pos The desired position in feet.
-     * @param vel The desired velocity in feet/second.
-     * @param acc The desired velocity in feet/second^2.
-     */
-    public void executeMPPoint(double pos, double vel, double acc) {
-        setpoint = pos;
-        setPositionPID();
-        canTalon.config_kF(0, 0);
-        canTalon.set(ControlMode.Position, feetToEncoder(pos), DemandType.ArbitraryFeedForward,
-                currentGearSettings.getFeedForwardComponent().calcMPVoltage(pos, vel, acc) / 12.);
-    }
-
-    /**
-     * Process the motion profile buffer and stop when the top buffer is empty.
-     */
-    protected void processMotionProfileBuffer() {
-        canTalon.processMotionProfileBuffer();
-        if (canTalon.getMotionProfileTopLevelBufferCount() == 0) {
-            bottomBufferLoader.stop();
-        }
-    }
-
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader() {
-        return new String[]{
-                "velocity",
-                "position",
-                "setpoint",
-                "error",
-                "battery_voltage",
-                "voltage",
-                "current",
-                "control_mode",
-                "gear",
-                "resistance",
-                "velocity_PID"
-        };
-    }
-
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @Nullable
-    @Override
-    public Object[] getData() {
-        if (voltagePerCurrentLinReg != null && PDP != null) {
-            voltagePerCurrentLinReg.addPoint(getOutputCurrent(), PDP.getVoltage() - getBatteryVoltage());
-        }
-        return new Object[]{
-                getVelocity(),
-                getPositionFeet(),
-                getSetpoint(),
-                getError(),
-                getBatteryVoltage(),
-                getOutputVoltage(),
-                getOutputCurrent(),
-                getControlMode(),
-                getGear(),
-                (voltagePerCurrentLinReg != null && PDP != null) ? -voltagePerCurrentLinReg.getSlope() : null,
-                velocityPIDSet
-        };
-    }
-
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @NotNull
-    @Override
-    public String getLogName() {
-        return name;
-    }
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader() {
+//        return new String[]{
+//                "velocity",
+//                "position",
+//                "setpoint",
+//                "error",
+//                "battery_voltage",
+//                "voltage",
+//                "current",
+//                "control_mode",
+//                "gear",
+//                "resistance",
+//                "forward_limit",
+//                "reverse_limit"
+//        };
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @Nullable
+//    @Override
+//    public Object[] getData() {
+//        if (voltagePerCurrentLinReg != null && PDP != null) {
+//            voltagePerCurrentLinReg.addPoint(getOutputCurrent(), PDP.getVoltage() - getBatteryVoltage());
+//        }
+//        return new Object[]{
+//                getVelocity(),
+//                getPositionFeet(),
+//                getSetpoint(),
+//                getError(),
+//                getBatteryVoltage(),
+//                getOutputVoltage(),
+//                getOutputCurrent(),
+//                getControlMode(),
+//                getGear(),
+//                (voltagePerCurrentLinReg != null && PDP != null) ? -voltagePerCurrentLinReg.getSlope() : null,
+//                this.getFwdLimitSwitch(),
+//                this.getRevLimitSwitch()
+//        };
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @NotNull
+//    @Override
+//    public String getLogName() {
+//        return name;
+//    }
 
     /**
      * An object representing the CANTalon settings that are different for each gear.
@@ -1021,31 +813,10 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         private final double posKP, posKI, posKD;
 
         /**
-         * The forwards PID constants for motion profiles in this gear. Ignored if maxSpeed is null.
+         * WPI object for calculating feed forward constants given a max achievable velocity
+         * and acceleration
          */
-        private final double motionProfilePFwd, motionProfileIFwd, motionProfileDFwd;
-
-        /**
-         * The reverse PID constants for motion profiles in this gear. Ignored if maxSpeed is null.
-         */
-        private final double motionProfilePRev, motionProfileIRev, motionProfileDRev;
-
-        /**
-         * The component for calculating feedforwards in closed-loop control modes. Ignored if maxSpeed is null.
-         */
-        @NotNull
-        private final FeedForwardComponent feedForwardComponent;
-
-        /**
-         * The maximum velocity for motion magic mode, in FPS. Can be null to not use motion magic.
-         */
-        @Nullable
-        private final Double motionMagicMaxVel;
-
-        /**
-         * The maximum acceleration for motion magic mode, in FPS per second.
-         */
-        private final double motionMagicMaxAccel;
+        private SimpleMotorFeedforward feedForwardCalculator;
 
         /**
          * Default constructor.
@@ -1062,6 +833,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
          * @param revNominalOutputVoltage The minimum output voltage for closed-loop modes in the reverse direction.
          *                                This does not rescale, it just sets any output below this voltage to this
          *                                voltage. Defaults to -fwdNominalOutputVoltage.
+         *
+         * @param feedForwardCalculator   The component for calculating feedforwards in closed-loop control modes.
+         *
          * @param rampRate                The ramp rate, in volts/sec. Can be null, and if it is, no ramp rate is used.
          * @param maxSpeed                The maximum speed of the motor in this gear, in FPS. Used for throttle
          *                                scaling. Ignored if kVFwd is null. Calculated from the drive characterization
@@ -1078,23 +852,6 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
          *                                null. Defaults to 0.
          * @param posKD                   The derivative PID constant for position control on the motor in this gear. Ignored if kVFwd is
          *                                null. Defaults to 0.
-         * @param motionProfilePFwd       The proportional PID constant for forwards motion profiles in this gear.
-         *                                Ignored if kVFwd is null. Defaults to 0.
-         * @param motionProfileIFwd       The integral PID constant for forwards motion profiles in this gear. Ignored
-         *                                if kVFwd is null. Defaults to 0.
-         * @param motionProfileDFwd       The derivative PID constant for forwards motion profiles in this gear. Ignored
-         *                                if kVFwd is null. Defaults to 0.
-         * @param motionProfilePRev       The proportional PID constant for reverse motion profiles in this gear.
-         *                                Ignored if kVFwd is null. Defaults to motionProfilePFwd.
-         * @param motionProfileIRev       The integral PID constant for reverse motion profiles in this gear. Ignored if
-         *                                kVFwd is null. Defaults to motionProfileIFwd.
-         * @param motionProfileDRev       The derivative PID constant for reverse motion profiles in this gear. Ignored
-         *                                if kVFwd is null. Defaults to motionProfileDFwd.
-         * @param feedForwardComponent    The component for calculating feedforwards in closed-loop control modes.
-         *                                Ignored if maxSpeed is null. Defaults to no feedforward.
-         * @param motionMagicMaxVel       The maximum velocity for motion magic mode, in FPS. Can be null to not use
-         *                                motion magic.
-         * @param motionMagicMaxAccel     The maximum acceleration for motion magic mode, in FPS per second.
          */
         @JsonCreator
         public PerGearSettings(int gearNum,
@@ -1103,6 +860,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                                @Nullable Double revPeakOutputVoltage,
                                @Nullable Double fwdNominalOutputVoltage,
                                @Nullable Double revNominalOutputVoltage,
+                               @Nullable MappedFeedForwardCalculator feedForwardCalculator,
                                @Nullable Double rampRate,
                                @Nullable Double maxSpeed,
                                double kP,
@@ -1110,16 +868,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
                                double kD,
                                double posKP,
                                double posKI,
-                               double posKD,
-                               double motionProfilePFwd,
-                               double motionProfileIFwd,
-                               double motionProfileDFwd,
-                               @Nullable Double motionProfilePRev,
-                               @Nullable Double motionProfileIRev,
-                               @Nullable Double motionProfileDRev,
-                               @Nullable FeedForwardComponent feedForwardComponent,
-                               @Nullable Double motionMagicMaxVel,
-                               double motionMagicMaxAccel) {
+                               double posKD) {
             this.gear = gear != null ? gear.getNumVal() : gearNum;
             this.fwdPeakOutputVoltage = fwdPeakOutputVoltage != null ? fwdPeakOutputVoltage : 12;
             this.revPeakOutputVoltage = revPeakOutputVoltage != null ? revPeakOutputVoltage :
@@ -1127,6 +876,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             this.fwdNominalOutputVoltage = fwdNominalOutputVoltage != null ? fwdNominalOutputVoltage : 0;
             this.revNominalOutputVoltage = revNominalOutputVoltage != null ? revNominalOutputVoltage :
                     -this.fwdNominalOutputVoltage;
+            this.feedForwardCalculator = feedForwardCalculator != null ? feedForwardCalculator :
+                    new SimpleMotorFeedforward(0,0);
             this.rampRate = rampRate;
             this.kP = kP;
             this.kI = kI;
@@ -1134,24 +885,14 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             this.posKP = posKP;
             this.posKI = posKI;
             this.posKD = posKD;
-            this.motionProfilePFwd = motionProfilePFwd;
-            this.motionProfileIFwd = motionProfileIFwd;
-            this.motionProfileDFwd = motionProfileDFwd;
-            this.motionProfilePRev = motionProfilePRev != null ? motionProfilePRev : this.motionProfilePFwd;
-            this.motionProfileIRev = motionProfileIRev != null ? motionProfileIRev : this.motionProfileIFwd;
-            this.motionProfileDRev = motionProfileDRev != null ? motionProfileDRev : this.motionProfileDFwd;
-            this.feedForwardComponent = feedForwardComponent != null ? feedForwardComponent :
-                    FeedForwardComponent.getZeroFeedForward();
             this.maxSpeed = maxSpeed;
-            this.motionMagicMaxVel = motionMagicMaxVel;
-            this.motionMagicMaxAccel = motionMagicMaxAccel;
         }
 
         /**
          * Empty constructor that uses all default options.
          */
         public PerGearSettings() {
-            this(0, null, null, null, null, null, null, null, 0, 0, 0, 0, 0,0, 0, 0, 0, null, null, null, null, null, 0);
+            this(0, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0 ,0);
         }
 
         /**
@@ -1189,6 +930,13 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
          */
         public double getRevNominalOutputVoltage() {
             return revNominalOutputVoltage;
+        }
+
+        /**
+         * @return Feedforward calculator for this gear
+         */
+        public SimpleMotorFeedforward getFeedForwardCalculator(){
+            return feedForwardCalculator;
         }
 
         /**
@@ -1240,69 +988,15 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             return posKD;
         }
 
-        /**
-         * @return The proportional PID constant for motion profiles in this gear.
-         */
-        public double getMotionProfilePFwd() {
-            return motionProfilePFwd;
-        }
+    }
 
-        /**
-         * @return The integral PID constant for motion profiles in this gear.
-         */
-        public double getMotionProfileIFwd() {
-            return motionProfileIFwd;
-        }
+    @Override
+    public String configureLogName() {
+        return name;
+    }
 
-        /**
-         * @return The derivative PID constant for motion profiles in this gear.
-         */
-        public double getMotionProfileDFwd() {
-            return motionProfileDFwd;
-        }
-
-        /**
-         * @return The proportional PID constant for reverse motion profiles in this gear.
-         */
-        public double getMotionProfilePRev() {
-            return motionProfilePRev;
-        }
-
-        /**
-         * @return The integral PID constant for reverse motion profiles in this gear.
-         */
-        public double getMotionProfileIRev() {
-            return motionProfileIRev;
-        }
-
-        /**
-         * @return The derivative PID constant for reverse motion profiles in this gear.
-         */
-        public double getMotionProfileDRev() {
-            return motionProfileDRev;
-        }
-
-        /**
-         * @return The component for calculating feedforwards in closed-loop control modes.
-         */
-        @NotNull
-        public FeedForwardComponent getFeedForwardComponent() {
-            return feedForwardComponent;
-        }
-
-        /**
-         * @return The maximum velocity for motion magic mode, in FPS. Can be null to not use motion magic.
-         */
-        @Nullable
-        public Double getMotionMagicMaxVel() {
-            return motionMagicMaxVel;
-        }
-
-        /**
-         * @return The maximum acceleration for motion magic mode, in FPS per second.
-         */
-        public double getMotionMagicMaxAccel() {
-            return motionMagicMaxAccel;
-        }
+    @Override
+    public LayoutType configureLayoutType() {
+        return BuiltInLayouts.kGrid;
     }
 }

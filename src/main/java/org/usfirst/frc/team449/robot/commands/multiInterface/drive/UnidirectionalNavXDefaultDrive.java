@@ -1,16 +1,17 @@
 package org.usfirst.frc.team449.robot.commands.multiInterface.drive;
 
 import com.fasterxml.jackson.annotation.*;
-import edu.wpi.first.wpilibj.command.Subsystem;
-import org.jetbrains.annotations.Contract;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent;
-import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
 import org.usfirst.frc.team449.robot.oi.unidirectional.OIUnidirectional;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.commands.PIDAngleCommand;
 
@@ -26,6 +27,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
      * The drive this command is controlling.
      */
     @NotNull
+    @Log.Exclude
     protected final T subsystem;
     /**
      * The OI giving the input stick values.
@@ -112,21 +114,22 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
         this.maxAngularVelToEnterLoop = maxAngularVelToEnterLoop != null ? maxAngularVelToEnterLoop : 180;
 
         //Needs a requires because it's a default command.
-        requires(this.subsystem);
+        addRequirements(this.subsystem);
 
         //Logging, but in Spanish.
-        Logger.addEvent("Drive Robot bueno", this.getClass());
+        Shuffleboard.addEventMarker("Drive Robot bueno", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("Drive Robot bueno", this.getClass());
     }
 
     /**
      * Initialize PIDController and variables.
      */
     @Override
-    protected void initialize() {
+    public void initialize() {
         //Reset all values of the PIDController and enable it.
-        this.getPIDController().reset();
-        this.getPIDController().enable();
-        Logger.addEvent("UnidirectionalNavXArcadeDrive init.", this.getClass());
+        this.getController().reset();
+        Shuffleboard.addEventMarker("UnidirectionalNavXArcadeDrive init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("UnidirectionalNavXArcadeDrive init.", this.getClass());
 
         //Initial assignment
         drivingStraight = false;
@@ -136,7 +139,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
      * Decide whether or not we should be in free drive or straight drive.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         //If we're driving straight but the driver tries to turn or overrides the AHRS:
         if (drivingStraight && (!oi.commandingStraight() || subsystem.getOverrideGyro())) {
             //Switch to free drive
@@ -148,13 +151,12 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
             //Switch to driving straight
             drivingStraight = true;
             //Set the setpoint to the current heading and reset the AHRS
-            this.getPIDController().reset();
-            this.getPIDController().setSetpoint(subsystem.getHeadingCached());
-            this.getPIDController().enable();
+            this.getController().reset();
+            this.setSetpoint(subsystem.getHeadingCached());
         }
 
         //Get the outputs
-        rawOutput = this.getPIDController().get();
+        rawOutput = this.getRawOutput();
         leftOutput = oi.getLeftRightOutputCached()[0];
         rightOutput = oi.getLeftRightOutputCached()[1];
 
@@ -167,7 +169,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
         //If we're driving straight..
         if (drivingStraight) {
             //Process the output (minimumOutput, deadband, etc.)
-            processedOutput = processPIDOutput(rawOutput);
+            processedOutput = getOutput();
 
             //Deadband if we're stationary
             if (leftOutput == 0 && rightOutput == 0) {
@@ -194,7 +196,8 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
      * @return false
      */
     @Override
-    protected boolean isFinished() {
+    @Log
+    public boolean isFinished() {
         return false;
     }
 
@@ -202,62 +205,78 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
      * Log when this command ends
      */
     @Override
-    protected void end() {
-        Logger.addEvent("UnidirectionalNavXArcadeDrive End.", this.getClass());
-    }
-
-    /**
-     * Stop the motors and log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Logger.addEvent("UnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass());
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("UnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
         subsystem.fullStop();
+        Shuffleboard.addEventMarker("UnidirectionalNavXArcadeDrive End.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("UnidirectionalNavXArcadeDrive End.", this.getClass());
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader() {
-        return new String[]{
-                "drivingStraight",
-                "running",
-                "raw_output",
-                "processed_output",
-                "final_output"
-        };
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader() {
+//        return new String[]{
+//                "drivingStraight",
+//                "running",
+//                "raw_output",
+//                "processed_output",
+//                "final_output"
+//        };
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @NotNull
+//    @Override
+//    public Object[] getData() {
+//        return new Object[]{
+//                drivingStraight,
+//                this.isRunning(),
+//                rawOutput,
+//                processedOutput,
+//                finalOutput
+//        };
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @Override
+//    @NotNull
+//    @Contract(pure = true)
+//    public String getLogName() {
+//        return "UnidirectionalNavXDefaultDrive";
+//    }
+
+    @Log
+    public boolean isDrivingStraight(){
+        return drivingStraight;
     }
 
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @NotNull
-    @Override
-    public Object[] getData() {
-        return new Object[]{
-                drivingStraight,
-                this.isRunning(),
-                rawOutput,
-                processedOutput,
-                finalOutput
-        };
+    @Log
+    public double getRawOutput(){
+        return rawOutput;
     }
 
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @Override
-    @NotNull
-    @Contract(pure = true)
-    public String getLogName() {
-        return "UnidirectionalNavXDefaultDrive";
+    @Log
+    public double getProcessedOutput(){
+        return processedOutput;
+    }
+
+    @Log
+    public double getFinalOutput(){
+        return finalOutput;
     }
 }

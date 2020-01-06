@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.generalInterfaces.loggable.Loggable;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 
 import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
@@ -18,7 +18,7 @@ import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
  * A Jackson-compatible, invertible wrapper for the NavX.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MappedAHRS implements Loggable, Updatable {
+public class MappedAHRS implements Updatable, Loggable {
 
     /**
      * The AHRS this class is a wrapper on.
@@ -155,6 +155,7 @@ public class MappedAHRS implements Loggable, Updatable {
      *
      * @return The heading, in degrees from [-180, 180]
      */
+    @Log
     public double getCachedHeading() {
         return cachedHeading;
     }
@@ -164,6 +165,7 @@ public class MappedAHRS implements Loggable, Updatable {
      *
      * @return The angular displacement, in degrees.
      */
+    @Log
     public double getCachedAngularDisplacement() {
         return cachedAngularDisplacement;
     }
@@ -173,6 +175,7 @@ public class MappedAHRS implements Loggable, Updatable {
      *
      * @return The angular yaw velocity, in degrees/sec.
      */
+    @Log
     public double getCachedAngularVelocity() {
         return cachedAngularVel;
     }
@@ -182,6 +185,7 @@ public class MappedAHRS implements Loggable, Updatable {
      *
      * @return Linear X acceleration, in feet/(sec^2)
      */
+    @Log
     public double getCachedXAccel() {
         return cachedXAccel;
     }
@@ -191,6 +195,7 @@ public class MappedAHRS implements Loggable, Updatable {
      *
      * @return Linear Y acceleration, in feet/(sec^2)
      */
+    @Log
     public double getCachedYAccel() {
         return cachedYAccel;
     }
@@ -200,56 +205,57 @@ public class MappedAHRS implements Loggable, Updatable {
      *
      * @return The pitch, in degrees from [-180, 180]
      */
+    @Log
     public double getCachedPitch() {
         return cachedPitch;
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader() {
-        return new String[]{
-                "heading",
-                "angular_displacement",
-                "angular_vel",
-                "x_accel",
-                "y_accel",
-                "pitch"
-        };
-    }
-
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @NotNull
-    @Override
-    public Object[] getData() {
-        return new Object[]{
-                getCachedHeading(),
-                getCachedAngularDisplacement(),
-                getCachedAngularVelocity(),
-                getCachedXAccel(),
-                getCachedYAccel(),
-                getCachedPitch()
-        };
-    }
-
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @NotNull
-    @Override
-    public String getLogName() {
-        return "AHRS";
-    }
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader() {
+//        return new String[]{
+//                "heading",
+//                "angular_displacement",
+//                "angular_vel",
+//                "x_accel",
+//                "y_accel",
+//                "pitch"
+//        };
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @NotNull
+//    @Override
+//    public Object[] getData() {
+//        return new Object[]{
+//                getCachedHeading(),
+//                getCachedAngularDisplacement(),
+//                getCachedAngularVelocity(),
+//                getCachedXAccel(),
+//                getCachedYAccel(),
+//                getCachedPitch()
+//        };
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @NotNull
+//    @Override
+//    public String getLogName() {
+//        return "AHRS";
+//    }
 
     /**
      * Updates all cached values with current ones.

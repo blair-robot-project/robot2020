@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
-import org.usfirst.frc.team449.robot.other.Logger;
+
 
 /**
  * A command that switches to high gear.
@@ -35,15 +37,16 @@ public class SwitchToHighGear extends InstantCommand {
      * Log when this command is initialized
      */
     @Override
-    protected void initialize() {
-        Logger.addEvent("SwitchToHighGear init.", this.getClass());
+    public void initialize() {
+        Shuffleboard.addEventMarker("SwitchToHighGear init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SwitchToHighGear init.", this.getClass());
     }
 
     /**
      * Switch to high gear
      */
     @Override
-    protected void execute() {
+    public void execute() {
         subsystem.setGear(Shiftable.gear.HIGH.getNumVal());
     }
 
@@ -51,15 +54,10 @@ public class SwitchToHighGear extends InstantCommand {
      * Log when this command ends
      */
     @Override
-    protected void end() {
-        Logger.addEvent("SwitchToHighGear end.", this.getClass());
-    }
-
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Logger.addEvent("SwitchToHighGear Interrupted!", this.getClass());
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("SwitchToHighGear Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
+        Shuffleboard.addEventMarker("SwitchToHighGear end.", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 }

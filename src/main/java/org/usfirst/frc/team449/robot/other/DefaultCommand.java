@@ -2,15 +2,21 @@ package org.usfirst.frc.team449.robot.other;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * A class that sets the default command for a subsystem when constructed.
  */
-public class DefaultCommand {
+public class DefaultCommand implements Loggable {
+
+    /**
+     * The command of this defaultCommand; field to allow logging
+     */
+    private Command command;
 
     /**
      * Sets the given command as the default command for the given subsystem.
@@ -29,5 +35,11 @@ public class DefaultCommand {
             System.out.println("Command: " + command.getClass().toString());
         }
         subsystem.setDefaultCommand(command);
+        this.command = command;
+    }
+
+    @Override
+    public boolean skipLayout() {
+        return true;
     }
 }

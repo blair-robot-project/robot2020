@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.other.Logger;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.intakeTwoSides.SubsystemIntakeTwoSides;
 
@@ -20,6 +22,7 @@ public class SetTwoSideIntakeMode<T extends Subsystem & SubsystemIntakeTwoSides>
      * The subsystem to execute this command on.
      */
     @NotNull
+    @Log.Exclude
     private final T subsystem;
 
     /**
@@ -39,7 +42,7 @@ public class SetTwoSideIntakeMode<T extends Subsystem & SubsystemIntakeTwoSides>
     public SetTwoSideIntakeMode(@NotNull @JsonProperty(required = true) T subsystem,
                                 @NotNull @JsonProperty(required = true) SubsystemIntake.IntakeMode leftMode,
                                 @NotNull @JsonProperty(required = true) SubsystemIntake.IntakeMode rightMode) {
-        requires(subsystem);
+        addRequirements(subsystem);
         this.subsystem = subsystem;
         this.leftMode = leftMode;
         this.rightMode = rightMode;
@@ -49,42 +52,29 @@ public class SetTwoSideIntakeMode<T extends Subsystem & SubsystemIntakeTwoSides>
      * Log when this command is initialized
      */
     @Override
-    protected void initialize() {
-        Logger.addEvent("SetTwoSideIntakeMode init.", this.getClass());
+    public void initialize() {
+        Shuffleboard.addEventMarker("SetTwoSideIntakeMode init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        //Logger.addEvent("SetTwoSideIntakeMode init.", this.getClass());
     }
 
     /**
      * Set the intake to the given mode.
      */
     @Override
-    protected void execute() {
+    public void execute() {
         subsystem.setLeftMode(leftMode);
         subsystem.setRightMode(rightMode);
-    }
-
-    /**
-     * Finish immediately because this is a state-change command.
-     *
-     * @return true
-     */
-    @Override
-    protected boolean isFinished() {
-        return true;
     }
 
     /**
      * Log when this command ends
      */
     @Override
-    protected void end() {
-        Logger.addEvent("SetTwoSideIntakeMode end.", this.getClass());
+    public void end(boolean interrupted) {
+        if(interrupted){
+            Shuffleboard.addEventMarker("SetTwoSideIntakeMode Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+        }
+        Shuffleboard.addEventMarker("SetTwoSideIntakeMode end.", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 
-    /**
-     * Log when this command is interrupted.
-     */
-    @Override
-    protected void interrupted() {
-        Logger.addEvent("SetTwoSideIntakeMode Interrupted!", this.getClass());
-    }
 }

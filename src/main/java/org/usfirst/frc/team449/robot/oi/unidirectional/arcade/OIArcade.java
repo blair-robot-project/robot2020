@@ -2,7 +2,7 @@ package org.usfirst.frc.team449.robot.oi.unidirectional.arcade;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.jetbrains.annotations.NotNull;
+import io.github.oblarg.oblog.annotations.Log;
 import org.usfirst.frc.team449.robot.oi.unidirectional.OIUnidirectional;
 
 /**
@@ -45,6 +45,7 @@ public abstract class OIArcade implements OIUnidirectional {
      * @return True if the driver is trying to drive straight, false otherwise.
      */
     @Override
+    @Log
     public boolean commandingStraight() {
         return getFwdRotOutputCached()[1] == 0;
     }
@@ -112,37 +113,37 @@ public abstract class OIArcade implements OIUnidirectional {
         leftRightOutputCached = getLeftRightOutput();
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
-    @Override
-    public String[] getHeader() {
-        return new String[]{
-                "left",
-                "right",
-                "commandingStraight",
-                "fwd",
-                "rot"
-        };
-    }
-
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @NotNull
-    @Override
-    public Object[] getData() {
-        return new Object[]{
-                getLeftRightOutputCached()[0],
-                getLeftRightOutputCached()[1],
-                commandingStraight(),
-                getFwdRotOutputCached()[0],
-                getFwdRotOutputCached()[1]
-        };
-    }
+//    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader() {
+//        return new String[]{
+//                "left",
+//                "right",
+//                "commandingStraight",
+//                "fwd",
+//                "rot"
+//        };
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @NotNull
+//    @Override
+//    public Object[] getData() {
+//        return new Object[]{
+//                getLeftRightOutputCached()[0],
+//                getLeftRightOutputCached()[1],
+//                commandingStraight(),
+//                getFwdRotOutputCached()[0],
+//                getFwdRotOutputCached()[1]
+//        };
+//    }
 }

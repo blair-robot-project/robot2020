@@ -5,8 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 
@@ -14,7 +13,7 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
  * A class representing a single axis on a joystick.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class ThrottleBasic implements Throttle, PIDSource {
+public class ThrottleBasic implements Throttle {
 
     /**
      * The stick we're using
@@ -58,6 +57,7 @@ public class ThrottleBasic implements Throttle, PIDSource {
      *
      * @return The raw joystick output, on [-1, 1].
      */
+    @Log
     public double getValue() {
         return (inverted ? -1 : 1) * stick.getRawAxis(axis);
     }
@@ -68,6 +68,7 @@ public class ThrottleBasic implements Throttle, PIDSource {
      * @return The output from [-1, 1].
      */
     @Override
+    @Log
     public double getValueCached() {
         return cachedOutput;
     }
@@ -81,69 +82,54 @@ public class ThrottleBasic implements Throttle, PIDSource {
     }
 
     /**
-     * Get which parameter of the device you are using as a process control variable.
-     *
-     * @return the currently selected PID source parameter
-     */
-    @Override
-    public PIDSourceType getPIDSourceType() {
-        return null;
-    }
-
-    /**
-     * Set which parameter of the device you are using as a process control variable.
-     *
-     * @param pidSource An enum to select the parameter.
-     */
-    @Override
-    public void setPIDSourceType(PIDSourceType pidSource) {
-        //Do nothing
-    }
-
-    /**
      * Get the result to use in PIDController.
      *
      * @return the result to use in PIDController
      */
-    @Override
+    @Log
     public double pidGet() {
         return (inverted ? -1 : 1) * stick.getRawAxis(axis);
     }
 
-    /**
-     * Get the headers for the data this subsystem logs every loop.
-     *
-     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-     */
-    @NotNull
     @Override
-    public String[] getHeader() {
-        return new String[]{
-                "value"
-        };
+    public String configureLogName() {
+        return "Throttle " + stick.getName() + " axis " + axis;
     }
 
-    /**
-     * Get the data this subsystem logs every loop.
-     *
-     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-     */
-    @NotNull
-    @Override
-    public Object[] getData() {
-        return new Object[]{
-                getValueCached()
-        };
-    }
-
-    /**
-     * Get the name of this object.
-     *
-     * @return A string that will identify this object in the log file.
-     */
-    @NotNull
-    @Override
-    public String getLogName() {
-        return "Stick_" + stick.getPort() + "_Axis_" + axis;
-    }
+    //    /**
+//     * Get the headers for the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
+//     */
+//    @NotNull
+//    @Override
+//    public String[] getHeader() {
+//        return new String[]{
+//                "value"
+//        };
+//    }
+//
+//    /**
+//     * Get the data this subsystem logs every loop.
+//     *
+//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
+//     */
+//    @NotNull
+//    @Override
+//    public Object[] getData() {
+//        return new Object[]{
+//                getValueCached()
+//        };
+//    }
+//
+//    /**
+//     * Get the name of this object.
+//     *
+//     * @return A string that will identify this object in the log file.
+//     */
+//    @NotNull
+//    @Override
+//    public String getLogName() {
+//        return "Stick_" + stick.getPort() + "_Axis_" + axis;
+//    }
 }

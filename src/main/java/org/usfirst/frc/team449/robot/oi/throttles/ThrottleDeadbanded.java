@@ -1,7 +1,7 @@
 package org.usfirst.frc.team449.robot.oi.throttles;
 
 import com.fasterxml.jackson.annotation.*;
-import edu.wpi.first.wpilibj.filters.LinearDigitalFilter;
+import edu.wpi.first.wpilibj.LinearFilter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
@@ -20,7 +20,7 @@ public class ThrottleDeadbanded extends ThrottleBasic {
     /**
      * The smoothing filter for this joystick.
      */
-    private final LinearDigitalFilter filter;
+    private final LinearFilter filter;
     /**
      * The input from the joystick. Declared outside of getValue to avoid garbage collection.
      */
@@ -47,8 +47,7 @@ public class ThrottleDeadbanded extends ThrottleBasic {
                               boolean inverted) {
         super(stick, axis, inverted);
         this.deadband = deadband;
-        this.filter = LinearDigitalFilter.singlePoleIIR(this, smoothingTimeSecs != null ? smoothingTimeSecs : 0.02,
-                0.02);
+        this.filter = LinearFilter.singlePoleIIR(smoothingTimeSecs != null ? smoothingTimeSecs : 0.02,0.02);
     }
 
     /**
@@ -59,7 +58,7 @@ public class ThrottleDeadbanded extends ThrottleBasic {
     @Override
     public double getValue() {
         //Get the smoothed value
-        input = filter.pidGet();
+        input = filter.calculate(pidGet());
 
         sign = Math.signum(input);
         input = Math.abs(input);
