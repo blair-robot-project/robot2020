@@ -216,14 +216,10 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         //If given no gear settings, use the default values.
         if (perGearSettings == null || perGearSettings.size() == 0) {
             this.perGearSettings.put(0, new PerGearSettings());
-            //this.perGearSettings.get(0).getFeedForwardComponent().setTalon(this);
-            //todo wrap around feedforward file to allow talon storage
         }
         //Otherwise, map the settings to the gear they are.
         else {
             for (PerGearSettings settings : perGearSettings) {
-                //settings.getFeedForwardComponent().setTalon(this);
-                //todo wrap around feedforward file to allow talon storage
                 this.perGearSettings.put(settings.getGear(), settings);
             }
         }
@@ -508,7 +504,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         setpoint = feet;
         nativeSetpoint = feetToEncoder(feet);
         canTalon.config_kF(0, 0);
-        //todo make this work again with WPI stuff
+        canTalon.set(ControlMode.Position, nativeSetpoint, DemandType.ArbitraryFeedForward,
+                currentGearSettings.getFeedForwardCalculator().ks / 12.);
     }
 
     /**
@@ -544,7 +541,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         nativeSetpoint = FPSToEncoder(velocity);
         setpoint = velocity;
         canTalon.config_kF(0, 0, 0);
-        //todo make this work again with wpi stuff
+        canTalon.set(ControlMode.Velocity, nativeSetpoint, DemandType.ArbitraryFeedForward,
+                currentGearSettings.getFeedForwardCalculator().calculate(velocity) / 12.);
     }
 
     /**
