@@ -1,8 +1,18 @@
 package org.usfirst.frc.team449.robot;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+
+import org.jetbrains.annotations.NotNull;
+import org.usfirst.frc.team449.robot.other.Clock;
+import org.yaml.snakeyaml.Yaml;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -10,12 +20,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
-import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.other.Clock;
-import org.yaml.snakeyaml.Yaml;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Map;
 
 /**
  * The main class of the robot, constructs all the subsystems and initializes default commands.
@@ -90,9 +94,11 @@ public class Robot extends TimedRobot {
             mapper.registerModule(new JavaModule());
             //Deserialize the map into an object.
             robotMap = mapper.readValue(fixed, RobotMap.class);
+	} catch (FileNotFoundException e) {
+		System.err.println("Config file not found: " + e.getMessage());
         } catch (IOException e) {
             //This is either the map file not being in the file system OR it being improperly formatted.
-            System.out.println("Config file is bad/nonexistent!");
+            System.out.println("Syntax error in config file:");
             e.printStackTrace();
         }
 
