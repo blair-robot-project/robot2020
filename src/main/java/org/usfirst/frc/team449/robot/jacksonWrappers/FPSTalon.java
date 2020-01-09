@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
+import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
@@ -32,7 +33,7 @@ import java.util.Map;
  * in this class takes arguments in post-gearing FPS.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
+public class FPSTalon implements FPSSmartMotor {
 
     Faults faults = new Faults();
 
@@ -416,7 +417,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @param nativeUnits A distance native units as measured by the encoder.
      * @return That distance in feet, or null if no encoder CPR was given.
      */
-    protected double encoderToFeet(double nativeUnits) {
+    @Override
+    public double encoderToFeet(double nativeUnits) {
         if (encoderCPR == null) {
             return Double.NaN;
         }
@@ -430,7 +432,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @param feet A distance in feet.
      * @return That distance in native units as measured by the encoder, or null if no encoder CPR was given.
      */
-    protected double feetToEncoder(double feet) {
+    @Override
+    public double feetToEncoder(double feet) {
         if (encoderCPR == null) {
             return Double.NaN;
         }
@@ -445,7 +448,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if no encoder CPR
      * was given.
      */
-    protected double encoderToFPS(double encoderReading) {
+    @Override
+    public double encoderToFPS(double encoderReading) {
         RPS = nativeToRPS(encoderReading);
         if (RPS == null) {
             return Double.NaN;
@@ -460,7 +464,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @param FPS The velocity of the output shaft, in FPS.
      * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was given.
      */
-    protected double FPSToEncoder(double FPS) {
+    @Override
+    public double FPSToEncoder(double FPS) {
         return RPSToNative((FPS / postEncoderGearing) / feetPerRotation);
     }
 
@@ -473,7 +478,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      */
     @Contract(pure = true)
     @Nullable
-    private Double nativeToRPS(double nat) {
+    @Override
+    public Double nativeToRPS(double nat) {
         if (encoderCPR == null) {
             return null;
         }
@@ -488,11 +494,20 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @return That velocity in CANTalon native units, or null if no encoder CPR was given.
      */
     @Contract(pure = true)
-    private double RPSToNative(double RPS) {
+    @Override
+    public double RPSToNative(double RPS) {
         if (encoderCPR == null) {
             return Double.NaN;
         }
         return (RPS / 10) * (encoderCPR * 4); //4 edges per count, and 10 100ms per second.
+    }
+
+    /**
+     * @return Total ticks travelled for debug purposes
+     */
+    @Override
+    public double encoderPosition() {
+        return canTalon.getSelectedSensorPosition();
     }
 
     /**
@@ -509,11 +524,20 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     }
 
     /**
+     * @return Ticks per 100ms for debug purposes
+     */
+    @Override
+    public double encoderVelocity() {
+        return canTalon.getSelectedSensorVelocity();
+    }
+
+    /**
      * Get the velocity of the CANTalon in FPS.
      *
      * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
      */
     @Log
+    @Override
     public Double getVelocity() {
         return encoderToFPS(canTalon.getSelectedSensorVelocity(0));
     }
@@ -537,7 +561,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @param velocity velocity setpoint in FPS.
      */
-    protected void setVelocityFPS(double velocity) {
+    @Override
+    public void setVelocityFPS(double velocity) {
         nativeSetpoint = FPSToEncoder(velocity);
         setpoint = velocity;
         canTalon.config_kF(0, 0, 0);
@@ -608,14 +633,6 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     @Log
     public String getControlMode() {
         return String.valueOf(canTalon.getControlMode());
-    }
-
-    /**
-     * Enables the motor, if applicable.
-     */
-    @Override
-    public void enable() {
-        //Not a thing anymore
     }
 
     /**
@@ -768,53 +785,63 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
 //        return name;
 //    }
 
+    @Override
+    public String configureLogName() {
+        return name;
+    }
+
+    @Override
+    public LayoutType configureLayoutType() {
+        return BuiltInLayouts.kGrid;
+    }
+
     /**
      * An object representing the CANTalon settings that are different for each gear.
      */
-    protected static class PerGearSettings {
+    class PerGearSettings {
 
         /**
          * The gear number this is the settings for.
          */
-        private final int gear;
+        public final int gear;
 
         /**
          * The forwards and reverse peak output voltages.
          */
-        private final double fwdPeakOutputVoltage, revPeakOutputVoltage;
+        public final double fwdPeakOutputVoltage, revPeakOutputVoltage;
 
         /**
          * The forwards and reverse nominal output voltages.
          */
-        private final double fwdNominalOutputVoltage, revNominalOutputVoltage;
+        public final double fwdNominalOutputVoltage, revNominalOutputVoltage;
 
         /**
          * The ramp rate, in volts/sec. null means no ramp rate.
          */
         @Nullable
-        private final Double rampRate;
+        public final Double rampRate;
 
         /**
          * The maximum speed of the motor in this gear, in FPS. Used for throttle scaling.
          */
         @Nullable
-        private final Double maxSpeed;
+        public final Double maxSpeed;
 
         /**
          * The PID constants for the motor in this gear. Ignored if maxSpeed is null.
          */
-        private final double kP, kI, kD;
+        public final double kP, kI, kD;
 
         /**
          * The position PID constants for the motor in this gear.
          */
-        private final double posKP, posKI, posKD;
+        public final double posKP, posKI, posKD;
 
         /**
          * WPI object for calculating feed forward constants given a max achievable velocity
          * and acceleration
          */
-        private SimpleMotorFeedforward feedForwardCalculator;
+        public SimpleMotorFeedforward feedForwardCalculator;
 
         /**
          * Default constructor.
@@ -985,16 +1012,5 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         public double getPosKD() {
             return posKD;
         }
-
-    }
-
-    @Override
-    public String configureLogName() {
-        return name;
-    }
-
-    @Override
-    public LayoutType configureLayoutType() {
-        return BuiltInLayouts.kGrid;
     }
 }
