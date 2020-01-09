@@ -18,7 +18,7 @@ public interface SimpleMotor {
     /**
      * Enables the motor, if applicable.
      */
-    void enable();
+    default void enable(){}
 
     /**
      * Disables the motor, if applicable.
