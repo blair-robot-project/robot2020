@@ -11,6 +11,17 @@ import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
  * Also features built in FPS conversions.
  */
 public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
+
+    /**
+     * @return Raw position units for debugging purposes
+     */
+    double encoderPosition();
+
+    /**
+     * @return Raw velocity units for debugging purposes
+     */
+    double encoderVelocity();
+
     /**
      * Convert from native units read by an encoder to feet moved. Note this DOES account for post-encoder gearing.
      *

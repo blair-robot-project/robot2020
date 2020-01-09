@@ -503,6 +503,14 @@ public class FPSTalon implements FPSSmartMotor {
     }
 
     /**
+     * @return Total ticks travelled for debug purposes
+     */
+    @Override
+    public double encoderPosition() {
+        return canTalon.getSelectedSensorPosition();
+    }
+
+    /**
      * Set a position setpoint for the Talon.
      *
      * @param feet An absolute position setpoint, in feet.
@@ -513,6 +521,14 @@ public class FPSTalon implements FPSSmartMotor {
         canTalon.config_kF(0, 0);
         canTalon.set(ControlMode.Position, nativeSetpoint, DemandType.ArbitraryFeedForward,
                 currentGearSettings.getFeedForwardCalculator().ks / 12.);
+    }
+
+    /**
+     * @return Ticks per 100ms for debug purposes
+     */
+    @Override
+    public double encoderVelocity() {
+        return canTalon.getSelectedSensorVelocity();
     }
 
     /**

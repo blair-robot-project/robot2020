@@ -2,10 +2,7 @@ package org.usfirst.frc.team449.robot.jacksonWrappers;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANPIDController;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.*;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
@@ -19,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class FPSSparkMax implements FPSSmartMotor {
+public class FPSSparkMax implements FPSSmartMotor, Loggable {
 
     /**
      * REV brushless controller object
@@ -51,9 +48,18 @@ public class FPSSparkMax implements FPSSmartMotor {
      */
     private final double feetPerRotation;
     /**
+     * The most recently set setpoint.
+     */
+    private double setpoint;
+    /**
      * RPS as used in a unit conversion method. Field to avoid garbage collection.
      */
     private Double RPS;
+
+    /**
+     * The setpoint in native units. Field to avoid garbage collection.
+     */
+    private double nativeSetpoint;
 
     /**
      * The settings currently being used by this controller.
@@ -80,6 +86,7 @@ public class FPSSparkMax implements FPSSmartMotor {
                        @Nullable Integer startingGearNum) {
         spark = new CANSparkMax(deviceID, CANSparkMaxLowLevel.MotorType.kBrushless);
         canEncoder = spark.getEncoder();
+        pidController = spark.getPIDController();
 
         this.encoderCPR = canEncoder.getCountsPerRevolution();
         this.postEncoderGearing = postEncoderGearing;
@@ -119,12 +126,12 @@ public class FPSSparkMax implements FPSSmartMotor {
 
     @Override
     public int getGear() {
-        return 0;
+        return currentGearSettings.gear;
     }
 
     @Override
     public void setGear(int gear) {
-
+        //todo do this
     }
 
     /**
@@ -203,6 +210,22 @@ public class FPSSparkMax implements FPSSmartMotor {
     }
 
     /**
+     * @return Total revolutions for debug purposes
+     */
+    @Override
+    public double encoderPosition() {
+        return 0;
+    }
+
+    /**
+     * @return Current RPM for debug purposes
+     */
+    @Override
+    public double encoderVelocity() {
+        return 0;
+    }
+
+    /**
      * Get the velocity of the CANTalon in FPS.
      *
      * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
@@ -232,11 +255,10 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @param velocity velocity setpoint in FPS.
      */
     public void setVelocityFPS(double velocity) {
-//        nativeSetpoint = FPSToEncoder(velocity);
-//        setpoint = velocity;
-//        canTalon.config_kF(0, 0, 0);
-//        canTalon.set(ControlMode.Velocity, nativeSetpoint, DemandType.ArbitraryFeedForward,
-//                currentGearSettings.getFeedForwardCalculator().calculate(velocity) / 12.);
+        nativeSetpoint = FPSToEncoder(velocity);
+        setpoint = velocity;
+        pidController.setFF(currentGearSettings.feedForwardCalculator.calculate(velocity) / 12.);
+        pidController.setReference(velocity, ControlType.kVelocity);
     }
 
 
