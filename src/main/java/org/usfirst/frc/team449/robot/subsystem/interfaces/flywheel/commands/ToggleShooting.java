@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.jetbrains.annotations.NotNull;
@@ -24,13 +26,17 @@ public class ToggleShooting extends InstantCommand {
         super(() -> {
                     switch (subsystem.getFlywheelState()) {
                         case OFF:
-                            new SpinUpThenShoot(subsystem).schedule();
+                            // Interrupt the command if the flywheel enters the OFF state because
+                            // that implies that some other command has turned it off.
+                            new SpinUpThenShoot(subsystem).withInterrupt(
+                                    () -> subsystem.getFlywheelState() == SubsystemFlywheel.FlywheelState.OFF).schedule();
                             break;
                         case SHOOTING:
+                        case SPINNING_UP:
                             new TurnAllOff(subsystem).schedule();
                             break;
-                        case SPINNING_UP:
-                            new TurnAllOn(subsystem).schedule();
+                        default:
+                            throw new RuntimeException("Switch statement fall-through on enum type " + SubsystemFlywheel.FlywheelState.class.getSimpleName());
                     }
                 },
                 subsystem);

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +12,9 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlyw
 
 /**
  * Spin up the flywheel until it's at the target speed, then start feeding in balls.
+ *
+ * Does not halt the spin-up process if the flywheel is signalled to stop while this command is running.
+ * Consider decorating with {@link Command#withInterrupt(java.util.function.BooleanSupplier)} with a test for flywheel state.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SpinUpThenShoot extends SequentialCommandGroup {
