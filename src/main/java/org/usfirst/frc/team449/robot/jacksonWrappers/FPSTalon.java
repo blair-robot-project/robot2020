@@ -798,7 +798,7 @@ public class FPSTalon implements FPSSmartMotor {
     /**
      * An object representing the CANTalon settings that are different for each gear.
      */
-    class PerGearSettings {
+    static class PerGearSettings {
 
         /**
          * The gear number this is the settings for.
