@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.revrobotics.*;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -114,8 +116,6 @@ public class FPSSparkMax implements FPSSmartMotor {
      *                                   Defaults to 1.
      * @param currentLimit               The max amps this device can draw. If this is null, no current limit is used.
      * @param enableVoltageComp          Whether or not to use voltage compensation. Defaults to false.
-     * @param voltageCompSamples         The number of 1-millisecond samples to use for voltage compensation. Defaults
-     *                                   to 32.
      * @param reverseSensor              Whether or not to reverse the reading from the encoder on this Talon. Ignored
      *                                   if feedbackDevice is null. Defaults to false.
      * @param perGearSettings            The settings for each gear this motor has. Can be null to use default values
@@ -123,6 +123,8 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @param startingGear               The gear to start in. Can be null to use startingGearNum instead.
      * @param startingGearNum            The number of the gear to start in. Ignored if startingGear isn't null.
      *                                   Defaults to the lowest gear.
+     * @param statusFrameRatesMillis     The update rates, in millis, for each of the Talon status frames.
+     * @param controlFrameRateMillis    The update rate, in milliseconds, for each of the control frame.
      */
     public FPSSparkMax(@JsonProperty(required = true) int port,
                        @Nullable String name,
@@ -138,11 +140,12 @@ public class FPSSparkMax implements FPSSmartMotor {
                        @Nullable Double feetPerRotation,
                        @Nullable Integer currentLimit,
                        boolean enableVoltageComp,
-                       @Nullable Integer voltageCompSamples,
                        boolean reverseSensor,
                        @Nullable List<PerGearSettings> perGearSettings,
                        @Nullable Shiftable.gear startingGear,
-                       @Nullable Integer startingGearNum) {
+                       @Nullable Integer startingGearNum,
+                       @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
+                       @Nullable final Integer controlFrameRateMillis) {
         spark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
         canEncoder = spark.getEncoder();
         pidController = spark.getPIDController();
@@ -155,6 +158,18 @@ public class FPSSparkMax implements FPSSmartMotor {
         spark.setIdleMode(enableBrakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
         //Reset the position
 //        resetPosition();
+
+        //Set frame rates
+        if (controlFrameRateMillis != null) {
+            // Must be between 1 and 100 ms.
+            spark.setControlFramePeriodMs(controlFrameRateMillis);
+        }
+
+        if (statusFrameRatesMillis != null) {
+            for (CANSparkMaxLowLevel.PeriodicFrame frame : statusFrameRatesMillis.keySet()) {
+                spark.setPeriodicFramePeriod(frame, statusFrameRatesMillis.get(frame));
+            }
+        }
 
         this.PDP = PDP;
 
@@ -201,7 +216,30 @@ public class FPSSparkMax implements FPSSmartMotor {
         //Set up gear-based settings.
         setGear(currentGear);
 
+        //Set the current limit if it was given
+        if (currentLimit != null) {
+            spark.setSmartCurrentLimit(currentLimit);
+        }
+
+        if(enableVoltageComp){
+            spark.enableVoltageCompensation(12);
+        }
+
         spark.burnFlash();
+    }
+
+    @Override
+    public void setPercentVoltage(double percentVoltage){
+        //Warn the user if they're setting Vbus to a number that's outside the range of values.
+        if (Math.abs(percentVoltage) > 1.0) {
+            Shuffleboard.addEventMarker("WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage, this.getClass().getSimpleName(), EventImportance.kNormal);
+            //Logger.addEvent("WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage, this.getClass());
+            percentVoltage = Math.signum(percentVoltage);
+        }
+
+        setpoint = percentVoltage;
+
+        spark.set(percentVoltage);
     }
 
     @Override
@@ -365,6 +403,7 @@ public class FPSSparkMax implements FPSSmartMotor {
      *
      * @param velocity velocity setpoint in FPS.
      */
+    @Override
     public void setVelocityFPS(double velocity) {
         nativeSetpoint = FPSToEncoder(velocity);
         setpoint = velocity;

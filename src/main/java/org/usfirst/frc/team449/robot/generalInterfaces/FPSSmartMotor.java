@@ -13,6 +13,13 @@ import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
 
     /**
+     * Set the motor output voltage to a given percent of available voltage.
+     *
+     * @param percentVoltage percent of total voltage from [-1, 1]
+     */
+    void setPercentVoltage(double percentVoltage);
+
+    /**
      * Convert from native units read by an encoder to feet moved. Note this DOES account for post-encoder gearing.
      *
      * @param nativeUnits A distance native units as measured by the encoder.
@@ -74,7 +81,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
     /**
      * Set a position setpoint for the controller.
      */
-    public void setPositionSetpoint(double feet);
+    void setPositionSetpoint(double feet);
 
     /**
      * @return Raw velocity units for debugging purposes
