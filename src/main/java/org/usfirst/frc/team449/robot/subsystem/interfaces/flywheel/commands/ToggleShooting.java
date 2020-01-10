@@ -28,6 +28,9 @@ public class ToggleShooting extends InstantCommand {
                         case OFF:
                             // Interrupt the command if the flywheel enters the OFF state because
                             // that implies that some other command has turned it off.
+                            // But set the flywheel to SPINNING_UP before that because the command seems to sometimes
+                            // be interrupted before it gets a chance to do so itself.
+                            subsystem.setFlywheelState(SubsystemFlywheel.FlywheelState.SPINNING_UP);
                             new SpinUpThenShoot(subsystem).withInterrupt(
                                     () -> subsystem.getFlywheelState() == SubsystemFlywheel.FlywheelState.OFF).schedule();
                             break;
