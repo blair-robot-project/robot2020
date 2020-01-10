@@ -1,37 +1,61 @@
 package org.usfirst.frc.team449.robot.components;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 
-
-public class NetworkTableGetter{
+/**
+ * Has all of the methods for getting any desired value from the limelight.
+ * Poorly documented, reference docs.limelightvision.io/en/latest/networktables_api.html for full documentation
+ */
+public class Limelight {
 
     private NetworkTable netTable;
 
-    public NetworkTableGetter(){
+    public Limelight(){
         netTable = NetworkTableInstance.getDefault().getTable("limelight");
     }
 
-    public double tableGet(String param){
+    /**
+     * Gets the value from the corresponding param from netTable.
+     * Used exclusively to avoid typing "netTable.getEntry(param).getDouble(0)" for every method
+     * @param param the value to ask for from the limelight
+     * @return the value asked for
+     */
+    private double tableGet(String param){
         return netTable.getEntry(param).getDouble(0);
     }
+
+    /**
+     * @return whether the limelight can see valid targets (0 or 1)
+     */
     public double validTargets(){
         return tableGet("tv");
     }
+
+    /**
+     * @return horizontal offset of target (as an angle)
+     */
     public double getXOffset(){
         return tableGet("tx");
     }
+
+    /**
+     * @return vertical offset from crosshair to target (as an angle)
+     */
     public double getYOffset(){
         return tableGet("ty");
     }
+
+    /**
+     * @return area of target (as a percent of the image onscreen)
+     */
     public double getTargetArea(){
         return tableGet("ta");
     }
+
+    /**
+     * @return skew or rotation (-90 to 0, in degrees)
+     */
     public double getSkew(){
         return tableGet("ts");
     }

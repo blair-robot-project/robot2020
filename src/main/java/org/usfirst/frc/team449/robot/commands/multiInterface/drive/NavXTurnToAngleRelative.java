@@ -65,7 +65,7 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
     public void initialize() {
         //Setup start time
         this.startTime = Clock.currentTimeMillis();
-        Shuffleboard.addEventMarker("NavXRelativeTurnToAngle init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        Shuffleboard.addEventMarker("NavXTurnToAngleRelative init.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("NavXRelativeTurnToAngle init.", this.getClass());
         //Do math to setup the setpoint.
         this.setSetpoint(clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() + setpoint));
@@ -77,9 +77,9 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
     @Override
     public void end(boolean interrupted) {
         if(interrupted){
-            Shuffleboard.addEventMarker("NavXRelativeTurnToAngle interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+            Shuffleboard.addEventMarker("NavXTurnToAngleRelative interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
         }
         //how the heck do we stop this thing help
-        Shuffleboard.addEventMarker("NavXRelativeTurnToAngle end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        Shuffleboard.addEventMarker("NavXTurnToAngleRelative end.", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 }
