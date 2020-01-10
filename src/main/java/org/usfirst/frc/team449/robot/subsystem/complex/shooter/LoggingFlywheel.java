@@ -154,9 +154,13 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @NotNull
     @Override
-    @Log
     public SubsystemFlywheel.FlywheelState getFlywheelState() {
         return state;
+    }
+
+    @Log
+    public String getFlywheelStateLogged(){
+        return state.name();
     }
 
     /**
