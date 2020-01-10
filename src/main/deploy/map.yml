@@ -1,6 +1,6 @@
 ---
 # WHETHER TO USE THE CAMERA SERVER
-useCameraServer: true
+useCameraServer: false
 
 # PDP
 pdp:
@@ -23,28 +23,34 @@ subsystems:
           name: shooterTalon
           reverseOutput: false
           enableBrakeMode: false
-          voltagePerCurrentLinReg: 0 #TODO
+#          voltagePerCurrentLinReg: 0 #TODO
           PDP: PDP
-          fwdLimitSwitchNormallyOpen: false #TODO
-          revLimitSwitchNormallyOpen: false #TODO
-          remoteLimitSwitchID: 0 #TODO
-          fwdSoftLimit: 0 #TODO
-          revSoftLimit: 0 # TODO
-          postEncoderGearing: 0 #TODO
-          feetPerRotation: 0 #TODO
-          currentLimit: 10 #TODO
-          enableVoltageComp: true #TODO
-          voltageCompSamples: 100 #TODO
-          feedbackDevice: QuadEncoder #TODO
-          encoderCPR: 256 #TODO
+#          fwdLimitSwitchNormallyOpen: false #TODO
+#          revLimitSwitchNormallyOpen: false #TODO
+#          remoteLimitSwitchID: 0 #TODO
+          #fwdSoftLimit: 0 #TODO
+          #revSoftLimit: 0 # TODO
+#          postEncoderGearing: 0.0 #TODO
+          #feetPerRotation: 0 #TODO
+          currentLimit: 5 #TODO
+#          enableVoltageComp: true #TODO
+#          voltageCompSamples: 100 #TODO
+#          feedbackDevice: QuadEncoder #TODO
+#          encoderCPR: 256 #TODO
           reverseSensor: false #TODO
-          perGearSettings: #TODO
+#          perGearSettings:
+#            - gearNum: 0
+#              kP: 0.003
+#              kI: 0.0
+#              kD: 0.05
+#              #TODO check these values, currently same as kP, etc
+#              posKP: 0.003
+#              posKI: 0.0
+#              posKD: 0.05
           startingGearNum: 0 #TODO
-          updaterPRocessPeriodSecs: 0.005 #TODO
+#          updaterProcessPeriodSecs: 0.005 #TODO
           slaveVictors:
-            org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor:
-              '@id': shooterVictor
-              port: 3 #TODO
+            - port: 3 #TODO
               invertType: OpposeMaster
       shooterThrottle: 0.2 #TODO
       feederMotor:
@@ -54,50 +60,56 @@ subsystems:
           name: kickerTalon
           reverseOutput: false
           enableBrakeMode: false
-          voltagePerCurrentLinReg: 0 #TODO
+          #voltagePerCurrentLinReg: 0 #TODO
           PDP: PDP
-          fwdLimitSwitchNormallyOpen: false #TODO
-          revLimitSwitchNormallyOpen: false #TODO
-          remoteLimitSwitchID: 0 #TODO
-          fwdSoftLimit: 0 #TODO
-          revSoftLimit: 0 # TODO
-          postEncoderGearing: 0 #TODO
-          feetPerRotation: 0 #TODO
+          #fwdLimitSwitchNormallyOpen: false #TODO
+          #revLimitSwitchNormallyOpen: false #TODO
+          #remoteLimitSwitchID: 0 #TODO
+          #fwdSoftLimit: 0 #TODO
+          #revSoftLimit: 0 # TODO
+#          postEncoderGearing: 0 #TODO
+          #feetPerRotation: 0 #TODO
           currentLimit: 10 #TODO
-          enableVoltageComp: true #TODO
-          voltageCompSamples: 100 #TODO
-          feedbackDevice: QuadEncoder #TODO
-          encoderCPR: 256 #TODO
+          #enableVoltageComp: true #TODO
+#          voltageCompSamples: 100 #TODO
+#          feedbackDevice: QuadEncoder #TODO
+#          encoderCPR: 256 #TODO
           reverseSensor: false #TODO
-          perGearSettings: #TODO
+#          perGearSettings:
+#            - gearNum: 0
+#              kP: 0.003
+#              kI: 0.0
+#              kD: 0.05
+#              #TODO check these values, currently same as kP, etc
+#              posKP: 0.003
+#              posKI: 0.0
+#              posKD: 0.05
           startingGearNum: 0 #TODO
-          updaterPRocessPeriodSecs: 0.005 #TODO
+          #updaterProcessPeriodSecs: 0.005 #TODO
       feederThrottle: 0.1 #TODO
 
 # COMMANDS
 commands:
-  org.usfirst.frc.team449.robot.CommandContainer:
-    #BUTTONS
-    buttons:
-      - org.usfirst.frc.team449.robot.oi.buttons.CommandButton:
-          button:
-            org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-              '@id': shooterStartButton
-              joystick:
-                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                  '@id': mechanismsJoystick
-                  port: 2 #TODO
-              buttonNumber: 2 #X
-          command:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheel:
-              '@id': spinupFlywheelCommand
-              subsystem:
-                org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-                  shooterFlywheel
-          action:
-            WHEN_PRESSED
-    # DEFAULT COMMANDS
-    defaultCommands:
+  #BUTTONS
+  buttons:
+  - button:
+      org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+        '@id': shooterStartButton
+        joystick:
+          org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+            '@id': mechanismsJoystick
+            port: 2 #TODO
+        buttonNumber: 2 #X/
+    command:
+      org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.ToggleShooting:
+        '@id': toggleFlywheelCommand
+        subsystem:
+          org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
+            shooterFlywheel
+    action:
+      WHEN_PRESSED
+  # DEFAULT COMMANDS
+  defaultCommands:
       # DEFAULT DRIVE COMMAND
 #      - subsystem:
 #          org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
