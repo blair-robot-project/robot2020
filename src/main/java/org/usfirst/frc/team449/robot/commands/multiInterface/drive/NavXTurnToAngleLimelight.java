@@ -13,7 +13,7 @@ import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
-import org.usfirst.frc.team449.robot.components.Limelight;
+import org.usfirst.frc.team449.robot.components.LimelightComponent;
 
 /**
  * Turn a certain number of degrees from the current heading, based on input from the limelight
@@ -52,11 +52,11 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
                                    int kP,
                                    int kI,
                                    int kD,
-                                   @NotNull @JsonProperty(required = true) Limelight angleSupplier,
+                                   @NotNull @JsonProperty(required = true) LimelightComponent angleSupplier,
                                    @NotNull @JsonProperty(required = true) T drive,
                                    @JsonProperty(required = true) double timeout) {
         super(absoluteTolerance, onTargetBuffer, minimumOutput, maximumOutput, loopTimeMillis, deadband, inverted, kP
-                , kI, kD, angleSupplier.getXOffset(), drive, timeout);
+                , kI, kD, angleSupplier.getAsDouble(), drive, timeout);
     }
 
     /**

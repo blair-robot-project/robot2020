@@ -6,9 +6,13 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 /**
  * Has all of the methods for getting any desired value from the limelight.
  * Poorly documented, reference docs.limelightvision.io/en/latest/networktables_api.html for full documentation
+ * Also THIS IS OBSOLETE, should be using the LimelightComponent class for the capacity to tailor offsets
  */
 public class Limelight {
 
+    /**
+     * The network table to get the values from
+     */
     private NetworkTable netTable;
 
     public Limelight(){

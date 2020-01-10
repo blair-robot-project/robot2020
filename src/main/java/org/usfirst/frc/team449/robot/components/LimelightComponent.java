@@ -30,7 +30,14 @@ public class LimelightComponent implements DoubleSupplier {
      * Can be:
      *  x: x distance from target
      *  y: y distance from target
-     *  area: area of the target seen (0% to 100% of the whole target seen)
+     *  area: area of the target (0% to 100% of the camera screen)
+     *  skew: rotation (-90 to 0, in degrees) of the target (as the limelight sees it)
+     *  latency: the pipeline's latency contribution, in ms
+     *  shortest: sidelength of the shortest side of the vision target box, in pixels
+     *  longest: sidelength of the longest side of the vision target box, in pixels
+     *  width: width of target box, in pixels
+     *  height: height of target box, in pixels
+     *  pipeIndex: pipelineIndex of the camera
      *  poseX: x position of the target in a 3D model
      *  poseY: y position of the target in a 3D model
      *  poseZ: z position of the target in a 3D model
@@ -45,7 +52,7 @@ public class LimelightComponent implements DoubleSupplier {
     private final double offset;
 
     enum ReturnValue {
-        x, y, area, poseX, poseY, poseZ, pitch, yaw, roll
+        x, y, area, skew, latency, shortest, longest, width, height, pipeIndex, poseX, poseY, poseZ, pitch, yaw, roll
     }
 
     /**
@@ -67,6 +74,24 @@ public class LimelightComponent implements DoubleSupplier {
                 break;
             case area:
                 entry = table.getEntry("ta");
+                break;
+            case skew:
+                entry = table.getEntry("ts");
+                break;
+            case latency:
+                entry = table.getEntry("tl");
+                break;
+            case shortest:
+                entry = table.getEntry("tshort");
+                break;
+            case width:
+                entry = table.getEntry("thor");
+                break;
+            case height:
+                entry = table.getEntry("tvert");
+                break;
+            case pipeIndex:
+                entry = table.getEntry("getpipe");
                 break;
             default:
                 entry = table.getEntry("camtran");
