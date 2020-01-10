@@ -1,13 +1,14 @@
 package org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * A subsystem with a flywheel and feeder.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT, property = "@class")
-public interface SubsystemFlywheel {
+public interface SubsystemFlywheel extends Subsystem {
 
     /**
      * Turn the flywheel on to a map-specified speed.
