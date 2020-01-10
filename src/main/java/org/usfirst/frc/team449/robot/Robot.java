@@ -95,7 +95,7 @@ public class Robot extends TimedRobot {
             //Deserialize the map into an object.
             robotMap = mapper.readValue(fixed, RobotMap.class);
 	} catch (FileNotFoundException e) {
-		System.err.println("Config file not found: " + e.getMessage());
+		System.err.println("Config file not found: `" + RESOURCES_PATH + "/" + mapName + "`");
         } catch (IOException e) {
             //This is either the map file not being in the file system OR it being improperly formatted.
             System.out.println("Syntax error in config file:");
