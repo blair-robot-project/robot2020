@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -20,9 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
-import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
-import org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
-
 
 import java.util.HashMap;
 import java.util.List;
@@ -221,7 +217,7 @@ public class FPSTalon implements FPSSmartMotor {
         //Otherwise, map the settings to the gear they are.
         else {
             for (PerGearSettings settings : perGearSettings) {
-                this.perGearSettings.put(settings.getGear(), settings);
+                this.perGearSettings.put(settings.gear, settings);
             }
         }
 
@@ -303,8 +299,7 @@ public class FPSTalon implements FPSSmartMotor {
             }
         } else {
             this.encoderCPR = null;
-//            canTalon.configSelectedFeedbackSensor(FeedbackDevice.None, 0, 0); Uncomment this if FeedbackDevice.None
-// is re-added in a future release.
+            canTalon.configSelectedFeedbackSensor(FeedbackDevice.None, 0, 0);
         }
 
         //postEncoderGearing defaults to 1
@@ -374,7 +369,7 @@ public class FPSTalon implements FPSSmartMotor {
     @Override
     @Log
     public int getGear() {
-        return currentGearSettings.getGear();
+        return currentGearSettings.gear;
     }
 
     /**
@@ -388,17 +383,17 @@ public class FPSTalon implements FPSSmartMotor {
         currentGearSettings = perGearSettings.get(gear);
 
         //Set max voltage
-        canTalon.configPeakOutputForward(currentGearSettings.getFwdPeakOutputVoltage() / 12., 0);
-        canTalon.configPeakOutputReverse(currentGearSettings.getRevPeakOutputVoltage() / 12., 0);
+        canTalon.configPeakOutputForward(currentGearSettings.fwdPeakOutputVoltage / 12., 0);
+        canTalon.configPeakOutputReverse(currentGearSettings.revPeakOutputVoltage / 12., 0);
 
         //Set min voltage
-        canTalon.configNominalOutputForward(currentGearSettings.getFwdNominalOutputVoltage() / 12., 0);
-        canTalon.configNominalOutputReverse(currentGearSettings.getRevNominalOutputVoltage() / 12., 0);
+        canTalon.configNominalOutputForward(currentGearSettings.fwdNominalOutputVoltage / 12., 0);
+        canTalon.configNominalOutputReverse(currentGearSettings.revNominalOutputVoltage / 12., 0);
 
-        if (currentGearSettings.getRampRate() != null) {
+        if (currentGearSettings.rampRate != null) {
             //Set ramp rate, converting from volts/sec to seconds until 12 volts.
-            canTalon.configClosedloopRamp(1 / (currentGearSettings.getRampRate() / 12.), 0);
-            canTalon.configOpenloopRamp(1 / (currentGearSettings.getRampRate() / 12.), 0);
+            canTalon.configClosedloopRamp(1 / (currentGearSettings.rampRate / 12.), 0);
+            canTalon.configOpenloopRamp(1 / (currentGearSettings.rampRate / 12.), 0);
         } else {
             canTalon.configClosedloopRamp(0, 0);
             canTalon.configOpenloopRamp(0, 0);
@@ -406,9 +401,9 @@ public class FPSTalon implements FPSSmartMotor {
 
         //Set PID stuff
         //Slot 0 velocity gains. We don't set F yet because that changes based on setpoint.
-        canTalon.config_kP(0, currentGearSettings.getkP(), 0);
-        canTalon.config_kI(0, currentGearSettings.getkI(), 0);
-        canTalon.config_kD(0, currentGearSettings.getkD(), 0);
+        canTalon.config_kP(0, currentGearSettings.kP, 0);
+        canTalon.config_kI(0, currentGearSettings.kI, 0);
+        canTalon.config_kD(0, currentGearSettings.kD, 0);
     }
 
     /**
@@ -515,12 +510,13 @@ public class FPSTalon implements FPSSmartMotor {
      *
      * @param feet An absolute position setpoint, in feet.
      */
+    @Override
     public void setPositionSetpoint(double feet) {
         setpoint = feet;
         nativeSetpoint = feetToEncoder(feet);
         canTalon.config_kF(0, 0);
         canTalon.set(ControlMode.Position, nativeSetpoint, DemandType.ArbitraryFeedForward,
-                currentGearSettings.getFeedForwardCalculator().ks / 12.);
+                currentGearSettings.feedForwardCalculator.ks / 12.);
     }
 
     /**
@@ -549,8 +545,8 @@ public class FPSTalon implements FPSSmartMotor {
      */
     @Override
     public void setVelocity(double velocity) {
-        if (currentGearSettings.getMaxSpeed() != null) {
-            setVelocityFPS(velocity * currentGearSettings.getMaxSpeed());
+        if (currentGearSettings.maxSpeed != null) {
+            setVelocityFPS(velocity * currentGearSettings.maxSpeed);
         } else {
             setPercentVoltage(velocity);
         }
@@ -567,7 +563,7 @@ public class FPSTalon implements FPSSmartMotor {
         setpoint = velocity;
         canTalon.config_kF(0, 0, 0);
         canTalon.set(ControlMode.Velocity, nativeSetpoint, DemandType.ArbitraryFeedForward,
-                currentGearSettings.getFeedForwardCalculator().calculate(velocity) / 12.);
+                currentGearSettings.feedForwardCalculator.calculate(velocity) / 12.);
     }
 
     /**
@@ -650,10 +646,10 @@ public class FPSTalon implements FPSSmartMotor {
      * @param gear     The number of the gear to use the max speed from to scale the velocity.
      */
     public void setGearScaledVelocity(double velocity, int gear) {
-        if (currentGearSettings.getMaxSpeed() == null) {
-            setPercentVoltage(velocity);
+        if (currentGearSettings.maxSpeed != null) {
+            setVelocityFPS(currentGearSettings.maxSpeed * velocity);
         } else {
-            setVelocityFPS(perGearSettings.get(gear).getMaxSpeed() * velocity);
+            setPercentVoltage(velocity);
         }
     }
 
@@ -672,7 +668,7 @@ public class FPSTalon implements FPSSmartMotor {
      * @return Feedforward calculator for this gear
      */
     public SimpleMotorFeedforward getCurrentGearFeedForward(){
-        return currentGearSettings.getFeedForwardCalculator();
+        return currentGearSettings.feedForwardCalculator;
     }
 
     /**
@@ -793,224 +789,5 @@ public class FPSTalon implements FPSSmartMotor {
     @Override
     public LayoutType configureLayoutType() {
         return BuiltInLayouts.kGrid;
-    }
-
-    /**
-     * An object representing the CANTalon settings that are different for each gear.
-     */
-    class PerGearSettings {
-
-        /**
-         * The gear number this is the settings for.
-         */
-        public final int gear;
-
-        /**
-         * The forwards and reverse peak output voltages.
-         */
-        public final double fwdPeakOutputVoltage, revPeakOutputVoltage;
-
-        /**
-         * The forwards and reverse nominal output voltages.
-         */
-        public final double fwdNominalOutputVoltage, revNominalOutputVoltage;
-
-        /**
-         * The ramp rate, in volts/sec. null means no ramp rate.
-         */
-        @Nullable
-        public final Double rampRate;
-
-        /**
-         * The maximum speed of the motor in this gear, in FPS. Used for throttle scaling.
-         */
-        @Nullable
-        public final Double maxSpeed;
-
-        /**
-         * The PID constants for the motor in this gear. Ignored if maxSpeed is null.
-         */
-        public final double kP, kI, kD;
-
-        /**
-         * The position PID constants for the motor in this gear.
-         */
-        public final double posKP, posKI, posKD;
-
-        /**
-         * WPI object for calculating feed forward constants given a max achievable velocity
-         * and acceleration
-         */
-        public SimpleMotorFeedforward feedForwardCalculator;
-
-        /**
-         * Default constructor.
-         *
-         * @param gearNum                 The gear number this is the settings for. Ignored if gear isn't null.
-         * @param gear                    The gear this is the settings for. Can be null.
-         * @param fwdPeakOutputVoltage    The peak output voltage for closed-loop modes in the forwards direction, in
-         *                                volts. Defaults to 12.
-         * @param revPeakOutputVoltage    The peak output voltage for closed-loop modes in the reverse direction, in
-         *                                volts. Defaults to -fwdPeakOutputVoltage.
-         * @param fwdNominalOutputVoltage The minimum output voltage for closed-loop modes in the forwards direction.
-         *                                This does not rescale, it just sets any output below this voltage to this
-         *                                voltage. Defaults to 0.
-         * @param revNominalOutputVoltage The minimum output voltage for closed-loop modes in the reverse direction.
-         *                                This does not rescale, it just sets any output below this voltage to this
-         *                                voltage. Defaults to -fwdNominalOutputVoltage.
-         *
-         * @param feedForwardCalculator   The component for calculating feedforwards in closed-loop control modes.
-         *
-         * @param rampRate                The ramp rate, in volts/sec. Can be null, and if it is, no ramp rate is used.
-         * @param maxSpeed                The maximum speed of the motor in this gear, in FPS. Used for throttle
-         *                                scaling. Ignored if kVFwd is null. Calculated from the drive characterization
-         *                                terms if null.
-         * @param kP                      The proportional PID constant for the motor in this gear. Ignored if kVFwd is
-         *                                null. Defaults to 0.
-         * @param kI                      The integral PID constant for the motor in this gear. Ignored if kVFwd is
-         *                                null. Defaults to 0.
-         * @param kD                      The derivative PID constant for the motor in this gear. Ignored if kVFwd is
-         *                                null. Defaults to 0.
-         * @param posKP                   The proportional PID constant for position control on the motor in this gear. Ignored if kVFwd is
-         *                                null. Defaults to 0.
-         * @param posKI                   The integral PID constant for position control on the motor in this gear. Ignored if kVFwd is
-         *                                null. Defaults to 0.
-         * @param posKD                   The derivative PID constant for position control on the motor in this gear. Ignored if kVFwd is
-         *                                null. Defaults to 0.
-         */
-        @JsonCreator
-        public PerGearSettings(int gearNum,
-                               @Nullable Shiftable.gear gear,
-                               @Nullable Double fwdPeakOutputVoltage,
-                               @Nullable Double revPeakOutputVoltage,
-                               @Nullable Double fwdNominalOutputVoltage,
-                               @Nullable Double revNominalOutputVoltage,
-                               @Nullable MappedFeedForwardCalculator feedForwardCalculator,
-                               @Nullable Double rampRate,
-                               @Nullable Double maxSpeed,
-                               double kP,
-                               double kI,
-                               double kD,
-                               double posKP,
-                               double posKI,
-                               double posKD) {
-            this.gear = gear != null ? gear.getNumVal() : gearNum;
-            this.fwdPeakOutputVoltage = fwdPeakOutputVoltage != null ? fwdPeakOutputVoltage : 12;
-            this.revPeakOutputVoltage = revPeakOutputVoltage != null ? revPeakOutputVoltage :
-                    -this.fwdPeakOutputVoltage;
-            this.fwdNominalOutputVoltage = fwdNominalOutputVoltage != null ? fwdNominalOutputVoltage : 0;
-            this.revNominalOutputVoltage = revNominalOutputVoltage != null ? revNominalOutputVoltage :
-                    -this.fwdNominalOutputVoltage;
-            this.feedForwardCalculator = feedForwardCalculator != null ? feedForwardCalculator :
-                    new SimpleMotorFeedforward(0,0);
-            this.rampRate = rampRate;
-            this.kP = kP;
-            this.kI = kI;
-            this.kD = kD;
-            this.posKP = posKP;
-            this.posKI = posKI;
-            this.posKD = posKD;
-            this.maxSpeed = maxSpeed;
-        }
-
-        /**
-         * Empty constructor that uses all default options.
-         */
-        public PerGearSettings() {
-            this(0, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0 ,0);
-        }
-
-        /**
-         * @return The gear number this is the settings for.
-         */
-        public int getGear() {
-            return gear;
-        }
-
-        /**
-         * @return The peak output voltage for closed-loop modes in the forwards direction, in volts.
-         */
-        public double getFwdPeakOutputVoltage() {
-            return fwdPeakOutputVoltage;
-        }
-
-        /**
-         * @return The peak output voltage for closed-loop modes in the reverse direction, in volts.
-         */
-        public double getRevPeakOutputVoltage() {
-            return revPeakOutputVoltage;
-        }
-
-        /**
-         * @return The minimum output voltage for closed-loop modes in the forwards direction. This does not rescale, it
-         * just sets any output below this voltage to this voltage.
-         */
-        public double getFwdNominalOutputVoltage() {
-            return fwdNominalOutputVoltage;
-        }
-
-        /**
-         * @return The minimum output voltage for closed-loop modes in the reverse direction. This does not rescale, it
-         * just sets any output below this voltage to this voltage.
-         */
-        public double getRevNominalOutputVoltage() {
-            return revNominalOutputVoltage;
-        }
-
-        /**
-         * @return Feedforward calculator for this gear
-         */
-        public SimpleMotorFeedforward getFeedForwardCalculator(){
-            return feedForwardCalculator;
-        }
-
-        /**
-         * @return The ramp rate, in volts/sec.
-         */
-        @Nullable
-        public Double getRampRate() {
-            return rampRate;
-        }
-
-        /**
-         * @return The maximum speed of the motor in this gear, in FPS.
-         */
-        @Nullable
-        public Double getMaxSpeed() {
-            return maxSpeed;
-        }
-
-        /**
-         * @return The proportional PID constant for the motor in this gear.
-         */
-        public double getkP() {
-            return kP;
-        }
-
-        /**
-         * @return The integral PID constant for the motor in this gear.
-         */
-        public double getkI() {
-            return kI;
-        }
-
-        /**
-         * @return The derivative PID constant for the motor in this gear.
-         */
-        public double getkD() {
-            return kD;
-        }
-
-        public double getPosKP() {
-            return posKP;
-        }
-
-        public double getPosKI() {
-            return posKI;
-        }
-
-        public double getPosKD() {
-            return posKD;
-        }
     }
 }

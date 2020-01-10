@@ -1,9 +1,9 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.revrobotics.*;
-import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class FPSSparkMax implements FPSSmartMotor, Loggable {
+public class FPSSparkMax implements FPSSmartMotor {
 
     /**
      * REV brushless controller object
@@ -34,6 +34,12 @@ public class FPSSparkMax implements FPSSmartMotor, Loggable {
     private CANPIDController pidController;
 
     /**
+     * The PDP this Talon is connected to.
+     */
+    @Nullable
+    @Log.Exclude
+    protected final PDP PDP;
+    /**
      * The counts per rotation of the encoder being used, or null if there is no encoder.
      */
     @Nullable
@@ -47,6 +53,28 @@ public class FPSSparkMax implements FPSSmartMotor, Loggable {
      * The number of feet travelled per rotation of the motor this is attached to, or null if there is no encoder.
      */
     private final double feetPerRotation;
+
+    /**
+     * A list of all the gears this robot has and their settings.
+     */
+    @NotNull
+    private final Map<Integer, PerGearSettings> perGearSettings;
+    /**
+     * The talon's name, used for logging purposes.
+     */
+    @NotNull
+    private final String name;
+
+    /**
+     * Whether the forwards or reverse limit switches are normally open or closed, respectively.
+     */
+//    private final boolean fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen;
+
+    /**
+     * The settings currently being used by this Talon.
+     */
+    @NotNull
+    protected PerGearSettings currentGearSettings;
     /**
      * The most recently set setpoint.
      */
@@ -62,35 +90,76 @@ public class FPSSparkMax implements FPSSmartMotor, Loggable {
     private double nativeSetpoint;
 
     /**
-     * The settings currently being used by this controller.
-     */
-    @NotNull
-    protected PerGearSettings currentGearSettings;
-    /**
-     * A list of all the gears this robot has and their settings.
-     */
-    @NotNull
-    private final Map<Integer, PerGearSettings> perGearSettings;
-
-    /**
      * Create a new SPARK MAX Controller
-     *  @param deviceID The device ID.
-     * @param postEncoderGearing
-     * @param feetPerRotation
+     * @param port                       CAN port of this Talon.
+     * @param name                       The talon's name, used for logging purposes. Defaults to talon_portnum
+     * @param reverseOutput              Whether to reverse the output.
+     * @param enableBrakeMode            Whether to brake or coast when stopped.
+     * @param PDP                        The PDP this Talon is connected to.
+     * @param fwdLimitSwitchNormallyOpen Whether the forward limit switch is normally open or closed. If this is null,
+     *                                   the forward limit switch is disabled.
+     * @param revLimitSwitchNormallyOpen Whether the reverse limit switch is normally open or closed. If this is null,
+     *                                   the reverse limit switch is disabled.
+     * @param remoteLimitSwitchID        The CAN port of the Talon the limit switch to use for this talon is plugged
+     *                                   into, or null to not use a limit switch or use the limit switch plugged into
+     *                                   this talon.
+     * @param fwdSoftLimit               The forward software limit, in feet. If this is null, the forward software
+     *                                   limit is disabled. Ignored if there's no encoder.
+     * @param revSoftLimit               The reverse software limit, in feet. If this is null, the reverse software
+     *                                   limit is disabled. Ignored if there's no encoder.
+     * @param postEncoderGearing         The coefficient the output changes by after being measured by the encoder, e.g.
+     *                                   this would be 1/70 if there was a 70:1 gearing between the encoder and the
+     *                                   final output. Defaults to 1.
+     * @param feetPerRotation            The number of feet travelled per rotation of the motor this is attached to.
+     *                                   Defaults to 1.
+     * @param currentLimit               The max amps this device can draw. If this is null, no current limit is used.
+     * @param enableVoltageComp          Whether or not to use voltage compensation. Defaults to false.
+     * @param voltageCompSamples         The number of 1-millisecond samples to use for voltage compensation. Defaults
+     *                                   to 32.
+     * @param reverseSensor              Whether or not to reverse the reading from the encoder on this Talon. Ignored
+     *                                   if feedbackDevice is null. Defaults to false.
+     * @param perGearSettings            The settings for each gear this motor has. Can be null to use default values
+     *                                   and gear # of zero. Gear numbers can't be repeated.
+     * @param startingGear               The gear to start in. Can be null to use startingGearNum instead.
+     * @param startingGearNum            The number of the gear to start in. Ignored if startingGear isn't null.
+     *                                   Defaults to the lowest gear.
      */
-    public FPSSparkMax(int deviceID,
-                       double postEncoderGearing,
-                       double feetPerRotation,
+    public FPSSparkMax(@JsonProperty(required = true) int port,
+                       @Nullable String name,
+                       boolean reverseOutput,
+                       @JsonProperty(required = true) boolean enableBrakeMode,
+                       @Nullable PDP PDP,
+                       @Nullable Boolean fwdLimitSwitchNormallyOpen,
+                       @Nullable Boolean revLimitSwitchNormallyOpen,
+                       @Nullable Integer remoteLimitSwitchID,
+                       @Nullable Double fwdSoftLimit,
+                       @Nullable Double revSoftLimit,
+                       @Nullable Double postEncoderGearing,
+                       @Nullable Double feetPerRotation,
+                       @Nullable Integer currentLimit,
+                       boolean enableVoltageComp,
+                       @Nullable Integer voltageCompSamples,
+                       boolean reverseSensor,
                        @Nullable List<PerGearSettings> perGearSettings,
                        @Nullable Shiftable.gear startingGear,
                        @Nullable Integer startingGearNum) {
-        spark = new CANSparkMax(deviceID, CANSparkMaxLowLevel.MotorType.kBrushless);
+        spark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
         canEncoder = spark.getEncoder();
         pidController = spark.getPIDController();
 
-        this.encoderCPR = canEncoder.getCountsPerRevolution();
-        this.postEncoderGearing = postEncoderGearing;
-        this.feetPerRotation = feetPerRotation;
+        //Set the name to the given one or to talon_portnum
+        this.name = name != null ? name : ("talon_" + port);
+        //Set this to false because we only use reverseOutput for slaves.
+        spark.setInverted(reverseOutput);
+        //Set brake mode
+        spark.setIdleMode(enableBrakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
+        //Reset the position
+//        resetPosition();
+
+        this.PDP = PDP;
+
+
+        this.feetPerRotation = feetPerRotation != null ? feetPerRotation : 1;
 
         //Initialize
         this.perGearSettings = new HashMap<>();
@@ -122,6 +191,17 @@ public class FPSSparkMax implements FPSSmartMotor, Loggable {
             currentGear = startingGear.getNumVal();
         }
         currentGearSettings = this.perGearSettings.get(currentGear);
+
+        this.encoderCPR = canEncoder.getCountsPerRevolution();
+        canEncoder.setInverted(reverseSensor);
+
+        //postEncoderGearing defaults to 1
+        this.postEncoderGearing = postEncoderGearing != null ? postEncoderGearing : 1.;
+
+        //Set up gear-based settings.
+        setGear(currentGear);
+
+        spark.burnFlash();
     }
 
     @Override
@@ -131,7 +211,25 @@ public class FPSSparkMax implements FPSSmartMotor, Loggable {
 
     @Override
     public void setGear(int gear) {
-        //todo do this
+        //Set the current gear
+        currentGearSettings = perGearSettings.get(gear);
+
+        //note, no current limiting
+
+        if (currentGearSettings.rampRate != null) {
+            //Set ramp rate, converting from volts/sec to seconds until 12 volts.
+            spark.setClosedLoopRampRate(1 / (currentGearSettings.rampRate / 12.));
+            spark.setOpenLoopRampRate(1 / (currentGearSettings.rampRate / 12.));
+        } else {
+            spark.setClosedLoopRampRate(0);
+            spark.setOpenLoopRampRate(0);
+        }
+
+        pidController.setP(currentGearSettings.kP, 0);
+        pidController.setI(currentGearSettings.kI, 0);
+        pidController.setD(currentGearSettings.kD, 0);
+
+        spark.burnFlash();
     }
 
     /**
@@ -215,6 +313,19 @@ public class FPSSparkMax implements FPSSmartMotor, Loggable {
     @Override
     public double encoderPosition() {
         return 0;
+    }
+
+    /**
+     * Set a position setpoint for the Talon.
+     *
+     * @param feet An absolute position setpoint, in feet.
+     */
+    @Override
+    public void setPositionSetpoint(double feet) {
+        setpoint = feet;
+        nativeSetpoint = feetToEncoder(feet);
+        pidController.setFF(currentGearSettings.feedForwardCalculator.ks / 12.);
+        pidController.setReference(feet, ControlType.kPosition);
     }
 
     /**
