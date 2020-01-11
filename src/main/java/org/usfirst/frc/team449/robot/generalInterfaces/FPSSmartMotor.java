@@ -13,14 +13,11 @@ import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
 
     /**
-     * @return Raw position units for debugging purposes
+     * Set the motor output voltage to a given percent of available voltage.
+     *
+     * @param percentVoltage percent of total voltage from [-1, 1]
      */
-    double encoderPosition();
-
-    /**
-     * @return Raw velocity units for debugging purposes
-     */
-    double encoderVelocity();
+    void setPercentVoltage(double percentVoltage);
 
     /**
      * Convert from native units read by an encoder to feet moved. Note this DOES account for post-encoder gearing.
@@ -75,6 +72,21 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      * @return That velocity in native units, or null if no encoder CPR was given.
      */
     double RPSToNative(double RPS);
+
+    /**
+     * @return Raw position units for debugging purposes
+     */
+    double encoderPosition();
+
+    /**
+     * Set a position setpoint for the controller.
+     */
+    void setPositionSetpoint(double feet);
+
+    /**
+     * @return Raw velocity units for debugging purposes
+     */
+    double encoderVelocity();
 
     /**
      * Get the velocity of the controller in FPS.
