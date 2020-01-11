@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
-import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
 
 /**
@@ -22,7 +22,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      * The flywheel's Talon
      */
     @NotNull
-    private final FPSTalon shooterTalon;
+    private final FPSSmartMotor shooterMotor;
 
     /**
      * The feeder's motor
@@ -57,23 +57,23 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     /**
      * Default constructor
      *
-     * @param shooterTalon        The TalonSRX controlling the flywheel.
+     * @param shooterMotor        The motor controlling the flywheel.
      * @param shooterThrottle     The throttle, from [-1, 1], at which to run the multiSubsystem.
      * @param feederMotor         The motor controlling the feeder.
      * @param feederThrottle      The throttle, from [-1, 1], at which to run the feeder.
-     * @param spinUpTimeoutSecs      The amount of time, in seconds, it takes for the multiSubsystem to get up to speed.
+     * @param spinUpTimeoutSecs   The amount of time, in seconds, it takes for the multiSubsystem to get up to speed.
      *                            Defaults to {@literal 0}.
      * @param minShootingSpeedFPS The speed, in feet per second, at which the flywheel is ready to begin shooting.
      *                            Defaults to {@literal null}, meaning that there is no minimum speed requirement.
      */
     @JsonCreator
-    public LoggingFlywheel(@NotNull @JsonProperty(required = true) FPSTalon shooterTalon,
+    public LoggingFlywheel(@NotNull @JsonProperty(required = true) FPSSmartMotor shooterMotor,
                            @JsonProperty(required = true) double shooterThrottle,
                            @NotNull @JsonProperty(required = true) SimpleMotor feederMotor,
                            @JsonProperty(required = true) double feederThrottle,
                            double spinUpTimeoutSecs,
                            @Nullable Double minShootingSpeedFPS) {
-        this.shooterTalon = shooterTalon;
+        this.shooterMotor = shooterMotor;
         this.shooterThrottle = shooterThrottle;
         this.feederMotor = feederMotor;
         this.feederThrottle = feederThrottle;
@@ -106,11 +106,11 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
 //    @NotNull
 //    @Override
 //    public Object[] getData() {s
-//        return new Object[]{shooterTalon.getVelocity(),
-//                shooterTalon.getSetpoint(),
-//                shooterTalon.getError(),
-//                shooterTalon.getOutputVoltage(),
-//                shooterTalon.getOutputCurrent()};
+//        return new Object[]{shooterMotor.getVelocity(),
+//                shooterMotor.getSetpoint(),
+//                shooterMotor.getError(),
+//                shooterMotor.getOutputVoltage(),
+//                shooterMotor.getOutputCurrent()};
 //    }
 //
 //    /**
@@ -129,8 +129,8 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void turnFlywheelOn() {
-        shooterTalon.enable();
-        shooterTalon.setVelocity(shooterThrottle);
+        shooterMotor.enable();
+        shooterMotor.setVelocity(shooterThrottle);
     }
 
     /**
@@ -138,7 +138,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void turnFlywheelOff() {
-        shooterTalon.disable();
+        shooterMotor.disable();
     }
 
     /**
@@ -192,6 +192,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     @Override
     @Log
     public boolean isAtShootingSpeed() {
-        return this.minShootingSpeedFPS == null || this.shooterTalon.getVelocity() > this.minShootingSpeedFPS;
+        Double actualVelocity = this.shooterMotor.getVelocity();
+        return this.minShootingSpeedFPS == null || Double.isNaN(actualVelocity) || actualVelocity > this.minShootingSpeedFPS;
     }
 }
