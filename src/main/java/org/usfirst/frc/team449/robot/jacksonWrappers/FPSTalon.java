@@ -533,6 +533,7 @@ public class FPSTalon implements FPSSmartMotor {
      * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
      */
     @Log
+    @NotNull
     @Override
     public Double getVelocity() {
         return encoderToFPS(canTalon.getSelectedSensorVelocity(0));
@@ -714,7 +715,7 @@ public class FPSTalon implements FPSSmartMotor {
     }
 
     @Log
-    public boolean isInhibitedReverse(){
+    public boolean isInhibitedReverse() {
         canTalon.getFaults(faults);
         return faults.ReverseLimitSwitch;
     }

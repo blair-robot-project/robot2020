@@ -132,7 +132,7 @@ public class FlywheelSimple extends SubsystemBase implements SubsystemFlywheel, 
      */
     @Override
     @Log
-    public double getSpinUpTime() {
+    public double getSpinUpTimeoutSecs() {
         return spinUpTime;
     }
 }

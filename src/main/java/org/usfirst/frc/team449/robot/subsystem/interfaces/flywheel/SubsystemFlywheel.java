@@ -1,6 +1,7 @@
 package org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -10,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public interface SubsystemFlywheel {
 
     /**
-     * Turn the flywheel on to a map-specified speed.
+     * Turn the flywheel on to the speed passed to the constructor.
      */
     void turnFlywheelOn();
 
@@ -43,7 +44,12 @@ public interface SubsystemFlywheel {
     /**
      * @return Time from giving the flywheel voltage to being ready to fire, in seconds.
      */
-    double getSpinUpTime();
+    double getSpinUpTimeoutSecs();
+
+    /**
+     * @return Whether the flywheel has attained a speed specified to be sufficient for shooting.
+     */
+    default boolean isAtShootingSpeed() { return true; }
 
     /**
      * An enum for the possible states of the flywheel.
