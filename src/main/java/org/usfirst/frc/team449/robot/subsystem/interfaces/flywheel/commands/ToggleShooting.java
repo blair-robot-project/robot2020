@@ -31,7 +31,7 @@ public final class ToggleShooting<T extends Subsystem & SubsystemFlywheel> exten
                     break;
                 case SHOOTING:
                 case SPINNING_UP:
-                    commandToSchedule = new TurnAllOffWithRequires<T>(subsystem);
+                    commandToSchedule = new TurnAllOffWithRequires<>(subsystem);
                     break;
                 default:
                     throw new RuntimeException("Switch statement fall-through on enum type " + SubsystemFlywheel.FlywheelState.class.getSimpleName());

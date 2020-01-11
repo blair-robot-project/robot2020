@@ -15,15 +15,18 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlyw
  * Consider decorating with {@link Command#withInterrupt(java.util.function.BooleanSupplier)} with a test for flywheel state.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class SpinUpThenShoot extends SequentialCommandGroup {
+public class SpinUpThenShoot<T extends Subsystem & SubsystemFlywheel> extends SequentialCommandGroup {
 
     /**
      * Default constructor.
      *
+     * Requires the subsystem.
+     *
      * @param subsystem The subsystem to execute this command on.
      */
     @JsonCreator
-    public SpinUpThenShoot(@NotNull @JsonProperty(required = true) SubsystemFlywheel subsystem) {
+    public SpinUpThenShoot(@NotNull @JsonProperty(required = true) T subsystem) {
+        this.addRequirements(subsystem);
         addCommands(
                 new SpinUpFlywheel(subsystem),
                 new ParallelRaceGroup(
