@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
@@ -42,7 +43,10 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     /**
      * Time from giving the multiSubsystem voltage to being ready to fire, in seconds.
      */
-    private final double spinUpTime;
+    private final double spinUpTimeoutSecs;
+
+    @Nullable
+    private final Double minShootingSpeedFPS;
 
     /**
      * Whether the flywheel is currently commanded to spin
@@ -53,25 +57,30 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     /**
      * Default constructor
      *
-     * @param shooterTalon    The TalonSRX controlling the flywheel.
-     * @param shooterThrottle The throttle, from [-1, 1], at which to run the multiSubsystem.
-     * @param feederMotor     The motor controlling the feeder.
-     * @param feederThrottle  The throttle, from [-1, 1], at which to run the feeder.
-     * @param spinUpTimeSecs  The amount of time, in seconds, it takes for the multiSubsystem to get up to speed.
-     *                        Defaults to 0.
+     * @param shooterTalon        The TalonSRX controlling the flywheel.
+     * @param shooterThrottle     The throttle, from [-1, 1], at which to run the multiSubsystem.
+     * @param feederMotor         The motor controlling the feeder.
+     * @param feederThrottle      The throttle, from [-1, 1], at which to run the feeder.
+     * @param spinUpTimeoutSecs      The amount of time, in seconds, it takes for the multiSubsystem to get up to speed.
+     *                            Defaults to {@literal 0}.
+     * @param minShootingSpeedFPS The speed, in feet per second, at which the flywheel is ready to begin shooting.
+     *                            Defaults to {@literal null}, meaning that there is no minimum speed requirement.
      */
     @JsonCreator
     public LoggingFlywheel(@NotNull @JsonProperty(required = true) FPSTalon shooterTalon,
                            @JsonProperty(required = true) double shooterThrottle,
                            @NotNull @JsonProperty(required = true) SimpleMotor feederMotor,
                            @JsonProperty(required = true) double feederThrottle,
-                           double spinUpTimeSecs) {
+                           double spinUpTimeoutSecs,
+                           @Nullable Double minShootingSpeedFPS) {
         this.shooterTalon = shooterTalon;
         this.shooterThrottle = shooterThrottle;
         this.feederMotor = feederMotor;
         this.feederThrottle = feederThrottle;
-        state = FlywheelState.OFF;
-        spinUpTime = spinUpTimeSecs;
+        this.spinUpTimeoutSecs = spinUpTimeoutSecs;
+        this.minShootingSpeedFPS = minShootingSpeedFPS;
+
+        this.state = FlywheelState.OFF;
     }
 
 //    /**
@@ -96,7 +105,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
 //     */
 //    @NotNull
 //    @Override
-//    public Object[] getData() {
+//    public Object[] getData() {s
 //        return new Object[]{shooterTalon.getVelocity(),
 //                shooterTalon.getSetpoint(),
 //                shooterTalon.getError(),
@@ -158,11 +167,6 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
         return state;
     }
 
-    @Log
-    public String getFlywheelStateLogged(){
-        return state.name();
-    }
-
     /**
      * @param state The state to switch the multiSubsystem to.
      */
@@ -171,12 +175,23 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
         this.state = state;
     }
 
+    @Log
+    public String getFlywheelStateLogged() {
+        return state.name();
+    }
+
     /**
-     * @return Time from giving the multiSubsystem voltage to being ready to fire, in seconds.
+     * @return Expected time from giving the multiSubsystem voltage to being ready to fire, in seconds.
      */
     @Override
     @Log
-    public double getSpinUpTime() {
-        return spinUpTime;
+    public double getSpinUpTimeoutSecs() {
+        return spinUpTimeoutSecs;
+    }
+
+    @Override
+    @Log
+    public boolean isAtShootingSpeed() {
+        return this.minShootingSpeedFPS == null || this.shooterTalon.getVelocity() > this.minShootingSpeedFPS;
     }
 }
