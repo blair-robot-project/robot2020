@@ -10,13 +10,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
 
 /**
  * A flywheel multiSubsystem with a single flywheel and a single-motor feeder system.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel, io.github.oblarg.oblog.Loggable {
+public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel, SubsystemConditional, io.github.oblarg.oblog.Loggable {
 
     /**
      * The flywheel's Talon
@@ -53,6 +54,11 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @NotNull
     private SubsystemFlywheel.FlywheelState state;
+
+    /**
+     * Whether the condition was met last time caching was done.
+     */
+    private boolean conditionMetCached;
 
     /**
      * Default constructor
@@ -192,7 +198,38 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     @Override
     @Log
     public boolean isAtShootingSpeed() {
+        if (this.minShootingSpeedFPS == null) return false;
         Double actualVelocity = this.shooterMotor.getVelocity();
-        return this.minShootingSpeedFPS == null || Double.isNaN(actualVelocity) || actualVelocity > this.minShootingSpeedFPS;
+        return !Double.isNaN(actualVelocity) && actualVelocity > this.minShootingSpeedFPS;
+    }
+
+    @Log
+    public double actualSpeed() {
+        return this.shooterMotor.getVelocity();
+    }
+
+    /**
+     * @return true if the condition is met, false otherwise
+     */
+    @Override
+    public boolean isConditionTrue() {
+        return this.isAtShootingSpeed();
+    }
+
+    /**
+     * @return true if the condition was met when cached, false otherwise
+     */
+    @Override
+    @Log
+    public boolean isConditionTrueCached() {
+        return conditionMetCached;
+    }
+
+    /**
+     * Updates all cached values with current ones.
+     */
+    @Override
+    public void update() {
+        conditionMetCached = isConditionTrue();
     }
 }
