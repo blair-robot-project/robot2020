@@ -537,6 +537,7 @@ public class FPSTalon implements FPSSmartMotor {
      * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
      */
     @Log
+    @NotNull
     @Override
     public Double getVelocity() {
         return encoderToFPS(canTalon.getSelectedSensorVelocity(0));
@@ -671,7 +672,7 @@ public class FPSTalon implements FPSSmartMotor {
     /**
      * @return Feedforward calculator for this gear
      */
-    public SimpleMotorFeedforward getCurrentGearFeedForward(){
+    public SimpleMotorFeedforward getCurrentGearFeedForward() {
         return currentGearSettings.getFeedForwardCalculator();
     }
 
@@ -718,7 +719,7 @@ public class FPSTalon implements FPSSmartMotor {
     }
 
     @Log
-    public boolean isInhibitedReverse(){
+    public boolean isInhibitedReverse() {
         canTalon.getFaults(faults);
         return faults.ReverseLimitSwitch;
     }
@@ -858,9 +859,7 @@ public class FPSTalon implements FPSSmartMotor {
          * @param revNominalOutputVoltage The minimum output voltage for closed-loop modes in the reverse direction.
          *                                This does not rescale, it just sets any output below this voltage to this
          *                                voltage. Defaults to -fwdNominalOutputVoltage.
-         *
          * @param feedForwardCalculator   The component for calculating feedforwards in closed-loop control modes.
-         *
          * @param rampRate                The ramp rate, in volts/sec. Can be null, and if it is, no ramp rate is used.
          * @param maxSpeed                The maximum speed of the motor in this gear, in FPS. Used for throttle
          *                                scaling. Ignored if kVFwd is null. Calculated from the drive characterization
@@ -902,7 +901,7 @@ public class FPSTalon implements FPSSmartMotor {
             this.revNominalOutputVoltage = revNominalOutputVoltage != null ? revNominalOutputVoltage :
                     -this.fwdNominalOutputVoltage;
             this.feedForwardCalculator = feedForwardCalculator != null ? feedForwardCalculator :
-                    new SimpleMotorFeedforward(0,0);
+                    new SimpleMotorFeedforward(0, 0);
             this.rampRate = rampRate;
             this.kP = kP;
             this.kI = kI;
@@ -917,7 +916,7 @@ public class FPSTalon implements FPSSmartMotor {
          * Empty constructor that uses all default options.
          */
         public PerGearSettings() {
-            this(0, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0 ,0);
+            this(0, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0, 0);
         }
 
         /**
@@ -960,7 +959,7 @@ public class FPSTalon implements FPSSmartMotor {
         /**
          * @return Feedforward calculator for this gear
          */
-        public SimpleMotorFeedforward getFeedForwardCalculator(){
+        public SimpleMotorFeedforward getFeedForwardCalculator() {
             return feedForwardCalculator;
         }
 
