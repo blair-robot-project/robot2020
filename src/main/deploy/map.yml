@@ -19,12 +19,12 @@ subsystems:
       shooterMotor:
         org.usfirst.frc.team449.robot.jacksonWrappers.FPSSparkMax:
           '@id': shooterTalon
-          deviceID: 1 #TODO
+          port: 1 #TODO
           ###name: shooterTalon
           ###reverseOutput: false
-          ###enableBrakeMode: false
+          enableBrakeMode: false
 #          voltagePerCurrentLinReg: 0 #TODO
-          ###PDP: PDP
+          PDP: PDP
 #          fwdLimitSwitchNormallyOpen: false #TODO
 #          revLimitSwitchNormallyOpen: false #TODO
 #          remoteLimitSwitchID: 0 #TODO
@@ -32,12 +32,12 @@ subsystems:
           #revSoftLimit: 0 # TODO
 #          postEncoderGearing: 0.0 #TODO
           feetPerRotation: 0 #TODO
-          ###currentLimit: 5 #TODO
-#          enableVoltageComp: true #TODO
+          currentLimit: 5 #TODO
+          enableVoltageComp: true #TODO
 #          voltageCompSamples: 100 #TODO
 #          feedbackDevice: QuadEncoder #TODO
 #          encoderCPR: 256 #TODO
-          ###reverseSensor: false #TODO
+          reverseSensor: false #TODO
 #          perGearSettings:
 #            - gearNum: 0
 #              kP: 0.003
@@ -53,7 +53,7 @@ subsystems:
 #          ###  - port: 3 #TODO
 #          ###    invertType: OpposeMaster
       shooterThrottle: 0.2 #TODO
-      feederMotor:
+      kickerMotor:
         org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon: #TODO TODO
           '@id': kickerTalon
           port: 2 #TODO
@@ -107,6 +107,30 @@ commands:
         subsystem:
           org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
             shooterFlywheel
+    action:
+      WHEN_PRESSED
+  - button:
+      org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+        '@id': feederButton
+        joystick:
+          org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+            mechanismsJoystick
+        buttonNumber: 3 #B
+    command:
+      org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.commands.ToggleMotor:
+        '@id': runFeeder
+        subsystem:
+          org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.binaryMotorSimple:
+            '@id': feederMotorSubsystem
+            motor:
+              org.usfirst.frc.team449.robot.jacksonWrappers.FPSSparkMax:
+                '@id': feederMotor
+                port: 6 #change
+                enableBrakeMode: true
+                currentLimit: 30
+                enableVoltageComp: true
+                reverseSensor: true
+            #velocity: 1
     action:
       WHEN_PRESSED
   # DEFAULT COMMANDS
