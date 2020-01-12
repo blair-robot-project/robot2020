@@ -210,7 +210,6 @@ public class FPSSparkMax implements FPSSmartMotor {
         currentGearSettings = this.perGearSettings.get(currentGear);
 
         this.encoderCPR = canEncoder.getCountsPerRevolution();
-//        canEncoder.setInverted(reverseSensor);
 
         //postEncoderGearing defaults to 1
         this.postEncoderGearing = postEncoderGearing != null ? postEncoderGearing : 1.;

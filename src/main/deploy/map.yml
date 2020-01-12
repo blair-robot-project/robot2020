@@ -50,7 +50,7 @@ subsystems:
 #          ###  - port: 3 #TODO
 #          ###    invertType: OpposeMaster
       shooterThrottle: 0.2 #TODO
-      feederMotor:
+      kickerMotor:
         org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon: #TODO TODO
           '@id': kickerTalon
           port: 2 #TODO
