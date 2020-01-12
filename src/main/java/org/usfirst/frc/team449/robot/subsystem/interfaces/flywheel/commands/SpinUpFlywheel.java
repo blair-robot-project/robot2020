@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
 
@@ -24,7 +25,7 @@ public class SpinUpFlywheel extends InstantCommand {
     @NotNull
     @Log.Exclude
     private final SubsystemFlywheel flywheel;
-    @NotNull
+    @Nullable
     @Log.Exclude
     private final SubsystemIntake feeder;
 
@@ -35,7 +36,7 @@ public class SpinUpFlywheel extends InstantCommand {
      */
     @JsonCreator
     public SpinUpFlywheel(@NotNull @JsonProperty(required = true) SubsystemFlywheel flywheel,
-                          @NotNull @JsonProperty(required = true) SubsystemIntake feeder) {
+                          @Nullable @JsonProperty(required = true) SubsystemIntake feeder) {
         this.flywheel = flywheel;
         this.feeder = feeder;
     }
@@ -54,7 +55,7 @@ public class SpinUpFlywheel extends InstantCommand {
      */
     @Override
     public void execute() {
-        feeder.setMode(SubsystemIntake.IntakeMode.IN_FAST); // Turn feeder on.
+        if (feeder != null) feeder.setMode(SubsystemIntake.IntakeMode.IN_FAST); // Turn feeder on.
         flywheel.turnFeederOff(); // Turn kicker off.
         flywheel.setFlywheelState(SubsystemFlywheel.FlywheelState.SPINNING_UP); // Turn flywheel on.
     }
@@ -64,7 +65,7 @@ public class SpinUpFlywheel extends InstantCommand {
      */
     @Override
     public void end(boolean interrupted) {
-        if(interrupted){
+        if (interrupted) {
             Shuffleboard.addEventMarker("SpinUpFlywheel Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
         }
         Shuffleboard.addEventMarker("SpinUpFlywheel end.", this.getClass().getSimpleName(), EventImportance.kNormal);

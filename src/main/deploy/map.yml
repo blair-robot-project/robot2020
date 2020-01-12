@@ -170,6 +170,8 @@ subsystems:
 # COMMANDS
 commands:
   #BUTTONS
+
+  #        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheel:
   buttons:
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -180,14 +182,41 @@ commands:
               port: 2 #TODO
           buttonNumber: 1 #A
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpThenShoot:
-          '@id': shootCommand
-          flywheel:
-            org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-              shooterFlywheel
-          feeder:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-              feeder
+        org.usfirst.frc.team449.robot.commands.general.MappedSequentialCommandGroup:
+          commands:
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheel:
+                '@id': spinUpFlywheelCommand
+                flywheel:
+                  org.usfirst.frc.team449.robot.subsystem.complex.sho`oter.LoggingFlywheel:
+                    shooterFlywheel
+                feeder:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+                    feeder
+            - org.usfirst.frc.team449.robot.commands.general.MappedPerpetualCommand:
+                requires:
+                  org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
+                    shooterFlywheel
+                command:
+                  org.usfirst.frc.team449.robot.commands.general.MappedSequentialCommandGroup:
+                    commands:
+                      - org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand:
+                          timeout: 1
+                      - org.usfirst.frc.team449.robot.commands.general.ConditionalCommandFunctional:
+                          onTrue:
+                            org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOn:
+                              '@id': startShootingCommand
+                              subsystem:
+                                org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
+                                  shooterFlywheel
+                          onFalse:
+                            org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheel:
+                              spinUpFlywheelCommand
+                          booleanSupplier:
+                            org.usfirst.frc.team449.robot.commands.general.InstanceMethodBooleanSupplier: #TODO TODO
+                              source:
+                                org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
+                                  shooterFlywheel
+                              methodName: isConditionTrueCached
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -197,7 +226,7 @@ commands:
               mechanismsJoystick
           buttonNumber: 2 #B
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOff:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOffRequires:
           '@id': shooterStopCommand
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
@@ -235,28 +264,6 @@ commands:
       action: WHEN_PRESSED
   # DEFAULT COMMANDS
   defaultCommands:
-      # DEFAULT SHOOTING BEGIN (KICKER ACTIVATION) COMMAND
-#      - subsystem:
-#          org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-#            shooterFlywheel
-#        command:
-#          org.usfirst.frc.team449.robot.commands.general.ConditionalCommandFunctional:
-#            onTrue:
-#              org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOn:
-#                '@id': startShootingCommand
-#                subsystem:
-#                  org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-#                    shooterFlywheel
-#            onFalse:
-#              org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOn:
-#                shootCommand
-#            booleanSupplier:
-#              org.usfirst.frc.team449.robot.commands.general.InstanceMethodBooleanSupplier: #TODO TODO
-#                source:
-#                  org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-#                    shooterFlywheel
-#                methodName: isConditionTrueCached
-
       # DEFAULT DRIVE COMMAND
 #      - subsystem:
 #          org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
