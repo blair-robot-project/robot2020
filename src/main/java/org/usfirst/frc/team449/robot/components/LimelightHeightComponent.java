@@ -8,35 +8,35 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.DoubleSupplier;
 
 /**
- * Finds the distance from the robot to a vision target that is at an angle
+ * Finds the height of a vision target above the limelight. Not entirely certain if it works...?
  */
-public class LimelightAngularToDistanceComponent implements DoubleSupplier {
+public class LimelightHeightComponent implements DoubleSupplier {
     /**
-     * The supplier that determines the angle at which the Limelight is positioned
+     * The supplier that determines the angle of the target above or below the Limelight.
+     * Should be a LimelightComponent with ReturnValue y.
      */
     @NotNull
     DoubleSupplier angularInput;
     /**
-     * The supplier determining the distance to the vision target
+     * The supplier determining the distance to the vision target. Should be a LimelightDistanceComponent.
      */
     @NotNull
     DoubleSupplier distanceToTarget;
 
     /**
      * Default constructor
-     * @param angularInput The DoubleSupplier determining the angle theta of the vision target
-     * @param distanceToTarget The LimeLightComponent finding the distance to the vision target
+     * @param angularInput The DoubleSupplier determining the angle theta of the vision target.
+     * @param distanceToTarget The LimeLightComponent finding the distance to the vision target.
      */
     @JsonCreator
-    public LimelightAngularToDistanceComponent(@JsonProperty(required = true) DoubleSupplier angularInput,
-                                               @JsonProperty(required = true) DoubleSupplier distanceToTarget){
+    public LimelightHeightComponent(@JsonProperty(required = true) DoubleSupplier angularInput,
+                                    @JsonProperty(required = true) DoubleSupplier distanceToTarget){
         this.angularInput = angularInput;
         this.distanceToTarget = distanceToTarget;
     }
 
     /**
-     * Determines the distance from the robot to the vision target using the angle from angularInput
-     * @return
+     * @return the height of the vision target above the limelight
      */
     @Override
     public double getAsDouble() {
