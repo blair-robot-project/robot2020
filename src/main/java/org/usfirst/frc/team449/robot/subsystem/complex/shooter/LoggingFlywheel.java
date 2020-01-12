@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
+import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
 
@@ -59,6 +60,8 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      * Whether the condition was met last time caching was done.
      */
     private boolean conditionMetCached;
+
+    private double lastSpinUpTimeMS;
 
     /**
      * Default constructor
@@ -138,6 +141,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     @Override
     public void setFlywheelState(@NotNull SubsystemFlywheel.FlywheelState state) {
         this.state = state;
+        if (state == FlywheelState.SPINNING_UP) this.lastSpinUpTimeMS = Clock.currentTimeMillis();
     }
 
     @Log
@@ -157,14 +161,14 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     @Override
     @Log
     public boolean isAtShootingSpeed() {
-        if (this.minShootingSpeedFPS == null) return false;
-        Double actualVelocity = this.shooterMotor.getVelocity();
-        return !Double.isNaN(actualVelocity) && actualVelocity > this.minShootingSpeedFPS;
-    }
+        double timeSinceLastSpinUp = Clock.currentTimeMillis() - this.lastSpinUpTimeMS;
+        boolean timeoutExceeded = timeSinceLastSpinUp * 1000 > this.spinUpTimeoutSecs;
+        if (timeoutExceeded) return true;
 
-    @Log
-    public double actualSpeed() {
-        return this.shooterMotor.getVelocity();
+        if (this.minShootingSpeedFPS == null ) return true;
+
+        Double actualVelocity = this.shooterMotor.getVelocity();
+        return (!Double.isNaN(actualVelocity) && actualVelocity > this.minShootingSpeedFPS)
     }
 
     /**
