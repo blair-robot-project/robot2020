@@ -15,6 +15,8 @@ import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.components.LimelightComponent;
 
+import java.util.function.DoubleSupplier;
+
 /**
  * Turn a certain number of degrees from the current heading, based on input from the limelight
  */
@@ -38,6 +40,7 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
      * @param kI                Integral gain. Defaults to zero.
      * @param kD                Derivative gain. Defaults to zero.
      * @param angleSupplier     The limelight component supplying the angle (in 2D) from the limelight to the target
+     *                          A LimelightComponent, ReturnValue x, unless there is a reason for it to not be
      * @param drive             The drive subsystem to execute this command on.
      * @param timeout           How long this command is allowed to run for, in seconds. Needed because sometimes
      *                          floating-point errors prevent termination.
@@ -52,7 +55,7 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
                                    int kP,
                                    int kI,
                                    int kD,
-                                   @NotNull @JsonProperty(required = true) LimelightComponent angleSupplier,
+                                   @NotNull @JsonProperty(required = true) DoubleSupplier angleSupplier,
                                    @NotNull @JsonProperty(required = true) T drive,
                                    @JsonProperty(required = true) double timeout) {
         super(absoluteTolerance, onTargetBuffer, minimumOutput, maximumOutput, loopTimeMillis, deadband, inverted, kP

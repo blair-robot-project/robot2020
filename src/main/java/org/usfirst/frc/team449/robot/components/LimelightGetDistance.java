@@ -7,11 +7,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import java.util.function.DoubleSupplier;
 
 /**
- * Determines the distance from the Limelight to a vision target. Currently using a ton of hardcoded values.
- * Assumes that the Limelight is at an angle with respect to the vision targets
- * If the Limelight isn't tilted, use LimeLightDistanceComponentSimple
+ * Determines the distance from the Limelight to a vision target.
  */
-public class LimelightDistanceComponentTilted implements DoubleSupplier {
+public class LimelightGetDistance implements DoubleSupplier {
 
     /**
      * The height of the Limelight
@@ -29,8 +27,8 @@ public class LimelightDistanceComponentTilted implements DoubleSupplier {
      * @param limelightAngleDown The angle of the Limelight, in degrees
      */
     @JsonCreator
-    public LimelightDistanceComponentTilted(@JsonProperty(required = true) double limelightHeight,
-                                            @JsonProperty(required = true) double limelightAngleDown) {
+    public LimelightGetDistance(@JsonProperty(required = true) double limelightHeight,
+                                @JsonProperty(required = true) double limelightAngleDown) {
         this.limelightHeight = limelightHeight;
         this.limelightAngleDown = limelightAngleDown;
     }
