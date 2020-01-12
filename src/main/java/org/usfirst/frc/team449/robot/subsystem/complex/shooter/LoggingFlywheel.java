@@ -69,8 +69,8 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      * @param feederThrottle      The throttle, from [-1, 1], at which to run the feeder.
      * @param spinUpTimeoutSecs   The amount of time, in seconds, it takes for the multiSubsystem to get up to speed.
      *                            Defaults to {@literal 0}.
-     * @param minShootingSpeedFPS The speed, in feet per second, at which the flywheel is ready to begin shooting.
-     *                            Defaults to {@literal null}, meaning that there is no minimum speed requirement.
+     * @param minShootingSpeedFPS The speed, in feet per second, at which the flywheel nominally shoots.
+     *                            Defaults to {@literal null}, meaning that there is no speed requirement.
      */
     @JsonCreator
     public LoggingFlywheel(@NotNull @JsonProperty(required = true) FPSSmartMotor shooterMotor,
@@ -88,47 +88,6 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
 
         this.state = FlywheelState.OFF;
     }
-
-//    /**
-//     * Get the headers for the data this subsystem logs every loop.
-//     *
-//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-//     */
-//    @NotNull
-//    @Override
-//    public String[] getHeader() {
-//        return new String[]{"speed",
-//                "setpoint",
-//                "error",
-//                "voltage",
-//                "current"};
-//    }
-//
-//    /**
-//     * Get the data this subsystem logs every loop.
-//     *
-//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-//     */
-//    @NotNull
-//    @Override
-//    public Object[] getData() {s
-//        return new Object[]{shooterMotor.getVelocity(),
-//                shooterMotor.getSetpoint(),
-//                shooterMotor.getError(),
-//                shooterMotor.getOutputVoltage(),
-//                shooterMotor.getOutputCurrent()};
-//    }
-//
-//    /**
-//     * Get the name of this object.
-//     *
-//     * @return A string that will identify this object in the log file.
-//     */
-//    @NotNull
-//    @Override
-//    public String getLogName() {
-//        return "loggingShooter";
-//    }
 
     /**
      * Turn the multiSubsystem on to a map-specified speed.
