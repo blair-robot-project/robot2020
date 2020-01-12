@@ -1,5 +1,6 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -126,6 +127,7 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @param statusFrameRatesMillis     The update rates, in millis, for each of the Talon status frames.
      * @param controlFrameRateMillis    The update rate, in milliseconds, for each of the control frame.
      */
+    @JsonCreator
     public FPSSparkMax(@JsonProperty(required = true) int port,
                        @Nullable String name,
                        boolean reverseOutput,
@@ -208,7 +210,7 @@ public class FPSSparkMax implements FPSSmartMotor {
         currentGearSettings = this.perGearSettings.get(currentGear);
 
         this.encoderCPR = canEncoder.getCountsPerRevolution();
-        canEncoder.setInverted(reverseSensor);
+//        canEncoder.setInverted(reverseSensor);
 
         //postEncoderGearing defaults to 1
         this.postEncoderGearing = postEncoderGearing != null ? postEncoderGearing : 1.;

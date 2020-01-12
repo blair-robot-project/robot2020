@@ -168,7 +168,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
         if (this.minShootingSpeedFPS == null ) return true;
 
         Double actualVelocity = this.shooterMotor.getVelocity();
-        return (!Double.isNaN(actualVelocity) && actualVelocity > this.minShootingSpeedFPS)
+        return (!Double.isNaN(actualVelocity) && actualVelocity > this.minShootingSpeedFPS);
     }
 
     /**
