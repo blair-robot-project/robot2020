@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.*;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
 
 /**
  * Spin up the flywheel until it's at the target speed, then start feeding in balls.
@@ -22,17 +23,18 @@ public class SpinUpThenShoot<T extends Subsystem & SubsystemFlywheel> extends Se
      *
      * Requires the subsystem.
      *
-     * @param subsystem The subsystem to execute this command on.
+     * @param flywheel The subsystem to execute this command on.
      */
     @JsonCreator
-    public SpinUpThenShoot(@NotNull @JsonProperty(required = true) T subsystem) {
-        this.addRequirements(subsystem);
+    public SpinUpThenShoot(@NotNull @JsonProperty(required = true) T flywheel,
+                           @NotNull @JsonProperty(required = true) SubsystemIntake feeder) {
+        this.addRequirements(flywheel);
         addCommands(
-                new SpinUpFlywheel(subsystem),
+                new SpinUpFlywheel(flywheel, feeder),
                 new ParallelRaceGroup(
-                        new WaitUntilCommand(subsystem::isAtShootingSpeed),
-                        new WaitCommand(subsystem.getSpinUpTimeoutSecs())),
-                new TurnAllOn(subsystem)
+                        new WaitUntilCommand(flywheel::isAtShootingSpeed),
+                        new WaitCommand(flywheel.getSpinUpTimeoutSecs())),
+                new TurnAllOn(flywheel)
         );
     }
 }
