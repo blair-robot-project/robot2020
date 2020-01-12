@@ -10,9 +10,10 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
 
 /**
- * Turn on the flywheel but not the feeder in order to give the flywheel time to get up to speed.
+ * Turn on the flywheel and feeder (but not the kicker) in order to give the flywheel time to get up to speed.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SpinUpFlywheel extends InstantCommand {
@@ -22,16 +23,21 @@ public class SpinUpFlywheel extends InstantCommand {
      */
     @NotNull
     @Log.Exclude
-    private final SubsystemFlywheel subsystem;
+    private final SubsystemFlywheel flywheel;
+    @NotNull
+    @Log.Exclude
+    private final SubsystemIntake feeder;
 
     /**
      * Default constructor
      *
-     * @param subsystem The subsystem to execute this command on.
+     * @param flywheel The subsystem to execute this command on.
      */
     @JsonCreator
-    public SpinUpFlywheel(@NotNull @JsonProperty(required = true) SubsystemFlywheel subsystem) {
-        this.subsystem = subsystem;
+    public SpinUpFlywheel(@NotNull @JsonProperty(required = true) SubsystemFlywheel flywheel,
+                          @NotNull @JsonProperty(required = true) SubsystemIntake feeder) {
+        this.flywheel = flywheel;
+        this.feeder = feeder;
     }
 
     /**
@@ -48,9 +54,9 @@ public class SpinUpFlywheel extends InstantCommand {
      */
     @Override
     public void execute() {
-        subsystem.turnFeederOff();
-        subsystem.turnFlywheelOn();
-        subsystem.setFlywheelState(SubsystemFlywheel.FlywheelState.SPINNING_UP);
+        feeder.setMode(SubsystemIntake.IntakeMode.IN_FAST); // Turn feeder on.
+        flywheel.turnFeederOff(); // Turn kicker off.
+        flywheel.setFlywheelState(SubsystemFlywheel.FlywheelState.SPINNING_UP); // Turn flywheel on.
     }
 
     /**
