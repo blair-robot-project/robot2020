@@ -346,6 +346,15 @@ public class FPSTalon implements FPSSmartMotor {
     }
 
     /**
+     * Disables the motor, if applicable.
+     */
+    @Override
+    public void disable() {
+        canTalon.set(ControlMode.Disabled, 0);
+    }
+
+
+    /**
      * Set the motor output voltage to a given percent of available voltage.
      *
      * @param percentVoltage percent of total voltage from [-1, 1]
@@ -532,7 +541,6 @@ public class FPSTalon implements FPSSmartMotor {
      *
      * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
      */
-    @Log
     @NotNull
     @Override
     public Double getVelocity() {
@@ -573,6 +581,7 @@ public class FPSTalon implements FPSSmartMotor {
      * @return The closed-loop error in FPS, or null if no encoder CPR was given.
      */
     @Log
+    @Override
     public double getError() {
         if (canTalon.getControlMode().equals(ControlMode.Velocity)) {
             return encoderToFPS(canTalon.getClosedLoopError(0));
@@ -588,6 +597,7 @@ public class FPSTalon implements FPSSmartMotor {
      */
     @Nullable
     @Log
+    @Override
     public Double getSetpoint() {
         return setpoint;
     }
@@ -598,6 +608,7 @@ public class FPSTalon implements FPSSmartMotor {
      * @return Voltage in volts.
      */
     @Log
+    @Override
     public double getOutputVoltage() {
         return canTalon.getMotorOutputVoltage();
     }
@@ -608,6 +619,7 @@ public class FPSTalon implements FPSSmartMotor {
      * @return Voltage in volts.
      */
     @Log
+    @Override
     public double getBatteryVoltage() {
         return canTalon.getBusVoltage();
     }
@@ -618,8 +630,9 @@ public class FPSTalon implements FPSSmartMotor {
      * @return Current in amps.
      */
     @Log
+    @Override
     public double getOutputCurrent() {
-        return canTalon.getOutputCurrent();
+        return canTalon.getSupplyCurrent();
     }
 
     /**
@@ -627,17 +640,9 @@ public class FPSTalon implements FPSSmartMotor {
      *
      * @return Control mode as a string.
      */
-    @Log
-    public String getControlMode() {
-        return String.valueOf(canTalon.getControlMode());
-    }
-
-    /**
-     * Disables the motor, if applicable.
-     */
     @Override
-    public void disable() {
-        canTalon.set(ControlMode.Disabled, 0);
+    public String getControlMode() {
+        return canTalon.getControlMode().name();
     }
 
     /**
@@ -646,6 +651,7 @@ public class FPSTalon implements FPSSmartMotor {
      * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given gear.
      * @param gear     The number of the gear to use the max speed from to scale the velocity.
      */
+    @Override
     public void setGearScaledVelocity(double velocity, int gear) {
         if (currentGearSettings.maxSpeed != null) {
             setVelocityFPS(currentGearSettings.maxSpeed * velocity);
@@ -660,6 +666,7 @@ public class FPSTalon implements FPSSmartMotor {
      * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given gear.
      * @param gear     The gear to use the max speed from to scale the velocity.
      */
+    @Override
     public void setGearScaledVelocity(double velocity, Shiftable.gear gear) {
         setGearScaledVelocity(velocity, gear.getNumVal());
     }
@@ -668,6 +675,7 @@ public class FPSTalon implements FPSSmartMotor {
     /**
      * @return Feedforward calculator for this gear
      */
+    @Override
     public SimpleMotorFeedforward getCurrentGearFeedForward(){
         return currentGearSettings.feedForwardCalculator;
     }
@@ -675,7 +683,7 @@ public class FPSTalon implements FPSSmartMotor {
     /**
      * @return the position of the talon in feet, or null of inches per rotation wasn't given.
      */
-    @Log
+    @Override
     public Double getPositionFeet() {
         return encoderToFeet(canTalon.getSelectedSensorPosition(0));
     }
@@ -683,6 +691,7 @@ public class FPSTalon implements FPSSmartMotor {
     /**
      * Resets the position of the Talon to 0.
      */
+    @Override
     public void resetPosition() {
         canTalon.setSelectedSensorPosition(0, 0, 0);
     }
@@ -692,7 +701,7 @@ public class FPSTalon implements FPSSmartMotor {
      *
      * @return True if the forwards limit switch is closed, false if it's open or doesn't exist.
      */
-    @Log
+    @Override
     public boolean getFwdLimitSwitch() {
         return fwdLimitSwitchNormallyOpen == canTalon.getSensorCollection().isFwdLimitSwitchClosed();
     }
@@ -702,93 +711,25 @@ public class FPSTalon implements FPSSmartMotor {
      *
      * @return True if the reverse limit switch is closed, false if it's open or doesn't exist.
      */
-    @Log
+    @Override
     public boolean getRevLimitSwitch() {
         return revLimitSwitchNormallyOpen == canTalon.getSensorCollection().isRevLimitSwitchClosed();
     }
 
-    @Log
+    @Override
     public boolean isInhibitedForward() {
-
         canTalon.getFaults(faults);
         return faults.ForwardLimitSwitch;
     }
 
-    @Log
+    @Override
     public boolean isInhibitedReverse() {
         canTalon.getFaults(faults);
         return faults.ReverseLimitSwitch;
     }
 
-//    /**
-//     * Get the headers for the data this subsystem logs every loop.
-//     *
-//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-//     */
-//    @NotNull
-//    @Override
-//    public String[] getHeader() {
-//        return new String[]{
-//                "velocity",
-//                "position",
-//                "setpoint",
-//                "error",
-//                "battery_voltage",
-//                "voltage",
-//                "current",
-//                "control_mode",
-//                "gear",
-//                "resistance",
-//                "forward_limit",
-//                "reverse_limit"
-//        };
-//    }
-//
-//    /**
-//     * Get the data this subsystem logs every loop.
-//     *
-//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-//     */
-//    @Nullable
-//    @Override
-//    public Object[] getData() {
-//        if (voltagePerCurrentLinReg != null && PDP != null) {
-//            voltagePerCurrentLinReg.addPoint(getOutputCurrent(), PDP.getVoltage() - getBatteryVoltage());
-//        }
-//        return new Object[]{
-//                getVelocity(),
-//                getPositionFeet(),
-//                getSetpoint(),
-//                getError(),
-//                getBatteryVoltage(),
-//                getOutputVoltage(),
-//                getOutputCurrent(),
-//                getControlMode(),
-//                getGear(),
-//                (voltagePerCurrentLinReg != null && PDP != null) ? -voltagePerCurrentLinReg.getSlope() : null,
-//                this.getFwdLimitSwitch(),
-//                this.getRevLimitSwitch()
-//        };
-//    }
-//
-//    /**
-//     * Get the name of this object.
-//     *
-//     * @return A string that will identify this object in the log file.
-//     */
-//    @NotNull
-//    @Override
-//    public String getLogName() {
-//        return name;
-//    }
-
     @Override
     public String configureLogName() {
         return name;
-    }
-
-    @Override
-    public LayoutType configureLayoutType() {
-        return BuiltInLayouts.kGrid;
     }
 }
