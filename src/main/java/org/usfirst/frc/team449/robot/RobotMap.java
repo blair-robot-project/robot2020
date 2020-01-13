@@ -76,6 +76,9 @@ public class RobotMap {
      */
     @Nullable
     public Iterator<Command> getAutoStartupCommands() {
+        if(commands.getAutoStartupCommand() == null){
+            return null;
+        }
         return commands.getAutoStartupCommand().iterator();
     }
 
@@ -84,11 +87,17 @@ public class RobotMap {
      */
     @Nullable
     public Iterator<Command> getTeleopStartupCommands() {
+        if(commands.getTeleopStartupCommand() == null){
+            return null;
+        }
         return commands.getTeleopStartupCommand().iterator();
     }
 
     @Nullable
     public Iterator<Command> getTestStartupCommands(){
+        if(commands.getTestStartupCommand() == null){
+            return null;
+        }
         return commands.getTestStartupCommand().iterator();
     }
 
@@ -97,6 +106,9 @@ public class RobotMap {
      */
     @Nullable
     public Iterator<Command> getRobotStartupCommands() {
+        if(commands.getRobotStartupCommand() == null){
+            return null;
+        }
         return commands.getRobotStartupCommand().iterator();
     }
 

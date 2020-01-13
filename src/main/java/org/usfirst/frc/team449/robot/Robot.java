@@ -89,6 +89,8 @@ public class Robot extends TimedRobot {
             CameraServer.getInstance().startAutomaticCapture();
         }
 
+        this.robotMap.getUpdater().run();
+
         Logger.configureLoggingAndConfig(robotMap, false);
         Shuffleboard.setRecordingFileNameFormat("log-${time}");
         Shuffleboard.startRecording();
