@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
+import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
 
@@ -29,7 +30,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      * The feeder's motor
      */
     @NotNull
-    private final SimpleMotor feederMotor;
+    private final SimpleMotor kickerMotor;
 
     /**
      * How fast to run the feeder, from [-1, 1]
@@ -60,75 +61,36 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     private boolean conditionMetCached;
 
+    private double lastSpinUpTimeMS;
+
     /**
      * Default constructor
      *
      * @param shooterMotor        The motor controlling the flywheel.
      * @param shooterThrottle     The throttle, from [-1, 1], at which to run the multiSubsystem.
-     * @param feederMotor         The motor controlling the feeder.
+     * @param kickerMotor         The motor controlling the feeder.
      * @param feederThrottle      The throttle, from [-1, 1], at which to run the feeder.
      * @param spinUpTimeoutSecs   The amount of time, in seconds, it takes for the multiSubsystem to get up to speed.
      *                            Defaults to {@literal 0}.
-     * @param minShootingSpeedFPS The speed, in feet per second, at which the flywheel is ready to begin shooting.
-     *                            Defaults to {@literal null}, meaning that there is no minimum speed requirement.
+     * @param minShootingSpeedFPS The speed, in feet per second, at which the flywheel nominally shoots.
+     *                            Defaults to {@literal null}, meaning that there is no speed requirement.
      */
     @JsonCreator
     public LoggingFlywheel(@NotNull @JsonProperty(required = true) FPSSmartMotor shooterMotor,
                            @JsonProperty(required = true) double shooterThrottle,
-                           @NotNull @JsonProperty(required = true) SimpleMotor feederMotor,
+                           @NotNull @JsonProperty(required = true) SimpleMotor kickerMotor,
                            @JsonProperty(required = true) double feederThrottle,
                            double spinUpTimeoutSecs,
                            @Nullable Double minShootingSpeedFPS) {
         this.shooterMotor = shooterMotor;
         this.shooterThrottle = shooterThrottle;
-        this.feederMotor = feederMotor;
+        this.kickerMotor = kickerMotor;
         this.feederThrottle = feederThrottle;
         this.spinUpTimeoutSecs = spinUpTimeoutSecs;
         this.minShootingSpeedFPS = minShootingSpeedFPS;
 
         this.state = FlywheelState.OFF;
     }
-
-//    /**
-//     * Get the headers for the data this subsystem logs every loop.
-//     *
-//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-//     */
-//    @NotNull
-//    @Override
-//    public String[] getHeader() {
-//        return new String[]{"speed",
-//                "setpoint",
-//                "error",
-//                "voltage",
-//                "current"};
-//    }
-//
-//    /**
-//     * Get the data this subsystem logs every loop.
-//     *
-//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-//     */
-//    @NotNull
-//    @Override
-//    public Object[] getData() {s
-//        return new Object[]{shooterMotor.getVelocity(),
-//                shooterMotor.getSetpoint(),
-//                shooterMotor.getError(),
-//                shooterMotor.getOutputVoltage(),
-//                shooterMotor.getOutputCurrent()};
-//    }
-//
-//    /**
-//     * Get the name of this object.
-//     *
-//     * @return A string that will identify this object in the log file.
-//     */
-//    @NotNull
-//    @Override
-//    public String getLogName() {
-//        return "loggingShooter";
-//    }
 
     /**
      * Turn the multiSubsystem on to a map-specified speed.
@@ -152,8 +114,8 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void turnFeederOn() {
-        feederMotor.enable();
-        feederMotor.setVelocity(feederThrottle);
+        kickerMotor.enable();
+        kickerMotor.setVelocity(feederThrottle);
     }
 
     /**
@@ -161,7 +123,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void turnFeederOff() {
-        feederMotor.disable();
+        kickerMotor.disable();
     }
 
     /**
@@ -179,6 +141,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     @Override
     public void setFlywheelState(@NotNull SubsystemFlywheel.FlywheelState state) {
         this.state = state;
+        if (state == FlywheelState.SPINNING_UP) this.lastSpinUpTimeMS = Clock.currentTimeMillis();
     }
 
     @Log
@@ -198,14 +161,14 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     @Override
     @Log
     public boolean isAtShootingSpeed() {
-        if (this.minShootingSpeedFPS == null) return false;
-        Double actualVelocity = this.shooterMotor.getVelocity();
-        return !Double.isNaN(actualVelocity) && actualVelocity > this.minShootingSpeedFPS;
-    }
+        double timeSinceLastSpinUp = Clock.currentTimeMillis() - this.lastSpinUpTimeMS;
+        boolean timeoutExceeded = timeSinceLastSpinUp * 1000 > this.spinUpTimeoutSecs;
+        if (timeoutExceeded) return true;
 
-    @Log
-    public double actualSpeed() {
-        return this.shooterMotor.getVelocity();
+        if (this.minShootingSpeedFPS == null ) return true;
+
+        Double actualVelocity = this.shooterMotor.getVelocity();
+        return (!Double.isNaN(actualVelocity) && actualVelocity > this.minShootingSpeedFPS);
     }
 
     /**

@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.*;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
 
 /**
  * Toggle whether or not the subsystem is firing.
@@ -21,13 +22,14 @@ public final class ToggleShooting<T extends Subsystem & SubsystemFlywheel> exten
      * @param subsystem The subsystem to execute this command on.
      */
     @JsonCreator
-    public ToggleShooting(@NotNull @JsonProperty(required = true) T subsystem) {
+    public ToggleShooting(@NotNull @JsonProperty(required = true) T subsystem,
+                          @NotNull @JsonProperty(required = true) SubsystemIntake feeder) {
         super(() -> {
             final CommandBase commandToSchedule;
 
             switch (subsystem.getFlywheelState()) {
                 case OFF:
-                    commandToSchedule = new SpinUpThenShoot(subsystem);
+                    commandToSchedule = new SpinUpThenShoot(subsystem, feeder);
                     break;
                 case SHOOTING:
                 case SPINNING_UP:

@@ -14,7 +14,7 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.MappedRunnable;
 import java.util.Set;
 
 /**
- * A command that runs any number of {@link Runnable} objects every tic.
+ * A command that runs any number of {@link Runnable} objects every tick.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class RunRunnables extends CommandBase {

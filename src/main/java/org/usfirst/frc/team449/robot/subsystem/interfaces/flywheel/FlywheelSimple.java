@@ -13,8 +13,12 @@ import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 
 /**
  * A simple flywheel subsystem.
+ * Reference org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel for the updated version
+ *
+ * @deprecated Use {@link org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel} instead.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
+@Deprecated(since = "2020-01-10")
 public class FlywheelSimple extends SubsystemBase implements SubsystemFlywheel, Loggable {
 
     /**
