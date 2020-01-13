@@ -50,7 +50,7 @@ subsystems:
 #          ###  - port: 3 #TODO
 #          ###    invertType: OpposeMaster
       shooterThrottle: 0.2 #TODO
-      kickerMotor:
+      feederMotor:
         org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon: #TODO TODO
           '@id': kickerTalon
           port: 2 #TODO
@@ -170,8 +170,6 @@ subsystems:
 # COMMANDS
 commands:
   #BUTTONS
-
-  #        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheel:
   buttons:
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:

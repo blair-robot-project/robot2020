@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
 import java.util.function.BooleanSupplier;
 
-public class InstanceMethodBooleanSupplier implements BooleanSupplier {
+public class InstanceMethodBooleanSupplier<T> implements MappedBooleanSupplier {
     private final BooleanSupplier invoke;
 
     @JsonCreator
-    public InstanceMethodBooleanSupplier(Object source, String methodName) throws NoSuchMethodException {
+    public InstanceMethodBooleanSupplier(T source, String methodName) throws NoSuchMethodException {
         Method method = source.getClass().getMethod(methodName);
         this.invoke = () -> {
             try {
