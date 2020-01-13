@@ -121,7 +121,6 @@ subsystems:
           name: shooterTalon
           ###reverseOutput: false
           enableBrakeMode: false
-          voltagePerCurrentLinReg: 0 #TODO
           PDP: PDP
           #          fwdLimitSwitchNormallyOpen: false #TODO
           #          revLimitSwitchNormallyOpen: false #TODO
@@ -140,13 +139,14 @@ subsystems:
               posKP: 0.003
               posKI: 0.0
               posKD: 0.05
+              maxSpeed: 57
           startingGearNum: 0 #TODO
       #          updaterProcessPeriodSecs: 0.005 #TODO
       #          ###slaveVictors:
       #          ###  - port: 3 #TODO
       #          ###    invertType: OpposeMaster
-      shooterThrottle: 0.2 #TODO
-      kickerMotor:
+      shooterThrottle: 10 #TODO
+      feederMotor:
         org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon: #TODO TODO
           '@id': kickerTalon
           port: 2 #TODO
@@ -184,6 +184,22 @@ subsystems:
       minShootingSpeedFPS: 1
 # COMMANDS
 commands:
+  buttons:
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': shooterStartButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              '@id': mechanismsJoystick
+              port: 2
+          buttonNumber: 2 #B
+      command:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpThenShoot:
+          '@id': toggleFlywheelCommand
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
+              shooterFlywheel
+      action: WHEN_PRESSED
   # DEFAULT COMMANDS
   defaultCommands:
     # DEFAULT DRIVE COMMAND
