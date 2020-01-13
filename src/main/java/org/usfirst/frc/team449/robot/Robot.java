@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
@@ -89,6 +90,8 @@ public class Robot extends TimedRobot {
         }
 
         Logger.configureLoggingAndConfig(robotMap, false);
+        Shuffleboard.setRecordingFileNameFormat("log-${time}");
+        Shuffleboard.startRecording();
 
         //start systems
         if (robotMap.getRobotStartupCommands() != null) {
