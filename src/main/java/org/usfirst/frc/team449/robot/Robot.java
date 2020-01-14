@@ -35,20 +35,22 @@ public class Robot extends TimedRobot {
     public static final String RESOURCES_PATH_SIMULATED = "./src/main/deploy/";
 
     /**
+     * The name of the map to read from. Should be overriden by a subclass to change the name.
+     */
+    @NotNull
+    public static final String mapName = "map.yml";
+
+    /**
      * The filepath to the resources folder containing the config files.
      */
     @NotNull
-    public static String RESOURCES_PATH;
-
-    /**
-     * The name of the map to read from. Should be overriden by a subclass to change the name.
-     */
-    protected String mapName = "map.yml";
+    public static final String RESOURCES_PATH = RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
 
     /**
      * The object constructed directly from the yaml map.
      */
-    protected RobotMap robotMap;
+    @NotNull
+    protected final RobotMap robotMap = loadMap();
 
     /**
      * Whether or not the robot has been enabled yet.
@@ -73,30 +75,6 @@ public class Robot extends TimedRobot {
         //Yes this should be a print statement, it's useful to know that robotInit started.
         System.out.println("Started robotInit.");
 
-        RESOURCES_PATH = RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
-
-        Yaml yaml = new Yaml();
-
-        try {
-            //Read the yaml file with SnakeYaml so we can use anchors and merge syntax.
-            Map<?, ?> normalized = (Map<?, ?>) yaml.load(new FileReader(RESOURCES_PATH + "/" + mapName));
-            YAMLMapper mapper = new YAMLMapper();
-            //Turn the Map read by SnakeYaml into a String so Jackson can read it.
-            String fixed = mapper.writeValueAsString(normalized);
-            //Use a parameter name module so we don't have to specify name for every field.
-            mapper.registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES));
-            //Add mix-ins
-            mapper.registerModule(new WPIModule());
-            mapper.registerModule(new JavaModule());
-            //Deserialize the map into an object.
-            robotMap = mapper.readValue(fixed, RobotMap.class);
-        } catch (IOException e) {
-            //This is either the map file not being in the file system OR it being improperly formatted.
-            System.out.println("Config file is bad/nonexistent!");
-            e.printStackTrace();
-        }
-
-        System.out.println(this.robotMap == null);
         //Read sensors
         this.robotMap.getUpdater().run();
 
@@ -110,6 +88,28 @@ public class Robot extends TimedRobot {
 
         Logger.configureLoggingAndConfig(robotMap, false);
 
+    }
+
+    @NotNull
+    public static RobotMap loadMap() {
+        try {
+            //Read the yaml file with SnakeYaml so we can use anchors and merge syntax.
+            Map<?, ?> normalized = (Map<?, ?>) new Yaml().load(new FileReader(RESOURCES_PATH + "/" + mapName));
+            YAMLMapper mapper = new YAMLMapper();
+            //Turn the Map read by SnakeYaml into a String so Jackson can read it.
+            String fixed = mapper.writeValueAsString(normalized);
+            //Use a parameter name module so we don't have to specify name for every field.
+            mapper.registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES));
+            //Add mix-ins
+            mapper.registerModule(new WPIModule());
+            mapper.registerModule(new JavaModule());
+            //Deserialize the map into an object.
+            return mapper.readValue(fixed, RobotMap.class);
+        } catch (IOException e) {
+            //This is either the map file not being in the file system OR it being improperly formatted.
+            System.out.println("Config file is bad/nonexistent!");
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
