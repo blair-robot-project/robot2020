@@ -136,8 +136,6 @@ public class FPSSparkMax implements FPSSmartMotor {
      *                                   Defaults to 1.
      * @param currentLimit               The max amps this device can draw. If this is null, no current limit is used.
      * @param enableVoltageComp          Whether or not to use voltage compensation. Defaults to false.
-     * @param reverseSensor              Whether or not to reverse the reading from the encoder on this Talon. Ignored
-     *                                   if feedbackDevice is null. Defaults to false.
      * @param perGearSettings            The settings for each gear this motor has. Can be null to use default values
      *                                   and gear # of zero. Gear numbers can't be repeated.
      * @param startingGear               The gear to start in. Can be null to use startingGearNum instead.
@@ -161,12 +159,12 @@ public class FPSSparkMax implements FPSSmartMotor {
                        @Nullable Double feetPerRotation,
                        @Nullable Integer currentLimit,
                        boolean enableVoltageComp,
-                       boolean reverseSensor,
                        @Nullable List<PerGearSettings> perGearSettings,
                        @Nullable Shiftable.gear startingGear,
                        @Nullable Integer startingGearNum,
                        @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
-                       @Nullable final Integer controlFrameRateMillis) {
+                       @Nullable final Integer controlFrameRateMillis,
+                       @Nullable List<SlaveSparkMax> slaveSparks) {
         spark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
         canEncoder = spark.getEncoder();
         pidController = spark.getPIDController();
@@ -252,9 +250,9 @@ public class FPSSparkMax implements FPSSmartMotor {
         if (revLimitSwitchNormallyOpen != null) {
             if (remoteLimitSwitchID != null) {
                 reverseLimitSwitch = new CANSparkMax(remoteLimitSwitchID, CANSparkMaxLowLevel.MotorType.kBrushless)
-                        .getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed);
+                        .getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed);
             } else {
-                reverseLimitSwitch = spark.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed);
+                reverseLimitSwitch = spark.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed);
             }
             this.revLimitSwitchNormallyOpen = revLimitSwitchNormallyOpen;
         } else {
@@ -270,13 +268,22 @@ public class FPSSparkMax implements FPSSmartMotor {
             spark.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, revSoftLimit.floatValue());
         }
 
-        //Set the current limit if it was given
-        if (currentLimit != null) {
-            spark.setSmartCurrentLimit(currentLimit);
-        }
+//        //Set the current limit if it was given
+//        if (currentLimit != null) {
+//            spark.setSmartCurrentLimit(currentLimit);
+//        }
+//
+//        if(enableVoltageComp){
+//            spark.enableVoltageCompensation(12);
+//        } else {
+//            spark.disableVoltageCompensation();
+//        }
 
-        if(enableVoltageComp){
-            spark.enableVoltageCompensation(12);
+        if (slaveSparks != null) {
+            //Set up slaves.
+            for (SlaveSparkMax slave : slaveSparks) {
+                slave.setMaster(port, enableBrakeMode, PDP);
+            }
         }
 
         spark.burnFlash();
@@ -453,6 +460,7 @@ public class FPSSparkMax implements FPSSmartMotor {
     public void setVelocity(double velocity) {
         if (currentGearSettings.maxSpeed != null) {
             setVelocityFPS(velocity * currentGearSettings.maxSpeed);
+            System.out.println(encoderVelocity());
         } else {
             setPercentVoltage(velocity);
         }
