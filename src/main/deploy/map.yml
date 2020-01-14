@@ -39,7 +39,7 @@ subsystems:
             - port: 2
               invert: true
       shooterThrottle: -0.3 #percent out
-      feederMotor:
+      kickerMotor:
         org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon: #TODO TODO
           '@id': kickerTalon
           port: 3
@@ -49,7 +49,27 @@ subsystems:
           PDP: PDP
           currentLimit: 10 #TODO
           reverseSensor: false #TODO
-      feederThrottle: 0 #TODO
+      kickerThrottle: 0 #TODO
+  # FEEDER
+  - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+      '@id': feeder
+      motor:
+        org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon: #TODO TODO
+          '@id': feederMotor
+          port: 2 #TODO
+          name: feederMotor
+          reverseOutput: false
+          enableBrakeMode: false
+          PDP: PDP
+          currentLimit: 10 #TODO
+          reverseSensor: false #TODO
+          startingGearNum: 0 #TODO
+      inSlowVel: 0.1
+      inFastVel: 0.2
+      outSlowVel: -0.1
+      outFastVel: -0.2
+
+
 
 # COMMANDS
 commands:
@@ -66,9 +86,12 @@ commands:
       command:
         org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpThenShoot:
           '@id': shootCommand
-          subsystem:
+          flywheel:
             org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
               shooterFlywheel
+          feeder:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+              feeder
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
