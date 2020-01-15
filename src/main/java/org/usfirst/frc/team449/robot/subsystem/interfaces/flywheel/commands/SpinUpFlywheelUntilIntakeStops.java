@@ -21,6 +21,7 @@ import java.util.*;
  * put into one command, for ease of readability
  * TODO test this out
  */
+@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SpinUpFlywheelUntilIntakeStops extends SequentialCommandGroup implements ISpinUpFlywheelCommand {
 
     Command x;
