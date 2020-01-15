@@ -6,6 +6,7 @@ import org.usfirst.frc.team449.robot.other.Util;
 
 import java.util.List;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ExecuteMethodCommand extends InstantCommand {
 
     public ExecuteMethodCommand(Object object, String methodName, List<Subsystem> requirements) {
