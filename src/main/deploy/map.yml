@@ -30,15 +30,15 @@ subsystems:
           enableVoltageComp: true #TODO
           perGearSettings:
             - gearNum: 0
-#              maxSpeed: 100 #uncomment for fps velocity control
-              kP: 0.003
+              maxSpeed: 95 #this value is wrong
+              kP: 0.0001
               kI: 0.0
-              kD: 0.05
+              kD: 0.001
           startingGearNum: 0 #TODO
           slaveSparks:
             - port: 2
               invert: true
-      shooterThrottle: -0.3 #percent out
+      shooterThrottle: 2.5 #this should be from -1 to 1
       kickerMotor:
         org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon: #TODO TODO
           '@id': kickerTalon

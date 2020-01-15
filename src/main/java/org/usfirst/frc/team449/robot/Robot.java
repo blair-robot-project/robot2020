@@ -83,6 +83,8 @@ public class Robot extends TimedRobot {
             //This is either the map file not being in the file system OR it being improperly formatted.
             System.out.println("Config file is bad/nonexistent!");
             e.printStackTrace();
+            //dont restart watchdog
+            while(true){}
         }
 
         if(robotMap.useCameraServer()){
