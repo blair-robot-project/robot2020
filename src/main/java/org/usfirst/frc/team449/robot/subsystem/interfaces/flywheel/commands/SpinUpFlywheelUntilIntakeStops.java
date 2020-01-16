@@ -1,5 +1,9 @@
 package org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +25,7 @@ import java.util.*;
  * put into one command, for ease of readability
  * TODO test this out
  */
+//@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SpinUpFlywheelUntilIntakeStops extends SequentialCommandGroup implements ISpinUpFlywheelCommand {
 
     Command x;
@@ -29,23 +34,25 @@ public class SpinUpFlywheelUntilIntakeStops extends SequentialCommandGroup imple
       * @param timeToStart how long the feeder waits to start. Not sure how necessary this is
      * @param spinUpFlywheelCommand
      * @param shooterFlywheel
-     * @param intake the intake
-     * @param timeToStop how long the feeder keeps running after intake stops, in sec
+     * @param feeder the feeder
+     * @param timeToStop how long the feeder keeps running after feeder stops, in sec
      */
+    @JsonCreator
   public SpinUpFlywheelUntilIntakeStops(@Nullable Double timeToStart,
-                                        @NotNull final SpinUpFlywheel spinUpFlywheelCommand,
-                                        @NotNull final LoggingFlywheel shooterFlywheel,
-                                        @NotNull final IntakeSimple intake,
+                                        @NotNull @JsonProperty(required=true) final SpinUpFlywheel spinUpFlywheelCommand,
+                                        @NotNull @JsonProperty(required=true) final LoggingFlywheel shooterFlywheel,
+                                        @NotNull @JsonProperty(required=true) final IntakeSimple feeder,
                                         @Nullable Double timeToStop) {
     super(new MappedWaitCommand(timeToStart == null ? 1.0 : timeToStart),
-            makePerpetualCommand(spinUpFlywheelCommand, shooterFlywheel, intake, timeToStop));
+            makePerpetualCommand(spinUpFlywheelCommand, shooterFlywheel, feeder, timeToStop));
   }
 
-  public static Command makePerpetualCommand(@NotNull final SpinUpFlywheel spinUpFlywheelCommand,
-                   @NotNull final LoggingFlywheel shooterFlywheel,
-                   @NotNull final IntakeSimple intake,
+  public static Command makePerpetualCommand(/*@NotNull*/ final SpinUpFlywheel spinUpFlywheelCommand,
+                   /*@NotNull*/ final LoggingFlywheel shooterFlywheel,
+                   /*@NotNull*/ final IntakeSimple intake,
                    @Nullable Double timeToStop) {
       //todo should this be a perpetual command?
+      System.out.println("Hello there!!!");
       return new PerpetualCommand(
               //TODO make this less complicated, this is even worse than before
               new ConditionalCommandFunctional(new CommandBase() {

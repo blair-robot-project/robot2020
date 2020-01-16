@@ -194,8 +194,7 @@ commands:
                     feeder
             - org.usfirst.frc.team449.robot.commands.general.MappedPerpetualCommand:
                 requires:
-                  org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-                    shooterFlywheel
+                  - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel: shooterFlywheel
                 command:
                   org.usfirst.frc.team449.robot.commands.general.MappedSequentialCommandGroup:
                     commands:
@@ -212,7 +211,7 @@ commands:
                             org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheel:
                               spinUpFlywheelCommand
                           booleanSupplier:
-                            org.usfirst.frc.team449.robot.commands.general.InstanceMethodBooleanSupplier: #TODO TODO
+                            org.usfirst.frc.team449.robot.commands.general.InstanceMethodBooleanSupplier: #TODO
                               source:
                                 org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
                                   shooterFlywheel

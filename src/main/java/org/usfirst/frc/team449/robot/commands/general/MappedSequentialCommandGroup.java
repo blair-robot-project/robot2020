@@ -14,7 +14,7 @@ public class MappedSequentialCommandGroup extends SequentialCommandGroup {
     @JsonCreator
     public MappedSequentialCommandGroup(@NotNull @JsonProperty(required = true) List<Command> commands,
                                         @Nullable List<Subsystem> requires) {
-        super((Command[]) commands.toArray());
+        super(commands.toArray(new Command[]{}));
         if (requires != null)
             for (var subsystem : requires)
                 this.addRequirements(subsystem);

@@ -185,19 +185,23 @@ commands:
         org.usfirst.frc.team449.robot.commands.general.MappedSequentialCommandGroup:
           commands:
             - org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheel:
-                '@id': spinUpFlywheelCommand
+                '@id': spinUpFlywheelCommand1
                 flywheel:
-                  org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-                    shooterFlywheel
+                  org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel: shooterFlywheel
                 feeder:
                   org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
                     feeder
-            - org.usfirst.frc.team449.robot.commands.general.MappedPerpetualCommand:
-                requires:
-                  org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-                    shooterFlywheel
-                command:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheelUntilIntakeStops:
+            - org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheelUntilIntakeStops:
+                spinUpFlywheelCommand:
+                  org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheel:
+                    '@id': spinUpFlywheelCommand2
+                    flywheel:
+                      org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel: shooterFlywheel
+                    feeder:
+                      org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+                        feeder
+                shooterFlywheel: shooterFlywheel
+                feeder: feeder
 
       action: WHEN_PRESSED
     - button:
@@ -208,7 +212,7 @@ commands:
               mechanismsJoystick
           buttonNumber: 2 #B
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOffRequires:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOffWithRequires:
           '@id': shooterStopCommand
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:

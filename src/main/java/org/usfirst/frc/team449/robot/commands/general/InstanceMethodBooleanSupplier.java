@@ -1,6 +1,7 @@
 package org.usfirst.frc.team449.robot.commands.general;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -10,7 +11,8 @@ public class InstanceMethodBooleanSupplier implements BooleanSupplier {
     private final BooleanSupplier invoke;
 
     @JsonCreator
-    public InstanceMethodBooleanSupplier(Object source, String methodName) throws NoSuchMethodException {
+    public InstanceMethodBooleanSupplier(@JsonProperty(required=true) Object source,
+                                         @JsonProperty(required=true) String methodName) throws NoSuchMethodException {
         Method method = source.getClass().getMethod(methodName);
         this.invoke = () -> {
             try {
