@@ -47,9 +47,9 @@ public class SpinUpFlywheelUntilIntakeStops extends SequentialCommandGroup imple
             makePerpetualCommand(spinUpFlywheelCommand, shooterFlywheel, feeder, timeToStop));
   }
 
-  public static Command makePerpetualCommand(/*@NotNull*/ final SpinUpFlywheel spinUpFlywheelCommand,
-                   /*@NotNull*/ final LoggingFlywheel shooterFlywheel,
-                   /*@NotNull*/ final IntakeSimple intake,
+  public static Command makePerpetualCommand(@NotNull final SpinUpFlywheel spinUpFlywheelCommand,
+                   @NotNull final LoggingFlywheel shooterFlywheel,
+                   @NotNull final IntakeSimple intake,
                    @Nullable Double timeToStop) {
       //todo should this be a perpetual command?
       System.out.println("Hello there!!!");
