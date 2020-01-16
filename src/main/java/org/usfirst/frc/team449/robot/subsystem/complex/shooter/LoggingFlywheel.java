@@ -7,32 +7,35 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
-import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
+import org.usfirst.frc.team449.robot.other.Clock;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
 
 /**
  * A flywheel multiSubsystem with a single flywheel and a single-motor feeder system.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel, io.github.oblarg.oblog.Loggable {
+public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel, SubsystemConditional, io.github.oblarg.oblog.Loggable {
 
     /**
      * The flywheel's Talon
      */
     @NotNull
-    private final FPSTalon shooterTalon;
+    private final FPSSmartMotor shooterMotor;
 
     /**
      * The feeder's motor
      */
     @NotNull
-    private final SimpleMotor feederMotor;
+    private final SimpleMotor kickerMotor;
 
     /**
      * How fast to run the feeder, from [-1, 1]
      */
-    private final double feederThrottle;
+    private final double kickerThrottle;
 
     /**
      * Throttle at which to run the multiSubsystem, from [-1, 1]
@@ -42,7 +45,10 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     /**
      * Time from giving the multiSubsystem voltage to being ready to fire, in seconds.
      */
-    private final double spinUpTime;
+    private final double spinUpTimeoutSecs;
+
+    @Nullable
+    private final Double minShootingSpeedFPS;
 
     /**
      * Whether the flywheel is currently commanded to spin
@@ -51,77 +57,48 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     private SubsystemFlywheel.FlywheelState state;
 
     /**
+     * Whether the condition was met last time caching was done.
+     */
+    private boolean conditionMetCached;
+
+    private double lastSpinUpTimeMS;
+
+    /**
      * Default constructor
      *
-     * @param shooterTalon    The TalonSRX controlling the flywheel.
-     * @param shooterThrottle The throttle, from [-1, 1], at which to run the multiSubsystem.
-     * @param feederMotor     The motor controlling the feeder.
-     * @param feederThrottle  The throttle, from [-1, 1], at which to run the feeder.
-     * @param spinUpTimeSecs  The amount of time, in seconds, it takes for the multiSubsystem to get up to speed.
-     *                        Defaults to 0.
+     * @param shooterMotor        The motor controlling the flywheel.
+     * @param shooterThrottle     The throttle, from [-1, 1], at which to run the multiSubsystem.
+     * @param kickerMotor         The motor controlling the feeder.
+     * @param kickerThrottle      The throttle, from [-1, 1], at which to run the feeder.
+     * @param spinUpTimeoutSecs   The amount of time, in seconds, it takes for the multiSubsystem to get up to speed.
+     *                            Defaults to {@literal 0}.
+     * @param minShootingSpeedFPS The speed, in feet per second, at which the flywheel nominally shoots.
+     *                            Defaults to {@literal null}, meaning that there is no speed requirement.
      */
     @JsonCreator
-    public LoggingFlywheel(@NotNull @JsonProperty(required = true) FPSTalon shooterTalon,
+    public LoggingFlywheel(@NotNull @JsonProperty(required = true) FPSSmartMotor shooterMotor,
                            @JsonProperty(required = true) double shooterThrottle,
-                           @NotNull @JsonProperty(required = true) SimpleMotor feederMotor,
-                           @JsonProperty(required = true) double feederThrottle,
-                           double spinUpTimeSecs) {
-        this.shooterTalon = shooterTalon;
+                           @NotNull @JsonProperty(required = true) SimpleMotor kickerMotor,
+                           @JsonProperty(required = true) double kickerThrottle,
+                           double spinUpTimeoutSecs,
+                           @Nullable Double minShootingSpeedFPS) {
+        this.shooterMotor = shooterMotor;
         this.shooterThrottle = shooterThrottle;
-        this.feederMotor = feederMotor;
-        this.feederThrottle = feederThrottle;
-        state = FlywheelState.OFF;
-        spinUpTime = spinUpTimeSecs;
-    }
+        this.kickerMotor = kickerMotor;
+        this.kickerThrottle = kickerThrottle;
+        this.spinUpTimeoutSecs = spinUpTimeoutSecs;
+        this.minShootingSpeedFPS = minShootingSpeedFPS;
 
-//    /**
-//     * Get the headers for the data this subsystem logs every loop.
-//     *
-//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-//     */
-//    @NotNull
-//    @Override
-//    public String[] getHeader() {
-//        return new String[]{"speed",
-//                "setpoint",
-//                "error",
-//                "voltage",
-//                "current"};
-//    }
-//
-//    /**
-//     * Get the data this subsystem logs every loop.
-//     *
-//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-//     */
-//    @NotNull
-//    @Override
-//    public Object[] getData() {
-//        return new Object[]{shooterTalon.getVelocity(),
-//                shooterTalon.getSetpoint(),
-//                shooterTalon.getError(),
-//                shooterTalon.getOutputVoltage(),
-//                shooterTalon.getOutputCurrent()};
-//    }
-//
-//    /**
-//     * Get the name of this object.
-//     *
-//     * @return A string that will identify this object in the log file.
-//     */
-//    @NotNull
-//    @Override
-//    public String getLogName() {
-//        return "loggingShooter";
-//    }
+        this.state = FlywheelState.OFF;
+    }
 
     /**
      * Turn the multiSubsystem on to a map-specified speed.
      */
     @Override
     public void turnFlywheelOn() {
-        shooterTalon.enable();
-        shooterTalon.setVelocity(shooterThrottle);
+        shooterMotor.enable();
+        shooterMotor.setVelocity(shooterThrottle);
     }
 
     /**
@@ -129,7 +106,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void turnFlywheelOff() {
-        shooterTalon.disable();
+        shooterMotor.disable();
     }
 
     /**
@@ -137,8 +114,8 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void turnFeederOn() {
-        feederMotor.enable();
-        feederMotor.setVelocity(feederThrottle);
+        kickerMotor.enable();
+        kickerMotor.setVelocity(kickerThrottle);
     }
 
     /**
@@ -146,7 +123,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void turnFeederOff() {
-        feederMotor.disable();
+        kickerMotor.disable();
     }
 
     /**
@@ -154,7 +131,6 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @NotNull
     @Override
-    @Log
     public SubsystemFlywheel.FlywheelState getFlywheelState() {
         return state;
     }
@@ -165,14 +141,58 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     @Override
     public void setFlywheelState(@NotNull SubsystemFlywheel.FlywheelState state) {
         this.state = state;
+        if (state == FlywheelState.SPINNING_UP) this.lastSpinUpTimeMS = Clock.currentTimeMillis();
+    }
+
+    @Log
+    public String getFlywheelStateLogged() {
+        return state.name();
     }
 
     /**
-     * @return Time from giving the multiSubsystem voltage to being ready to fire, in seconds.
+     * @return Expected time from giving the multiSubsystem voltage to being ready to fire, in seconds.
      */
     @Override
     @Log
-    public double getSpinUpTime() {
-        return spinUpTime;
+    public double getSpinUpTimeoutSecs() {
+        return spinUpTimeoutSecs;
+    }
+
+    @Override
+    @Log
+    public boolean isAtShootingSpeed() {
+        double timeSinceLastSpinUp = Clock.currentTimeMillis() - this.lastSpinUpTimeMS;
+        boolean timeoutExceeded = timeSinceLastSpinUp * 1000 > this.spinUpTimeoutSecs;
+        if (timeoutExceeded) return true;
+
+        if (this.minShootingSpeedFPS == null ) return true;
+
+        Double actualVelocity = this.shooterMotor.getVelocity();
+        return (!Double.isNaN(actualVelocity) && actualVelocity > this.minShootingSpeedFPS);
+    }
+
+    /**
+     * @return true if the condition is met, false otherwise
+     */
+    @Override
+    public boolean isConditionTrue() {
+        return this.isAtShootingSpeed();
+    }
+
+    /**
+     * @return true if the condition was met when cached, false otherwise
+     */
+    @Override
+    @Log
+    public boolean isConditionTrueCached() {
+        return conditionMetCached;
+    }
+
+    /**
+     * Updates all cached values with current ones.
+     */
+    @Override
+    public void update() {
+        conditionMetCached = isConditionTrue();
     }
 }
