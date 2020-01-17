@@ -98,7 +98,6 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      *
      * @return The controller's velocity in FPS, or null if no encoder CPR was given.
      */
-    @Log
     Double getVelocity();
 
     /**
@@ -121,7 +120,6 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      *
      * @return The closed-loop error in FPS, or null if no encoder CPR was given.
      */
-    @Log
     double getError();
 
     /**
@@ -130,7 +128,6 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      * @return The setpoint in sensible units for the current control mode.
      */
     @Nullable
-    @Log
     Double getSetpoint();
 
     /**
@@ -138,7 +135,6 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      *
      * @return Voltage in volts.
      */
-    @Log
     double getOutputVoltage();
 
     /**
@@ -146,7 +142,6 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      *
      * @return Voltage in volts.
      */
-    @Log
     double getBatteryVoltage();
 
     /**
@@ -154,7 +149,6 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      *
      * @return Current in amps.
      */
-    @Log
     double getOutputCurrent();
 
     /**
@@ -162,7 +156,6 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      *
      * @return Control mode as a string.
      */
-    @Log
     String getControlMode();
 
     /**
@@ -188,7 +181,6 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
     /**
      * @return the position of the talon in feet, or null of inches per rotation wasn't given.
      */
-    @Log
     Double getPositionFeet();
 
     /**
@@ -201,20 +193,16 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      *
      * @return True if the forwards limit switch is closed, false if it's open or doesn't exist.
      */
-    @Log
     boolean getFwdLimitSwitch();
     /**
      * Get the status of the reverse limit switch.
      *
      * @return True if the reverse limit switch is closed, false if it's open or doesn't exist.
      */
-    @Log
     boolean getRevLimitSwitch();
 
-    @Log
     boolean isInhibitedForward();
 
-    @Log
     boolean isInhibitedReverse();
 
     @Override

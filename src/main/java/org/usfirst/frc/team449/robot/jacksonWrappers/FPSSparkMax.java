@@ -268,21 +268,21 @@ public class FPSSparkMax implements FPSSmartMotor {
             spark.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, revSoftLimit.floatValue());
         }
 
-//        //Set the current limit if it was given
-//        if (currentLimit != null) {
-//            spark.setSmartCurrentLimit(currentLimit);
-//        }
-//
-//        if(enableVoltageComp){
-//            spark.enableVoltageCompensation(12);
-//        } else {
-//            spark.disableVoltageCompensation();
-//        }
+        //Set the current limit if it was given
+        if (currentLimit != null) {
+            spark.setSmartCurrentLimit(currentLimit);
+        }
+
+        if(enableVoltageComp){
+            spark.enableVoltageCompensation(12);
+        } else {
+            spark.disableVoltageCompensation();
+        }
 
         if (slaveSparks != null) {
             //Set up slaves.
             for (SlaveSparkMax slave : slaveSparks) {
-                slave.setMaster(port, enableBrakeMode, PDP);
+                slave.setMasterSpark(spark, enableBrakeMode, PDP);
             }
         }
 
