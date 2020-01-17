@@ -12,7 +12,7 @@ import java.util.function.DoubleSupplier;
 public class LimelightDistanceComponentTilted implements DoubleSupplier {
 
     /**
-     * The height of the Limelight
+     * The height of the Limelight above the ground
      */
     private final double limelightHeight;
     /**
@@ -20,7 +20,7 @@ public class LimelightDistanceComponentTilted implements DoubleSupplier {
      */
     private final double limelightAngle;
     /**
-     *
+     * The height of the vision target
      */
     private final double targetHeight;
 
@@ -29,7 +29,7 @@ public class LimelightDistanceComponentTilted implements DoubleSupplier {
      *
      * @param limelightHeight The height of the Limelight
      * @param limelightAngleDown The angle of the Limelight, in degrees
-     * @param targetHeight the height of the expected vision target, provided by the game manual
+     * @param targetHeight the height of the expected vision target, probably provided by the game manual
      */
     @JsonCreator
     public LimelightDistanceComponentTilted(@JsonProperty(required = true) double limelightHeight,
@@ -41,11 +41,11 @@ public class LimelightDistanceComponentTilted implements DoubleSupplier {
     }
 
     /**
-     * @return Gets the distance from the robot to the vision target, coplanar with the field
+     * @return Gets the distance from the robot to the vision target, at an angle above the field
      */
     @Override
     public double getAsDouble() {
-        double robotToTargAngle = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
-        return (targetHeight - limelightHeight) / Math.sin(Math.toRadians(limelightAngle + robotToTargAngle));
+        DoubleSupplier robotToTargAngle = new LimelightComponent(LimelightComponent.ReturnValue.y, 0);
+        return (targetHeight - limelightHeight) / Math.sin(Math.toRadians(limelightAngle + robotToTargAngle.getAsDouble()));
     }
 }

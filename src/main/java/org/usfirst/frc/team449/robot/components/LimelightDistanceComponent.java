@@ -12,7 +12,7 @@ import java.util.function.DoubleSupplier;
 public class LimelightDistanceComponent implements DoubleSupplier {
 
     /**
-     * The height of the Limelight
+     * The height of the Limelight above the ground
      */
     private final double limelightHeight;
     /**
@@ -20,7 +20,7 @@ public class LimelightDistanceComponent implements DoubleSupplier {
      */
     private final double limelightAngle;
     /**
-     *
+     * The height of the vision target
      */
     private final double targetHeight;
 
@@ -29,7 +29,7 @@ public class LimelightDistanceComponent implements DoubleSupplier {
      *
      * @param limelightHeight The height of the Limelight
      * @param limelightAngleDown The angle of the Limelight, in degrees
-     * @param targetHeight the height of the expected vision target, provided by the game manual
+     * @param targetHeight the height of the expected vision target, probably provided by the game manual
      */
     @JsonCreator
     public LimelightDistanceComponent(@JsonProperty(required = true) double limelightHeight,
