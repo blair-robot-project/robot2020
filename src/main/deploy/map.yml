@@ -13,159 +13,29 @@ pdp:
 
 # ROBOT SUBSYSTEMS
 subsystems:
-  # SHOOTER
-  - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-      '@id': shooterFlywheel
-      shooterMotor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSSparkMax:
-          '@id': shooterMotor
-          port: 1 #TODO
-          name: shooterMotor
-          reverseOutput: false
-          enableBrakeMode: false
-#          vfpspoltagePerCurrentLinReg: 0 #TODO
-          PDP: PDP
-#          fwdLimitSwitchNormallyOpen: false #TODO
-#          revLimitSwitchNormallyOpen: false #TODO
-#          remoteLimitSwitchID: 0 #TODO
-          #fwdSoftLimit: 0 #TODO
-          #revSoftLimit: 0 # TODO
-#          postEncoderGearing: 1 #TODO
-          feetPerRotation: 0 #TODO
-          currentLimit: 5 #TODO
-          enableVoltageComp: true #TODO
-#          voltageCompSamples: 100 #TODO
-          reverseSensor: false #TODO
-#          perGearSettings:
-#            - gearNum: 0
-#              kP: 0.003
-#              kI: 0.0
-#              kD: 0.05
-#              #TODO check these values, currently same as kP, etc
-#              posKP: 0.003
-#              posKI: 0.0
-#              posKD: 0.05
-          startingGearNum: 0 #TODO
-#          ###slaveVictors:
-#          ###  - port: 3 #TODO
-#          ###    invertType: OpposeMaster
-      shooterThrottle: 0.2 #TODO
-      feederMotor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon: #TODO TODO
-          '@id': kickerTalon
-          port: 2 #TODO
-          name: kickerTalon
-          reverseOutput: false
-          enableBrakeMode: false
-          #voltagePerCurrentLinReg: 0 #TODO
-          PDP: PDP
-          #fwdLimitSwitchNormallyOpen: false #TODO
-          #revLimitSwitchNormallyOpen: false #TODO
-          #remoteLimitSwitchID: 0 #TODO
-          #fwdSoftLimit: 0 #TODO
-          #revSoftLimit: 0 # TODO
-          #          postEncoderGearing: 0 #TODO
-          #feetPerRotation: 0 #TODO
-          currentLimit: 10 #TODO
-          #enableVoltageComp: true #TODO
-          #          voltageCompSamples: 100 #TODO
-          #          feedbackDevice: QuadEncoder #TODO
-          #          encoderCPR: 256 #TODO
-          reverseSensor: false #TODO
-          #          perGearSettings:
-          #            - gearNum: 0
-          #              kP: 0.003
-          #              kI: 0.0
-          #              kD: 0.05
-          #              #TODO check these values, currently same as kP, etc
-          #              posKP: 0.003
-          #              posKI: 0.0
-          #              posKD: 0.05
-          startingGearNum: 0 #TODO
-          #updaterProcessPeriodSecs: 0.005 #TODO
-      feederThrottle: 0.1 #TODO
-      spinUpTimeoutSecs: 2
-      minShootingSpeedFPS: 1
-  # FEEDER
-  - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-      '@id': feeder
-      motor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon: #TODO TODO
-          '@id': feederMotor
-          port: 2 #TODO
-          name: feederMotor
-          reverseOutput: false
-          enableBrakeMode: false
-          #voltagePerCurrentLinReg: 0 #TODO
-          PDP: PDP
-          #fwdLimitSwitchNormallyOpen: false #TODO
-          #revLimitSwitchNormallyOpen: false #TODO
-          #remoteLimitSwitchID: 0 #TODO
-          #fwdSoftLimit: 0 #TODO
-          #revSoftLimit: 0 # TODO
-          #          postEncoderGearing: 0 #TODO
-          #feetPerRotation: 0 #TODO
-          currentLimit: 10 #TODO
-          #enableVoltageComp: true #TODO
-          #          voltageCompSamples: 100 #TODO
-          #          feedbackDevice: QuadEncoder #TODO
-          #          encoderCPR: 256 #TODO
-          reverseSensor: false #TODO
-          #          perGearSettings:
-          #            - gearNum: 0
-          #              kP: 0.003
-          #              kI: 0.0
-          #              kD: 0.05
-          #              #TODO check these values, currently same as kP, etc
-          #              posKP: 0.003
-          #              posKI: 0.0
-          #              posKD: 0.05
-          startingGearNum: 0 #TODO
-          #updaterProcessPeriodSecs: 0.005 #TODO
-      inSlowVel: 0.1
-      inFastVel: 0.2
-      outSlowVel: -0.1
-      outFastVel: -0.2
-  # INTAKE
-  - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-      '@id': intake
-      motor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon: #TODO TODO
-          '@id': intakeMotor
-          port: 2 #TODO
-          name: intakeMotor
-          reverseOutput: false
-          enableBrakeMode: false
-          #voltagePerCurrentLinReg: 0 #TODO
-          PDP: PDP
-          #fwdLimitSwitchNormallyOpen: false #TODO
-          #revLimitSwitchNormallyOpen: false #TODO
-          #remoteLimitSwitchID: 0 #TODO
-          #fwdSoftLimit: 0 #TODO
-          #revSoftLimit: 0 # TODO
-          #          postEncoderGearing: 0 #TODO
-          #feetPerRotation: 0 #TODO
-          currentLimit: 10 #TODO
-          #enableVoltageComp: true #TODO
-          #          voltageCompSamples: 100 #TODO
-          #          feedbackDevice: QuadEncoder #TODO
-          #          encoderCPR: 256 #TODO
-          reverseSensor: false #TODO
-          #          perGearSettings:
-          #            - gearNum: 0
-          #              kP: 0.003
-          #              kI: 0.0
-          #              kD: 0.05
-          #              #TODO check these values, currently same as kP, etc
-          #              posKP: 0.003
-          #              posKI: 0.0
-          #              posKD: 0.05
-          startingGearNum: 0 #TODO
-          #updaterProcessPeriodSecs: 0.005 #TODO
-      inSlowVel: 0.1
-      inFastVel: 0.2
-      outSlowVel: -0.1
-      outFastVel: -0.2
+  # CLIMBER
+  - org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberFoldingArm:
+      '@id': climber
+      motorSubsystem:
+        org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberCurrentLimited:
+          '@id': climberCurrentLimitSystem
+          smartMotor:
+            org.usfirst.frc.team449.robot.jacksonWrappers.FPSSparkMax:
+              '@id': climberMotor
+              port: 1
+              enableBrakeMode: false
+          maxPower: 0.1
+          powerLimitTimer:
+            '@id': climberLimitTimer
+            bufferTimeSeconds: 1
+      solenoidSubsystem:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+          '@id': climberSolenoidSystem
+          piston:
+            '@id': climberSolenoid
+            module: 0
+            forward: 1
+            reverse: 2
 
 # COMMANDS
 commands:
@@ -173,93 +43,51 @@ commands:
   buttons:
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': shooterStartButton
+          '@id': climberOffButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               '@id': mechanismsJoystick
               port: 2 #TODO
           buttonNumber: 1 #A
-      command:
-        org.usfirst.frc.team449.robot.commands.general.MappedSequentialCommandGroup:
-          commands:
-            - org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheel:
-                '@id': spinUpFlywheelCommand
-                flywheel:
-                  org.usfirst.frc.team449.robot.subsystem.complex.sho`oter.LoggingFlywheel:
-                    shooterFlywheel
-                feeder:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-                    feeder
-            - org.usfirst.frc.team449.robot.commands.general.MappedPerpetualCommand:
-                requires:
-                  org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-                    shooterFlywheel
-                command:
-                  org.usfirst.frc.team449.robot.commands.general.MappedSequentialCommandGroup:
-                    commands:
-                      - org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand:
-                          timeout: 1
-                      - org.usfirst.frc.team449.robot.commands.general.ConditionalCommandFunctional:
-                          onTrue:
-                            org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOn:
-                              '@id': startShootingCommand
-                              subsystem:
-                                org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-                                  shooterFlywheel
-                          onFalse:
-                            org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheel:
-                              spinUpFlywheelCommand
-                          booleanSupplier:
-                            org.usfirst.frc.team449.robot.commands.general.InstanceMethodBooleanSupplier: #TODO TODO
-                              source:
-                                org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-                                  shooterFlywheel
-                              methodName: isConditionTrueCached
       action: WHEN_PRESSED
+      command:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberFoldingArmState:
+          '@id': climberOffCommand
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberFoldingArm:
+              climber
+          state: "OFF"
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': shooterStopButton
+          '@id': climberRaiseButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               mechanismsJoystick
           buttonNumber: 2 #B
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOffRequires:
-          '@id': shooterStopCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-              shooterFlywheel
       action: WHEN_PRESSED
+      command:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberFoldingArmState:
+          '@id': climberRaiseCommand
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberFoldingArm:
+              climber
+          state: "RAISE"
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': intakeToggleButton
+          '@id': climberLowerButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               mechanismsJoystick
           buttonNumber: 3 #X
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.ToggleIntaking:
-          '@id': feederToggleCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-              feeder
-          mode: IN_FAST
       action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': intakeStartButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: 4 #Y
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
-          '@id': intakeStartCommand
+        org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberFoldingArmState:
+          '@id': climberLowerCommand
           subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-              intake
-          mode: IN_FAST
-      action: WHEN_PRESSED
+            org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberFoldingArm:
+              climber
+          state: "LOWER"
+
   # DEFAULT COMMANDS
   defaultCommands:
       # DEFAULT DRIVE COMMAND
