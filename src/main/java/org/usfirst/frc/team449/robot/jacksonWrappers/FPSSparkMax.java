@@ -282,7 +282,7 @@ public class FPSSparkMax implements FPSSmartMotor {
         if (slaveSparks != null) {
             //Set up slaves.
             for (SlaveSparkMax slave : slaveSparks) {
-                slave.setMasterSpark(spark, enableBrakeMode, PDP);
+                slave.setMasterSpark(spark, enableBrakeMode);
             }
         }
 

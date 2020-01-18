@@ -45,12 +45,17 @@ public class MapInterpolationComponent {
             return LUT.get(x);
         }
         updateEntries(x);
-        double ratio = (x - lower.getKey()) / (upper.getKey() - lower.getKey());
+        double ratio;
+        try {
+            ratio = (x - lower.getKey()) / (upper.getKey() - lower.getKey());
+        } catch (ArithmeticException e) {
+            ratio = 0;
+        }
         switch(currentMethod){
             case LINEAR:
-                return lerp(ratio);
+                return linear(ratio);
             case COSINE:
-                return cerp(ratio);
+                return cosine(ratio);
             default:
                 return 0;
         }
@@ -62,12 +67,12 @@ public class MapInterpolationComponent {
     }
 
 
-    private double lerp(double x){
+    private double linear(double x){
         return lower.getValue() * (1 - x) + upper.getValue()*x;
     }
 
-    private double cerp(double x){
+    private double cosine(double x){
         double smoothpoint = (1 - Math.cos(x*Math.PI)) /2;
-        return lerp(smoothpoint);
+        return linear(smoothpoint);
     }
 }
