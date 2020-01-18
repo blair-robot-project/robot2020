@@ -8,20 +8,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
-import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
+import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
-import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
-import org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator;
-
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +27,7 @@ import java.util.Map;
  * in this class takes arguments in post-gearing FPS.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
+public class FPSTalon implements FPSSmartMotor {
 
     Faults faults = new Faults();
 
@@ -220,7 +215,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         //Otherwise, map the settings to the gear they are.
         else {
             for (PerGearSettings settings : perGearSettings) {
-                this.perGearSettings.put(settings.getGear(), settings);
+                this.perGearSettings.put(settings.gear, settings);
             }
         }
 
@@ -302,8 +297,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
             }
         } else {
             this.encoderCPR = null;
-//            canTalon.configSelectedFeedbackSensor(FeedbackDevice.None, 0, 0); Uncomment this if FeedbackDevice.None
-// is re-added in a future release.
+            canTalon.configSelectedFeedbackSensor(FeedbackDevice.None, 0, 0);
         }
 
         //postEncoderGearing defaults to 1
@@ -350,6 +344,15 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     }
 
     /**
+     * Disables the motor, if applicable.
+     */
+    @Override
+    public void disable() {
+        canTalon.set(ControlMode.Disabled, 0);
+    }
+
+
+    /**
      * Set the motor output voltage to a given percent of available voltage.
      *
      * @param percentVoltage percent of total voltage from [-1, 1]
@@ -373,7 +376,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     @Override
     @Log
     public int getGear() {
-        return currentGearSettings.getGear();
+        return currentGearSettings.gear;
     }
 
     /**
@@ -387,17 +390,17 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
         currentGearSettings = perGearSettings.get(gear);
 
         //Set max voltage
-        canTalon.configPeakOutputForward(currentGearSettings.getFwdPeakOutputVoltage() / 12., 0);
-        canTalon.configPeakOutputReverse(currentGearSettings.getRevPeakOutputVoltage() / 12., 0);
+        canTalon.configPeakOutputForward(currentGearSettings.fwdPeakOutputVoltage / 12., 0);
+        canTalon.configPeakOutputReverse(currentGearSettings.revPeakOutputVoltage / 12., 0);
 
         //Set min voltage
-        canTalon.configNominalOutputForward(currentGearSettings.getFwdNominalOutputVoltage() / 12., 0);
-        canTalon.configNominalOutputReverse(currentGearSettings.getRevNominalOutputVoltage() / 12., 0);
+        canTalon.configNominalOutputForward(currentGearSettings.fwdNominalOutputVoltage / 12., 0);
+        canTalon.configNominalOutputReverse(currentGearSettings.revNominalOutputVoltage / 12., 0);
 
-        if (currentGearSettings.getRampRate() != null) {
+        if (currentGearSettings.rampRate != null) {
             //Set ramp rate, converting from volts/sec to seconds until 12 volts.
-            canTalon.configClosedloopRamp(1 / (currentGearSettings.getRampRate() / 12.), 0);
-            canTalon.configOpenloopRamp(1 / (currentGearSettings.getRampRate() / 12.), 0);
+            canTalon.configClosedloopRamp(1 / (currentGearSettings.rampRate / 12.), 0);
+            canTalon.configOpenloopRamp(1 / (currentGearSettings.rampRate / 12.), 0);
         } else {
             canTalon.configClosedloopRamp(0, 0);
             canTalon.configOpenloopRamp(0, 0);
@@ -405,9 +408,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
 
         //Set PID stuff
         //Slot 0 velocity gains. We don't set F yet because that changes based on setpoint.
-        canTalon.config_kP(0, currentGearSettings.getkP(), 0);
-        canTalon.config_kI(0, currentGearSettings.getkI(), 0);
-        canTalon.config_kD(0, currentGearSettings.getkD(), 0);
+        canTalon.config_kP(0, currentGearSettings.kP, 0);
+        canTalon.config_kI(0, currentGearSettings.kI, 0);
+        canTalon.config_kD(0, currentGearSettings.kD, 0);
     }
 
     /**
@@ -416,7 +419,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @param nativeUnits A distance native units as measured by the encoder.
      * @return That distance in feet, or null if no encoder CPR was given.
      */
-    protected double encoderToFeet(double nativeUnits) {
+    @Override
+    public double encoderToFeet(double nativeUnits) {
         if (encoderCPR == null) {
             return Double.NaN;
         }
@@ -430,7 +434,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @param feet A distance in feet.
      * @return That distance in native units as measured by the encoder, or null if no encoder CPR was given.
      */
-    protected double feetToEncoder(double feet) {
+    @Override
+    public double feetToEncoder(double feet) {
         if (encoderCPR == null) {
             return Double.NaN;
         }
@@ -445,7 +450,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if no encoder CPR
      * was given.
      */
-    protected double encoderToFPS(double encoderReading) {
+    @Override
+    public double encoderToFPS(double encoderReading) {
         RPS = nativeToRPS(encoderReading);
         if (RPS == null) {
             return Double.NaN;
@@ -460,7 +466,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @param FPS The velocity of the output shaft, in FPS.
      * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was given.
      */
-    protected double FPSToEncoder(double FPS) {
+    @Override
+    public double FPSToEncoder(double FPS) {
         return RPSToNative((FPS / postEncoderGearing) / feetPerRotation);
     }
 
@@ -473,7 +480,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      */
     @Contract(pure = true)
     @Nullable
-    private Double nativeToRPS(double nat) {
+    @Override
+    public Double nativeToRPS(double nat) {
         if (encoderCPR == null) {
             return null;
         }
@@ -488,7 +496,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @return That velocity in CANTalon native units, or null if no encoder CPR was given.
      */
     @Contract(pure = true)
-    private double RPSToNative(double RPS) {
+    @Override
+    public double RPSToNative(double RPS) {
         if (encoderCPR == null) {
             return Double.NaN;
         }
@@ -496,16 +505,33 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     }
 
     /**
+     * @return Total ticks travelled for debug purposes
+     */
+    @Override
+    public double encoderPosition() {
+        return canTalon.getSelectedSensorPosition();
+    }
+
+    /**
      * Set a position setpoint for the Talon.
      *
      * @param feet An absolute position setpoint, in feet.
      */
+    @Override
     public void setPositionSetpoint(double feet) {
         setpoint = feet;
         nativeSetpoint = feetToEncoder(feet);
         canTalon.config_kF(0, 0);
         canTalon.set(ControlMode.Position, nativeSetpoint, DemandType.ArbitraryFeedForward,
-                currentGearSettings.getFeedForwardCalculator().ks / 12.);
+                currentGearSettings.feedForwardCalculator.ks / 12.);
+    }
+
+    /**
+     * @return Ticks per 100ms for debug purposes
+     */
+    @Override
+    public double encoderVelocity() {
+        return canTalon.getSelectedSensorVelocity();
     }
 
     /**
@@ -513,7 +539,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
      */
-    @Log
+    @NotNull
+    @Override
     public Double getVelocity() {
         return encoderToFPS(canTalon.getSelectedSensorVelocity(0));
     }
@@ -525,8 +552,8 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      */
     @Override
     public void setVelocity(double velocity) {
-        if (currentGearSettings.getMaxSpeed() != null) {
-            setVelocityFPS(velocity * currentGearSettings.getMaxSpeed());
+        if (currentGearSettings.maxSpeed != null) {
+            setVelocityFPS(velocity * currentGearSettings.maxSpeed);
         } else {
             setPercentVoltage(velocity);
         }
@@ -537,12 +564,13 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @param velocity velocity setpoint in FPS.
      */
-    protected void setVelocityFPS(double velocity) {
+    @Override
+    public void setVelocityFPS(double velocity) {
         nativeSetpoint = FPSToEncoder(velocity);
         setpoint = velocity;
         canTalon.config_kF(0, 0, 0);
         canTalon.set(ControlMode.Velocity, nativeSetpoint, DemandType.ArbitraryFeedForward,
-                currentGearSettings.getFeedForwardCalculator().calculate(velocity) / 12.);
+                currentGearSettings.feedForwardCalculator.calculate(velocity) / 12.);
     }
 
     /**
@@ -551,6 +579,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @return The closed-loop error in FPS, or null if no encoder CPR was given.
      */
     @Log
+    @Override
     public double getError() {
         if (canTalon.getControlMode().equals(ControlMode.Velocity)) {
             return encoderToFPS(canTalon.getClosedLoopError(0));
@@ -566,6 +595,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      */
     @Nullable
     @Log
+    @Override
     public Double getSetpoint() {
         return setpoint;
     }
@@ -576,6 +606,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @return Voltage in volts.
      */
     @Log
+    @Override
     public double getOutputVoltage() {
         return canTalon.getMotorOutputVoltage();
     }
@@ -586,6 +617,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @return Voltage in volts.
      */
     @Log
+    @Override
     public double getBatteryVoltage() {
         return canTalon.getBusVoltage();
     }
@@ -596,8 +628,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @return Current in amps.
      */
     @Log
+    @Override
     public double getOutputCurrent() {
-        return canTalon.getOutputCurrent();
+        return canTalon.getSupplyCurrent();
     }
 
     /**
@@ -605,25 +638,9 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return Control mode as a string.
      */
-    @Log
+    @Override
     public String getControlMode() {
-        return String.valueOf(canTalon.getControlMode());
-    }
-
-    /**
-     * Enables the motor, if applicable.
-     */
-    @Override
-    public void enable() {
-        //Not a thing anymore
-    }
-
-    /**
-     * Disables the motor, if applicable.
-     */
-    @Override
-    public void disable() {
-        canTalon.set(ControlMode.Disabled, 0);
+        return canTalon.getControlMode().name();
     }
 
     /**
@@ -632,11 +649,12 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given gear.
      * @param gear     The number of the gear to use the max speed from to scale the velocity.
      */
+    @Override
     public void setGearScaledVelocity(double velocity, int gear) {
-        if (currentGearSettings.getMaxSpeed() == null) {
-            setPercentVoltage(velocity);
+        if (currentGearSettings.maxSpeed != null) {
+            setVelocityFPS(currentGearSettings.maxSpeed * velocity);
         } else {
-            setVelocityFPS(perGearSettings.get(gear).getMaxSpeed() * velocity);
+            setPercentVoltage(velocity);
         }
     }
 
@@ -646,6 +664,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given gear.
      * @param gear     The gear to use the max speed from to scale the velocity.
      */
+    @Override
     public void setGearScaledVelocity(double velocity, Shiftable.gear gear) {
         setGearScaledVelocity(velocity, gear.getNumVal());
     }
@@ -654,14 +673,15 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     /**
      * @return Feedforward calculator for this gear
      */
+    @Override
     public SimpleMotorFeedforward getCurrentGearFeedForward(){
-        return currentGearSettings.getFeedForwardCalculator();
+        return currentGearSettings.feedForwardCalculator;
     }
 
     /**
      * @return the position of the talon in feet, or null of inches per rotation wasn't given.
      */
-    @Log
+    @Override
     public Double getPositionFeet() {
         return encoderToFeet(canTalon.getSelectedSensorPosition(0));
     }
@@ -669,6 +689,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
     /**
      * Resets the position of the Talon to 0.
      */
+    @Override
     public void resetPosition() {
         canTalon.setSelectedSensorPosition(0, 0, 0);
     }
@@ -678,7 +699,7 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return True if the forwards limit switch is closed, false if it's open or doesn't exist.
      */
-    @Log
+    @Override
     public boolean getFwdLimitSwitch() {
         return fwdLimitSwitchNormallyOpen == canTalon.getSensorCollection().isFwdLimitSwitchClosed();
     }
@@ -688,313 +709,25 @@ public class FPSTalon implements SimpleMotor, Shiftable, Loggable {
      *
      * @return True if the reverse limit switch is closed, false if it's open or doesn't exist.
      */
-    @Log
+    @Override
     public boolean getRevLimitSwitch() {
         return revLimitSwitchNormallyOpen == canTalon.getSensorCollection().isRevLimitSwitchClosed();
     }
 
-    @Log
+    @Override
     public boolean isInhibitedForward() {
-
         canTalon.getFaults(faults);
         return faults.ForwardLimitSwitch;
     }
 
-    @Log
-    public boolean isInhibitedReverse(){
+    @Override
+    public boolean isInhibitedReverse() {
         canTalon.getFaults(faults);
         return faults.ReverseLimitSwitch;
-    }
-
-//    /**
-//     * Get the headers for the data this subsystem logs every loop.
-//     *
-//     * @return An N-length array of String labels for data, where N is the length of the Object[] returned by getData().
-//     */
-//    @NotNull
-//    @Override
-//    public String[] getHeader() {
-//        return new String[]{
-//                "velocity",
-//                "position",
-//                "setpoint",
-//                "error",
-//                "battery_voltage",
-//                "voltage",
-//                "current",
-//                "control_mode",
-//                "gear",
-//                "resistance",
-//                "forward_limit",
-//                "reverse_limit"
-//        };
-//    }
-//
-//    /**
-//     * Get the data this subsystem logs every loop.
-//     *
-//     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-//     */
-//    @Nullable
-//    @Override
-//    public Object[] getData() {
-//        if (voltagePerCurrentLinReg != null && PDP != null) {
-//            voltagePerCurrentLinReg.addPoint(getOutputCurrent(), PDP.getVoltage() - getBatteryVoltage());
-//        }
-//        return new Object[]{
-//                getVelocity(),
-//                getPositionFeet(),
-//                getSetpoint(),
-//                getError(),
-//                getBatteryVoltage(),
-//                getOutputVoltage(),
-//                getOutputCurrent(),
-//                getControlMode(),
-//                getGear(),
-//                (voltagePerCurrentLinReg != null && PDP != null) ? -voltagePerCurrentLinReg.getSlope() : null,
-//                this.getFwdLimitSwitch(),
-//                this.getRevLimitSwitch()
-//        };
-//    }
-//
-//    /**
-//     * Get the name of this object.
-//     *
-//     * @return A string that will identify this object in the log file.
-//     */
-//    @NotNull
-//    @Override
-//    public String getLogName() {
-//        return name;
-//    }
-
-    /**
-     * An object representing the CANTalon settings that are different for each gear.
-     */
-    protected static class PerGearSettings {
-
-        /**
-         * The gear number this is the settings for.
-         */
-        private final int gear;
-
-        /**
-         * The forwards and reverse peak output voltages.
-         */
-        private final double fwdPeakOutputVoltage, revPeakOutputVoltage;
-
-        /**
-         * The forwards and reverse nominal output voltages.
-         */
-        private final double fwdNominalOutputVoltage, revNominalOutputVoltage;
-
-        /**
-         * The ramp rate, in volts/sec. null means no ramp rate.
-         */
-        @Nullable
-        private final Double rampRate;
-
-        /**
-         * The maximum speed of the motor in this gear, in FPS. Used for throttle scaling.
-         */
-        @Nullable
-        private final Double maxSpeed;
-
-        /**
-         * The PID constants for the motor in this gear. Ignored if maxSpeed is null.
-         */
-        private final double kP, kI, kD;
-
-        /**
-         * The position PID constants for the motor in this gear.
-         */
-        private final double posKP, posKI, posKD;
-
-        /**
-         * WPI object for calculating feed forward constants given a max achievable velocity
-         * and acceleration
-         */
-        private SimpleMotorFeedforward feedForwardCalculator;
-
-        /**
-         * Default constructor.
-         *
-         * @param gearNum                 The gear number this is the settings for. Ignored if gear isn't null.
-         * @param gear                    The gear this is the settings for. Can be null.
-         * @param fwdPeakOutputVoltage    The peak output voltage for closed-loop modes in the forwards direction, in
-         *                                volts. Defaults to 12.
-         * @param revPeakOutputVoltage    The peak output voltage for closed-loop modes in the reverse direction, in
-         *                                volts. Defaults to -fwdPeakOutputVoltage.
-         * @param fwdNominalOutputVoltage The minimum output voltage for closed-loop modes in the forwards direction.
-         *                                This does not rescale, it just sets any output below this voltage to this
-         *                                voltage. Defaults to 0.
-         * @param revNominalOutputVoltage The minimum output voltage for closed-loop modes in the reverse direction.
-         *                                This does not rescale, it just sets any output below this voltage to this
-         *                                voltage. Defaults to -fwdNominalOutputVoltage.
-         *
-         * @param feedForwardCalculator   The component for calculating feedforwards in closed-loop control modes.
-         *
-         * @param rampRate                The ramp rate, in volts/sec. Can be null, and if it is, no ramp rate is used.
-         * @param maxSpeed                The maximum speed of the motor in this gear, in FPS. Used for throttle
-         *                                scaling. Ignored if kVFwd is null. Calculated from the drive characterization
-         *                                terms if null.
-         * @param kP                      The proportional PID constant for the motor in this gear. Ignored if kVFwd is
-         *                                null. Defaults to 0.
-         * @param kI                      The integral PID constant for the motor in this gear. Ignored if kVFwd is
-         *                                null. Defaults to 0.
-         * @param kD                      The derivative PID constant for the motor in this gear. Ignored if kVFwd is
-         *                                null. Defaults to 0.
-         * @param posKP                   The proportional PID constant for position control on the motor in this gear. Ignored if kVFwd is
-         *                                null. Defaults to 0.
-         * @param posKI                   The integral PID constant for position control on the motor in this gear. Ignored if kVFwd is
-         *                                null. Defaults to 0.
-         * @param posKD                   The derivative PID constant for position control on the motor in this gear. Ignored if kVFwd is
-         *                                null. Defaults to 0.
-         */
-        @JsonCreator
-        public PerGearSettings(int gearNum,
-                               @Nullable Shiftable.gear gear,
-                               @Nullable Double fwdPeakOutputVoltage,
-                               @Nullable Double revPeakOutputVoltage,
-                               @Nullable Double fwdNominalOutputVoltage,
-                               @Nullable Double revNominalOutputVoltage,
-                               @Nullable MappedFeedForwardCalculator feedForwardCalculator,
-                               @Nullable Double rampRate,
-                               @Nullable Double maxSpeed,
-                               double kP,
-                               double kI,
-                               double kD,
-                               double posKP,
-                               double posKI,
-                               double posKD) {
-            this.gear = gear != null ? gear.getNumVal() : gearNum;
-            this.fwdPeakOutputVoltage = fwdPeakOutputVoltage != null ? fwdPeakOutputVoltage : 12;
-            this.revPeakOutputVoltage = revPeakOutputVoltage != null ? revPeakOutputVoltage :
-                    -this.fwdPeakOutputVoltage;
-            this.fwdNominalOutputVoltage = fwdNominalOutputVoltage != null ? fwdNominalOutputVoltage : 0;
-            this.revNominalOutputVoltage = revNominalOutputVoltage != null ? revNominalOutputVoltage :
-                    -this.fwdNominalOutputVoltage;
-            this.feedForwardCalculator = feedForwardCalculator != null ? feedForwardCalculator :
-                    new SimpleMotorFeedforward(0,0);
-            this.rampRate = rampRate;
-            this.kP = kP;
-            this.kI = kI;
-            this.kD = kD;
-            this.posKP = posKP;
-            this.posKI = posKI;
-            this.posKD = posKD;
-            this.maxSpeed = maxSpeed;
-        }
-
-        /**
-         * Empty constructor that uses all default options.
-         */
-        public PerGearSettings() {
-            this(0, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0 ,0);
-        }
-
-        /**
-         * @return The gear number this is the settings for.
-         */
-        public int getGear() {
-            return gear;
-        }
-
-        /**
-         * @return The peak output voltage for closed-loop modes in the forwards direction, in volts.
-         */
-        public double getFwdPeakOutputVoltage() {
-            return fwdPeakOutputVoltage;
-        }
-
-        /**
-         * @return The peak output voltage for closed-loop modes in the reverse direction, in volts.
-         */
-        public double getRevPeakOutputVoltage() {
-            return revPeakOutputVoltage;
-        }
-
-        /**
-         * @return The minimum output voltage for closed-loop modes in the forwards direction. This does not rescale, it
-         * just sets any output below this voltage to this voltage.
-         */
-        public double getFwdNominalOutputVoltage() {
-            return fwdNominalOutputVoltage;
-        }
-
-        /**
-         * @return The minimum output voltage for closed-loop modes in the reverse direction. This does not rescale, it
-         * just sets any output below this voltage to this voltage.
-         */
-        public double getRevNominalOutputVoltage() {
-            return revNominalOutputVoltage;
-        }
-
-        /**
-         * @return Feedforward calculator for this gear
-         */
-        public SimpleMotorFeedforward getFeedForwardCalculator(){
-            return feedForwardCalculator;
-        }
-
-        /**
-         * @return The ramp rate, in volts/sec.
-         */
-        @Nullable
-        public Double getRampRate() {
-            return rampRate;
-        }
-
-        /**
-         * @return The maximum speed of the motor in this gear, in FPS.
-         */
-        @Nullable
-        public Double getMaxSpeed() {
-            return maxSpeed;
-        }
-
-        /**
-         * @return The proportional PID constant for the motor in this gear.
-         */
-        public double getkP() {
-            return kP;
-        }
-
-        /**
-         * @return The integral PID constant for the motor in this gear.
-         */
-        public double getkI() {
-            return kI;
-        }
-
-        /**
-         * @return The derivative PID constant for the motor in this gear.
-         */
-        public double getkD() {
-            return kD;
-        }
-
-        public double getPosKP() {
-            return posKP;
-        }
-
-        public double getPosKI() {
-            return posKI;
-        }
-
-        public double getPosKD() {
-            return posKD;
-        }
-
     }
 
     @Override
     public String configureLogName() {
         return name;
-    }
-
-    @Override
-    public LayoutType configureLayoutType() {
-        return BuiltInLayouts.kGrid;
     }
 }

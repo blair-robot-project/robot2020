@@ -157,17 +157,17 @@ public class SlaveTalon implements Loggable {
 //    }
 
     @Log
-    public double getOutPutCurrent (){
-        return  talonSRX.getOutputCurrent();
+    public double getOutputCurrent (){
+        return  talonSRX.getSupplyCurrent();
     }
 
     @Log
-    public double getMotorOutPutVolt(){
+    public double getMotorOutputVoltage(){
         return talonSRX.getMotorOutputVoltage();
     }
 
     @Log
-    public Double getRisistance(){
+    public Double getResistance(){
         return (linRegComponent != null && PDP != null) ? -linRegComponent.getSlope() : Double.NaN;
     }
 }

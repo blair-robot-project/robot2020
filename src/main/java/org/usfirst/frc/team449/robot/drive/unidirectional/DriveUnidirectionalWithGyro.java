@@ -12,6 +12,7 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
@@ -29,13 +30,13 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * Right master Talon
      */
     @NotNull
-    protected final FPSTalon rightMaster;
+    protected final FPSSmartMotor rightMaster;
 
     /**
      * Left master Talon
      */
     @NotNull
-    protected final FPSTalon leftMaster;
+    protected final FPSSmartMotor leftMaster;
 
     /**
      * The NavX gyro

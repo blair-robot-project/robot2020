@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
 
@@ -55,24 +57,11 @@ public class Robot extends TimedRobot {
     protected RobotMap robotMap;
 
     /**
-     * Whether or not the robot has been enabled yet.
-     */
-    protected boolean enabled;
-
-    /**
-     * Whether or not the auto command should be started.
-     */
-    protected boolean shouldStartAuto;
-
-    /**
      * The method that runs when the robot is turned on. Initializes all subsystems from the map.
      */
     public void robotInit() {
         //Set up start time
         Clock.setStartTime();
-        Clock.updateTime();
-
-        enabled = false;
 
         //Yes this should be a print statement, it's useful to know that robotInit started.
         System.out.println("Started robotInit.");
@@ -99,27 +88,36 @@ public class Robot extends TimedRobot {
         } catch (IOException e) {
             System.err.println("Syntax error in config file:");
             e.printStackTrace();
+            //dont restart watchdog
+            while(true){}
         }
-
-        System.out.println(this.robotMap == null);
-        //Read sensors
-        this.robotMap.getUpdater().run();
-
-        shouldStartAuto = this.robotMap.getAutoStartupCommand() != null;
 
         if(robotMap.useCameraServer()){
             CameraServer.getInstance().startAutomaticCapture();
         }
 
-//        robotMap.getLogger().start();
+        this.robotMap.getUpdater().run();
 
         Logger.configureLoggingAndConfig(robotMap, false);
+        Shuffleboard.setRecordingFileNameFormat("log-${time}");
+        Shuffleboard.startRecording();
 
+        //start systems
+        if (robotMap.getRobotStartupCommands() != null) {
+            robotMap.getRobotStartupCommands().forEachRemaining(Command::schedule);
+        }
     }
 
     @Override
     public void robotPeriodic() {
+        //save current time
+        Clock.updateTime();
+        //update shuffleboard
         Logger.updateEntries();
+        //Read sensors
+        this.robotMap.getUpdater().run();
+        //Run all commands. This is a WPILib thing you don't really have to worry about.
+        CommandScheduler.getInstance().run();
     }
 
     /**
@@ -127,37 +125,15 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopInit() {
-        //Read sensors
-        this.robotMap.getUpdater().run();
-
-        if (this.robotMap.getAutoStartupCommand() != null) {
-            this.robotMap.getAutoStartupCommand().cancel();
-        }
-
-        //Run startup command if we start in teleop.
-        if (!enabled) {
-            if (robotMap.getRobotStartupCommand() != null) {
-                robotMap.getRobotStartupCommand().schedule();
-            }
-            enabled = true;
+        //cancel remaining auto commands
+        if (robotMap.getAutoStartupCommands() != null) {
+            robotMap.getAutoStartupCommands().forEachRemaining(Command::cancel);
         }
 
         //Run the teleop startup command
-        if (robotMap.getTeleopStartupCommand() != null) {
-            robotMap.getTeleopStartupCommand().schedule();
+        if (robotMap.getTeleopStartupCommands() != null) {
+            robotMap.getTeleopStartupCommands().forEachRemaining(Command::schedule);
         }
-    }
-
-    /**
-     * Run every tick in teleop.
-     */
-    @Override
-    public void teleopPeriodic() {
-        //Read sensors
-        this.robotMap.getUpdater().run();
-
-        //Run all commands. This is a WPILib thing you don't really have to worry about.
-        CommandScheduler.getInstance().run();
     }
 
     /**
@@ -165,48 +141,10 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        //Read sensors
-        this.robotMap.getUpdater().run();
-
-        //Run startup command if we start in auto.
-        if (!enabled) {
-            if (robotMap.getRobotStartupCommand() != null) {
-                robotMap.getRobotStartupCommand().schedule();
-            }
-            enabled = true;
-        }
-
         //Run the auto startup command
-        if (shouldStartAuto) {
-            robotMap.getAutoStartupCommand().schedule();
-            shouldStartAuto = false;
+        if (robotMap.getAutoStartupCommands() != null && !DriverStation.getInstance().getGameSpecificMessage().isEmpty()) {
+            robotMap.getAutoStartupCommands().forEachRemaining(Command::schedule);
         }
-    }
-
-    /**
-     * Runs every tick in autonomous.
-     */
-    @Override
-    public void autonomousPeriodic() {
-        //Read sensors
-        this.robotMap.getUpdater().run();
-
-        //Start auto if the game-specific message has been set
-        if (shouldStartAuto && !DriverStation.getInstance().getGameSpecificMessage().isEmpty()) {
-            robotMap.getAutoStartupCommand().schedule();
-            shouldStartAuto = false;
-        }
-
-        //Run all commands. This is a WPILib thing you don't really have to worry about.
-        CommandScheduler.getInstance().run();
-    }
-
-    /**
-     * Run when we disable.
-     */
-    @Override
-    public void disabledInit() {
-        //Do nothing
     }
 
     /**
@@ -215,20 +153,8 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         //Run startup command if we start in test mode.
-        if (!enabled) {
-            if (robotMap.getRobotStartupCommand() != null) {
-                robotMap.getRobotStartupCommand().schedule();
-            }
-            enabled = true;
+        if(robotMap.getTestStartupCommands() != null){
+            robotMap.getTestStartupCommands().forEachRemaining(Command::schedule);
         }
-    }
-
-    /**
-     * Run every tic while disabled
-     */
-    @Override
-    public void disabledPeriodic() {
-        //Read sensors
-        this.robotMap.getUpdater().run();
     }
 }

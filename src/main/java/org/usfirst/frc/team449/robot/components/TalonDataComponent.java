@@ -11,7 +11,7 @@ public class TalonDataComponent implements DoubleSupplier {
     @NotNull private final FPSTalon talon;
     @NotNull private final ReturnValue value;
 
-    enum ReturnValue{
+    enum ReturnValue {
         position, velocity, current, voltage;
     }
 

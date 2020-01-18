@@ -20,35 +20,43 @@ public class CommandContainer implements Loggable {
 
   private final List<CommandButton> buttons;
 
-  private final Command robotStartupCommand;
+  private final List<Command> robotStartupCommand;
 
-  private final Command autoStartupCommand;
+  private final List<Command> autoStartupCommand;
 
-  private final Command teleopStartupCommand;
+  private final List<Command> teleopStartupCommand;
+
+  private final List<Command> testStartupCommand;
 
   @JsonCreator
   public CommandContainer(@Nullable List<DefaultCommand> defaultCommands,
                           @Nullable List<CommandButton> buttons,
-                          @Nullable Command robotStartupCommand,
-                          @Nullable Command autoStartupCommand,
-                          @Nullable Command teleopStartupCommand) {
+                          @Nullable List<Command> robotStartupCommand,
+                          @Nullable List<Command> autoStartupCommand,
+                          @Nullable List<Command> teleopStartupCommand,
+                          @Nullable List<Command> testStartupCommand) {
     this.defaultCommands = defaultCommands;
     this.buttons = buttons;
-    this.robotStartupCommand = robotStartupCommand != null ? robotStartupCommand : new InstantCommand();
-    this.autoStartupCommand = autoStartupCommand != null ? autoStartupCommand : new InstantCommand();
-    this.teleopStartupCommand = teleopStartupCommand != null ? teleopStartupCommand : new InstantCommand();
+    this.robotStartupCommand = robotStartupCommand;
+    this.autoStartupCommand = autoStartupCommand;
+    this.teleopStartupCommand = teleopStartupCommand;
+    this.testStartupCommand = testStartupCommand;
   }
 
-  public Command getRobotStartupCommand() {
+  public List<Command> getRobotStartupCommand() {
     return robotStartupCommand;
   }
 
-  public Command getAutoStartupCommand() {
+  public List<Command> getAutoStartupCommand() {
     return autoStartupCommand;
   }
 
-  public Command getTeleopStartupCommand() {
+  public List<Command> getTeleopStartupCommand() {
     return teleopStartupCommand;
+  }
+
+  public List<Command> getTestStartupCommand(){
+    return testStartupCommand;
   }
 
   @Override
