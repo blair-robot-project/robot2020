@@ -180,41 +180,13 @@ commands:
               port: 2 #TODO
           buttonNumber: 1 #A
       command:
-        org.usfirst.frc.team449.robot.commands.general.MappedSequentialCommandGroup:
-          commands:
-            - org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheel:
-                '@id': spinUpFlywheelCommand
-                flywheel:
-                  org.usfirst.frc.team449.robot.subsystem.complex.sho`oter.LoggingFlywheel:
-                    shooterFlywheel
-                feeder:
-                  org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-                    feeder
-            - org.usfirst.frc.team449.robot.commands.general.MappedPerpetualCommand:
-                requires:
-                  org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-                    shooterFlywheel
-                command:
-                  org.usfirst.frc.team449.robot.commands.general.MappedSequentialCommandGroup:
-                    commands:
-                      - org.usfirst.frc.team449.robot.commands.general.MappedWaitCommand:
-                          timeout: 1
-                      - org.usfirst.frc.team449.robot.commands.general.ConditionalCommandFunctional:
-                          onTrue:
-                            org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOn:
-                              '@id': startShootingCommand
-                              subsystem:
-                                org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-                                  shooterFlywheel
-                          onFalse:
-                            org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheel:
-                              spinUpFlywheelCommand
-                          booleanSupplier:
-                            org.usfirst.frc.team449.robot.commands.general.InstanceMethodBooleanSupplier: #TODO TODO
-                              source:
-                                org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-                                  shooterFlywheel
-                              methodName: isConditionTrueCached
+        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpThenShoot:
+          '@id': shooterStartCommand
+          flywheel:
+            org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
+              shooterFlywheel
+          feeder:
+            feeder
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -238,7 +210,7 @@ commands:
               mechanismsJoystick
           buttonNumber: 3 #X
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.ToggleIntaking:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.ToggleIntaking: #toggling generally a bad idea bc you can't tell if it's on all the time, so maybe TODO fix
           '@id': feederToggleCommand
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
