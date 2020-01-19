@@ -13,12 +13,15 @@ import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
+import org.usfirst.frc.team449.robot.components.LimelightComponent;
+
+import java.util.function.DoubleSupplier;
 
 /**
- * Turn a certain number of degrees from the current heading.
+ * Turn a certain number of degrees from the current heading, based on input from the limelight
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional & SubsystemAHRS> extends NavXTurnToAngle {
+public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional & SubsystemAHRS> extends NavXTurnToAngleRelative {
 
     /**
      * Default constructor.
@@ -36,13 +39,14 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
      * @param kP                Proportional gain. Defaults to zero.
      * @param kI                Integral gain. Defaults to zero.
      * @param kD                Derivative gain. Defaults to zero.
-     * @param setpoint          The setpoint, in degrees from 180 to -180.
+     * @param angleSupplier     The limelight component supplying the angle (in 2D) from the limelight to the target
+     *                          A LimelightComponent, ReturnValue x, unless there is a reason for it to not be
      * @param drive             The drive subsystem to execute this command on.
      * @param timeout           How long this command is allowed to run for, in seconds. Needed because sometimes
      *                          floating-point errors prevent termination.
      */
     @JsonCreator
-    public NavXTurnToAngleRelative(@JsonProperty(required = true) double absoluteTolerance,
+    public NavXTurnToAngleLimelight(@JsonProperty(required = true) double absoluteTolerance,
                                    @Nullable BufferTimer onTargetBuffer,
                                    double minimumOutput, @Nullable Double maximumOutput,
                                    @Nullable Integer loopTimeMillis,
@@ -51,11 +55,11 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
                                    int kP,
                                    int kI,
                                    int kD,
-                                   @JsonProperty(required = true) double setpoint,
+                                   @NotNull @JsonProperty(required = true) DoubleSupplier angleSupplier,
                                    @NotNull @JsonProperty(required = true) T drive,
                                    @JsonProperty(required = true) double timeout) {
         super(absoluteTolerance, onTargetBuffer, minimumOutput, maximumOutput, loopTimeMillis, deadband, inverted, kP
-                , kI, kD, setpoint, drive, timeout);
+                , kI, kD, angleSupplier.getAsDouble(), drive, timeout);
     }
 
     /**
@@ -65,7 +69,7 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
     public void initialize() {
         //Setup start time
         this.startTime = Clock.currentTimeMillis();
-        Shuffleboard.addEventMarker("NavXTurnToAngleRelative init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        Shuffleboard.addEventMarker("NavXTurnToAngleLimelight init.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("NavXRelativeTurnToAngle init.", this.getClass());
         //Do math to setup the setpoint.
         this.setSetpoint(clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() + setpoint));
@@ -77,9 +81,9 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
     @Override
     public void end(boolean interrupted) {
         if(interrupted){
-            Shuffleboard.addEventMarker("NavXTurnToAngleRelative interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+            Shuffleboard.addEventMarker("NavXTurnToAngleLimelight interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
         }
         //how the heck do we stop this thing help
-        Shuffleboard.addEventMarker("NavXTurnToAngleRelative end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        Shuffleboard.addEventMarker("NavXRelativeTurnToAngleLimelight end.", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 }

@@ -619,7 +619,7 @@ public class FPSTalon implements FPSSmartMotor {
      */
     @Log
     public double getOutputCurrent() {
-        return canTalon.getOutputCurrent();
+        return canTalon.getStatorCurrent();
     }
 
     /**
