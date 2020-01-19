@@ -9,12 +9,10 @@ import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
-import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
 
 /**
- * Turn on the flywheel and feeder (but not the kicker) in order to give the flywheel time to get up to speed.
+ * Turn on the flywheel but not the feeder in order to give the flywheel time to get up to speed.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SpinUpFlywheel extends InstantCommand {
@@ -24,21 +22,16 @@ public class SpinUpFlywheel extends InstantCommand {
      */
     @NotNull
     @Log.Exclude
-    private final SubsystemFlywheel flywheel;
-    @Nullable
-    @Log.Exclude
-    private final SubsystemIntake feeder;
+    private final SubsystemFlywheel subsystem;
 
     /**
      * Default constructor
      *
-     * @param flywheel The subsystem to execute this command on.
+     * @param subsystem The subsystem to execute this command on.
      */
     @JsonCreator
-    public SpinUpFlywheel(@NotNull @JsonProperty(required = true) SubsystemFlywheel flywheel,
-                          @Nullable @JsonProperty(required = true) SubsystemIntake feeder) {
-        this.flywheel = flywheel;
-        this.feeder = feeder;
+    public SpinUpFlywheel(@NotNull @JsonProperty(required = true) SubsystemFlywheel subsystem) {
+        this.subsystem = subsystem;
     }
 
     /**
@@ -55,9 +48,9 @@ public class SpinUpFlywheel extends InstantCommand {
      */
     @Override
     public void execute() {
-        if (feeder != null) feeder.setMode(SubsystemIntake.IntakeMode.IN_FAST); // Turn feeder on.
-        flywheel.turnFeederOff(); // Turn kicker off.
-        flywheel.setFlywheelState(SubsystemFlywheel.FlywheelState.SPINNING_UP); // Turn flywheel on.
+        subsystem.turnFeederOff();
+        subsystem.turnFlywheelOn();
+        subsystem.setFlywheelState(SubsystemFlywheel.FlywheelState.SPINNING_UP);
     }
 
     /**
@@ -65,7 +58,7 @@ public class SpinUpFlywheel extends InstantCommand {
      */
     @Override
     public void end(boolean interrupted) {
-        if (interrupted) {
+        if(interrupted){
             Shuffleboard.addEventMarker("SpinUpFlywheel Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
         }
         Shuffleboard.addEventMarker("SpinUpFlywheel end.", this.getClass().getSimpleName(), EventImportance.kNormal);
