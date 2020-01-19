@@ -109,6 +109,7 @@ public class FPSSparkMax implements FPSSmartMotor {
     /**
      * The setpoint in native units. Field to avoid garbage collection.
      */
+    @Log
     private double nativeSetpoint;
 
     /**
@@ -438,6 +439,7 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @return Current RPM for debug purposes
      */
     @Override
+    @Log
     public double encoderVelocity() {
         return canEncoder.getVelocity();
     }
@@ -447,6 +449,7 @@ public class FPSSparkMax implements FPSSmartMotor {
      *
      * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
      */
+    @Log
     public Double getVelocity() {
         return encoderToFPS(canEncoder.getVelocity());
     }
@@ -460,7 +463,6 @@ public class FPSSparkMax implements FPSSmartMotor {
     public void setVelocity(double velocity) {
         if (currentGearSettings.maxSpeed != null) {
             setVelocityFPS(velocity * currentGearSettings.maxSpeed);
-            System.out.println(encoderVelocity());
         } else {
             setPercentVoltage(velocity);
         }
