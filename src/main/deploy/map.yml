@@ -177,16 +177,17 @@ commands:
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               '@id': mechanismsJoystick
-              port: 2 #TODO
+              port: 0
           buttonNumber: 1 #A
       command:
         org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpThenShoot:
-          '@id': shooterStartCommand
+          '@id': shootCommand
           flywheel:
             org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
               shooterFlywheel
           feeder:
-            feeder
+            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+              feeder
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -196,7 +197,7 @@ commands:
               mechanismsJoystick
           buttonNumber: 2 #B
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOffRequires:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOff:
           '@id': shooterStopCommand
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
