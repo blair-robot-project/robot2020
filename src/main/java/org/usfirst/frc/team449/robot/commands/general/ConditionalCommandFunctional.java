@@ -27,7 +27,7 @@ public class ConditionalCommandFunctional extends ConditionalCommand {
     @JsonCreator
     public ConditionalCommandFunctional(@NotNull @JsonProperty(required = true) Command onTrue,
                                         @Nullable Command onFalse,
-                                        @NotNull @JsonProperty(required = true) BooleanSupplier booleanSupplier) {
+                                        @NotNull @JsonProperty(required = true) MappedBooleanSupplier booleanSupplier) {
         super(onTrue, onFalse, booleanSupplier);
     }
 }
