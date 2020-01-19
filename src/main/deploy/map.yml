@@ -204,7 +204,7 @@ commands:
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': intakeToggleButton
+          '@id': feederToggleButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               mechanismsJoystick

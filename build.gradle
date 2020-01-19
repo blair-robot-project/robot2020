@@ -2,7 +2,7 @@ plugins {
     id 'org.hidetake.ssh' version "2.9.0"
     id 'java'
     id 'idea'
-    id "edu.wpi.first.GradleRIO" version "2020.1.2"
+    id "edu.wpi.first.GradleRIO" version "2020.2.2"
     id "com.google.protobuf" version "0.8.8"
 }
 
