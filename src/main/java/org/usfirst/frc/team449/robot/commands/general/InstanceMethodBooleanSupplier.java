@@ -5,9 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
 import java.util.function.BooleanSupplier;
 
-public class InstanceMethodBooleanSupplier implements BooleanSupplier {
+public class InstanceMethodBooleanSupplier<T> implements MappedBooleanSupplier {
     private final BooleanSupplier invoke;
 
     @JsonCreator
