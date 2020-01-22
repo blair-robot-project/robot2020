@@ -102,6 +102,17 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     }
 
     /**
+     * Set voltage output raw
+     *
+     * @param left The voltage output for the left side of the drive from [-12, 12]
+     * @param right The voltage output for the right side of the drive from [-12, 12]
+     */
+    public void setVoltage(double left, double right){
+        leftMaster.setPercentVoltage(left / 12);
+        rightMaster.setPercentVoltage(right / 12);
+    }
+
+    /**
      * Get the velocity of the left side of the drive.
      *
      * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
