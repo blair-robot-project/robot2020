@@ -25,35 +25,24 @@ subsystems:
           enableBrakeMode: false
 #          vfpspoltagePerCurrentLinReg: 0 #TODO
           PDP: PDP
-#          fwdLimitSwitchNormallyOpen: false #TODO
-#          revLimitSwitchNormallyOpen: false #TODO
-#          remoteLimitSwitchID: 0 #TODO
-          #fwdSoftLimit: 0 #TODO
-          #revSoftLimit: 0 # TODO
-#          postEncoderGearing: 1 #TODO
-          feetPerRotation: 0 #TODO
-          currentLimit: 5 #TODO
+          postEncoderGearing: 1 #TODO
+          feetPerRotation: 1.0472 #TODO
           enableVoltageComp: true #TODO
-#          voltageCompSamples: 100 #TODO
-          reverseSensor: false #TODO
-#          perGearSettings:
-#            - gearNum: 0
-#              kP: 0.003
-#              kI: 0.0
-#              kD: 0.05
-#              #TODO check these values, currently same as kP, etc
-#              posKP: 0.003
-#              posKI: 0.0
-#              posKD: 0.05
+          perGearSettings:
+            - gearNum: 0
+              maxSpeed: 95 #fps
+              kP: 0.0001 #0.00074
+              kI: 0.0
+              kD: 0.001 #0.1
           startingGearNum: 0 #TODO
-#          ###slaveVictors:
-#          ###  - port: 3 #TODO
-#          ###    invertType: OpposeMaster
-      shooterThrottle: 0.2 #TODO
-      feederMotor:
+          slaveSparks:
+            - port: 2
+              invert: true
+      shooterThrottle: 2 #percent, this should be from -1 to 1
+      kickerMotor:
         org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon: #TODO TODO
           '@id': kickerTalon
-          port: 2 #TODO
+          port: 6
           name: kickerTalon
           reverseOutput: false
           enableBrakeMode: false
@@ -72,27 +61,14 @@ subsystems:
           #          feedbackDevice: QuadEncoder #TODO
           #          encoderCPR: 256 #TODO
           reverseSensor: false #TODO
-          #          perGearSettings:
-          #            - gearNum: 0
-          #              kP: 0.003
-          #              kI: 0.0
-          #              kD: 0.05
-          #              #TODO check these values, currently same as kP, etc
-          #              posKP: 0.003
-          #              posKI: 0.0
-          #              posKD: 0.05
-          startingGearNum: 0 #TODO
-          #updaterProcessPeriodSecs: 0.005 #TODO
-      feederThrottle: 0.1 #TODO
-      spinUpTimeoutSecs: 2
-      minShootingSpeedFPS: 1
+      kickerThrottle: .9 #percent
   # FEEDER
   - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
       '@id': feeder
       motor:
         org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon: #TODO TODO
           '@id': feederMotor
-          port: 2 #TODO
+          port: 99 #TODO
           name: feederMotor
           reverseOutput: false
           enableBrakeMode: false

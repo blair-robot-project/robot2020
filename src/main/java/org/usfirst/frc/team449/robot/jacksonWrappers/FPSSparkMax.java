@@ -109,6 +109,7 @@ public class FPSSparkMax implements FPSSmartMotor {
     /**
      * The setpoint in native units. Field to avoid garbage collection.
      */
+    @Log
     private double nativeSetpoint;
 
     /**
@@ -268,21 +269,21 @@ public class FPSSparkMax implements FPSSmartMotor {
             spark.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, revSoftLimit.floatValue());
         }
 
-//        //Set the current limit if it was given
-//        if (currentLimit != null) {
-//            spark.setSmartCurrentLimit(currentLimit);
-//        }
-//
-//        if(enableVoltageComp){
-//            spark.enableVoltageCompensation(12);
-//        } else {
-//            spark.disableVoltageCompensation();
-//        }
+        //Set the current limit if it was given
+        if (currentLimit != null) {
+            spark.setSmartCurrentLimit(currentLimit);
+        }
+
+        if(enableVoltageComp){
+            spark.enableVoltageCompensation(12);
+        } else {
+            spark.disableVoltageCompensation();
+        }
 
         if (slaveSparks != null) {
             //Set up slaves.
             for (SlaveSparkMax slave : slaveSparks) {
-                slave.setMaster(port, enableBrakeMode, PDP);
+                slave.setMasterSpark(spark, enableBrakeMode);
             }
         }
 
@@ -438,6 +439,7 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @return Current RPM for debug purposes
      */
     @Override
+    @Log
     public double encoderVelocity() {
         return canEncoder.getVelocity();
     }
@@ -447,6 +449,7 @@ public class FPSSparkMax implements FPSSmartMotor {
      *
      * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
      */
+    @Log
     public Double getVelocity() {
         return encoderToFPS(canEncoder.getVelocity());
     }
@@ -460,7 +463,6 @@ public class FPSSparkMax implements FPSSmartMotor {
     public void setVelocity(double velocity) {
         if (currentGearSettings.maxSpeed != null) {
             setVelocityFPS(velocity * currentGearSettings.maxSpeed);
-            System.out.println(encoderVelocity());
         } else {
             setPercentVoltage(velocity);
         }
