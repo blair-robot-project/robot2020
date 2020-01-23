@@ -35,7 +35,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     /**
      * How fast to run the feeder, from [-1, 1]
      */
-    private final double feederThrottle;
+    private final double kickerThrottle;
 
     /**
      * Throttle at which to run the multiSubsystem, from [-1, 1]
@@ -69,7 +69,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      * @param shooterMotor        The motor controlling the flywheel.
      * @param shooterThrottle     The throttle, from [-1, 1], at which to run the multiSubsystem.
      * @param kickerMotor         The motor controlling the feeder.
-     * @param feederThrottle      The throttle, from [-1, 1], at which to run the feeder.
+     * @param kickerThrottle      The throttle, from [-1, 1], at which to run the feeder.
      * @param spinUpTimeoutSecs   The amount of time, in seconds, it takes for the multiSubsystem to get up to speed.
      *                            Defaults to {@literal 0}.
      * @param minShootingSpeedFPS The speed, in feet per second, at which the flywheel nominally shoots.
@@ -79,13 +79,13 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     public LoggingFlywheel(@NotNull @JsonProperty(required = true) FPSSmartMotor shooterMotor,
                            @JsonProperty(required = true) double shooterThrottle,
                            @NotNull @JsonProperty(required = true) SimpleMotor kickerMotor,
-                           @JsonProperty(required = true) double feederThrottle,
+                           @JsonProperty(required = true) double kickerThrottle,
                            double spinUpTimeoutSecs,
                            @Nullable Double minShootingSpeedFPS) {
         this.shooterMotor = shooterMotor;
         this.shooterThrottle = shooterThrottle;
         this.kickerMotor = kickerMotor;
-        this.feederThrottle = feederThrottle;
+        this.kickerThrottle = kickerThrottle;
         this.spinUpTimeoutSecs = spinUpTimeoutSecs;
         this.minShootingSpeedFPS = minShootingSpeedFPS;
 
@@ -115,7 +115,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     @Override
     public void turnFeederOn() {
         kickerMotor.enable();
-        kickerMotor.setVelocity(feederThrottle);
+        kickerMotor.setVelocity(kickerThrottle);
     }
 
     /**

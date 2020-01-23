@@ -3,11 +3,14 @@ package org.usfirst.frc.team449.robot;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedRunnable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
+
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -69,27 +72,44 @@ public class RobotMap {
 //    }
 
     /**
-     * @return The command to be run when first enabled in autonomous mode.
+     * @return The commands to be run when first enabled in autonomous mode.
      */
     @Nullable
-    public Command getAutoStartupCommand() {
-        return commands.getAutoStartupCommand();
+    public Iterator<Command> getAutoStartupCommands() {
+        if(commands.getAutoStartupCommand() == null){
+            return null;
+        }
+        return commands.getAutoStartupCommand().iterator();
     }
 
     /**
-     * @return The command to be run when first enabled in teleoperated mode.
+     * @return The commands to be run when first enabled in teleoperated mode.
      */
     @Nullable
-    public Command getTeleopStartupCommand() {
-        return commands.getTeleopStartupCommand();
+    public Iterator<Command> getTeleopStartupCommands() {
+        if(commands.getTeleopStartupCommand() == null){
+            return null;
+        }
+        return commands.getTeleopStartupCommand().iterator();
+    }
+
+    @Nullable
+    public Iterator<Command> getTestStartupCommands(){
+        if(commands.getTestStartupCommand() == null){
+            return null;
+        }
+        return commands.getTestStartupCommand().iterator();
     }
 
     /**
-     * @return The command to be run when first enabled.
+     * @return The commands to be run when first enabled.
      */
     @Nullable
-    public Command getRobotStartupCommand() {
-        return commands.getRobotStartupCommand();
+    public Iterator<Command> getRobotStartupCommands() {
+        if(commands.getRobotStartupCommand() == null){
+            return null;
+        }
+        return commands.getRobotStartupCommand().iterator();
     }
 
     /**
@@ -106,4 +126,5 @@ public class RobotMap {
     public boolean useCameraServer() {
         return useCameraServer;
     }
+
 }
