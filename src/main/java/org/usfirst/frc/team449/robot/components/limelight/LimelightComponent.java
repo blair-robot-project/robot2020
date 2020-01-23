@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot.components;
+package org.usfirst.frc.team449.robot.components.limelight;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -80,18 +80,28 @@ public class LimelightComponent implements DoubleSupplier {
                 break;
             case latency:
                 entry = table.getEntry("tl");
+                //Offset should be 0
+                offset = 0;
                 break;
             case shortest:
                 entry = table.getEntry("tshort");
+                //Offset should be 0
+                offset = 0;
                 break;
             case width:
                 entry = table.getEntry("thor");
+                //Offset should be 0
+                offset = 0;
                 break;
             case height:
                 entry = table.getEntry("tvert");
+                //Offset should be 0
+                offset = 0;
                 break;
             case pipeIndex:
                 entry = table.getEntry("getpipe");
+                //Offset should be 0
+                offset = 0;
                 break;
             default:
                 entry = table.getEntry("camtran");
