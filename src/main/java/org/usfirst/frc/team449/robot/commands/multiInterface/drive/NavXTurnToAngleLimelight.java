@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
@@ -40,25 +40,26 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
      * @param kD                Derivative gain. Defaults to zero.
      * @param angleSupplier     The limelight component supplying the angle (in 2D) from the limelight to the target
      *                          A LimelightComponent, ReturnValue x, unless there is a reason for it to not be
-     * @param drive             The drive subsystem to execute this command on.
+     * @param subsystem         The drive subsystem to execute this command on.
      * @param timeout           How long this command is allowed to run for, in seconds. Needed because sometimes
      *                          floating-point errors prevent termination.
      */
     @JsonCreator
     public NavXTurnToAngleLimelight(@JsonProperty(required = true) double absoluteTolerance,
-                                   @Nullable BufferTimer onTargetBuffer,
-                                   double minimumOutput, @Nullable Double maximumOutput,
-                                   @Nullable Integer loopTimeMillis,
-                                   double deadband,
-                                   boolean inverted,
-                                   int kP,
-                                   int kI,
-                                   int kD,
-                                   @NotNull @JsonProperty(required = true) DoubleSupplier angleSupplier,
-                                   @NotNull @JsonProperty(required = true) T drive,
-                                   @JsonProperty(required = true) double timeout) {
+                                    @Nullable BufferTimer onTargetBuffer,
+                                    double minimumOutput,
+                                    @Nullable Double maximumOutput,
+                                    @Nullable Integer loopTimeMillis,
+                                    double deadband,
+                                    boolean inverted,
+                                    int kP,
+                                    int kI,
+                                    int kD,
+                                    @NotNull @JsonProperty(required = true) DoubleSupplier angleSupplier,
+                                    @NotNull @JsonProperty(required = true) T subsystem,
+                                    @JsonProperty(required = true) double timeout) {
         super(absoluteTolerance, onTargetBuffer, minimumOutput, maximumOutput, loopTimeMillis, deadband, inverted, kP
-                , kI, kD, angleSupplier.getAsDouble(), drive, timeout);
+                , kI, kD, angleSupplier.getAsDouble(), subsystem, timeout);
     }
 
     /**

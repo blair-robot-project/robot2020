@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot.components.limelight;
+package org.usfirst.frc.team449.robot.components;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,9 +7,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import java.util.function.DoubleSupplier;
 
 /**
- * Determines the distance from the Limelight to a vision target, at an appropriate angle up or down from the field.
+ * Determines the distance from the Limelight to a vision target.
  */
-public class LimelightDistanceComponent implements DoubleSupplier {
+public class LimelightDistanceComponentTilted implements DoubleSupplier {
 
     /**
      * The height of the Limelight above the ground
@@ -32,7 +32,7 @@ public class LimelightDistanceComponent implements DoubleSupplier {
      * @param targetHeight the height of the expected vision target, probably provided by the game manual
      */
     @JsonCreator
-    public LimelightDistanceComponent(@JsonProperty(required = true) double limelightHeight,
+    public LimelightDistanceComponentTilted(@JsonProperty(required = true) double limelightHeight,
                                       @JsonProperty(required = true) double limelightAngleDown,
                                       @JsonProperty(required = true) double targetHeight) {
         this.limelightHeight = limelightHeight;
@@ -41,11 +41,11 @@ public class LimelightDistanceComponent implements DoubleSupplier {
     }
 
     /**
-     * @return Gets the distance from the robot to the vision target, coplanar with the field
+     * @return Gets the distance from the robot to the vision target, at an angle above the field
      */
     @Override
     public double getAsDouble() {
         DoubleSupplier robotToTargAngle = new LimelightComponent(LimelightComponent.ReturnValue.y, 0);
-        return (targetHeight - limelightHeight) * Math.tan(Math.toRadians(limelightAngle + robotToTargAngle.getAsDouble()));
+        return (targetHeight - limelightHeight) / Math.sin(Math.toRadians(limelightAngle + robotToTargAngle.getAsDouble()));
     }
 }
