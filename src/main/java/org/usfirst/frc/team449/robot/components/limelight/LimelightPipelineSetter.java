@@ -4,8 +4,8 @@ package org.usfirst.frc.team449.robot.components.limelight;
  * Sets the limelight pipeline to the index provided
  * Following are (as of 2020) the pipelines and their uses
  * 0: DriverCamera camera for use by the driver
- * 1: LowDistance setting for close-range vision targets (in the trench in front of ctrl panel)
- * 2:
+ * 1: CloseDistance setting for close-range vision targets (in the trench in front of ctrl panel)
+ * 2: FarDistance same but with 2x zoom for being farther away
  * 3:
  * 4:
  * 5:
