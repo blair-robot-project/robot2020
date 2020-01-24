@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.usfirst.frc.team449.robot.components.TrajectoryGenerationComponent;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class RamseteControllerUnidirectionalDrive extends CommandBase {
@@ -46,6 +47,7 @@ public class RamseteControllerUnidirectionalDrive extends CommandBase {
     @Override
     public void initialize(){
         absoluteTime = Timer.getFPGATimestamp();
+        drivetrain.resetOdometry(drivetrain.getCurrentPose());
         Trajectory.State initialState = trajectory.sample(Timer.getFPGATimestamp() - absoluteTime);
         previousSpeeds = drivetrain.getDriveKinematics().toWheelSpeeds(new ChassisSpeeds(initialState.velocityMetersPerSecond,
                 0,

@@ -31,6 +31,8 @@ public class TrajectoryGenerationComponent {
                 .setKinematics(drivetrain.getDriveKinematics())
                 .addConstraint(constraint);
 
+        waypoints.add(0, drivetrain.getCurrentPose());
+
         trajectory = TrajectoryGenerator.generateTrajectory(waypoints, configuration);
     }
 

@@ -21,6 +21,6 @@ public class MappedPose2d extends Pose2d {
     public MappedPose2d(@JsonProperty(required = true) double xPosition,
                         @JsonProperty(required = true) double yPosition,
                         double angle){
-        super(xPosition / 3.281, yPosition / 3.281, new Rotation2d(Math.toRadians(angle)));
+        super(xPosition / 3.281, yPosition / 3.281, Rotation2d.fromDegrees(angle));
     }
 }

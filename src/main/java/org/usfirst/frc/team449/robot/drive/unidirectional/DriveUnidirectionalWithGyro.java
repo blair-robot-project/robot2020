@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
 
@@ -77,7 +79,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     public DriveUnidirectionalWithGyro(@NotNull @JsonProperty(required = true) FPSTalon leftMaster,
                                        @NotNull @JsonProperty(required = true) FPSTalon rightMaster,
                                        @NotNull @JsonProperty(required = true) MappedAHRS ahrs,
-                                       @NotNull @JsonProperty(required = true) double trackWidthMeters) {
+                                       @JsonProperty(required = true) double trackWidthMeters) {
         super();
         //Initialize stuff
         this.rightMaster = rightMaster;
@@ -86,6 +88,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
         this.overrideGyro = false;
         this.driveKinematics = new DifferentialDriveKinematics(trackWidthMeters);
         this.driveOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+//        resetOdometry(startingPose);
     }
 
     /**
@@ -343,9 +346,9 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * Reset odometry tracker to current robot pose
      */
     @Log
-    public void resetOdometry(){
+    public void resetOdometry(Pose2d pose){
         resetPosition();;
-        driveOdometry.resetPosition(getCurrentPose(), Rotation2d.fromDegrees(getHeading()));
+        driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
     }
 
     /**
@@ -360,7 +363,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * @return Current estimated pose based on odometry tracker data
      */
     public Pose2d getCurrentPose(){
-        return driveOdometry.getPoseMeters();
+        return driveOdometry.getPoseMeters() != null ? driveOdometry.getPoseMeters() : new Pose2d(new Translation2d(0, 0),new Rotation2d(0));
     }
 
     /**
@@ -444,6 +447,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Override
     public void update() {
+        updateOdometry();
         cachedLeftVel = getLeftVel();
         cachedLeftPos = getLeftPos();
         cachedRightVel = getRightVel();
