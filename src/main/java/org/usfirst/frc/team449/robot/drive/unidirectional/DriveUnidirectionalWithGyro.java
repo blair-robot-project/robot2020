@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -88,7 +89,6 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
         this.overrideGyro = false;
         this.driveKinematics = new DifferentialDriveKinematics(trackWidthMeters);
         this.driveOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
-//        resetOdometry(startingPose);
     }
 
     /**
@@ -356,7 +356,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     public void updateOdometry(){
         //need to convert to meters
-        driveOdometry.update(Rotation2d.fromDegrees(getHeading()), getLeftPos() / 3.281, getRightPos() / 3.281);
+        driveOdometry.update(Rotation2d.fromDegrees(getHeading()), Units.feetToMeters(getLeftPos()), Units.feetToMeters(getRightPos()));
     }
 
     /**
@@ -371,7 +371,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     public DifferentialDriveWheelSpeeds getWheelSpeeds(){
         //need to convert to meters
-        return new DifferentialDriveWheelSpeeds(getLeftVel() / 3.281, getRightVel() / 3.281);
+        return new DifferentialDriveWheelSpeeds(Units.feetToMeters(getLeftVel()), Units.feetToMeters(getRightVel()));
     }
 
     /**

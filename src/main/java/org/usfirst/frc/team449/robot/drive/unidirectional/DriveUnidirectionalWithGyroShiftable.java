@@ -46,7 +46,6 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
                                                 @NotNull @JsonProperty(required = true) FPSTalon rightMaster,
                                                 @NotNull @JsonProperty(required = true) MappedAHRS ahrs,
                                                 @JsonProperty(required = true) double trackWidthMeters,
-//                                                @NotNull @JsonProperty(required = true) Pose2d startingPose,
                                                 @NotNull @JsonProperty(required = true) ShiftComponent shiftComponent,
                                                 boolean startingOverrideAutoshift) {
         super(leftMaster, rightMaster, ahrs, trackWidthMeters);

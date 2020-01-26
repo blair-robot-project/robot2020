@@ -98,11 +98,6 @@ subsystems:
           port: kMXP
           invertYaw: true
       trackWidthMeters: 0.6
-      startingPose:
-        org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d:
-          xPosition: 0
-          yPosition: 0
-          angle: 0
       shiftComponent:
         org.usfirst.frc.team449.robot.components.ShiftComponent:
           '@id': driveShiftComponent
@@ -217,13 +212,33 @@ commands:
               '@id': upshiftDebouncer
               bufferTimeSeconds: 0.06
             upshiftFwdThresh: 0.4
-#  autoStartupCommand:
-#    org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerUnidirectionalDrive:
-#      '@id':testDriveCommand
-#      drivetrain:
-#        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
-#      P: 0.15
-#      D: 0
+  autoStartupCommand:
+    - org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerUnidirectionalDrive:
+      '@id': testDriveCommand
+      drivetrain:
+        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
+      startingPose:
+        org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d:
+          xPosition: 0
+          yPosition: 0
+          angle : 0
+      P: 0.15
+      D: 0
+      trajectoryGenerator:
+        org.usfirst.frc.team449.robot.components.TrajectoryGenerationComponent:
+          drivetrain:
+            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
+          maxSpeedMeters: 2.134
+          maxAccelMeters: 0.5
+          waypoints:
+            - org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d:
+                xPosition: 0
+                yPosition: 0
+                angle: 0
+            - org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d:
+                xPosition: 5
+                yPosition: 0
+                angle: 0
 
 # UPDATER
 updater:

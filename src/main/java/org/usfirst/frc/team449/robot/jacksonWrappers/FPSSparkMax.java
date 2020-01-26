@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.util.Units;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -114,9 +115,10 @@ public class FPSSparkMax implements FPSSmartMotor {
 
     /**
      * Create a new SPARK MAX Controller
+     *
      * @param port                       CAN port of this Talon.
      * @param name                       The talon's name, used for logging purposes. Defaults to talon_portnum
-     * @param reverseOutput              Whether to reverse the output.
+     * @param inverted              Whether to reverse the output.
      * @param enableBrakeMode            Whether to brake or coast when stopped.
      * @param PDP                        The PDP this Talon is connected to.
      * @param fwdLimitSwitchNormallyOpen Whether the forward limit switch is normally open or closed. If this is null,
@@ -143,12 +145,12 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @param startingGearNum            The number of the gear to start in. Ignored if startingGear isn't null.
      *                                   Defaults to the lowest gear.
      * @param statusFrameRatesMillis     The update rates, in millis, for each of the Talon status frames.
-     * @param controlFrameRateMillis    The update rate, in milliseconds, for each of the control frame.
+     * @param controlFrameRateMillis     The update rate, in milliseconds, for each of the control frame.
      */
     @JsonCreator
     public FPSSparkMax(@JsonProperty(required = true) int port,
                        @Nullable String name,
-                       boolean reverseOutput,
+                       boolean inverted,
                        @JsonProperty(required = true) boolean enableBrakeMode,
                        @Nullable PDP PDP,
                        @Nullable Boolean fwdLimitSwitchNormallyOpen,
@@ -167,13 +169,14 @@ public class FPSSparkMax implements FPSSmartMotor {
                        @Nullable final Integer controlFrameRateMillis,
                        @Nullable List<SlaveSparkMax> slaveSparks) {
         spark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
+        spark.restoreFactoryDefaults();
         canEncoder = spark.getEncoder();
         pidController = spark.getPIDController();
 
         //Set the name to the given one or to talon_portnum
         this.name = name != null ? name : ("talon_" + port);
         //Set this to false because we only use reverseOutput for slaves.
-        spark.setInverted(reverseOutput);
+        spark.setInverted(inverted);
         //Set brake mode
         spark.setIdleMode(enableBrakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
         //Reset the position
@@ -274,7 +277,7 @@ public class FPSSparkMax implements FPSSmartMotor {
             spark.setSmartCurrentLimit(currentLimit);
         }
 
-        if(enableVoltageComp){
+        if (enableVoltageComp) {
             spark.enableVoltageCompensation(12);
         } else {
             spark.disableVoltageCompensation();
@@ -297,7 +300,7 @@ public class FPSSparkMax implements FPSSmartMotor {
     }
 
     @Override
-    public void setPercentVoltage(double percentVoltage){
+    public void setPercentVoltage(double percentVoltage) {
         currentControlMode = ControlType.kVoltage;
         //Warn the user if they're setting Vbus to a number that's outside the range of values.
         if (Math.abs(percentVoltage) > 1.0) {
@@ -335,8 +338,6 @@ public class FPSSparkMax implements FPSSmartMotor {
         pidController.setP(currentGearSettings.kP, 0);
         pidController.setI(currentGearSettings.kI, 0);
         pidController.setD(currentGearSettings.kD, 0);
-
-        spark.burnFlash();
     }
 
     /**
@@ -432,7 +433,11 @@ public class FPSSparkMax implements FPSSmartMotor {
         setpoint = feet;
         nativeSetpoint = feetToEncoder(feet);
         pidController.setFF(currentGearSettings.feedForwardCalculator.ks / 12.);
-        pidController.setReference(nativeSetpoint, ControlType.kPosition);
+        pidController.setReference(nativeSetpoint,
+                ControlType.kPosition,
+                0,
+                currentGearSettings.feedForwardCalculator.ks,
+                CANPIDController.ArbFFUnits.kVoltage);
     }
 
     /**
@@ -478,18 +483,23 @@ public class FPSSparkMax implements FPSSmartMotor {
         currentControlMode = ControlType.kVelocity;
         nativeSetpoint = FPSToEncoder(velocity);
         setpoint = velocity;
-        pidController.setFF(currentGearSettings.feedForwardCalculator.calculate(velocity) / 12.);
-        pidController.setReference(nativeSetpoint, ControlType.kVelocity);
+        pidController.setFF(0);
+        pidController.setReference(nativeSetpoint,
+                ControlType.kVelocity,
+                0,
+                currentGearSettings.feedForwardCalculator.calculate(velocity),
+                CANPIDController.ArbFFUnits.kVoltage);
     }
 
     @Override
+    @Log
     public double getError() {
-        //but how though
-        return 0;
+        return getSetpoint() - getVelocity();
     }
 
     @Nullable
     @Override
+    @Log
     public Double getSetpoint() {
         return setpoint;
     }
