@@ -22,7 +22,7 @@ subsystems:
           &leftMaster
           '@id': leftMaster
           name: left
-          port: 1
+          port: 2
           PDP:
             org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
           voltagePerCurrentLinReg:
@@ -32,7 +32,7 @@ subsystems:
           reverseSensor: false
           enableBrakeMode: true
           postEncoderGearing: 0.13333333333
-          feetPerRotation: .5
+          feetPerRotation: .5 #meters per rotation
           currentLimit: 35
           enableVoltageComp: true
           feedbackDevice: QuadEncoder
@@ -41,8 +41,8 @@ subsystems:
           perGearSettings:
             - &lowGear
               gear: LOW
-              maxSpeed: 7.0
-              kP: 0.5
+              maxSpeed: 2.2
+              kP: 0.2
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                   kS: 0.954
@@ -50,8 +50,8 @@ subsystems:
                   kA: 0.573
             - &highGear
               gear: HIGH
-              maxSpeed: 14
-              kP: 0.5
+              maxSpeed: 5
+              kP: 0.2
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                   kS: 1.11
@@ -61,16 +61,16 @@ subsystems:
           statusFrameRatesMillis: !!map
             Status_4_AinTempVbat: 15
           slaveVictors:
-            - port: 2
+            - port: 4
               invertType: FollowMaster
-            - port: 3
+            - port: 6
               invertType: FollowMaster
       rightMaster:
         org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
           <<: *leftMaster
           '@id': rightMaster
           name: right
-          port: 4
+          port: 1
           reverseOutput: false
           reverseSensor: false
           perGearSettings:
@@ -87,9 +87,9 @@ subsystems:
                   kV: 2.05
                   kA: 0.788
           slaveVictors:
-            - port: 12
+            - port: 3
               #inverted: false
-            - port: 6
+            - port: 5
               #inverted: false
       startingOverrideAutoshift: false
       ahrs:
@@ -109,8 +109,8 @@ subsystems:
           piston:
             '@id': driveShifter
             module: 0
-            forward: 0
-            reverse: 1
+            forward: 1
+            reverse: 0
           startingGear: LOW
 
 # COMMANDS
