@@ -60,7 +60,7 @@ public class FPSSparkMax implements FPSSmartMotor {
      * The coefficient the output changes by after being measured by the encoder, e.g. this would be 1/70 if there was a
      * 70:1 gearing between the encoder and the final output.
      */
-    private final double postEncoderGearing;
+    private double postEncoderGearing;
     /**
      * The number of feet travelled per rotation of the motor this is attached to, or null if there is no encoder.
      */
@@ -323,6 +323,10 @@ public class FPSSparkMax implements FPSSmartMotor {
     public void setGear(int gear) {
         //Set the current gear
         currentGearSettings = perGearSettings.get(gear);
+
+        if(currentGearSettings.postEncoderGearing != null){
+            this.postEncoderGearing = currentGearSettings.postEncoderGearing;
+        }
 
         //note, no current limiting
 
