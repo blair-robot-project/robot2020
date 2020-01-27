@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +30,7 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
     /**
      * On-board PID controller
      */
-
+    @Log
     protected final PIDController pidController;
 
     /**
@@ -89,10 +90,10 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
         this.subsystem = subsystem;
 
         //It's a circle, so it's continuous
-        this.getController().enableContinuousInput(-180, 180);
+        pidController.enableContinuousInput(-180, 180);
 
         //Set the absolute tolerance to be considered on target within.
-        this.getController().setTolerance(absoluteTolerance);
+        pidController.setTolerance(absoluteTolerance);
 
         //This is how long we have to be within the tolerance band. Multiply by loop period for time in ms.
         this.onTargetBuffer = onTargetBuffer;
@@ -100,12 +101,6 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
         //Minimum output, the smallest output it's possible to give. One-tenth of your drive's top speed is about
         // right.
         this.minimumOutput = minimumOutput;
-
-        //This caps the output we can give. One way to set up closed-loop is to make P large and then use this to
-        // prevent overshoot.
-        if (maximumOutput != null) {
-            this.getController().enableContinuousInput(-maximumOutput, maximumOutput);
-        }
 
         //Set a deadband around the setpoint, in degrees, within which don't move, to avoid "dancing"
         this.deadband = deadband;
@@ -130,7 +125,7 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
      *
      */
     protected void setSetpoint(double setpoint){
-        this.getController().setSetpoint(setpoint);
+        pidController.setSetpoint(setpoint);
     }
 
     /**
@@ -138,9 +133,14 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
      *
      * @return standard output
      */
+    @Log
+    protected double getRawOutput() {
+        return pidController.calculate(subsystem.getHeadingCached());
+    }
 
-    protected double getRawOutput(){
-        return this.getController().calculate(subsystem.getHeadingCached());
+    @Log
+    public double getError() {
+        return pidController.getPositionError();
     }
 
     /**
@@ -149,6 +149,7 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
      * @return The processed output, ready to be subtracted from the left side of the drive output and added to the
      * right side.
      */
+    @Log
     protected double getOutput() {
         double controllerOutput = getRawOutput();
         //Set the output to the minimum if it's too small.
@@ -171,7 +172,7 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
      * @return That output after being deadbanded with the map-given deadband.
      */
     protected double deadbandOutput(double output) {
-        return Math.abs(this.getController().getPositionError()) > deadband ? output : 0;
+        return Math.abs(pidController.getPositionError()) > deadband ? output : 0;
     }
 
     /**
@@ -183,9 +184,9 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
     @Log
     protected boolean onTarget() {
         if (onTargetBuffer == null) {
-            return this.getController().atSetpoint();
+            return pidController.atSetpoint();
         } else {
-            return onTargetBuffer.get(this.getController().atSetpoint());
+            return onTargetBuffer.get(pidController.atSetpoint());
         }
     }
 

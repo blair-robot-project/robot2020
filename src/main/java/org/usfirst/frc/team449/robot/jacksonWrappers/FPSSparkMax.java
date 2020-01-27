@@ -505,16 +505,19 @@ public class FPSSparkMax implements FPSSmartMotor {
     }
 
     @Override
+    @Log
     public double getOutputVoltage() {
-        return spark.getAppliedOutput();
+        return spark.getAppliedOutput() * spark.getBusVoltage();
     }
 
     @Override
+    @Log
     public double getBatteryVoltage() {
         return spark.getBusVoltage();
     }
 
     @Override
+    @Log
     public double getOutputCurrent() {
         return spark.getOutputCurrent();
     }

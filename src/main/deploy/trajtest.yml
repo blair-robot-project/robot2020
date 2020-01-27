@@ -32,7 +32,7 @@ subsystems:
           reverseSensor: false
           enableBrakeMode: true
           postEncoderGearing: 0.13333333333
-          feetPerRotation: 1.556344647
+          feetPerRotation: .5
           currentLimit: 35
           enableVoltageComp: true
           feedbackDevice: QuadEncoder
@@ -42,21 +42,21 @@ subsystems:
             - &lowGear
               gear: LOW
               maxSpeed: 7.0
-              kP: 0.15
+              kP: 0.5
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 0.960891
-                  kV: 1.433226
-                  kA: 0.165688
+                  kS: 0.954
+                  kV: 5.19
+                  kA: 0.573
             - &highGear
               gear: HIGH
               maxSpeed: 14
-              kP: 0.3
+              kP: 0.5
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 1.40187
-                  kV: 0.59688
-                  kA: 0.15676
+                  kS: 1.11
+                  kV: 2.04
+                  kA: 0.637
           updaterProcessPeriodSecs: 0.005
           statusFrameRatesMillis: !!map
             Status_4_AinTempVbat: 15
@@ -77,15 +77,15 @@ subsystems:
             - <<: *lowGear
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 0.959980
-                  kV: 1.460269
-                  kA: 0.224505
+                  kS: 0.954
+                  kV: 5.19
+                  kA: 0.573
             - <<: *highGear
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 1.400309
-                  kV: 0.631419
-                  kA: 0.151538
+                  kS: 1.15
+                  kV: 2.05
+                  kA: 0.788
           slaveVictors:
             - port: 12
               #inverted: false
@@ -214,31 +214,32 @@ commands:
             upshiftFwdThresh: 0.4
   autoStartupCommand:
     - org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerUnidirectionalDrive:
-      '@id': testDriveCommand
-      drivetrain:
-        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
-      startingPose:
-        org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d:
-          xPosition: 0
-          yPosition: 0
-          angle : 0
-      P: 0.15
-      D: 0
-      trajectoryGenerator:
-        org.usfirst.frc.team449.robot.components.TrajectoryGenerationComponent:
-          drivetrain:
-            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
-          maxSpeedMeters: 2.134
-          maxAccelMeters: 0.5
-          waypoints:
-            - org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d:
+        '@id': testDriveCommand
+        drivetrain:
+          org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
+        P: 0.15
+        D: 0
+        trajectoryGenerator:
+          org.usfirst.frc.team449.robot.components.TrajectoryGenerationCubicComponent:
+            drivetrain:
+              org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
+            maxSpeedMeters: 2.134
+            maxAccelMeters: 0.5
+            waypoints:
+              startingPose:
                 xPosition: 0
                 yPosition: 0
                 angle: 0
-            - org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d:
-                xPosition: 5
+              translations:
+                - xPosition: 1
+                  yPosition: 1
+                - xPosition: 2
+                  yPosition: -1
+              endingPose:
+                xPosition: 3
                 yPosition: 0
                 angle: 0
+
 
 # UPDATER
 updater:

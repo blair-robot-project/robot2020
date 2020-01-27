@@ -7,8 +7,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.components.TrajectoryGenerationComponent;
+import org.usfirst.frc.team449.robot.components.TrajectoryGenerationCubicComponent;
+import org.usfirst.frc.team449.robot.components.TrajectoryGenerationQuinticComponent;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d;
 
@@ -17,11 +18,10 @@ public class RamseteControllerUnidirectionalDrive extends RamseteCommand {
 
     @JsonCreator
     public RamseteControllerUnidirectionalDrive(@JsonProperty(required = true) DriveUnidirectionalWithGyro drivetrain,
-                                                @JsonProperty(required = true) MappedPose2d startingPose,
                                                 @JsonProperty(required = true) double P,
                                                 @JsonProperty(required = true) double D,
                                                 @JsonProperty(required = true) TrajectoryGenerationComponent trajectoryGenerator){
-        super(trajectoryGenerator.getTrajectory(startingPose),
+        super(trajectoryGenerator.getTrajectory(),
                 drivetrain::getCurrentPose,
                 new RamseteController(),
                 drivetrain.getLeftFeedforwardCalculator(),

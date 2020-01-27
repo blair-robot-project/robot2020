@@ -32,7 +32,7 @@ subsystems:
           reverseSensor: false
           enableBrakeMode: true
           postEncoderGearing: 0.13333333333
-          feetPerRotation: 1.556344647
+          feetPerRotation: .5 #meters per rotation
           currentLimit: 35
           enableVoltageComp: true
           feedbackDevice: QuadEncoder
@@ -41,22 +41,22 @@ subsystems:
           perGearSettings:
             - &lowGear
               gear: LOW
-              maxSpeed: 7.0
-              kP: 0.15
+              maxSpeed: 2.2
+              kP: 0.2
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 0.960891
-                  kV: 1.433226
-                  kA: 0.165688
+                  kS: 0.954
+                  kV: 5.19
+                  kA: 0.573
             - &highGear
               gear: HIGH
-              maxSpeed: 14
-              kP: 0.3
+              maxSpeed: 5
+              kP: 0.2
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 1.40187
-                  kV: 0.59688
-                  kA: 0.15676
+                  kS: 1.11
+                  kV: 2.04
+                  kA: 0.637
           updaterProcessPeriodSecs: 0.005
           statusFrameRatesMillis: !!map
             Status_4_AinTempVbat: 15
@@ -77,15 +77,15 @@ subsystems:
             - <<: *lowGear
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 0.959980
-                  kV: 1.460269
-                  kA: 0.224505
+                  kS: 0.954
+                  kV: 5.19
+                  kA: 0.573
             - <<: *highGear
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 1.400309
-                  kV: 0.631419
-                  kA: 0.151538
+                  kS: 1.15
+                  kV: 2.05
+                  kA: 0.788
           slaveVictors:
             - port: 3
               #inverted: false
@@ -109,8 +109,8 @@ subsystems:
           piston:
             '@id': driveShifter
             module: 0
-            forward: 0
-            reverse: 1
+            forward: 1
+            reverse: 0
           startingGear: LOW
   # SHOOTER
   - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
@@ -129,10 +129,10 @@ subsystems:
             feedForwardCalculator:
               org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                 kS: 0
-                kV: 0.126
+                kV: 0 #0.126
                 kA: 0
             maxSpeed: 90 #rps
-            kP: 0 #0.0001
+            kP: 0 #5e-5 #0.0001
             kI: 0.
             kD: 0
           startingGearNum: 0 #TODO
@@ -157,7 +157,7 @@ subsystems:
               kI: 0
               kD: 0
           startingGearNum: 0 #TODO
-      shooterThrottle: .55 #percent
+      shooterThrottle: 1 #.55 #percent
       kickerMotor:
         org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.MappedVictorSPX: #TODO TODO
           '@id': kickerVictor
@@ -199,6 +199,7 @@ commands:
           kP: 0.003
           kI: 0.0
           kD: 0.05
+          maximumOutput: 1
           absoluteTolerance: 0
           deadband: 2
           maxAngularVelToEnterLoop: 3
@@ -267,7 +268,7 @@ commands:
                               3: 1
               invertDPad: false
               dPadShift: 0.1
-              turnInPlaceRotScale: 0.5
+              turnInPlaceRotScale: 1
               rescaleOutputs: true
               scaleRotByFwdPoly:
                 org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
@@ -279,14 +280,62 @@ commands:
                     #2: 0.25
           autoshiftComponent:
             '@id': autoshiftComponent
-            upshiftSpeed: 4
-            downshiftSpeed: 2.7
+            upshiftSpeed: 1.5
+            downshiftSpeed: 1
             upshiftDebouncer:
               '@id': upshiftDebouncer
               bufferTimeSeconds: 0.06
             upshiftFwdThresh: 0.4
   #BUTTONS
   buttons:
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': shiftdown
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              '@id': mechanismsJoystick
+#              port: 1
+#          buttonNumber: 6 #shoulder right
+#      command:
+#        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+#          '@id': overrideAndShift
+#          commandList:
+#            - org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
+#                '@id': overrideAutoshift
+#                drive:
+#                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#                    drive
+#                override: true
+#            - org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToLowGear:
+#                '@id': downshift
+#                subsystem:
+#                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#                    drive
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': shiftUp
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              '@id': mechanismsJoystick
+#              port: 1
+#          buttonNumber: 5 #shoulder left
+#      command:
+#        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+#          '@id': overrideAndShift
+#          commandList:
+#            - org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
+#                '@id': overrideAutoshift
+#                drive:
+#                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#                    drive
+#                override: true
+#            - org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToHighGear:
+#                '@id': downshift
+#                subsystem:
+#                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#                    drive
+#      action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': shooterStartButton

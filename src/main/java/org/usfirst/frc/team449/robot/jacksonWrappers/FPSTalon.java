@@ -579,7 +579,7 @@ public class FPSTalon implements FPSSmartMotor {
         setpoint = velocity;
         canTalon.config_kF(0, 0, 0);
         canTalon.set(ControlMode.Velocity, nativeSetpoint, DemandType.ArbitraryFeedForward,
-                currentGearSettings.feedForwardCalculator.calculate(Units.feetToMeters(velocity)) / 12.);
+                currentGearSettings.feedForwardCalculator.calculate(velocity) / 12. );
     }
 
     /**
