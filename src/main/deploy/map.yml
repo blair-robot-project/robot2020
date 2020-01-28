@@ -18,9 +18,10 @@ subsystems:
       '@id': drive
       #Wheelbase: 2.14
       leftMaster:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+        org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
           &leftMaster
           '@id': leftMaster
+          type: TALON
           name: left
           port: 2
           PDP:
@@ -66,7 +67,7 @@ subsystems:
             - port: 6
               invertType: FollowMaster
       rightMaster:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+        org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
           <<: *leftMaster
           '@id': rightMaster
           name: right
@@ -102,9 +103,9 @@ subsystems:
         org.usfirst.frc.team449.robot.components.ShiftComponent:
           '@id': driveShiftComponent
           otherShiftables:
-            - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+            - org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
                 leftMaster
-            - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+            - org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
                 rightMaster
           piston:
             '@id': driveShifter
@@ -116,11 +117,13 @@ subsystems:
   - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
       '@id': shooterFlywheel
       shooterMotor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSSparkMax:
+        org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
           '@id': shooterMotor
+          type: SPARKMAX
+          reverseSensor: false
           port: 1 #TODO
           name: rightMotor
-          inverted: true
+          reverseOutput: true
           enableBrakeMode: true
           PDP: PDP
           enableVoltageComp: true #TODO
@@ -137,11 +140,12 @@ subsystems:
             kD: 0
           startingGearNum: 0 #TODO
       otherShooterMotor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSSparkMax:
+        org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
           '@id': shooterMotor2
+          type: SPARKMAX
           port: 2 #TODO
           name: leftMotor
-          inverted: false
+          reverseOutput: false
           enableBrakeMode: true
           PDP: PDP
           enableVoltageComp: true #TODO
@@ -169,8 +173,9 @@ subsystems:
   - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
       '@id': feeder
       motor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon: #TODO TODO
+        org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor: #TODO TODO
           '@id': feederMotor
+          type: FPSTALON
           port: 8 #TODO
           name: feederMotor
           reverseOutput: false
