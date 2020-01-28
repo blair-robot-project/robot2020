@@ -24,7 +24,6 @@ import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class FPSSparkMax implements FPSSmartMotor {
-
     /**
      * REV brushless controller object
      */
@@ -46,21 +45,24 @@ public class FPSSparkMax implements FPSSmartMotor {
     private ControlType currentControlMode;
 
     /**
-     * The PDP this Talon is connected to.
+     * The PDP this Spark is connected to.
      */
     @Nullable
     @Log.Exclude
     protected final PDP PDP;
+
     /**
      * The counts per rotation of the encoder being used, or null if there is no encoder.
      */
     @Nullable
     private final Integer encoderCPR;
+
     /**
      * The coefficient the output changes by after being measured by the encoder, e.g. this would be 1/70 if there was a
      * 70:1 gearing between the encoder and the final output.
      */
     private final double postEncoderGearing;
+
     /**
      * The number of feet travelled per rotation of the motor this is attached to, or null if there is no encoder.
      */
@@ -83,7 +85,7 @@ public class FPSSparkMax implements FPSSmartMotor {
     private CANDigitalInput reverseLimitSwitch;
 
     /**
-     * The talon's name, used for logging purposes.
+     * The Spark's name, used for logging purposes.
      */
     @NotNull
     private final String name;
@@ -94,14 +96,16 @@ public class FPSSparkMax implements FPSSmartMotor {
     private final boolean fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen;
 
     /**
-     * The settings currently being used by this Talon.
+     * The settings currently being used by this Spark.
      */
     @NotNull
     protected PerGearSettings currentGearSettings;
+
     /**
      * The most recently set setpoint.
      */
     private double setpoint;
+
     /**
      * RPS as used in a unit conversion method. Field to avoid garbage collection.
      */
@@ -116,18 +120,17 @@ public class FPSSparkMax implements FPSSmartMotor {
     /**
      * Create a new SPARK MAX Controller
      *
-     * @param port                       CAN port of this Talon.
-     * @param name                       The talon's name, used for logging purposes. Defaults to talon_portnum
-     * @param inverted              Whether to reverse the output.
+     * @param port                       CAN port of this Spark.
+     * @param name                       The Spark's name, used for logging purposes. Defaults to "spark_&gt;port&lt;"
+     * @param reverseOutput                   Whether to reverse the output.
      * @param enableBrakeMode            Whether to brake or coast when stopped.
-     * @param PDP                        The PDP this Talon is connected to.
+     * @param PDP                        The PDP this Spark is connected to.
      * @param fwdLimitSwitchNormallyOpen Whether the forward limit switch is normally open or closed. If this is null,
      *                                   the forward limit switch is disabled.
      * @param revLimitSwitchNormallyOpen Whether the reverse limit switch is normally open or closed. If this is null,
      *                                   the reverse limit switch is disabled.
-     * @param remoteLimitSwitchID        The CAN port of the Talon the limit switch to use for this talon is plugged
-     *                                   into, or null to not use a limit switch or use the limit switch plugged into
-     *                                   this talon.
+     * @param remoteLimitSwitchID        The CAN ID the limit switch to use for this Spark is plugged
+     *                                   into, or null to not use a limit switch.
      * @param fwdSoftLimit               The forward software limit, in feet. If this is null, the forward software
      *                                   limit is disabled. Ignored if there's no encoder.
      * @param revSoftLimit               The reverse software limit, in feet. If this is null, the reverse software
@@ -144,13 +147,13 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @param startingGear               The gear to start in. Can be null to use startingGearNum instead.
      * @param startingGearNum            The number of the gear to start in. Ignored if startingGear isn't null.
      *                                   Defaults to the lowest gear.
-     * @param statusFrameRatesMillis     The update rates, in millis, for each of the Talon status frames.
-     * @param controlFrameRateMillis     The update rate, in milliseconds, for each of the control frame.
+     * @param statusFrameRatesMillis     The update rates, in millis, for each of the status frames.
+     * @param controlFrameRateMillis     The update rate, in milliseconds, for each control frame.
      */
     @JsonCreator
     public FPSSparkMax(@JsonProperty(required = true) int port,
                        @Nullable String name,
-                       boolean inverted,
+                       boolean reverseOutput,
                        @JsonProperty(required = true) boolean enableBrakeMode,
                        @Nullable PDP PDP,
                        @Nullable Boolean fwdLimitSwitchNormallyOpen,
@@ -173,10 +176,10 @@ public class FPSSparkMax implements FPSSmartMotor {
         canEncoder = spark.getEncoder();
         pidController = spark.getPIDController();
 
-        //Set the name to the given one or to talon_portnum
-        this.name = name != null ? name : ("talon_" + port);
+        //Set the name to the given one or to spark_<portnum>
+        this.name = name != null ? name : ("spark_" + port);
         //Set this to false because we only use reverseOutput for slaves.
-        spark.setInverted(inverted);
+        spark.setInverted(reverseOutput);
         //Set brake mode
         spark.setIdleMode(enableBrakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
         //Reset the position
@@ -364,7 +367,7 @@ public class FPSSparkMax implements FPSSmartMotor {
     }
 
     /**
-     * Converts the velocity read by the talon's getVelocity() method to the FPS of the output shaft. Note this DOES
+     * Converts the velocity read by the getVelocity() method to the FPS of the output shaft. Note this DOES
      * account for post-encoder gearing.
      *
      * @param encoderReading The velocity read from the encoder with no conversions.
@@ -378,7 +381,7 @@ public class FPSSparkMax implements FPSSmartMotor {
     }
 
     /**
-     * Converts from the velocity of the output shaft to what the talon's getVelocity() method would read at that
+     * Converts from the velocity of the output shaft to what the getVelocity() method would read at that
      * velocity. Note this DOES account for post-encoder gearing.
      *
      * @param FPS The velocity of the output shaft, in FPS.
@@ -390,7 +393,7 @@ public class FPSSparkMax implements FPSSmartMotor {
     }
 
     /**
-     * Convert from CANTalon native velocity units to output rotations per second. Note this DOES NOT account for
+     * Convert from native velocity units to output rotations per second. Note this DOES NOT account for
      * post-encoder gearing.
      *
      * @param nat A velocity in RPM
@@ -403,7 +406,7 @@ public class FPSSparkMax implements FPSSmartMotor {
     }
 
     /**
-     * Convert from output RPS to the CANTalon native velocity units. Note this DOES NOT account for post-encoder
+     * Convert from output RPS to native velocity units. Note this DOES NOT account for post-encoder
      * gearing.
      *
      * @param RPS The RPS velocity you want to convert.
@@ -424,7 +427,7 @@ public class FPSSparkMax implements FPSSmartMotor {
     }
 
     /**
-     * Set a position setpoint for the Talon.
+     * Set a position setpoint for the Spark.
      *
      * @param feet An absolute position setpoint, in feet.
      */
