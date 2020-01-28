@@ -184,28 +184,6 @@ subsystems:
       outSlowVel: -0.1
       outFastVel: -0.2
 
-  # INTAKE
-  - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-      '@id': intake
-      motor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon: #TODO TODO
-          '@id': intakeMotor
-          port: 2 #TODO
-          name: intakeMotor
-          reverseOutput: false
-          enableBrakeMode: false
-          #voltagePerCurrentLinReg: 0 #TODO
-          PDP: PDP
-          currentLimit: 10 #TODO
-          reverseSensor: false #TODO
-          startingGearNum: 0 #TODO
-      inSlowVel: 0
-      inFastVel: 0.15
-      outSlowVel: -0.1
-      outFastVel: -0.2
-
-
-
 # COMMANDS
 commands:
   defaultCommands:
@@ -401,24 +379,8 @@ commands:
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
               feeder
-          mode: IN_SLOW
+          mode: "OFF"
       action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': intakeStartButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: 4 #Y
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
-          '@id': feederStopCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-              feeder
-          mode: IN_SLOW
-      action: WHEN_PRESSED
-
 
 # UPDATER
 updater:
