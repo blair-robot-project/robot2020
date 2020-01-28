@@ -77,8 +77,8 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * @param trackWidthMeters The width between the left and right wheels in meters
      */
     @JsonCreator
-    public DriveUnidirectionalWithGyro(@NotNull @JsonProperty(required = true) FPSTalon leftMaster,
-                                       @NotNull @JsonProperty(required = true) FPSTalon rightMaster,
+    public DriveUnidirectionalWithGyro(@NotNull @JsonProperty(required = true) FPSSmartMotor leftMaster,
+                                       @NotNull @JsonProperty(required = true) FPSSmartMotor rightMaster,
                                        @NotNull @JsonProperty(required = true) MappedAHRS ahrs,
                                        @JsonProperty(required = true) double trackWidthMeters) {
         super();
