@@ -51,7 +51,7 @@ public class LimelightComponent implements DoubleSupplier {
      */
     private final double offset;
 
-    enum ReturnValue {
+    public enum ReturnValue {
         x, y, area, skew, latency, shortest, longest, width, height, pipeIndex, poseX, poseY, poseZ, pitch, yaw, roll
     }
 

@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot.components;
+package org.usfirst.frc.team449.robot.components.limelight;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;

@@ -44,8 +44,7 @@ public class LimelightDistanceComponent implements DoubleSupplier {
      */
     @Override
     public double getAsDouble() {
-        LimelightComponent.ReturnValue yOff = LimelightComponent.ReturnValue.y;
-        DoubleSupplier robotToTargAngle = new LimelightComponent(yOff, 0);
+        DoubleSupplier robotToTargAngle = new LimelightComponent(LimelightComponent.ReturnValue.y, 0);
         return (targetHeight - limelightHeight) * Math.tan(Math.toRadians(limelightAngle + robotToTargAngle.getAsDouble()));
     }
 }

@@ -1,8 +1,9 @@
-package org.usfirst.frc.team449.robot.components;
+package org.usfirst.frc.team449.robot.components.limelight;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import org.usfirst.frc.team449.robot.components.limelight.LimelightComponent;
 
 import java.util.function.DoubleSupplier;
 
