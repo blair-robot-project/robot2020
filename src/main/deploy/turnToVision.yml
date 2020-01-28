@@ -125,7 +125,7 @@ commands:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               '@id': mechanismsGamepad
               port: 2
-          buttonNumber: 1
+          buttonNumber: 1 #A
       command:
         org.usfirst.frc.team449.robot.commands.multiInterface.drive.NavXTurnToAngleLimelight:
           '@id': autoTurn

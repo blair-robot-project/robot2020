@@ -28,8 +28,8 @@ public class LimelightComponent implements DoubleSupplier {
     /**
      * Which value to ask from the limelight
      * Can be:
-     *  x: x distance from target
-     *  y: y distance from target
+     *  x: lateral offset from target, in degrees
+     *  y: vertical offset from target, in degrees
      *  area: area of the target (0% to 100% of the camera screen)
      *  skew: rotation (-90 to 0, in degrees) of the target (as the limelight sees it)
      *  latency: the pipeline's latency contribution, in ms

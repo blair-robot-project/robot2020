@@ -26,7 +26,7 @@ public class LimelightHeightComponent implements DoubleSupplier {
     /**
      * Default constructor
      * @param angularInput The DoubleSupplier determining the angle theta of the vision target.
-     * @param distanceToTarget The LimeLightComponent finding the distance to the vision target.
+     * @param distanceToTarget The LimelightComponent finding the distance to the vision target.
      */
     @JsonCreator
     public LimelightHeightComponent(@JsonProperty(required = true) DoubleSupplier angularInput,

@@ -2,7 +2,6 @@ package org.usfirst.frc.team449.robot.components.limelight;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import edu.wpi.first.networktables.NetworkTableInstance;
 
 import java.util.function.DoubleSupplier;
 
@@ -45,7 +44,8 @@ public class LimelightDistanceComponent implements DoubleSupplier {
      */
     @Override
     public double getAsDouble() {
-        DoubleSupplier robotToTargAngle = new LimelightComponent(LimelightComponent.ReturnValue.y, 0);
+        LimelightComponent.ReturnValue yOff = LimelightComponent.ReturnValue.y;
+        DoubleSupplier robotToTargAngle = new LimelightComponent(yOff, 0);
         return (targetHeight - limelightHeight) * Math.tan(Math.toRadians(limelightAngle + robotToTargAngle.getAsDouble()));
     }
 }
