@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 /**
  * A jackson-compatible wrapper on {@link WaitCommand}.
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
+//@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedWaitCommand extends WaitCommand {
 
     /**
