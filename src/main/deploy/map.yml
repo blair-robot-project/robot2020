@@ -14,7 +14,7 @@ pdp:
 # ROBOT SUBSYSTEMS
 subsystems:
   # CLIMBER
-  - org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberFoldingArm:
+  - org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberWinchingWithArm:
       '@id': climber
       motorSubsystem:
         org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberCurrentLimited:
@@ -51,10 +51,10 @@ commands:
           buttonNumber: 1 #A
       action: WHEN_PRESSED
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberFoldingArmState:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberWithArmState:
           '@id': climberOffCommand
           subsystem:
-            org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberFoldingArm:
+            org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberWinchingWithArm:
               climber
           state: "OFF"
     - button:
@@ -66,10 +66,10 @@ commands:
           buttonNumber: 2 #B
       action: WHEN_PRESSED
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberFoldingArmState:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberWithArmState:
           '@id': climberRaiseCommand
           subsystem:
-            org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberFoldingArm:
+            org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberWinchingWithArm:
               climber
           state: "RAISE"
     - button:
@@ -81,10 +81,10 @@ commands:
           buttonNumber: 3 #X
       action: WHEN_PRESSED
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberFoldingArmState:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberWithArmState:
           '@id': climberLowerCommand
           subsystem:
-            org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberFoldingArm:
+            org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberWinchingWithArm:
               climber
           state: "LOWER"
 

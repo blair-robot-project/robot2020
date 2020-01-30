@@ -9,12 +9,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.SubsystemBinaryMotor;
-import org.usfirst.frc.team449.robot.subsystem.interfaces.climber.SubsystemClimberFoldingArm;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.climber.SubsystemClimberWithArm;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
 
+/**
+ * A climber subsystem that has an arm that is raised pneumatically and lowered with force by means of a winch.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class ClimberFoldingArm extends SubsystemBase implements SubsystemClimberFoldingArm, SubsystemBinaryMotor, SubsystemSolenoid, Loggable {
-
+public class ClimberWinchingWithArm extends SubsystemBase implements SubsystemClimberWithArm, SubsystemBinaryMotor, SubsystemSolenoid, Loggable {
     @NotNull
     private final ClimberCurrentLimited motorSubsystem;
 
@@ -28,24 +30,34 @@ public class ClimberFoldingArm extends SubsystemBase implements SubsystemClimber
      * @param solenoidSubsystem The piston used to raise the arm.
      */
     @JsonCreator
-    public ClimberFoldingArm(@NotNull @JsonProperty(required = true) ClimberCurrentLimited motorSubsystem,
-                             @NotNull @JsonProperty(required = true) SubsystemSolenoid solenoidSubsystem) {
+    public ClimberWinchingWithArm(@NotNull @JsonProperty(required = true) ClimberCurrentLimited motorSubsystem,
+                                  @NotNull @JsonProperty(required = true) SubsystemSolenoid solenoidSubsystem) {
         this.motorSubsystem = motorSubsystem;
         this.solenoidSubsystem = solenoidSubsystem;
     }
 
+    /**
+     * Raises the arm by means of the solenoid subsystem and turns off the motor subsystem.
+     */
     @Override
     public void raise() {
         this.turnMotorOff();
         this.setSolenoid(DoubleSolenoid.Value.kForward);
     }
 
+    /**
+     * Turns off the solenoid subsystem and turns on the motor subsystem. The subsystem automatically turns the motor
+     * off when the motor encounters resistance from the arm reaching its lowermost position.
+     */
     @Override
     public void lower() {
         this.setSolenoid(DoubleSolenoid.Value.kOff);
         this.turnMotorOn();
     }
 
+    /**
+     * Turns both solenoid and motor subsystems off.
+     */
     @Override
     public void off() {
         this.turnMotorOff();
@@ -53,7 +65,7 @@ public class ClimberFoldingArm extends SubsystemBase implements SubsystemClimber
     }
 
     /**
-     * Turns the motor on, and sets it to a map-specified speed.
+     * Turns the motor subsystem on.
      */
     @Override
     public void turnMotorOn() {
@@ -61,7 +73,7 @@ public class ClimberFoldingArm extends SubsystemBase implements SubsystemClimber
     }
 
     /**
-     * Turns the motor off.
+     * Turns the motor subsystem off.
      */
     @Override
     public void turnMotorOff() {
@@ -69,7 +81,7 @@ public class ClimberFoldingArm extends SubsystemBase implements SubsystemClimber
     }
 
     /**
-     * @return true if the motor is on, false otherwise.
+     * @return true if the motor subsystem is on, false otherwise.
      */
     @Override
     public boolean isMotorOn() {
@@ -77,7 +89,7 @@ public class ClimberFoldingArm extends SubsystemBase implements SubsystemClimber
     }
 
     /**
-     * @param value The position to set the solenoid to.
+     * @param value The position to set the solenoid subsystem to.
      */
     @Override
     public void setSolenoid(DoubleSolenoid.@NotNull Value value) {
@@ -85,7 +97,7 @@ public class ClimberFoldingArm extends SubsystemBase implements SubsystemClimber
     }
 
     /**
-     * @return the current position of the solenoid.
+     * @return the current position of the solenoid subsystem.
      */
     @Override
     public @NotNull DoubleSolenoid.Value getSolenoidPosition() {

@@ -8,17 +8,17 @@ import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.subsystem.interfaces.climber.SubsystemClimberFoldingArm;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.climber.SubsystemClimberWithArm;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class SetClimberFoldingArmState extends InstantCommand {
+public class SetClimberWithArmState extends InstantCommand {
 
-    private final SubsystemClimberFoldingArm subsystem;
+    private final SubsystemClimberWithArm subsystem;
     private final ClimberState state;
 
     @JsonCreator
-    public SetClimberFoldingArmState(@NotNull @JsonProperty(required = true) SubsystemClimberFoldingArm subsystem,
-                                     @NotNull @JsonProperty(required = true) ClimberState state) {
+    public SetClimberWithArmState(@NotNull @JsonProperty(required = true) SubsystemClimberWithArm subsystem,
+                                  @NotNull @JsonProperty(required = true) ClimberState state) {
         this.subsystem = subsystem;
         this.state = state;
     }
@@ -28,11 +28,11 @@ public class SetClimberFoldingArmState extends InstantCommand {
      */
     @Override
     public void initialize() {
-        Shuffleboard.addEventMarker("SetClimberFoldingArmState init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        Shuffleboard.addEventMarker("SetClimberWithArmState init.", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 
     /**
-     * Set the intake to the given mode.
+     * Set the climber to the given mode.
      */
     @Override
     public void execute() {
@@ -55,9 +55,9 @@ public class SetClimberFoldingArmState extends InstantCommand {
     @Override
     public void end(boolean interrupted) {
         if (interrupted) {
-            Shuffleboard.addEventMarker("SetClimberFoldingArmState Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+            Shuffleboard.addEventMarker("SetClimberWithArmState Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
         }
-        Shuffleboard.addEventMarker("SetClimberFoldingArmState end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        Shuffleboard.addEventMarker("SetClimberWithArmState end.", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 
     public enum ClimberState {
