@@ -175,7 +175,7 @@ subsystems:
       motor:
         org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor: #TODO TODO
           '@id': feederMotor
-          type: FPSTALON
+  v          type: TALON
           port: 8 #TODO
           name: feederMotor
           reverseOutput: false
