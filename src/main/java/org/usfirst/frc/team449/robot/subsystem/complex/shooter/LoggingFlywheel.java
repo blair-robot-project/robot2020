@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
+import org.usfirst.frc.team449.robot.generalInterfaces.UPSSmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
@@ -24,10 +24,10 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      * The flywheel's Talon
      */
     @NotNull
-    private final FPSSmartMotor shooterMotor;
+    private final UPSSmartMotor shooterMotor;
 
     @NotNull
-    private final FPSSmartMotor otherShooterMotor;
+    private final UPSSmartMotor otherShooterMotor;
 
     /**
      * The feeder's motor
@@ -79,8 +79,8 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      *                            Defaults to {@literal null}, meaning that there is no speed requirement.
      */
     @JsonCreator
-    public LoggingFlywheel(@NotNull @JsonProperty(required = true) FPSSmartMotor shooterMotor,
-                           @NotNull @JsonProperty(required = true) FPSSmartMotor otherShooterMotor,
+    public LoggingFlywheel(@NotNull @JsonProperty(required = true) UPSSmartMotor shooterMotor,
+                           @NotNull @JsonProperty(required = true) UPSSmartMotor otherShooterMotor,
                            @JsonProperty(required = true) double shooterThrottle,
                            @NotNull @JsonProperty(required = true) SimpleMotor kickerMotor,
                            @JsonProperty(required = true) double kickerThrottle,

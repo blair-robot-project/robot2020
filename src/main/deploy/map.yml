@@ -18,7 +18,7 @@ subsystems:
       '@id': drive
       #Wheelbase: 2.14
       leftMaster:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+        org.usfirst.frc.team449.robot.jacksonWrappers.UPSTalon:
           &leftMaster
           '@id': leftMaster
           name: left
@@ -32,7 +32,7 @@ subsystems:
           reverseSensor: false
           enableBrakeMode: true
           postEncoderGearing: 0.13333333333
-          feetPerRotation: .5 #meters per rotation
+          unitPerRotation: .5 #meters per rotation
           currentLimit: 35
           enableVoltageComp: true
           feedbackDevice: QuadEncoder
@@ -57,7 +57,6 @@ subsystems:
                   kS: 1.11
                   kV: 2.04
                   kA: 0.637
-          updaterProcessPeriodSecs: 0.005
           statusFrameRatesMillis: !!map
             Status_4_AinTempVbat: 15
           slaveVictors:
@@ -66,7 +65,7 @@ subsystems:
             - port: 6
               invertType: FollowMaster
       rightMaster:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+        org.usfirst.frc.team449.robot.jacksonWrappers.UPSTalon:
           <<: *leftMaster
           '@id': rightMaster
           name: right
@@ -102,9 +101,9 @@ subsystems:
         org.usfirst.frc.team449.robot.components.ShiftComponent:
           '@id': driveShiftComponent
           otherShiftables:
-            - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+            - org.usfirst.frc.team449.robot.jacksonWrappers.UPSTalon:
                 leftMaster
-            - org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
+            - org.usfirst.frc.team449.robot.jacksonWrappers.UPSTalon:
                 rightMaster
           piston:
             '@id': driveShifter
@@ -116,7 +115,7 @@ subsystems:
   - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
       '@id': shooterFlywheel
       shooterMotor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSSparkMax:
+        org.usfirst.frc.team449.robot.jacksonWrappers.UPSSparkMax:
           '@id': shooterMotor
           port: 1 #TODO
           name: rightMotor
@@ -137,7 +136,7 @@ subsystems:
             kD: 0
           startingGearNum: 0 #TODO
       otherShooterMotor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSSparkMax:
+        org.usfirst.frc.team449.robot.jacksonWrappers.UPSSparkMax:
           '@id': shooterMotor2
           port: 2 #TODO
           name: leftMotor
@@ -169,7 +168,7 @@ subsystems:
   - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
       '@id': feeder
       motor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon: #TODO TODO
+        org.usfirst.frc.team449.robot.jacksonWrappers.UPSTalon: #TODO TODO
           '@id': feederMotor
           port: 8 #TODO
           name: feederMotor

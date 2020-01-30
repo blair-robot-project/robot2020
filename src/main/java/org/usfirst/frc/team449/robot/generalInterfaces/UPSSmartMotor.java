@@ -15,7 +15,7 @@ import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
  * A motor with built in advanced capability featuring encoder, current limiting, and gear shifting support.
  * Also features built in FPS conversions.
  */
-public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
+public interface UPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
 
     /**
      * Set the motor output voltage to a given percent of available voltage.
@@ -30,7 +30,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      * @param nativeUnits A distance native units as measured by the encoder.
      * @return That distance in feet, or null if no encoder CPR was given.
      */
-    double encoderToFeet(double nativeUnits);
+    double encoderToUnit(double nativeUnits);
 
     /**
      * Convert a distance from feet to encoder reading in native units. Note this DOES account for post-encoder
@@ -39,7 +39,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      * @param feet A distance in feet.
      * @return That distance in native units as measured by the encoder, or null if no encoder CPR was given.
      */
-    double feetToEncoder(double feet);
+    double unitToEncoder(double feet);
 
     /**
      * Converts the velocity read by the controllers's getVelocity() method to the FPS of the output shaft. Note this DOES
@@ -49,7 +49,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if no encoder CPR
      * was given.
      */
-    double encoderToFPS(double encoderReading);
+    double encoderToUPS(double encoderReading);
 
     /**
      * Converts from the velocity of the output shaft to what the controllers's getVelocity() method would read at that
@@ -58,7 +58,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      * @param FPS The velocity of the output shaft, in FPS.
      * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was given.
      */
-    double FPSToEncoder(double FPS);
+    double UPSToEncoder(double FPS);
 
     /**
      * Convert from native velocity units to output rotations per second. Note this DOES NOT account for
@@ -112,7 +112,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      *
      * @param velocity velocity setpoint in FPS.
      */
-    void setVelocityFPS(double velocity);
+    void setVelocityUPS(double velocity);
 
 
     /**

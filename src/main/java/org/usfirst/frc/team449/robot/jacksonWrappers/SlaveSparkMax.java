@@ -19,12 +19,12 @@ public class SlaveSparkMax implements Loggable {
 
     @JsonCreator
     public SlaveSparkMax(@JsonProperty(required = true) int port,
-                         @Nullable Boolean invert,
+                         @Nullable Boolean inverted,
                          @Nullable PDP PDP) {
 
         slaveSpark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-        inverted = invert == null ? false : invert;
+        this.inverted = inverted == null ? false : inverted;
 
         slaveSpark.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen).enableLimitSwitch(false);
         slaveSpark.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen).enableLimitSwitch(false);

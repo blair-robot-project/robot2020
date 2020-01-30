@@ -138,6 +138,10 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
         return pidController.calculate(subsystem.getHeadingCached());
     }
 
+    protected double getRawOutputHardcoded(double setpoint){
+        return pidController.calculate(subsystem.getHeadingCached(), setpoint);
+    }
+
     @Log
     public double getError() {
         return pidController.getPositionError();

@@ -6,16 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.revrobotics.*;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
-import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.util.Units;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
+import org.usfirst.frc.team449.robot.generalInterfaces.UPSSmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 
 import java.util.HashMap;
@@ -23,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class FPSSparkMax implements FPSSmartMotor {
+public class UPSSparkMax implements UPSSmartMotor {
 
     /**
      * REV brushless controller object
@@ -60,6 +57,7 @@ public class FPSSparkMax implements FPSSmartMotor {
      * The coefficient the output changes by after being measured by the encoder, e.g. this would be 1/70 if there was a
      * 70:1 gearing between the encoder and the final output.
      */
+    @Log
     private double postEncoderGearing;
     /**
      * The number of feet travelled per rotation of the motor this is attached to, or null if there is no encoder.
@@ -135,7 +133,7 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @param postEncoderGearing         The coefficient the output changes by after being measured by the encoder, e.g.
      *                                   this would be 1/70 if there was a 70:1 gearing between the encoder and the
      *                                   final output. Defaults to 1.
-     * @param feetPerRotation            The number of feet travelled per rotation of the motor this is attached to.
+     * @param unitPerRotation            The number of feet travelled per rotation of the motor this is attached to.
      *                                   Defaults to 1.
      * @param currentLimit               The max amps this device can draw. If this is null, no current limit is used.
      * @param enableVoltageComp          Whether or not to use voltage compensation. Defaults to false.
@@ -148,7 +146,7 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @param controlFrameRateMillis     The update rate, in milliseconds, for each of the control frame.
      */
     @JsonCreator
-    public FPSSparkMax(@JsonProperty(required = true) int port,
+    public UPSSparkMax(@JsonProperty(required = true) int port,
                        @Nullable String name,
                        boolean inverted,
                        @JsonProperty(required = true) boolean enableBrakeMode,
@@ -159,7 +157,7 @@ public class FPSSparkMax implements FPSSmartMotor {
                        @Nullable Double fwdSoftLimit,
                        @Nullable Double revSoftLimit,
                        @Nullable Double postEncoderGearing,
-                       @Nullable Double feetPerRotation,
+                       @Nullable Double unitPerRotation,
                        @Nullable Integer currentLimit,
                        boolean enableVoltageComp,
                        @Nullable List<PerGearSettings> perGearSettings,
@@ -197,7 +195,7 @@ public class FPSSparkMax implements FPSSmartMotor {
         this.PDP = PDP;
 
 
-        this.feetPerRotation = feetPerRotation != null ? feetPerRotation : 1;
+        this.feetPerRotation = unitPerRotation != null ? unitPerRotation : 1;
 
         //Initialize
         this.perGearSettings = new HashMap<>();
@@ -351,7 +349,7 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @return That distance in feet, or null if no encoder CPR was given.
      */
     @Override
-    public double encoderToFeet(double revs) {
+    public double encoderToUnit(double revs) {
         return revs * feetPerRotation * postEncoderGearing;
     }
 
@@ -363,7 +361,7 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @return That distance in native units as measured by the encoder, or null if no encoder CPR was given.
      */
     @Override
-    public double feetToEncoder(double feet) {
+    public double unitToEncoder(double feet) {
         return feet / feetPerRotation / postEncoderGearing;
     }
 
@@ -376,7 +374,7 @@ public class FPSSparkMax implements FPSSmartMotor {
      * was given.
      */
     @Override
-    public double encoderToFPS(double encoderReading) {
+    public double encoderToUPS(double encoderReading) {
         RPS = nativeToRPS(encoderReading);
         return RPS * postEncoderGearing * feetPerRotation;
     }
@@ -385,12 +383,12 @@ public class FPSSparkMax implements FPSSmartMotor {
      * Converts from the velocity of the output shaft to what the talon's getVelocity() method would read at that
      * velocity. Note this DOES account for post-encoder gearing.
      *
-     * @param FPS The velocity of the output shaft, in FPS.
+     * @param UPS The velocity of the output shaft, in UPS.
      * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was given.
      */
     @Override
-    public double FPSToEncoder(double FPS) {
-        return RPSToNative((FPS / postEncoderGearing) / feetPerRotation);
+    public double UPSToEncoder(double UPS) {
+        return RPSToNative((UPS / postEncoderGearing) / feetPerRotation);
     }
 
     /**
@@ -435,7 +433,7 @@ public class FPSSparkMax implements FPSSmartMotor {
     @Override
     public void setPositionSetpoint(double feet) {
         setpoint = feet;
-        nativeSetpoint = feetToEncoder(feet);
+        nativeSetpoint = unitToEncoder(feet);
         pidController.setFF(currentGearSettings.feedForwardCalculator.ks / 12.);
         pidController.setReference(nativeSetpoint,
                 ControlType.kPosition,
@@ -460,7 +458,7 @@ public class FPSSparkMax implements FPSSmartMotor {
      */
     @Log
     public Double getVelocity() {
-        return encoderToFPS(canEncoder.getVelocity());
+        return encoderToUPS(canEncoder.getVelocity());
     }
 
     /**
@@ -471,7 +469,7 @@ public class FPSSparkMax implements FPSSmartMotor {
     @Override
     public void setVelocity(double velocity) {
         if (currentGearSettings.maxSpeed != null) {
-            setVelocityFPS(velocity * currentGearSettings.maxSpeed);
+            setVelocityUPS(velocity * currentGearSettings.maxSpeed);
         } else {
             setPercentVoltage(velocity);
         }
@@ -483,9 +481,9 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @param velocity velocity setpoint in FPS.
      */
     @Override
-    public void setVelocityFPS(double velocity) {
+    public void setVelocityUPS(double velocity) {
         currentControlMode = ControlType.kVelocity;
-        nativeSetpoint = FPSToEncoder(velocity);
+        nativeSetpoint = UPSToEncoder(velocity);
         setpoint = velocity;
         pidController.setFF(0);
         pidController.setReference(nativeSetpoint,
@@ -534,7 +532,7 @@ public class FPSSparkMax implements FPSSmartMotor {
     @Override
     public void setGearScaledVelocity(double velocity, int gear) {
         if (currentGearSettings.maxSpeed != null) {
-            setVelocityFPS(currentGearSettings.maxSpeed * velocity);
+            setVelocityUPS(currentGearSettings.maxSpeed * velocity);
         } else {
             setPercentVoltage(velocity);
         }
@@ -552,7 +550,7 @@ public class FPSSparkMax implements FPSSmartMotor {
 
     @Override
     public Double getPositionFeet() {
-        return encoderToFeet(canEncoder.getPosition());
+        return encoderToUnit(canEncoder.getPosition());
     }
 
     @Override

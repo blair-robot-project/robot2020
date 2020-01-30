@@ -14,10 +14,8 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
-import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
+import org.usfirst.frc.team449.robot.generalInterfaces.UPSSmartMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
 
@@ -33,13 +31,13 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * Right master Talon
      */
     @NotNull
-    protected final FPSSmartMotor rightMaster;
+    protected final UPSSmartMotor rightMaster;
 
     /**
      * Left master Talon
      */
     @NotNull
-    protected final FPSSmartMotor leftMaster;
+    protected final UPSSmartMotor leftMaster;
 
     /**
      * The NavX gyro
@@ -77,8 +75,8 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * @param trackWidthMeters The width between the left and right wheels in meters
      */
     @JsonCreator
-    public DriveUnidirectionalWithGyro(@NotNull @JsonProperty(required = true) FPSTalon leftMaster,
-                                       @NotNull @JsonProperty(required = true) FPSTalon rightMaster,
+    public DriveUnidirectionalWithGyro(@NotNull @JsonProperty(required = true) UPSSmartMotor leftMaster,
+                                       @NotNull @JsonProperty(required = true) UPSSmartMotor rightMaster,
                                        @NotNull @JsonProperty(required = true) MappedAHRS ahrs,
                                        @JsonProperty(required = true) double trackWidthMeters) {
         super();
