@@ -19,7 +19,7 @@ subsystems:
       '@id': drive
       #Wheelbase: 2.14
       leftMaster:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSSparkMax:
+        org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
           &leftMaster
           '@id': leftMaster
           name: left
@@ -130,7 +130,8 @@ commands:
         org.usfirst.frc.team449.robot.commands.multiInterface.drive.NavXTurnToAngleLimelight:
           '@id': autoTurn
           angleSupplier:
-            org.usfirst.frc.team449.robot.components.LimelightComponent:
+            org.usfirst.frc.team449.robot.components.limelight.LimelightComponent:
+              '@id': xAngle
               value: x
               offset: 0
           subsystem:
