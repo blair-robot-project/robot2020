@@ -129,11 +129,6 @@ commands:
       command:
         org.usfirst.frc.team449.robot.commands.multiInterface.drive.NavXTurnToAngleLimelight:
           '@id': autoTurn
-          angleSupplier:
-            org.usfirst.frc.team449.robot.components.limelight.LimelightComponent:
-              '@id': xAngle
-              value: x
-              offset: 0
           subsystem:
             org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
               drive
