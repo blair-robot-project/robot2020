@@ -1,4 +1,5 @@
 ---
+# This map is the current one for the actual robot in the 2020 season. DO NOT USE FOR OUTREACH
 # WHETHER TO USE THE CAMERA SERVER
 useCameraServer: false
 
@@ -112,78 +113,6 @@ subsystems:
             forward: 1
             reverse: 0
           startingGear: LOW
-  # SHOOTER
-  - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-      '@id': shooterFlywheel
-      shooterMotor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSSparkMax:
-          '@id': shooterMotor
-          port: 1 #TODO
-          name: rightMotor
-          inverted: true
-          enableBrakeMode: true
-          PDP: PDP
-          enableVoltageComp: true #TODO
-          perGearSettings:
-          - gearNum: 0
-            feedForwardCalculator:
-              org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                kS: 0
-                kV: 0 #0.126
-                kA: 0
-            maxSpeed: 90 #rps
-            kP: 0 #5e-5 #0.0001
-            kI: 0.
-            kD: 0
-          startingGearNum: 0 #TODO
-      otherShooterMotor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSSparkMax:
-          '@id': shooterMotor2
-          port: 2 #TODO
-          name: leftMotor
-          inverted: false
-          enableBrakeMode: true
-          PDP: PDP
-          enableVoltageComp: true #TODO
-          perGearSettings:
-            - gearNum: 0
-              feedForwardCalculator:
-                org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 0
-                  kV: 0.126
-                  kA: 0
-              maxSpeed: 90 #rps
-              kP: 0 #0.0001
-              kI: 0
-              kD: 0
-          startingGearNum: 0 #TODO
-      shooterThrottle: 1 #.55 #percent
-      kickerMotor:
-        org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.MappedVictorSPX: #TODO TODO
-          '@id': kickerVictor
-          port: 7
-          inverted: false
-          brakeMode: false
-      kickerThrottle: 1 #percent
-  # FEEDER
-  - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-      '@id': feeder
-      motor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon: #TODO TODO
-          '@id': feederMotor
-          port: 8 #TODO
-          name: feederMotor
-          reverseOutput: false
-          enableBrakeMode: false
-          PDP: PDP
-          currentLimit: 10 #TODO
-          reverseSensor: false #TODO
-          startingGearNum: 0 #TODO
-      inSlowVel: 0.1
-      inFastVel: 0.2
-      outSlowVel: -0.1
-      outFastVel: -0.2
-
 # COMMANDS
 commands:
   defaultCommands:
