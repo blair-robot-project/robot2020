@@ -181,7 +181,7 @@ public interface UPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
     /**
      * @return the position of the talon in feet, or null of inches per rotation wasn't given.
      */
-    Double getPositionFeet();
+    Double getPositionUnits();
 
     /**
      * Resets the position of the Talon to 0.

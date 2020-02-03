@@ -549,7 +549,8 @@ public class UPSSparkMax implements UPSSmartMotor {
     }
 
     @Override
-    public Double getPositionFeet() {
+    @Log
+    public Double getPositionUnits() {
         return encoderToUnit(canEncoder.getPosition());
     }
 

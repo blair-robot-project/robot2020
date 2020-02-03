@@ -34,7 +34,7 @@ public class TalonDataComponent implements DoubleSupplier {
     public double getAsDouble() {
         switch(value) {
             case position:
-                return talon.getPositionFeet();
+                return talon.getPositionUnits();
             case velocity:
                 return talon.getVelocity();
             case current:

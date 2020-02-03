@@ -16,6 +16,8 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class RamseteControllerUnidirectionalDrive extends RamseteCommand {
 
+    private DriveUnidirectionalWithGyro driveTrain;
+
     @JsonCreator
     public RamseteControllerUnidirectionalDrive(@JsonProperty(required = true) DriveUnidirectionalWithGyro drivetrain,
                                                 @JsonProperty(required = true) double P,
@@ -32,5 +34,12 @@ public class RamseteControllerUnidirectionalDrive extends RamseteCommand {
                 drivetrain::setVoltage);
 
         addRequirements(drivetrain);
+        this.driveTrain = drivetrain;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        super.end(interrupted);
+        driveTrain.fullStop();
     }
 }

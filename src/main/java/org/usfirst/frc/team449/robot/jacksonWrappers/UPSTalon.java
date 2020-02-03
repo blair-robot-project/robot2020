@@ -685,7 +685,8 @@ public class UPSTalon implements UPSSmartMotor {
      * @return the position of the talon in feet, or null of inches per rotation wasn't given.
      */
     @Override
-    public Double getPositionFeet() {
+    @Log
+    public Double getPositionUnits() {
         return encoderToUnit(canTalon.getSelectedSensorPosition(0));
     }
 

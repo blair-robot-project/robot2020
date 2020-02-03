@@ -140,7 +140,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
      */
     @Override
     public void execute() {
-//        System.out.println(getRawOutputHardcoded(0));
+//        System.out.println(getRawOutputHardcoded(20));
         //If we're driving straight but the driver tries to turn or overrides the AHRS:
         if (drivingStraight && (!oi.commandingStraight() || subsystem.getOverrideGyro())) {
             //Switch to free drive
@@ -181,7 +181,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
 
             //Adjust the heading according to the PID output, it'll be positive if we want to go right.
             subsystem.setOutput(leftOutput - finalOutput, rightOutput + finalOutput);
-            System.out.println("Setpoint: " + pidController.getSetpoint() + "PID: " + getRawOutput());
+            System.out.println("Setpoint: " + pidController.getSetpoint() + "PID: " + getRawOutputHardcoded(20));
         }
         //If we're free driving...
         else {

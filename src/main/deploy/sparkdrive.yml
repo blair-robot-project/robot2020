@@ -121,7 +121,7 @@ subsystems:
             feedForwardCalculator:
               org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                 kS: 0
-                kV: 0 #0.126
+                kV: 0.126
                 kA: 0
             maxSpeed: 90 #rps
             kP: 0 #5e-5 #0.0001
@@ -188,9 +188,9 @@ commands:
       command:
         org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
           '@id': defaultDriveCommand
-          kP: 0 #0.003
+          kP: 0.003
           kI: 0.0
-          kD: 0 #0.05
+          kD: 0.05
           maximumOutput: 1
           absoluteTolerance: 0
           deadband: 2
@@ -272,9 +272,8 @@ commands:
                     #2: 0.25
           autoshiftComponent:
             '@id': autoshiftComponent
-            upshiftSpeed: 1.5
-            downshiftSpeed: 1
-
+            upshiftSpeed: 1.3
+            downshiftSpeed: 0.8
             upshiftDebouncer:
               '@id': upshiftDebouncer
               bufferTimeSeconds: 0.06
