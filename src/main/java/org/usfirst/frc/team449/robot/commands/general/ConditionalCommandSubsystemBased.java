@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
 
@@ -28,7 +29,7 @@ public class ConditionalCommandSubsystemBased extends ConditionalCommand {
     @JsonCreator
     public ConditionalCommandSubsystemBased(@Nullable Command trueCommand,
                                             @Nullable Command falseCommand,
-                                            @JsonProperty(required = true) SubsystemConditional subsystem,
+                                            @NotNull @JsonProperty(required = true) SubsystemConditional subsystem,
                                             boolean useCached) {
         super(trueCommand, falseCommand, useCached ? subsystem::isConditionTrueCached : subsystem::isConditionTrue);
     }

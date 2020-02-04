@@ -116,35 +116,39 @@ subsystems:
   # SHOOTER
   - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
       '@id': shooterFlywheel
+      shooterThrottle: 0.3 #.55 #percent
+      kickerThrottle: 0.3 #percent
+      spinUpTimeoutSecs: 2
       shooterMotor:
         org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
-          '@id': shooterMotor
+          '@id': shooterRightMotor
           type: SPARKMAX
           reverseSensor: false
-          port: 1 #TODO
-          name: rightMotor
+          port: 7 #TODO
+          name: shooterRightMotor
           reverseOutput: true
           enableBrakeMode: true
           PDP: PDP
           enableVoltageComp: true #TODO
-          perGearSettings:
-          - gearNum: 0
-            feedForwardCalculator:
-              org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                kS: 0
-                kV: 0 #0.126
-                kA: 0
-            maxSpeed: 90 #rps
-            kP: 0 #5e-5 #0.0001
-            kI: 0.
-            kD: 0
-          startingGearNum: 0 #TODO
+      #          perGearSettings:
+      #          - gearNum: 0
+      #            feedForwardCalculator:
+      #              org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
+      #                kS: 0
+      #                kV: 0 #0.126
+      #                kA: 0
+      #            maxSpeed: 90 #rps
+      #            kP: 0 #5e-5 #0.0001
+      #            kI: 0.
+      #            kD: 0
+      #          startingGearNum: 0 #TODO
       otherShooterMotor:
         org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
-          '@id': shooterMotor2
-          type: SPARKMAX
+          '@id': shooterLeftMotor
+          type: TALON
           port: 2 #TODO
-          name: leftMotor
+          name: shooterLeftMotor
+          reverseSensor: false
           reverseOutput: false
           enableBrakeMode: true
           PDP: PDP
@@ -161,14 +165,22 @@ subsystems:
               kI: 0
               kD: 0
           startingGearNum: 0 #TODO
-      shooterThrottle: 1 #.55 #percent
       kickerMotor:
-        org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.MappedVictorSPX: #TODO TODO
-          '@id': kickerVictor
-          port: 7
-          inverted: false
-          brakeMode: false
-      kickerThrottle: 1 #percent
+        org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
+          '@id': kickerMotor
+          type: TALON
+          reverseSensor: false
+          port: 4 #TODO
+          name: kickerMotor
+          reverseOutput: false
+          enableBrakeMode: true
+          PDP: PDP
+          enableVoltageComp: false #TODO
+  #        org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.MappedVictorSPX: #TODO TODO
+  #          '@id': kickerVictor
+  #          port: 7
+  #          inverted: false
+  #          brakeMode: false
   # FEEDER
   - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
       '@id': feeder
@@ -365,7 +377,7 @@ commands:
               mechanismsJoystick
           buttonNumber: 2 #B
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOff:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOffWithRequires:
           '@id': shooterStopCommand
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
