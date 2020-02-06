@@ -2,7 +2,6 @@ package org.usfirst.frc.team449.robot.generalInterfaces;
 
 import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -15,12 +14,9 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.Main;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
@@ -29,6 +25,8 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.FPSSmartMotorSimu
 
 import java.util.*;
 
+import static org.usfirst.frc.team449.robot.Util.getLogPrefix;
+
 
 /**
  * A motor with built in advanced capability featuring encoder, current limiting, and gear shifting support.
@@ -36,7 +34,7 @@ import java.util.*;
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
-    static final boolean MOCK_IF_SIM = false;
+    boolean MOCK_IF_SIM = false;
 
     /**
      * Creates a new <b>SPARK MAX</b> or <b>FPS TALON</b> motor controller.
@@ -123,7 +121,14 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
                                 @Nullable List<SlaveTalon> slaveTalons,
                                 @Nullable List<SlaveVictor> slaveVictors,
                                 @Nullable List<SlaveSparkMax> slaveSparks) {
-        System.out.println("[FPSSmartMotor] Constructing " + type.name() + " \"" + name + "\" with CAN ID " + port);
+        final String motorLogName = type.toString() + " \"" + name + "\" on port " + port;
+        System.out.println("[" + FPSSmartMotor.class.getSimpleName() + "] Constructing " + motorLogName);
+
+        final var helper = new Object() {
+            public void logUnsupported(String property) {
+                System.out.println("    WARNING: Property " + property + " is not supported for " + type);
+            }
+        };
 
         // The status frame map must be dealt with manually.
         var sparkStatusFramesMap = new HashMap<CANSparkMaxLowLevel.PeriodicFrame, Integer>();
@@ -141,7 +146,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
                             sparkStatusFramesMap.put(new ObjectMapper().readValue(toBeParsed, CANSparkMaxLowLevel.PeriodicFrame.class), statusFrameRatesMillis.get(frame));
                         }
                     } catch (Exception ex) {
-                        System.out.println("Could not parse status frame rate key value + " + toBeParsed);
+                        System.out.println("  ERROR: Could not parse status frame rate key value + " + toBeParsed);
                         ex.printStackTrace();
                     }
 
@@ -162,7 +167,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
         }
 
         if (MOCK_IF_SIM && RobotBase.isSimulation()) {
-            System.out.println("[FPSSmartMotor] Robot running in simulation; creating simulated motor.");
+            System.out.println(getLogPrefix(FPSSmartMotor.class) + "Robot running in simulation; created mock motor");
             return new FPSSmartMotorSimulated(
                     type,
                     port,
@@ -202,28 +207,28 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
         switch (type) {
             case SPARKMAX:
                 if (slaveTalons != null)
-                    System.out.println("WARNING: Property slaveTalons is not supported for FPSSparkMax");
+                    helper.logUnsupported("slaveTalons");
                 if (slaveVictors != null)
-                    System.out.println("WARNING: Property slaveTalons is not supported for FPSSparkMax");
+                    helper.logUnsupported("slaveTalons");
                 if (voltagePerCurrentLinReg != null)
-                    System.out.println("WARNING: Property voltagePerCurrentLinReg is not supported for FPSSparkMax");
+                    helper.logUnsupported("voltagePerCurrentLinReg");
                 if (encoderCPR != null)
-                    System.out.println("WARNING: Property encoderCPR is not supported for FPSSparkMax");
+                    helper.logUnsupported("encoderCPR");
                 if (reverseSensor != null)
-                    System.out.println("WARNING: Property reverseSensor is not supported for FPSSparkMax");
+                    helper.logUnsupported("reverseSensor");
                 if (voltageCompSamples != null)
-                    System.out.println("WARNING: Property voltageCompSamples is not supported for FPSSparkMax");
+                    helper.logUnsupported("voltageCompSamples");
                 if (updaterProcessPeriodSecs != null)
-                    System.out.println("WARNING: Property updaterProcessPeriodSecs is not supported for FPSSparkMax");
+                    helper.logUnsupported("updaterProcessPeriodSecs");
                 if (controlFrameRatesMillis != null)
-                    System.out.println("WARNING: Property controlFrameRatesMillis (RATESSSS--plural) is not supported for FPSSparkMax");
+                    System.out.println("    WARNING: Property controlFrameRatesMillis (RATESSSS--plural) is not supported for FPSSparkMax");
 
                 result = new FPSSparkMax(port, name, reverseOutput, enableBrakeMode, PDP, fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen, remoteLimitSwitchID, fwdSoftLimit, revSoftLimit, postEncoderGearing, feetPerRotation, currentLimit, enableVoltageComp, perGearSettings, startingGear, startingGearNum, sparkStatusFramesMap, controlFrameRateMillis, slaveSparks);
                 break;
 
             case TALON:
                 if (controlFrameRateMillis != null)
-                    System.out.println("WARNING: Property controlFrameRateMillis (RATE--singular) is not supported for FPSTalon");
+                    System.out.println("    WARNING: Property controlFrameRateMillis (RATE--singular) is not supported for FPSTalon");
 
                 result = new FPSTalon(port, name, reverseOutput, enableBrakeMode, voltagePerCurrentLinReg, PDP, fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen, remoteLimitSwitchID, fwdSoftLimit, revSoftLimit, postEncoderGearing, feetPerRotation, currentLimit, enableVoltageComp, voltageCompSamples, feedbackDevice, encoderCPR, reverseSensor != null ? reverseSensor : false, perGearSettings, startingGear, startingGearNum, updaterProcessPeriodSecs, talonStatusFramesMap, controlFrameRatesMillis, slaveTalons, slaveVictors, slaveSparks);
                 break;
@@ -232,7 +237,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
                 throw new IllegalArgumentException("Unsupported motor type: " + type);
         }
 
-        System.out.println("[FPSSmartMotor] Success for " + type.name() + " " + name + " on port " + port);
+        System.out.println(getLogPrefix(FPSSmartMotor.class) + "Success for " + motorLogName);
         return result;
     }
 
@@ -431,6 +436,17 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
     }
 
     enum Type {
-        SPARKMAX, TALON;
+        SPARKMAX("SparkMax"), TALON("Talon");
+
+        public final String friendlyName;
+
+        Type(String friendlyName) {
+            this.friendlyName = friendlyName;
+        }
+
+        @Override
+        public String toString() {
+            return this.friendlyName;
+        }
     }
 }

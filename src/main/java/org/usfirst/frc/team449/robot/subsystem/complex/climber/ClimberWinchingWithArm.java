@@ -12,6 +12,8 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.SubsystemB
 import org.usfirst.frc.team449.robot.subsystem.interfaces.climber.SubsystemClimberWithArm;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
 
+import static org.usfirst.frc.team449.robot.Util.getLogPrefix;
+
 /**
  * A climber subsystem that has an arm that is raised pneumatically and lowered with force by means of a winch.
  */
@@ -41,7 +43,7 @@ public class ClimberWinchingWithArm extends SubsystemBase implements SubsystemCl
      */
     @Override
     public void raise() {
-        System.out.println("[" + this.getClass().getName() + "] raise");
+        System.out.println(getLogPrefix(this) + "raise");
 
         this.turnMotorOff();
         this.setSolenoid(DoubleSolenoid.Value.kForward);
@@ -53,7 +55,7 @@ public class ClimberWinchingWithArm extends SubsystemBase implements SubsystemCl
      */
     @Override
     public void lower() {
-        System.out.println("[" + this.getClass().getName() + "] lower");
+        System.out.println(getLogPrefix(this) + "lower");
 
         this.setSolenoid(DoubleSolenoid.Value.kOff);
         this.turnMotorOn();
@@ -64,7 +66,7 @@ public class ClimberWinchingWithArm extends SubsystemBase implements SubsystemCl
      */
     @Override
     public void off() {
-        System.out.println("[" + this.getClass().getName() + "] off");
+        System.out.println(getLogPrefix(this) + "off");
 
         this.turnMotorOff();
         this.setSolenoid(DoubleSolenoid.Value.kOff);

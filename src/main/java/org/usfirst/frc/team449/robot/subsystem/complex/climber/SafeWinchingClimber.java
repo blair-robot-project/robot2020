@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 
+import static org.usfirst.frc.team449.robot.Util.getLogPrefix;
+
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SafeWinchingClimber extends SubsystemBase implements SubsystemClimberWithArm, SubsystemBinaryMotor, SubsystemSolenoid, Loggable {
     private final ClimberCurrentLimited motorSubsystem;
@@ -39,7 +41,7 @@ public class SafeWinchingClimber extends SubsystemBase implements SubsystemClimb
 
     @Override
     public void raise() {
-        System.out.println("[" + this.getClass().getName() + "] raise");
+        System.out.println(getLogPrefix(this) + "raise");
 
         if (enableArm) {
             this.setSolenoid(DoubleSolenoid.Value.kForward);
@@ -49,7 +51,7 @@ public class SafeWinchingClimber extends SubsystemBase implements SubsystemClimb
 
     @Override
     public void lower() {
-        System.out.println("[" + this.getClass().getName() + "] lower");
+        System.out.println(getLogPrefix(this) + "lower");
 
         if (enableArm) {
             setSolenoid(DoubleSolenoid.Value.kReverse);
@@ -58,7 +60,7 @@ public class SafeWinchingClimber extends SubsystemBase implements SubsystemClimb
 
     @Override
     public void off() {
-        System.out.println("[" + this.getClass().getName() + "] off");
+        System.out.println(getLogPrefix(this) + "off");
 
         setSolenoid(DoubleSolenoid.Value.kOff);
         turnMotorOff();
