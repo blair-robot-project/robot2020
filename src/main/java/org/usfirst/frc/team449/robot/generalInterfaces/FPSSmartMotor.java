@@ -170,7 +170,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
         }
 
         if (FAKE_IF_SIM && RobotBase.isSimulation()) {
-            System.out.println(getLogPrefix(FPSSmartMotor.class) + "Robot running in simulation; created simulated motor");
+            System.out.println(getLogPrefix(FPSSmartMotor.class) + "Robot running in simulation; created simulated   motor");
             return new FPSSmartMotorSimulated(
                     type,
                     port,

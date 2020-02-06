@@ -135,9 +135,9 @@ subsystems:
           '@id': climberSolenoidSystem
           piston:
             '@id': climberSolenoid
-            module: 7
-            forward: 1
-            reverse: 2
+            module: 0
+            forward: 2
+            reverse: 3
 
 # COMMANDS
 commands:
