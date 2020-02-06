@@ -14,7 +14,7 @@ pdp:
 # ROBOT SUBSYSTEMS
 subsystems:
   # CLIMBER
-  - org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberWinchingWithArm:
+  - org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber:
       '@id': climber
       motorSubsystem:
         org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberCurrentLimited:
@@ -54,7 +54,7 @@ commands:
         org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberWithArmState:
           '@id': climberOffCommand
           subsystem:
-            org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberWinchingWithArm:
+            org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber:
               climber
           state: "OFF"
     - button:
@@ -69,7 +69,7 @@ commands:
         org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberWithArmState:
           '@id': climberRaiseCommand
           subsystem:
-            org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberWinchingWithArm:
+            org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber:
               climber
           state: "RAISE"
     - button:
@@ -84,7 +84,7 @@ commands:
         org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberWithArmState:
           '@id': climberLowerCommand
           subsystem:
-            org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberWinchingWithArm:
+            org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber:
               climber
           state: "LOWER"
 
