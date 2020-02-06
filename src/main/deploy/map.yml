@@ -120,9 +120,11 @@ subsystems:
         org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberCurrentLimited:
           '@id': climberCurrentLimitSystem
           smartMotor:
-            org.usfirst.frc.team449.robot.jacksonWrappers.FPSSparkMax:
+D            org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
               '@id': climberMotor
-              port: 1
+              name: climberMotor
+              type: TALON
+              port: 7
               enableBrakeMode: false
           maxPower: 0.1
           powerLimitTimer:
@@ -133,7 +135,7 @@ subsystems:
           '@id': climberSolenoidSystem
           piston:
             '@id': climberSolenoid
-            module: 0
+            module: 7
             forward: 1
             reverse: 2
 
@@ -296,22 +298,13 @@ commands:
               port: 0
           buttonNumber: 1 #A
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpThenShoot:
-          '@id': shootCommand
-          flywheel:
-            org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-              shooterFlywheel
-          feeder:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-              feeder
-      action: WHEN_PRESSED
-      command:
         org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberWithArmState:
           '@id': climberOffCommand
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber:
               climber
           state: "OFF"
+      action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': climberRaiseButton
@@ -319,32 +312,16 @@ commands:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               mechanismsJoystick
           buttonNumber: 2 #B
-      action: WHEN_PRESSED
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOffWithRequires:
-          '@id': shooterStopCommand
+        org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberWithArmState:
+          '@id': climberRaiseCommand
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber:
               climber
           state: "RAISE"
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': feederStopButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: 3 #X
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
-          '@id': feederStopCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-              feeder
-          mode: "OFF"
       action: WHEN_PRESSED
 
   # DEFAULT COMMANDS
-  defaultCommands:
   # DEFAULT DRIVE COMMAND
 #      - subsystem:
 #          org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
