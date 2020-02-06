@@ -36,6 +36,7 @@ import java.util.*;
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
+    static final boolean MOCK_IF_SIM = false;
 
     /**
      * Creates a new <b>SPARK MAX</b> or <b>FPS TALON</b> motor controller.
@@ -122,7 +123,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
                                 @Nullable List<SlaveTalon> slaveTalons,
                                 @Nullable List<SlaveVictor> slaveVictors,
                                 @Nullable List<SlaveSparkMax> slaveSparks) {
-        System.out.println("FPSSmartMotor: Constructing " + type.name() + " \"" + name + "\" with CAN ID " + port);
+        System.out.println("[FPSSmartMotor] Constructing " + type.name() + " \"" + name + "\" with CAN ID " + port);
 
         // The status frame map must be dealt with manually.
         var sparkStatusFramesMap = new HashMap<CANSparkMaxLowLevel.PeriodicFrame, Integer>();
@@ -160,8 +161,8 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
             }
         }
 
-        if (RobotBase.isSimulation()) {
-            System.out.println("FPSSmartMotor: Robot running in simulation: creating simulated motor.");
+        if (MOCK_IF_SIM && RobotBase.isSimulation()) {
+            System.out.println("[FPSSmartMotor] Robot running in simulation; creating simulated motor.");
             return new FPSSmartMotorSimulated(
                     type,
                     port,
@@ -231,7 +232,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
                 throw new IllegalArgumentException("Unsupported motor type: " + type);
         }
 
-        System.out.println("# # FPSSmartMotor: Success for " + type.name() + " " + name + " on port " + port);
+        System.out.println("[FPSSmartMotor] Success for " + type.name() + " " + name + " on port " + port);
         return result;
     }
 
