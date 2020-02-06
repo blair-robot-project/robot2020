@@ -70,6 +70,7 @@ public class SafeWinchingClimber extends SubsystemBase
             if (!reallySure) {
                 reallySure = true;
             } else {
+                setSolenoid(DoubleSolenoid.Value.kOff);
                 motorSubsystem.turnMotorOn();
                 enableArm = false;
             }
