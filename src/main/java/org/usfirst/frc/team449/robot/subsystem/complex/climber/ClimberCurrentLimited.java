@@ -54,6 +54,7 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
      * Whether the condition was met last time caching was done.
      */
     private boolean conditionMetCached;
+    private double percentVoltage;
 
     /**
      * Default constructor
@@ -65,15 +66,18 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
      */
     @JsonCreator
     public ClimberCurrentLimited(@NotNull @JsonProperty(required = true) FPSSmartMotor smartMotor,
+                                 @NotNull @JsonProperty(required = true) BufferTimer powerLimitTimer,
                                  @JsonProperty(required = true) double maxPower,
                                  @Nullable SimpleMotor simpleMotor,
-                                 @NotNull @JsonProperty(required = true) BufferTimer powerLimitTimer) {
+                                 @Nullable Double percentVoltage
+    ) {
         //Instantiate things
         this.smartMotor = smartMotor;
         this.maxPower = maxPower;
         this.powerLimitTimer = powerLimitTimer;
         this.simpleMotor = simpleMotor;
         this.motorSpinning = false;
+        this.percentVoltage = percentVoltage != null ? percentVoltage : 1;
     }
 
     /**
@@ -94,7 +98,7 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
     @Override
     public void turnMotorOn() {
         smartMotor.enable();
-        setPercentVbus(1);
+        setPercentVbus(percentVoltage);
         motorSpinning = true;
     }
 
