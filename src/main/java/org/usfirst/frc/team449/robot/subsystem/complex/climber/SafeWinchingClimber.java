@@ -1,5 +1,6 @@
 package org.usfirst.frc.team449.robot.subsystem.complex.climber;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -19,9 +20,10 @@ public class SafeWinchingClimber extends SubsystemBase
     private final ClimberCurrentLimited motorSubsystem;
     private final SubsystemSolenoid solenoidSubsystem;
 
+    @JsonCreator
     public SafeWinchingClimber(@NotNull @JsonProperty(required = true) final ClimberCurrentLimited motorSubsystem,
-            @NotNull @JsonProperty(required = true) final SubsystemSolenoid solenoidSubsystem,
-            final long extensionTimeMillis) {
+                               @NotNull @JsonProperty(required = true) final SubsystemSolenoid solenoidSubsystem,
+                               final long extensionTimeMillis) {
         this.motorSubsystem = motorSubsystem;
         this.solenoidSubsystem = solenoidSubsystem;
         this.extensionTimeNano = extensionTimeMillis * 1000000;
