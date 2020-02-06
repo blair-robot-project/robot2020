@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDoubleSolenoid;
 
@@ -52,5 +53,10 @@ public class SolenoidSimple extends SubsystemBase implements SubsystemSolenoid, 
     @Override
     public DoubleSolenoid.Value getSolenoidPosition() {
         return pistonPos;
+    }
+
+    @Log
+    public String loggingSolenoidPosition() {
+        return String.valueOf(this.getSolenoidPosition());
     }
 }
