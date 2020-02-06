@@ -15,15 +15,16 @@ public class SlaveSparkMax implements Loggable {
 
     PDP PDP;
 
+    boolean inverted;
+
     @JsonCreator
     public SlaveSparkMax(@JsonProperty(required = true) int port,
-                         @Nullable Boolean invert) {
+                         @Nullable Boolean invert,
+                         @Nullable PDP PDP) {
 
         slaveSpark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-        if(invert != null){
-            slaveSpark.setInverted(invert);
-        }
+        inverted = invert == null ? false : invert;
 
         slaveSpark.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen).enableLimitSwitch(false);
         slaveSpark.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen).enableLimitSwitch(false);
@@ -31,12 +32,19 @@ public class SlaveSparkMax implements Loggable {
         slaveSpark.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100);
         slaveSpark.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 100);
         slaveSpark.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 100);
+
+        this.PDP = PDP;
     }
 
-    public void setMaster(int masterPort, boolean brakeMode, @Nullable PDP PDP) {
-        slaveSpark.follow(CANSparkMax.ExternalFollower.kFollowerSparkMax, masterPort);
+    public void setMasterSpark(CANSparkMax masterController, boolean brakeMode) {
+        slaveSpark.follow(masterController, inverted);
         slaveSpark.setIdleMode(brakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
-        this.PDP = PDP;
+    }
+
+    public void setMasterPhoenix(int masterPort, boolean brakeMode){
+        slaveSpark.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, masterPort);
+        slaveSpark.setIdleMode(brakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
+        slaveSpark.setInverted(inverted);
     }
 
     @Log

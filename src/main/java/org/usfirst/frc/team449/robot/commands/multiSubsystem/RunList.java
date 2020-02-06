@@ -13,8 +13,7 @@ import java.util.List;
 public class RunList extends ParallelCommandGroup {
 
     @JsonCreator
-    public RunList(@JsonProperty(required = true) List<Command> list){
-        addCommands((Command[])list.toArray());
+    public RunList(@JsonProperty(required = true) List<Command> list) {
+        addCommands(list.toArray(new Command[0]));
     }
-
 }

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.util.Units;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -146,6 +147,7 @@ public class FPSTalon implements FPSSmartMotor {
      * @param slaveTalons                The other {@link TalonSRX}s that are slaved to this one.
      * @param slaveVictors               The {@link com.ctre.phoenix.motorcontrol.can.VictorSPX}s that are slaved to
      *                                   this Talon.
+     * @param slaveSparks             The Spark/Neo combinations slaved to this Talon.
      */
     @JsonCreator
     public FPSTalon(@JsonProperty(required = true) int port,
@@ -174,7 +176,8 @@ public class FPSTalon implements FPSSmartMotor {
                     @Nullable Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
                     @Nullable Map<ControlFrame, Integer> controlFrameRatesMillis,
                     @Nullable List<SlaveTalon> slaveTalons,
-                    @Nullable List<SlaveVictor> slaveVictors) {
+                    @Nullable List<SlaveVictor> slaveVictors,
+                    @Nullable List<SlaveSparkMax> slaveSparks) {
         //Instantiate the base CANTalon this is a wrapper on.
         canTalon = new TalonSRX(port);
         //Set the name to the given one or to talon_portnum
@@ -339,6 +342,12 @@ public class FPSTalon implements FPSSmartMotor {
             for (SlaveVictor slave : slaveVictors) {
                 slave.setMaster(canTalon, enableBrakeMode,
                         enableVoltageComp ? notNullVoltageCompSamples : null);
+            }
+        }
+
+        if (slaveSparks != null){
+            for(SlaveSparkMax slave :slaveSparks){
+                slave.setMasterPhoenix(port, enableBrakeMode);
             }
         }
     }
@@ -570,7 +579,7 @@ public class FPSTalon implements FPSSmartMotor {
         setpoint = velocity;
         canTalon.config_kF(0, 0, 0);
         canTalon.set(ControlMode.Velocity, nativeSetpoint, DemandType.ArbitraryFeedForward,
-                currentGearSettings.feedForwardCalculator.calculate(velocity) / 12.);
+                currentGearSettings.feedForwardCalculator.calculate(velocity) / 12. );
     }
 
     /**

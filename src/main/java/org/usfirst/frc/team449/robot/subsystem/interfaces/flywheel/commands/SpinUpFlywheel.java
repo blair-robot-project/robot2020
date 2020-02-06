@@ -55,8 +55,9 @@ public class SpinUpFlywheel extends InstantCommand {
      */
     @Override
     public void execute() {
-        if (feeder != null) feeder.setMode(SubsystemIntake.IntakeMode.IN_FAST); // Turn feeder on.
-        flywheel.turnFeederOff(); // Turn kicker off.
+        if (feeder != null) feeder.setMode(SubsystemIntake.IntakeMode.OFF); // Turn feeder off.
+        flywheel.turnFeederOn(); // Turn kicker on.
+        flywheel.turnFlywheelOn();
         flywheel.setFlywheelState(SubsystemFlywheel.FlywheelState.SPINNING_UP); // Turn flywheel on.
     }
 
