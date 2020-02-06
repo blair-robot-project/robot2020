@@ -120,7 +120,7 @@ subsystems:
         org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberCurrentLimited:
           '@id': climberCurrentLimitSystem
           smartMotor:
-D            org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
+            org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
               '@id': climberMotor
               name: climberMotor
               type: TALON
