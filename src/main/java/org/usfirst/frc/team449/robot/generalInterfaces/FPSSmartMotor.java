@@ -34,7 +34,10 @@ import static org.usfirst.frc.team449.robot.Util.getLogPrefix;
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
-    boolean MOCK_IF_SIM = false;
+    /**
+     * Whether to construct a {@link FPSSmartMotorSimulated} when the robot is running in a simulation.
+     */
+    boolean FAKE_IF_SIM = false;
 
     /**
      * Creates a new <b>SPARK MAX</b> or <b>FPS TALON</b> motor controller.
@@ -166,8 +169,8 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
             }
         }
 
-        if (MOCK_IF_SIM && RobotBase.isSimulation()) {
-            System.out.println(getLogPrefix(FPSSmartMotor.class) + "Robot running in simulation; created mock motor");
+        if (FAKE_IF_SIM && RobotBase.isSimulation()) {
+            System.out.println(getLogPrefix(FPSSmartMotor.class) + "Robot running in simulation; created simulated motor");
             return new FPSSmartMotorSimulated(
                     type,
                     port,

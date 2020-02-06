@@ -14,8 +14,10 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.MappedJoystickSim
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedJoystick extends Joystick implements Rumbleable {
-    // Whether to construct a mock joystick when the robot is running in a simulation.
-    private static final boolean MOCK_IF_SIM = false;
+    /**
+     * Whether to construct a {@link MappedJoystickSimulated} when the robot is running in a simulation.
+     */
+    private static final boolean FAKE_IF_SIM = false;
 
     /**
      * Default constructor
@@ -27,11 +29,13 @@ public class MappedJoystick extends Joystick implements Rumbleable {
     }
 
     /**
+     * Factory method to enable faking in simulation.
+     *
      * @param port The USB port of this joystick, on [0, 5].
      */
     @JsonCreator
     public static MappedJoystick create(@JsonProperty(required = true) int port) {
-        if (!MOCK_IF_SIM || RobotBase.isReal()) {
+        if (!FAKE_IF_SIM || RobotBase.isReal()) {
             return new MappedJoystick(port);
         }
 
