@@ -23,6 +23,11 @@ public class ClimberWinchingWithArm extends SubsystemBase implements SubsystemCl
     @NotNull
     private final SubsystemSolenoid solenoidSubsystem;
 
+    @NotNull
+    public ArmState armState = ArmState.DOWN;
+
+    private boolean manualControlEnabled = false;
+
     /**
      * Default constructor.
      *
@@ -43,6 +48,7 @@ public class ClimberWinchingWithArm extends SubsystemBase implements SubsystemCl
     public void raise() {
         this.turnMotorOff();
         this.setSolenoid(DoubleSolenoid.Value.kForward);
+        armState = ArmState.UP;
     }
 
     /**
@@ -53,6 +59,7 @@ public class ClimberWinchingWithArm extends SubsystemBase implements SubsystemCl
     public void lower() {
         this.setSolenoid(DoubleSolenoid.Value.kOff);
         this.turnMotorOn();
+        armState = ArmState.DOWN;
     }
 
     /**
@@ -81,6 +88,18 @@ public class ClimberWinchingWithArm extends SubsystemBase implements SubsystemCl
     }
 
     /**
+     * Turn the motor on if it is enabled
+     * @return
+     */
+    public boolean winchUpIfEnabled() {
+        if (winchUpEnabled()) {
+            turnMotorOn();
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * @return true if the motor subsystem is on, false otherwise.
      */
     @Override
@@ -102,5 +121,29 @@ public class ClimberWinchingWithArm extends SubsystemBase implements SubsystemCl
     @Override
     public @NotNull DoubleSolenoid.Value getSolenoidPosition() {
         return this.solenoidSubsystem.getSolenoidPosition();
+    }
+
+    /**
+     * Whether or not the winch up command is enabled
+     * @return
+     */
+    public boolean winchUpEnabled() {
+        return manualControlEnabled || armState == ArmState.UP;
+    }
+
+    /**
+     * Set the manualControlEnabled field
+     * @param manualControlEnabled
+     */
+    public void setManualControl(boolean manualControlEnabled) {
+        this.manualControlEnabled = manualControlEnabled;
+    }
+
+    /**
+     * Whether or not manual control is enabled
+     * @return
+     */
+    public boolean isManualControlEnabled() {
+        return manualControlEnabled;
     }
 }

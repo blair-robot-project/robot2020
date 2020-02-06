@@ -81,12 +81,19 @@ commands:
           buttonNumber: 3 #X
       action: WHEN_PRESSED
       command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberWithArmState:
-          '@id': climberLowerCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberWinchingWithArm:
-              climber
-          state: "LOWER"
+        #TODO check this
+        org.usfirst.frc.team449.robot.commands.general.ConditionalCommandFunctional:
+          onTrue:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberWithArmState:
+              '@id': climberLowerCommand
+              subsystem:
+                org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberWinchingWithArm:
+                  climber
+              state: LOWER
+          booleanSupplier:
+            org.usfirst.frc.team449.robot.commands.general.InstanceMethodBooleanSupplier:
+              source: climber
+              methodName: winchUpEnabled
 
   # DEFAULT COMMANDS
   defaultCommands:
