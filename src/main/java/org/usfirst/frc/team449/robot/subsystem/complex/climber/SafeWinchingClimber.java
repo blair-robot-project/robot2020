@@ -5,7 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import io.github.oblarg.oblog.Logger;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
+import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.SubsystemBinaryMotor;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.climber.SubsystemClimberWithArm;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
@@ -15,10 +18,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class SafeWinchingClimber extends SubsystemBase
-        implements SubsystemClimberWithArm, SubsystemBinaryMotor, SubsystemSolenoid, Loggable {
+public class SafeWinchingClimber extends SubsystemBase implements SubsystemClimberWithArm, SubsystemBinaryMotor, SubsystemSolenoid, Loggable {
     private final ClimberCurrentLimited motorSubsystem;
     private final SubsystemSolenoid solenoidSubsystem;
+    private final long extensionTimeMillis;
+    private boolean enableArm = true;
+
+    private boolean reallySure = false;
+    private boolean armIsExtending = false;
+    private long extensionStartTime = 0L;
 
     @JsonCreator
     public SafeWinchingClimber(@NotNull @JsonProperty(required = true) final ClimberCurrentLimited motorSubsystem,
@@ -26,23 +34,23 @@ public class SafeWinchingClimber extends SubsystemBase
                                final long extensionTimeMillis) {
         this.motorSubsystem = motorSubsystem;
         this.solenoidSubsystem = solenoidSubsystem;
-        this.extensionTimeNano = extensionTimeMillis * 1000000;
+        this.extensionTimeMillis = extensionTimeMillis;
     }
-
-    private boolean enableArm = true;
-
-	private boolean reallySure = false;
 
     @Override
     public void raise() {
+        System.out.println("[" + this.getClass().getName() + "] raise");
+
         if (enableArm) {
             this.setSolenoid(DoubleSolenoid.Value.kForward);
-            extensionStartTime = System.nanoTime();
+            extensionStartTime = Clock.currentTimeMillis();
         }
     }
 
     @Override
     public void lower() {
+        System.out.println("[" + this.getClass().getName() + "] lower");
+
         if (enableArm) {
             setSolenoid(DoubleSolenoid.Value.kReverse);
         }
@@ -50,6 +58,8 @@ public class SafeWinchingClimber extends SubsystemBase
 
     @Override
     public void off() {
+        System.out.println("[" + this.getClass().getName() + "] off");
+
         setSolenoid(DoubleSolenoid.Value.kOff);
         turnMotorOff();
     }
@@ -79,15 +89,12 @@ public class SafeWinchingClimber extends SubsystemBase
         }
     }
 
-    private final long extensionTimeNano;
-    private boolean armIsExtending = false;
-    private long extensionStartTime = 0L;
-
-    private boolean armIsUp() {
+    @Log
+    public boolean armIsUp() {
         if (!armIsExtending) {
             return false;
         }
-        return System.nanoTime() >= extensionStartTime + extensionTimeNano;
+        return Clock.currentTimeMillis() >= extensionStartTime + extensionTimeMillis;
     }
 
     @Override
@@ -97,6 +104,7 @@ public class SafeWinchingClimber extends SubsystemBase
     }
 
     @Override
+    @Log
     public boolean isMotorOn() {
         return motorSubsystem.isMotorOn();
     }
