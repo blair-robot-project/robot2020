@@ -47,5 +47,5 @@ logs/
 #Generated profiles in the base-level directory
 #*Profile.csv
 
-#GUI layout configuration for Robot Simulation GUI
+# GUI layout configuration for Robot Simulation GUI
 imgui.ini
