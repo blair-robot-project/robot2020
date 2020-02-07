@@ -71,7 +71,7 @@ commands:
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber:
               climber
-          state: "RAISE"
+          state: RAISE
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': climberLowerButton
@@ -86,7 +86,7 @@ commands:
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber:
               climber
-          state: "LOWER"
+          state: LOWER
 
   # DEFAULT COMMANDS
   defaultCommands:
