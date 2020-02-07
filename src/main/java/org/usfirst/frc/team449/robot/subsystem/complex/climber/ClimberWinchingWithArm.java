@@ -46,6 +46,8 @@ public class ClimberWinchingWithArm extends SubsystemBase implements SubsystemCl
      */
     @Override
     public void raise() {
+        System.out.println("[" + this.getClass().getName() + "] raise");
+
         this.turnMotorOff();
         this.setSolenoid(DoubleSolenoid.Value.kForward);
         armState = ArmState.UP;
@@ -57,6 +59,8 @@ public class ClimberWinchingWithArm extends SubsystemBase implements SubsystemCl
      */
     @Override
     public void lower() {
+        System.out.println("[" + this.getClass().getName() + "] lower");
+
         this.setSolenoid(DoubleSolenoid.Value.kOff);
         this.turnMotorOn();
         armState = ArmState.DOWN;
@@ -67,6 +71,8 @@ public class ClimberWinchingWithArm extends SubsystemBase implements SubsystemCl
      */
     @Override
     public void off() {
+        System.out.println("[" + this.getClass().getName() + "] off");
+
         this.turnMotorOff();
         this.setSolenoid(DoubleSolenoid.Value.kOff);
     }
