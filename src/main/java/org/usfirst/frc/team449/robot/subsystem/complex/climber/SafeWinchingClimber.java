@@ -55,7 +55,12 @@ public class SafeWinchingClimber extends SubsystemBase
     @Override
     public void setSolenoid(@NotNull final DoubleSolenoid.Value value) {
         solenoidSubsystem.setSolenoid(value);
-        armIsExtending = value == DoubleSolenoid.Value.kForward;
+        if(value == DoubleSolenoid.Value.kForward) {
+            armIsExtending = true;
+        } else if(value == DoubleSolenoid.Value.kReverse) {
+            armIsExtending = false;
+        }
+
         reallySure = false;
     }
 
@@ -70,7 +75,7 @@ public class SafeWinchingClimber extends SubsystemBase
             if (!reallySure) {
                 reallySure = true;
             } else {
-                setSolenoid(DoubleSolenoid.Value.kOff);
+                setSolenoid(DoubleSolenoid.Value.kReverse);
                 motorSubsystem.turnMotorOn();
                 enableArm = false;
             }
