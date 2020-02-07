@@ -21,4 +21,8 @@ public interface SubsystemClimberWithArm {
      * Turns off all devices associated with the climber arm.
      */
     void off();
+
+    enum ArmState {
+        UP, DOWN;
+    }
 }

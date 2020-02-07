@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import io.github.oblarg.oblog.Logger;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.other.Clock;
@@ -19,16 +18,22 @@ import io.github.oblarg.oblog.Loggable;
 
 import static org.usfirst.frc.team449.robot.Util.getLogPrefix;
 
+/**
+ * Like {@link ClimberWinchingWithArm} with safety
+ * features (stuff needs to be enabled to move)
+ * @author Nathan
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class SafeWinchingClimber extends SubsystemBase implements SubsystemClimberWithArm, SubsystemBinaryMotor, SubsystemSolenoid, Loggable {
+public class SafeWinchingClimber extends SubsystemBase
+        implements SubsystemClimberWithArm, SubsystemBinaryMotor, SubsystemSolenoid, Loggable {
     private final ClimberCurrentLimited motorSubsystem;
     private final SubsystemSolenoid solenoidSubsystem;
-    private final long extensionTimeMillis;
-    private boolean enableArm = true;
 
-    private boolean reallySure = false;
+    private final long extensionTimeMillis;
     private boolean armIsExtending = false;
     private long extensionStartTime = 0L;
+    private boolean enableArm = true;
+    private boolean reallySure = false;
 
     @JsonCreator
     public SafeWinchingClimber(@NotNull @JsonProperty(required = true) final ClimberCurrentLimited motorSubsystem,
@@ -39,6 +44,9 @@ public class SafeWinchingClimber extends SubsystemBase implements SubsystemClimb
         this.extensionTimeMillis = extensionTimeMillis;
     }
 
+    /**
+     * Raise arm only if it is enabled
+     */
     @Override
     public void raise() {
         System.out.println(getLogPrefix(this) + "raise");
@@ -49,6 +57,9 @@ public class SafeWinchingClimber extends SubsystemBase implements SubsystemClimb
         }
     }
 
+    /**
+     * Lower arm, but only if it is enabled
+     */
     @Override
     public void lower() {
         System.out.println(getLogPrefix(this) + "lower");
@@ -78,6 +89,11 @@ public class SafeWinchingClimber extends SubsystemBase implements SubsystemClimb
         return solenoidSubsystem.getSolenoidPosition();
     }
 
+    /**
+     * Move the winch if the arm is up.
+     * Has to be called twice (double button
+     * press) for it to work (I think?)
+     */
     @Override
     public void turnMotorOn() {
         if (armIsUp()) {
@@ -92,13 +108,16 @@ public class SafeWinchingClimber extends SubsystemBase implements SubsystemClimb
     }
 
     @Log
-    public boolean armIsUp() {
+    private boolean armIsUp() {
         if (!armIsExtending) {
             return false;
         }
         return Clock.currentTimeMillis() >= extensionStartTime + extensionTimeMillis;
     }
 
+    /**
+     * Turn off the winch
+     */
     @Override
     public void turnMotorOff() {
         motorSubsystem.turnMotorOff();
