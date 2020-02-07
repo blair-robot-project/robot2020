@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 
-import static org.usfirst.frc.team449.robot.Util.getLogPrefix;
+import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /**
  * Like {@link ClimberWinchingWithArm} with safety
@@ -30,9 +30,13 @@ public class SafeWinchingClimber extends SubsystemBase
     private final SubsystemSolenoid solenoidSubsystem;
 
     private final long extensionTimeMillis;
+    @Log
     private boolean armIsExtending = false;
+    @Log
     private long extensionStartTime = 0L;
+    @Log
     private boolean enableArm = true;
+    @Log
     private boolean reallySure = false;
 
     @JsonCreator

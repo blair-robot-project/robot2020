@@ -12,7 +12,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.SubsystemB
 import org.usfirst.frc.team449.robot.subsystem.interfaces.climber.SubsystemClimberWithArm;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
 
-import static org.usfirst.frc.team449.robot.Util.getLogPrefix;
+import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /**
  * A climber subsystem that has an arm that is raised pneumatically and lowered with force by means of a winch.

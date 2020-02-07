@@ -1,11 +1,13 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers.simulated;
 
 import com.ctre.phoenix.motorcontrol.ControlFrame;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
@@ -14,20 +16,39 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
+import org.usfirst.frc.team449.robot.other.Clock;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Class to be . This class is automatically instantiated should not
+ * Class that implements {@link FPSSmartMotor} without relying on hardware.
+ * This class is automatically instantiated by the FPSSmartMotor factory method when the robot is running in a
+ * simulation and should not be otherwise referenced in code.
  */
 public class FPSSmartMotorSimulated implements FPSSmartMotor {
+    private static final double MAX_ACCEL = 100;
+    private final String name;
+
+    private double percentOutput;
+    private double velocity;
+    private double position;
+    private double busVoltage = 10;
+
+    @Log
+    private double setpoint;
+
+    private ControlMode controlMode = ControlMode.Disabled;
+
+    @Log
+    private double lastStateUpdateTime = Clock.currentTimeMillis();
+
     public FPSSmartMotorSimulated(@JsonProperty(required = true) Type type,
                                   @JsonProperty(required = true) int port,
+                                  @JsonProperty(required = true) boolean enableBrakeMode,
                                   @Nullable String name,
                                   boolean reverseOutput,
-                                  @JsonProperty(required = true) boolean enableBrakeMode,
                                   @Nullable PDP PDP,
                                   @Nullable Boolean fwdLimitSwitchNormallyOpen,
                                   @Nullable Boolean revLimitSwitchNormallyOpen,
@@ -41,11 +62,11 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
                                   @Nullable List<PerGearSettings> perGearSettings,
                                   @Nullable Shiftable.gear startingGear,
                                   @Nullable Integer startingGearNum,
-                                  @Nullable HashMap<StatusFrameEnhanced, Integer> sparkStatusFramesMap,
-                                  @Nullable HashMap<CANSparkMaxLowLevel.PeriodicFrame, Integer> talonStatusFramesMap,
                                   // Spark-specific
+                                  @Nullable HashMap<CANSparkMaxLowLevel.PeriodicFrame, Integer> sparkStatusFramesMap,
                                   @Nullable final Integer controlFrameRateMillis,
                                   // Talon-specific
+                                  @Nullable HashMap<StatusFrameEnhanced, Integer> talonStatusFramesMap,
                                   @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
                                   @Nullable RunningLinRegComponent voltagePerCurrentLinReg,
                                   @Nullable Integer voltageCompSamples,
@@ -56,6 +77,33 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
                                   @Nullable List<SlaveTalon> slaveTalons,
                                   @Nullable List<SlaveVictor> slaveVictors,
                                   @Nullable List<SlaveSparkMax> slaveSparks) {
+
+        this.name = "FAKE " + (name != null ? name : port);
+    }
+
+    /**
+     * Performs simulated PID logic and simulates physical state changes since last call.
+     */
+    private void updateSimulatedState() {
+        double now = Clock.currentTimeMillis();
+        double deltaSecs = (now - lastStateUpdateTime) / 1000.0;
+
+        switch (this.controlMode) {
+            case PercentOutput:
+                this.percentOutput = this.setpoint;
+                break;
+            case Velocity:
+                this.percentOutput = Math.min(this.busVoltage, 1.1 * (this.setpoint - this.velocity));
+                break;
+            case Position:
+                this.percentOutput = Math.min(this.busVoltage, 1.1 * (this.setpoint - this.position));
+                break;
+        }
+
+        this.velocity += Math.min(MAX_ACCEL, 10 * (this.busVoltage * this.percentOutput - this.velocity)) * deltaSecs;
+        this.position += this.velocity * deltaSecs;
+
+        this.lastStateUpdateTime = now;
     }
 
     /**
@@ -65,6 +113,9 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public void setPercentVoltage(double percentVoltage) {
+        System.out.println("SIM MOTOR %Voltage: " + percentVoltage);
+        this.setpoint = percentVoltage;
+        this.controlMode = ControlMode.PercentOutput;
     }
 
     /**
@@ -87,7 +138,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public double feetToEncoder(double feet) {
-        return 0;
+        return feet;
     }
 
     /**
@@ -100,7 +151,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public double encoderToFPS(double encoderReading) {
-        return 0;
+        return encoderReading;
     }
 
     /**
@@ -112,7 +163,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public double FPSToEncoder(double FPS) {
-        return 0;
+        return FPS;
     }
 
     /**
@@ -124,7 +175,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public Double nativeToRPS(double nat) {
-        return 0.0;
+        return nat;
     }
 
     /**
@@ -136,15 +187,17 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public double RPSToNative(double RPS) {
-        return 0;
+        return RPS;
     }
 
     /**
      * @return Raw position units for debugging purposes
      */
     @Override
+    @Log
     public double encoderPosition() {
-        return 0;
+        this.updateSimulatedState();
+        return this.position;
     }
 
     /**
@@ -154,15 +207,18 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public void setPositionSetpoint(double feet) {
-
+        this.setpoint = this.feetToEncoder(feet);
+        this.controlMode = ControlMode.Position;
     }
 
     /**
      * @return Raw velocity units for debugging purposes
      */
     @Override
+    @Log
     public double encoderVelocity() {
-        return 0;
+        this.updateSimulatedState();
+        return this.velocity;
     }
 
     /**
@@ -172,7 +228,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public Double getVelocity() {
-        return 0.0;
+        return this.encoderToFPS(this.encoderVelocity());
     }
 
     /**
@@ -182,7 +238,8 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public void setVelocity(double velocity) {
-
+        this.setpoint = velocity;
+        this.controlMode = ControlMode.Velocity;
     }
 
     /**
@@ -192,7 +249,8 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public void setVelocityFPS(double velocity) {
-
+        this.setpoint = this.FPSToEncoder(velocity);
+        this.controlMode = ControlMode.Velocity;
     }
 
     /**
@@ -202,7 +260,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public double getError() {
-        return 0;
+        return this.encoderToFPS(this.setpoint - this.velocity);
     }
 
     /**
@@ -212,7 +270,14 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public @Nullable Double getSetpoint() {
-        return null;
+        switch (this.controlMode) {
+            case Velocity:
+                return this.encoderToFPS(this.setpoint);
+            case Position:
+                return this.encoderToFeet(this.setpoint);
+            default:
+                return null;
+        }
     }
 
     /**
@@ -221,8 +286,10 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @return Voltage in volts.
      */
     @Override
+    @Log
     public double getOutputVoltage() {
-        return 0;
+        this.updateSimulatedState();
+        return this.getBatteryVoltage() * this.percentOutput;
     }
 
     /**
@@ -231,8 +298,9 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @return Voltage in volts.
      */
     @Override
+    @Log
     public double getBatteryVoltage() {
-        return 0;
+        return this.busVoltage;
     }
 
     /**
@@ -241,6 +309,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @return Current in amps.
      */
     @Override
+    @Log
     public double getOutputCurrent() {
         return 0;
     }
@@ -251,8 +320,9 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @return Control mode as a string.
      */
     @Override
+    @Log
     public String getControlMode() {
-        return "";
+        return this.controlMode.name();
     }
 
     /**
@@ -290,7 +360,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public Double getPositionFeet() {
-        return 0.0;
+        return this.encoderToFeet(this.encoderPosition());
     }
 
     /**
@@ -298,7 +368,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public void resetPosition() {
-
+        this.position = 0;
     }
 
     /**
@@ -346,5 +416,10 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public void setGear(int gear) {
+    }
+
+    @Override
+    public String configureLogName() {
+        return this.name;
     }
 }

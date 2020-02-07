@@ -63,6 +63,7 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
      * @param maxPower        The maximum power at which the motor won't shut off.
      * @param simpleMotor     The other climber motor. Can be null.
      * @param powerLimitTimer The buffer timer for the power-limited shutoff.
+     * @param percentVoltage  The voltage setpoint to run the motors at.
      */
     @JsonCreator
     public ClimberCurrentLimited(@NotNull @JsonProperty(required = true) FPSSmartMotor smartMotor,

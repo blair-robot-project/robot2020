@@ -15,7 +15,8 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.MappedJoystickSim
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedJoystick extends Joystick implements Rumbleable {
     /**
-     * Whether to construct a {@link MappedJoystickSimulated} when the robot is running in a simulation.
+     * Whether to construct instances of {@link MappedJoystickSimulated} instead of {@link MappedJoystick} when the
+     * robot is running in a simulation.
      */
     private static final boolean FAKE_IF_SIM = false;
 

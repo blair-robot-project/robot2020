@@ -2,7 +2,37 @@ package org.usfirst.frc.team449.robot.jacksonWrappers.simulated;
 
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 
+import java.awt.*;
+import java.awt.event.KeyEvent;
+
+import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
+
 public class MappedJoystickSimulated extends MappedJoystick {
+    private static volatile boolean wPressed = false;
+
+    {
+        {
+            KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
+                synchronized (MappedJoystickSimulated.class) {
+                    switch (e.getID()) {
+                        case KeyEvent.KEY_PRESSED:
+                            if (e.getKeyCode() == KeyEvent.VK_W) {
+                                wPressed = true;
+                            }
+                            break;
+
+                        case KeyEvent.KEY_RELEASED:
+                            if (e.getKeyCode() == KeyEvent.VK_W) {
+                                wPressed = false;
+                            }
+                            break;
+                    }
+                    return false;
+                }
+            });
+        }
+    }
+
     /**
      * Default constructor
      *
@@ -10,6 +40,12 @@ public class MappedJoystickSimulated extends MappedJoystick {
      */
     public MappedJoystickSimulated(int port) {
         super(port);
+    }
+
+    public static boolean isWPressed() {
+        synchronized (MappedJoystickSimulated.class) {
+            return wPressed;
+        }
     }
 
     /**
@@ -23,7 +59,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      */
     @Override
     public boolean getRawButton(int button) {
-        return false;
+        return wPressed;
     }
 
     /**
