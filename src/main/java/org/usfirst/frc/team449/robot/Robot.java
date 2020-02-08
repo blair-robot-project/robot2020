@@ -25,6 +25,7 @@ import java.io.PrintWriter;
 import java.util.IllegalFormatException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * The main class of the robot, constructs all the subsystems and initializes default commands.
@@ -59,13 +60,11 @@ public class Robot extends TimedRobot {
      * The object constructed directly from the yaml map.
      */
     @NotNull
-    protected final RobotMap robotMap = loadMap();
+    protected final RobotMap robotMap = Objects.requireNonNull(loadMap());
 
     /**
      * The method that runs when the robot is turned on. Initializes all subsystems from the map.
      */
-
-    Limelight netTableGetter;
 
     public static @Nullable RobotMap loadMap() {
         try {
@@ -117,21 +116,11 @@ public class Robot extends TimedRobot {
         //Yes this should be a print statement, it's useful to know that robotInit started.
         System.out.println("Started robotInit.");
 
+        if (robotMap.useCameraServer()) {
+            CameraServer.getInstance().startAutomaticCapture();
+        }
+
         //Read sensors
-        this.robotMap.getUpdater().run();
-
-        if (robotMap.useCameraServer()) {
-            CameraServer.getInstance().startAutomaticCapture();
-        }
-
-        Logger.configureLoggingAndConfig(robotMap, false);
-
-        netTableGetter = new Limelight();
-
-        if (robotMap.useCameraServer()) {
-            CameraServer.getInstance().startAutomaticCapture();
-        }
-
         this.robotMap.getUpdater().run();
 
         Logger.configureLoggingAndConfig(robotMap, false);
