@@ -20,17 +20,17 @@ public class ConditionalCommandSubsystemBased extends ConditionalCommand {
     /**
      * Default constructor.
      *
-     * @param trueCommand  The Command to execute before the given time. Can be null to not run a command before.
-     * @param falseCommand The Command to execute after the given time. Can be null to not run a command after.
+     * @param onTrue  The Command to execute before the given time. Can be null to not run a command before.
+     * @param onFalse The Command to execute after the given time. Can be null to not run a command after.
      * @param subsystem    The conditional subsystem on whose condition the command depends.
      * @param useCached    If true, use {@link SubsystemConditional#isConditionTrueCached()};
      *                     otherwise, use {@link SubsystemConditional#isConditionTrue()}
      */
     @JsonCreator
-    public ConditionalCommandSubsystemBased(@Nullable Command trueCommand,
-                                            @Nullable Command falseCommand,
+    public ConditionalCommandSubsystemBased(@Nullable Command onTrue,
+                                            @Nullable Command onFalse,
                                             @NotNull @JsonProperty(required = true) SubsystemConditional subsystem,
                                             boolean useCached) {
-        super(trueCommand, falseCommand, useCached ? subsystem::isConditionTrueCached : subsystem::isConditionTrue);
+        super(onTrue, onFalse, useCached ? subsystem::isConditionTrueCached : subsystem::isConditionTrue);
     }
 }

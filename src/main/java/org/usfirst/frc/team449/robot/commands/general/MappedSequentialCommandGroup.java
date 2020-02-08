@@ -12,8 +12,20 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+/**
+ * Runs a list of commands in sequence.
+ *
+ * @see SequentialCommandGroup
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedSequentialCommandGroup extends SequentialCommandGroup {
+    /**
+     * Creates a new SequentialCommandGroup.  The given commands will be run sequentially, with
+     * the CommandGroup finishing when the last command finishes.
+     *
+     * @param commands the commands to include in this group.
+     * @param requires the list of subsystems that this command requires
+     */
     @JsonCreator
     public MappedSequentialCommandGroup(@NotNull @JsonProperty(required = true) List<Command> commands,
                                         @Nullable List<Subsystem> requires) {

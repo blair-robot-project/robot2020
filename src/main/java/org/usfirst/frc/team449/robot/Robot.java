@@ -13,11 +13,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.Limelight;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.yaml.snakeyaml.Yaml;
+
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.util.IllegalFormatException;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -38,26 +44,72 @@ public class Robot extends TimedRobot {
     public static final String RESOURCES_PATH_SIMULATED = "./src/main/deploy/";
 
     /**
+     * The name of the map to read from. Should be overriden by a subclass to change the name.
+     */
+    @NotNull
+    public static final String mapName = "map.yml";
+
+    /**
      * The filepath to the resources folder containing the config files.
      */
     @NotNull
-    public static String RESOURCES_PATH;
-
-    /**
-     * The name of the map to read from. Should be overriden by a subclass to change the name.
-     */
-    protected String mapName = "map.yml";
+    public static final String RESOURCES_PATH = RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
 
     /**
      * The object constructed directly from the yaml map.
      */
-    protected RobotMap robotMap;
+    @NotNull
+    protected final RobotMap robotMap = loadMap();
 
     /**
      * The method that runs when the robot is turned on. Initializes all subsystems from the map.
      */
 
     Limelight netTableGetter;
+
+    public static @Nullable RobotMap loadMap() {
+        try {
+            //Read the yaml file with SnakeYaml so we can use anchors and merge syntax.
+            Map<?, ?> normalized = (Map<?, ?>) new Yaml().load(new FileReader(RESOURCES_PATH + "/" + mapName));
+
+            YAMLMapper mapper = new YAMLMapper();
+
+            //Turn the Map read by SnakeYaml into a String so Jackson can read it.
+            String fixed = mapper.writeValueAsString(normalized);
+
+            //Use a parameter name module so we don't have to specify name for every field.
+            mapper.registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES));
+
+            //Add mix-ins
+            mapper.registerModule(new WPIModule());
+            mapper.registerModule(new JavaModule());
+
+            //Deserialize the map into an object.
+            return mapper.readValue(fixed, RobotMap.class);
+
+        } catch (IOException ex) {
+            //The map file is either absent from the file system or improperly formatted.
+            System.out.println("Config file is bad/nonexistent!");
+
+            ex.printStackTrace(new PrintWriter(System.err, true) {
+                @Override
+                public void println(String x) {
+                    super.println(x.replace("->", "\n\t\t->"));
+                }
+
+                @Override
+                public void println(Object x) {
+                    this.println(String.valueOf(x));
+                }
+            });
+
+            //Prevent watchdog from restarting by looping infinitely, but only when on the robot in order not to hang unit tests.
+            if (RobotBase.isSimulation()) return null;
+            while (true) {
+            }
+        }
+    }
+
     public void robotInit() {
         //Set up start time
         Clock.setStartTime();
@@ -65,32 +117,18 @@ public class Robot extends TimedRobot {
         //Yes this should be a print statement, it's useful to know that robotInit started.
         System.out.println("Started robotInit.");
 
-        RESOURCES_PATH = RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
-        netTableGetter = new Limelight();
-        Yaml yaml = new Yaml();
+        //Read sensors
+        this.robotMap.getUpdater().run();
 
-        try {
-            //Read the yaml file with SnakeYaml so we can use anchors and merge syntax.
-            Map<?, ?> normalized = (Map<?, ?>) yaml.load(new FileReader(RESOURCES_PATH + "/" + mapName));
-            YAMLMapper mapper = new YAMLMapper();
-            //Turn the Map read by SnakeYaml into a String so Jackson can read it.
-            String fixed = mapper.writeValueAsString(normalized);
-            //Use a parameter name module so we don't have to specify name for every field.
-            mapper.registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES));
-            //Add mix-ins
-            mapper.registerModule(new WPIModule());
-            mapper.registerModule(new JavaModule());
-            //Deserialize the map into an object.
-            robotMap = mapper.readValue(fixed, RobotMap.class);
-        } catch (IOException e) {
-            //This is either the map file not being in the file system OR it being improperly formatted.
-            System.out.println("Config file is bad/nonexistent!");
-            e.printStackTrace();
-            //dont restart watchdog
-            while(true){}
+        if (robotMap.useCameraServer()) {
+            CameraServer.getInstance().startAutomaticCapture();
         }
 
-        if(robotMap.useCameraServer()){
+        Logger.configureLoggingAndConfig(robotMap, false);
+
+        netTableGetter = new Limelight();
+
+        if (robotMap.useCameraServer()) {
             CameraServer.getInstance().startAutomaticCapture();
         }
 
@@ -128,7 +166,7 @@ public class Robot extends TimedRobot {
             robotMap.getAutoStartupCommands().forEachRemaining(Command::cancel);
         }
 
-        //Run the teleop startup command
+        //Run teleop startup commands
         if (robotMap.getTeleopStartupCommands() != null) {
             robotMap.getTeleopStartupCommands().forEachRemaining(Command::schedule);
         }
@@ -151,7 +189,7 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         //Run startup command if we start in test mode.
-        if(robotMap.getTestStartupCommands() != null){
+        if (robotMap.getTestStartupCommands() != null) {
             robotMap.getTestStartupCommands().forEachRemaining(Command::schedule);
         }
     }
