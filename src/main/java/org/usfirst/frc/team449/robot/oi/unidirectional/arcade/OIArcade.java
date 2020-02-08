@@ -3,6 +3,8 @@ package org.usfirst.frc.team449.robot.oi.unidirectional.arcade;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.github.oblarg.oblog.annotations.Log;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.oi.unidirectional.OIUnidirectional;
 
 /**
@@ -18,15 +20,13 @@ public abstract class OIArcade implements OIUnidirectional {
     /**
      * Cached forwards and rotational output.
      */
+    @Nullable
     private double[] fwdRotOutputCached;
     /**
      * Cached left-right output values
      */
+    @Nullable
     private double[] leftRightOutputCached;
-    /**
-     * Unscaled, unclipped values for left and right output. Fields to avoid garbage collection.
-     */
-    private double tmpLeft, tmpRight;
 
     /**
      * Default constructor.
@@ -56,30 +56,34 @@ public abstract class OIArcade implements OIUnidirectional {
      * @return An array of length 2, where the 1st element is the output for the left and the second for the right, both
      * from [-1, 1].
      */
+    @NotNull
     public double[] getLeftRightOutput() {
         fwdRotOutputCached = getFwdRotOutput();
-        tmpLeft = fwdRotOutputCached[0] + fwdRotOutputCached[1];
-        tmpRight = fwdRotOutputCached[0] - fwdRotOutputCached[1];
+
+        // Unscaled, unclipped values for left and right output.
+        double tmpLeft = fwdRotOutputCached[0] + fwdRotOutputCached[1];
+        double tmpRight = fwdRotOutputCached[0] - fwdRotOutputCached[1];
+
         //If left is too large
         if (Math.abs(tmpLeft) > 1) {
             if (rescaleOutputs) {
                 //Rescale right, return left clipped to [-1, 1]
-                return new double[]{Math.signum(tmpLeft), tmpRight / Math.abs(tmpLeft)};
+                return new double[] {Math.signum(tmpLeft), tmpRight / Math.abs(tmpLeft)};
             } else {
                 //Return left clipped to [-1, 1], don't change right
-                return new double[]{Math.signum(tmpLeft), tmpRight};
+                return new double[] {Math.signum(tmpLeft), tmpRight};
             }
         } else if (Math.abs(tmpRight) > 1) { //If right is too large
             if (rescaleOutputs) {
                 //Rescale left, return right clipped to [-1, 1]
-                return new double[]{tmpLeft / Math.abs(tmpRight), Math.signum(tmpRight)};
+                return new double[] {tmpLeft / Math.abs(tmpRight), Math.signum(tmpRight)};
             } else {
                 //Return right clipped to [-1, 1], don't change left
-                return new double[]{tmpLeft, Math.signum(tmpRight)};
+                return new double[] {tmpLeft, Math.signum(tmpRight)};
             }
         } else {
             //Return unaltered if nothing is too large
-            return new double[]{tmpLeft, tmpRight};
+            return new double[] {tmpLeft, tmpRight};
         }
     }
 
@@ -89,8 +93,9 @@ public abstract class OIArcade implements OIUnidirectional {
      * @return An array of length 2, where the 1st element is the output for the left and the second for the right, both
      * from [-1, 1].
      */
+    @NotNull
     public double[] getLeftRightOutputCached() {
-        return leftRightOutputCached;
+        return leftRightOutputCached != null ? leftRightOutputCached : (leftRightOutputCached = getLeftRightOutput());
     }
 
     /**
@@ -100,8 +105,9 @@ public abstract class OIArcade implements OIUnidirectional {
      * both from [-1, 1]
      */
     @Override
+    @NotNull
     public double[] getFwdRotOutputCached() {
-        return fwdRotOutputCached;
+        return fwdRotOutputCached != null ? fwdRotOutputCached : (fwdRotOutputCached = getFwdRotOutput());
     }
 
     /**
