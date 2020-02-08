@@ -9,6 +9,7 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
@@ -22,10 +23,10 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemC
 public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBinaryMotor, SubsystemConditional, Loggable {
 
     /**
-     * The CANTalon controlling one of the climber motors.
+     * The controller for one of the climber motors.
      */
     @NotNull
-    private final FPSTalon canTalonSRX;
+    private final FPSSmartMotor smartMotor;
 
     /**
      * The other climber motor.
@@ -53,27 +54,31 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
      * Whether the condition was met last time caching was done.
      */
     private boolean conditionMetCached;
-
+    private double percentVoltage;
 
     /**
      * Default constructor
      *
-     * @param talonSRX        The CANTalon controlling one of the climber motors.
+     * @param smartMotor      The controller for one of the climber motors.
      * @param maxPower        The maximum power at which the motor won't shut off.
      * @param simpleMotor     The other climber motor. Can be null.
      * @param powerLimitTimer The buffer timer for the power-limited shutoff.
+     * @param percentVoltage  The voltage setpoint to run the motors at.
      */
     @JsonCreator
-    public ClimberCurrentLimited(@NotNull @JsonProperty(required = true) FPSTalon talonSRX,
+    public ClimberCurrentLimited(@NotNull @JsonProperty(required = true) FPSSmartMotor smartMotor,
+                                 @NotNull @JsonProperty(required = true) BufferTimer powerLimitTimer,
                                  @JsonProperty(required = true) double maxPower,
                                  @Nullable SimpleMotor simpleMotor,
-                                 @NotNull @JsonProperty(required = true) BufferTimer powerLimitTimer) {
+                                 @Nullable Double percentVoltage
+    ) {
         //Instantiate things
-        this.canTalonSRX = talonSRX;
+        this.smartMotor = smartMotor;
         this.maxPower = maxPower;
         this.powerLimitTimer = powerLimitTimer;
         this.simpleMotor = simpleMotor;
         this.motorSpinning = false;
+        this.percentVoltage = percentVoltage != null ? percentVoltage : 1;
     }
 
     /**
@@ -82,7 +87,7 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
      * @param percentVbus The voltage to give the motor, from -1 to 1.
      */
     private void setPercentVbus(double percentVbus) {
-        canTalonSRX.setPercentVoltage(percentVbus);
+        smartMotor.setPercentVoltage(percentVbus);
         if (simpleMotor != null) {
             simpleMotor.setVelocity(percentVbus);
         }
@@ -93,8 +98,8 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
      */
     @Override
     public void turnMotorOn() {
-        canTalonSRX.enable();
-        setPercentVbus(1);
+        smartMotor.enable();
+        setPercentVbus(percentVoltage);
         motorSpinning = true;
     }
 
@@ -104,7 +109,7 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
     @Override
     public void turnMotorOff() {
         setPercentVbus(0);
-        canTalonSRX.disable();
+        smartMotor.disable();
         motorSpinning = false;
     }
 
@@ -122,7 +127,7 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
      */
     @Override
     public boolean isConditionTrue() {
-        return powerLimitTimer.get(Math.abs(canTalonSRX.getOutputCurrent() * canTalonSRX.getOutputVoltage()) > maxPower);
+        return powerLimitTimer.get(Math.abs(smartMotor.getOutputCurrent() * smartMotor.getOutputVoltage()) > maxPower);
     }
 
     /**

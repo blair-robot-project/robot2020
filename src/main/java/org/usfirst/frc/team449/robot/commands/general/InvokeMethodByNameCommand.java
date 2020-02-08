@@ -22,13 +22,13 @@ public class InvokeMethodByNameCommand extends InstantCommand {
      * with the specified requirements.
      *
      * @param object       the object instance whose method to invoke
-     * @param methodName   the name of the method to invoke
+     * @param method       the name of the method to invoke
      * @param requirements the subsystems required by this command
      */
     @JsonCreator
-    public InvokeMethodByNameCommand(@NotNull @JsonProperty(required = true) Object object,
-                                     @NotNull @JsonProperty(required = true) String methodName,
+    public InvokeMethodByNameCommand(@NotNull @JsonProperty(required = true) Subsystem object,
+                                     @NotNull @JsonProperty(required = true) String method,
                                      @Nullable List<Subsystem> requirements) {
-        super(Util.getMethod(object, methodName), requirements != null ? requirements.toArray(new Subsystem[0]) : null);
+        super(Util.getMethod(object, method), requirements != null ? requirements.toArray(new Subsystem[0]) : new Subsystem[0]);
     }
 }
