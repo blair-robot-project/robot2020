@@ -265,7 +265,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
         return drivingStraight;
     }
 
-    @Log
+//    @Log
     public double getRawOutput(){
         return rawOutput;
     }

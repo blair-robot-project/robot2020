@@ -9,8 +9,10 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedRunnable;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -24,6 +26,7 @@ public class RunRunnables extends CommandBase {
      */
     @NotNull
     private final Runnable[] runnables;
+    private final boolean keepRunning;
 
     /**
      * Default constructor
@@ -31,8 +34,10 @@ public class RunRunnables extends CommandBase {
      * @param runnables The runnables to run.
      */
     @JsonCreator
-    public RunRunnables(@NotNull @JsonProperty(required = true) MappedRunnable[] runnables) {
+    public RunRunnables(@NotNull @JsonProperty(required = true) Runnable[] runnables,
+                        @Nullable Boolean keepRunning) {
         this.runnables = runnables;
+        this.keepRunning = keepRunning != null ? keepRunning : true;
     }
 
     /**
@@ -59,12 +64,13 @@ public class RunRunnables extends CommandBase {
     @Override
     public boolean isFinished() {
         //This does NOT have to be true.
-        return false;
+        return !this.keepRunning;
     }
 
     @Override
     public Set<Subsystem> getRequirements() {
-        return null;
+        // This shouldn't return null.
+        return Set.of();
     }
 
     /**
@@ -72,7 +78,7 @@ public class RunRunnables extends CommandBase {
      */
     @Override
     public void end(boolean interrupted) {
-        if(interrupted){
+        if (interrupted) {
             Shuffleboard.addEventMarker("RunRunnables interrupted", this.getClass().getSimpleName(), EventImportance.kNormal);
         }
         Shuffleboard.addEventMarker("RunRunnables end", this.getClass().getSimpleName(), EventImportance.kNormal);

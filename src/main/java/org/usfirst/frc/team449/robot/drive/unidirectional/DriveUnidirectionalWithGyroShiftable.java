@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.components.ShiftComponent;
 import org.usfirst.frc.team449.robot.drive.shifting.DriveShiftable;
+import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d;
 
 
 /**
@@ -40,10 +43,10 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
      * @param startingOverrideAutoshift Whether to start with autoshift disabled. Defaults to false.
      */
     @JsonCreator
-    public DriveUnidirectionalWithGyroShiftable(@NotNull @JsonProperty(required = true) FPSTalon leftMaster,
-                                                @NotNull @JsonProperty(required = true) FPSTalon rightMaster,
+    public DriveUnidirectionalWithGyroShiftable(@NotNull @JsonProperty(required = true) FPSSmartMotor leftMaster,
+                                                @NotNull @JsonProperty(required = true) FPSSmartMotor rightMaster,
                                                 @NotNull @JsonProperty(required = true) MappedAHRS ahrs,
-                                                @NotNull @JsonProperty(required = true) double trackWidthMeters,
+                                                @JsonProperty(required = true) double trackWidthMeters,
                                                 @NotNull @JsonProperty(required = true) ShiftComponent shiftComponent,
                                                 boolean startingOverrideAutoshift) {
         super(leftMaster, rightMaster, ahrs, trackWidthMeters);

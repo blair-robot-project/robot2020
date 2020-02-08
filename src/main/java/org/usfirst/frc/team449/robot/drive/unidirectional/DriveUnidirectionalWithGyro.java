@@ -4,16 +4,20 @@ import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
 
@@ -29,13 +33,13 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * Right master Talon
      */
     @NotNull
-    protected final FPSTalon rightMaster;
+    protected final FPSSmartMotor rightMaster;
 
     /**
      * Left master Talon
      */
     @NotNull
-    protected final FPSTalon leftMaster;
+    protected final FPSSmartMotor leftMaster;
 
     /**
      * The NavX gyro
@@ -73,10 +77,10 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * @param trackWidthMeters The width between the left and right wheels in meters
      */
     @JsonCreator
-    public DriveUnidirectionalWithGyro(@NotNull @JsonProperty(required = true) FPSTalon leftMaster,
-                                       @NotNull @JsonProperty(required = true) FPSTalon rightMaster,
+    public DriveUnidirectionalWithGyro(@NotNull @JsonProperty(required = true) FPSSmartMotor leftMaster,
+                                       @NotNull @JsonProperty(required = true) FPSSmartMotor rightMaster,
                                        @NotNull @JsonProperty(required = true) MappedAHRS ahrs,
-                                       @NotNull @JsonProperty(required = true) double trackWidthMeters) {
+                                       @JsonProperty(required = true) double trackWidthMeters) {
         super();
         //Initialize stuff
         this.rightMaster = rightMaster;
@@ -98,6 +102,17 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
         //scale by the max speed
         leftMaster.setVelocity(left);
         rightMaster.setVelocity(right);
+    }
+
+    /**
+     * Set voltage output raw
+     *
+     * @param left The voltage output for the left side of the drive from [-12, 12]
+     * @param right The voltage output for the right side of the drive from [-12, 12]
+     */
+    public void setVoltage(double left, double right){
+        leftMaster.setPercentVoltage(left / 12);
+        rightMaster.setPercentVoltage(right / 12);
     }
 
     /**
@@ -331,9 +346,9 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * Reset odometry tracker to current robot pose
      */
     @Log
-    public void resetOdometry(){
+    public void resetOdometry(Pose2d pose){
         resetPosition();;
-        driveOdometry.resetPosition(getCurrentPose(), Rotation2d.fromDegrees(getHeading()));
+        driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
     }
 
     /**
@@ -341,14 +356,14 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     public void updateOdometry(){
         //need to convert to meters
-        driveOdometry.update(Rotation2d.fromDegrees(getHeading()), getLeftPos() / 3.281, getRightPos() / 3.281);
+        driveOdometry.update(Rotation2d.fromDegrees(getHeading()), Units.feetToMeters(getLeftPos()), Units.feetToMeters(getRightPos()));
     }
 
     /**
      * @return Current estimated pose based on odometry tracker data
      */
     public Pose2d getCurrentPose(){
-        return driveOdometry.getPoseMeters();
+        return driveOdometry.getPoseMeters() != null ? driveOdometry.getPoseMeters() : new Pose2d(new Translation2d(0, 0),new Rotation2d(0));
     }
 
     /**
@@ -356,7 +371,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     public DifferentialDriveWheelSpeeds getWheelSpeeds(){
         //need to convert to meters
-        return new DifferentialDriveWheelSpeeds(getLeftVel() / 3.281, getRightVel() / 3.281);
+        return new DifferentialDriveWheelSpeeds(Units.feetToMeters(getLeftVel()), Units.feetToMeters(getRightVel()));
     }
 
     /**
@@ -432,6 +447,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Override
     public void update() {
+        updateOdometry();
         cachedLeftVel = getLeftVel();
         cachedLeftPos = getLeftPos();
         cachedRightVel = getRightVel();

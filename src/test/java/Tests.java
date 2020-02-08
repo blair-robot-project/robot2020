@@ -5,6 +5,6 @@ public final class Tests {
     @Test
     public void deserializeMap() {
         Robot.loadMap();
-        System.out.println("MAP DESERIALIZATION SUCCESSFUL");
+        System.out.println("*******************************************\nMAP DESERIALIZATION SUCCESSFUL\n*******************************************");
     }
 }

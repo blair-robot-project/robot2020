@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
 /**
  * Waits until a certain in-game time.
+ *
+ * @see WaitUntilCommand
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedWaitUntilCommand extends WaitUntilCommand {

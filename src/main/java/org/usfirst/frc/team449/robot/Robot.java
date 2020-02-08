@@ -8,13 +8,22 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.components.Limelight;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.yaml.snakeyaml.Yaml;
+
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.util.IllegalFormatException;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -53,24 +62,57 @@ public class Robot extends TimedRobot {
     protected final RobotMap robotMap = loadMap();
 
     /**
-     * Whether or not the robot has been enabled yet.
-     */
-    protected boolean enabled;
-
-    /**
-     * Whether or not the auto command should be started.
-     */
-    protected boolean shouldStartAuto;
-
-    /**
      * The method that runs when the robot is turned on. Initializes all subsystems from the map.
      */
+
+    Limelight netTableGetter;
+
+    public static @Nullable RobotMap loadMap() {
+        try {
+            //Read the yaml file with SnakeYaml so we can use anchors and merge syntax.
+            Map<?, ?> normalized = (Map<?, ?>) new Yaml().load(new FileReader(RESOURCES_PATH + "/" + mapName));
+
+            YAMLMapper mapper = new YAMLMapper();
+
+            //Turn the Map read by SnakeYaml into a String so Jackson can read it.
+            String fixed = mapper.writeValueAsString(normalized);
+
+            //Use a parameter name module so we don't have to specify name for every field.
+            mapper.registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES));
+
+            //Add mix-ins
+            mapper.registerModule(new WPIModule());
+            mapper.registerModule(new JavaModule());
+
+            //Deserialize the map into an object.
+            return mapper.readValue(fixed, RobotMap.class);
+
+        } catch (IOException ex) {
+            //The map file is either absent from the file system or improperly formatted.
+            System.out.println("Config file is bad/nonexistent!");
+
+            ex.printStackTrace(new PrintWriter(System.err, true) {
+                @Override
+                public void println(String x) {
+                    super.println(x.replace("->", "\n\t\t->"));
+                }
+
+                @Override
+                public void println(Object x) {
+                    this.println(String.valueOf(x));
+                }
+            });
+
+            //Prevent watchdog from restarting by looping infinitely, but only when on the robot in order not to hang unit tests.
+            if (RobotBase.isSimulation()) return null;
+            while (true) {
+            }
+        }
+    }
+
     public void robotInit() {
         //Set up start time
         Clock.setStartTime();
-        Clock.updateTime();
-
-        enabled = false;
 
         //Yes this should be a print statement, it's useful to know that robotInit started.
         System.out.println("Started robotInit.");
@@ -78,43 +120,40 @@ public class Robot extends TimedRobot {
         //Read sensors
         this.robotMap.getUpdater().run();
 
-        shouldStartAuto = this.robotMap.getAutoStartupCommand() != null;
-
-        if(robotMap.useCameraServer()){
+        if (robotMap.useCameraServer()) {
             CameraServer.getInstance().startAutomaticCapture();
         }
 
-//        robotMap.getLogger().start();
-
         Logger.configureLoggingAndConfig(robotMap, false);
 
-    }
+        netTableGetter = new Limelight();
 
-    @NotNull
-    public static RobotMap loadMap() {
-        try {
-            //Read the yaml file with SnakeYaml so we can use anchors and merge syntax.
-            Map<?, ?> normalized = (Map<?, ?>) new Yaml().load(new FileReader(RESOURCES_PATH + "/" + mapName));
-            YAMLMapper mapper = new YAMLMapper();
-            //Turn the Map read by SnakeYaml into a String so Jackson can read it.
-            String fixed = mapper.writeValueAsString(normalized);
-            //Use a parameter name module so we don't have to specify name for every field.
-            mapper.registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES));
-            //Add mix-ins
-            mapper.registerModule(new WPIModule());
-            mapper.registerModule(new JavaModule());
-            //Deserialize the map into an object.
-            return mapper.readValue(fixed, RobotMap.class);
-        } catch (IOException e) {
-            //This is either the map file not being in the file system OR it being improperly formatted.
-            System.out.println("Config file is bad/nonexistent!");
-            throw new RuntimeException(e);
+        if (robotMap.useCameraServer()) {
+            CameraServer.getInstance().startAutomaticCapture();
+        }
+
+        this.robotMap.getUpdater().run();
+
+        Logger.configureLoggingAndConfig(robotMap, false);
+        Shuffleboard.setRecordingFileNameFormat("log-${time}");
+        Shuffleboard.startRecording();
+
+        //start systems
+        if (robotMap.getRobotStartupCommands() != null) {
+            robotMap.getRobotStartupCommands().forEachRemaining(Command::schedule);
         }
     }
 
     @Override
     public void robotPeriodic() {
+        //save current time
+        Clock.updateTime();
+        //update shuffleboard
         Logger.updateEntries();
+        //Read sensors
+        this.robotMap.getUpdater().run();
+        //Run all commands. This is a WPILib thing you don't really have to worry about.
+        CommandScheduler.getInstance().run();
     }
 
     /**
@@ -122,37 +161,15 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopInit() {
-        //Read sensors
-        this.robotMap.getUpdater().run();
-
-        if (this.robotMap.getAutoStartupCommand() != null) {
-            this.robotMap.getAutoStartupCommand().cancel();
+        //cancel remaining auto commands
+        if (robotMap.getAutoStartupCommands() != null) {
+            robotMap.getAutoStartupCommands().forEachRemaining(Command::cancel);
         }
 
-        //Run startup command if we start in teleop.
-        if (!enabled) {
-            if (robotMap.getRobotStartupCommand() != null) {
-                robotMap.getRobotStartupCommand().schedule();
-            }
-            enabled = true;
+        //Run teleop startup commands
+        if (robotMap.getTeleopStartupCommands() != null) {
+            robotMap.getTeleopStartupCommands().forEachRemaining(Command::schedule);
         }
-
-        //Run the teleop startup command
-        if (robotMap.getTeleopStartupCommand() != null) {
-            robotMap.getTeleopStartupCommand().schedule();
-        }
-    }
-
-    /**
-     * Run every tick in teleop.
-     */
-    @Override
-    public void teleopPeriodic() {
-        //Read sensors
-        this.robotMap.getUpdater().run();
-
-        //Run all commands. This is a WPILib thing you don't really have to worry about.
-        CommandScheduler.getInstance().run();
     }
 
     /**
@@ -160,48 +177,10 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        //Read sensors
-        this.robotMap.getUpdater().run();
-
-        //Run startup command if we start in auto.
-        if (!enabled) {
-            if (robotMap.getRobotStartupCommand() != null) {
-                robotMap.getRobotStartupCommand().schedule();
-            }
-            enabled = true;
-        }
-
         //Run the auto startup command
-        if (shouldStartAuto) {
-            robotMap.getAutoStartupCommand().schedule();
-            shouldStartAuto = false;
+        if (robotMap.getAutoStartupCommands() != null && !DriverStation.getInstance().getGameSpecificMessage().isEmpty()) {
+            robotMap.getAutoStartupCommands().forEachRemaining(Command::schedule);
         }
-    }
-
-    /**
-     * Runs every tick in autonomous.
-     */
-    @Override
-    public void autonomousPeriodic() {
-        //Read sensors
-        this.robotMap.getUpdater().run();
-
-        //Start auto if the game-specific message has been set
-        if (shouldStartAuto && !DriverStation.getInstance().getGameSpecificMessage().isEmpty()) {
-            robotMap.getAutoStartupCommand().schedule();
-            shouldStartAuto = false;
-        }
-
-        //Run all commands. This is a WPILib thing you don't really have to worry about.
-        CommandScheduler.getInstance().run();
-    }
-
-    /**
-     * Run when we disable.
-     */
-    @Override
-    public void disabledInit() {
-        //Do nothing
     }
 
     /**
@@ -210,20 +189,8 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         //Run startup command if we start in test mode.
-        if (!enabled) {
-            if (robotMap.getRobotStartupCommand() != null) {
-                robotMap.getRobotStartupCommand().schedule();
-            }
-            enabled = true;
+        if (robotMap.getTestStartupCommands() != null) {
+            robotMap.getTestStartupCommands().forEachRemaining(Command::schedule);
         }
-    }
-
-    /**
-     * Run every tic while disabled
-     */
-    @Override
-    public void disabledPeriodic() {
-        //Read sensors
-        this.robotMap.getUpdater().run();
     }
 }
