@@ -1,37 +1,25 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers.simulated;
 
+import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 
-import java.awt.*;
+import javax.swing.*;
 import java.awt.event.KeyEvent;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
-
+/**
+ * Class that extends {@link MappedJoystick} that does not rely on the existence of actual hardware.
+ * This class is automatically instantiated by the MappedJoystick factory method when the robot is running in a
+ * simulation and should not be otherwise referenced in code.
+ */
 public class MappedJoystickSimulated extends MappedJoystick {
-    private static volatile boolean wPressed = false;
-
-    {
-        {
-            KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
-                synchronized (MappedJoystickSimulated.class) {
-                    switch (e.getID()) {
-                        case KeyEvent.KEY_PRESSED:
-                            if (e.getKeyCode() == KeyEvent.VK_W) {
-                                wPressed = true;
-                            }
-                            break;
-
-                        case KeyEvent.KEY_RELEASED:
-                            if (e.getKeyCode() == KeyEvent.VK_W) {
-                                wPressed = false;
-                            }
-                            break;
-                    }
-                    return false;
-                }
-            });
-        }
-    }
+    @NotNull
+    private final Map<String, Boolean> pressedKeys = new ConcurrentHashMap<>();
+    @NotNull
+    private final String logName;
+    @NotNull
+    private final String logPrefix;
 
     /**
      * Default constructor
@@ -40,12 +28,32 @@ public class MappedJoystickSimulated extends MappedJoystick {
      */
     public MappedJoystickSimulated(int port) {
         super(port);
-    }
 
-    public static boolean isWPressed() {
-        synchronized (MappedJoystickSimulated.class) {
-            return wPressed;
-        }
+        this.logName = "SIMJOY " + this.getPort();
+        this.logPrefix = "[" + this.logName + "] ";
+
+        new JFrame(this.logName) {
+            {
+                this.setVisible(true);
+            }
+
+            @Override
+            protected void processKeyEvent(KeyEvent e) {
+                String keyName = KeyEvent.getKeyText(e.getKeyCode());
+
+                switch (e.getID()) {
+                    case KeyEvent.KEY_PRESSED:
+                        pressedKeys.put(keyName, true);
+                        System.out.println(logPrefix + keyName + " [#]");
+                        break;
+
+                    case KeyEvent.KEY_RELEASED:
+                        pressedKeys.put(keyName, false);
+                        System.out.println(logPrefix + keyName + " [ ]");
+                        break;
+                }
+            }
+        };
     }
 
     /**
@@ -59,7 +67,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      */
     @Override
     public boolean getRawButton(int button) {
-        return wPressed;
+        return pressedKeys.getOrDefault(String.valueOf(button), false);
     }
 
     /**
@@ -139,7 +147,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      */
     @Override
     public int getButtonCount() {
-        return 1;
+        return 5;
     }
 
     /**
@@ -149,7 +157,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      */
     @Override
     public HIDType getType() {
-        return HIDType.kUnknown;
+        return HIDType.kXInputArcadePad;
     }
 
     /**
@@ -165,7 +173,6 @@ public class MappedJoystickSimulated extends MappedJoystick {
     /**
      * Get the axis type of a joystick axis.
      *
-     * @param axis
      * @return the axis type of a joystick axis.
      */
     @Override
