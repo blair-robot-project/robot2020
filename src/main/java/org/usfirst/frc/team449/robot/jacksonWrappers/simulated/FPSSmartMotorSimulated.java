@@ -8,41 +8,78 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import io.github.oblarg.oblog.annotations.Log;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
-import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
-import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
-import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
-import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
+import org.usfirst.frc.team449.robot.jacksonWrappers.*;
 import org.usfirst.frc.team449.robot.other.Clock;
+import org.usfirst.frc.team449.robot.other.Util;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
+import static org.usfirst.frc.team449.robot.other.Util.clamp;
+import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /**
- * Class that implements {@link FPSSmartMotor} without relying on hardware.
+ * Class that implements {@link FPSSmartMotor} without relying on the existence of actual hardware.
+ * <p>
  * This class is automatically instantiated by the FPSSmartMotor factory method when the robot is running in a
  * simulation and should not be otherwise referenced in code.
+ * </p>
+ * <p>
+ * The current implementation relies on fictional physics and does not involve
+ * </p>
  */
 public class FPSSmartMotorSimulated implements FPSSmartMotor {
+    /**
+     * Nominal bus voltage; used to calculate maximum speed.
+     */
+    private static final double NOM_BUS_VOLTAGE = 12;
+    /**
+     * Maximum acceleration in RPS.
+     */
     private static final double MAX_ACCEL = 100;
+    private static final double MAX_SPEED_COEFF = 10. / 12;
+    private static final double MAX_SPEED = NOM_BUS_VOLTAGE * MAX_SPEED_COEFF;
+    /**
+     * Maximum value for {@link FPSSmartMotorSimulated#integral} (for PID anti-windup).
+     */
+    private static final double MAX_INTEGRAL = 10;
+    /**
+     * Used to calculate output voltaeg.
+     */
+    private static final double MOTOR_RESISTANCE = 1;
+
+    @NotNull
     private final String name;
 
+    @NotNull
+    private ControlMode controlMode = ControlMode.Disabled;
+    @NotNull
+    private PerGearSettings currentGearSettings;
+    @NotNull
+    private Map<Integer, PerGearSettings> perGearSettings;
+
+    // Log the getters instead because logging the fields doesn't cause physics updates.
     private double percentOutput;
     private double velocity;
     private double position;
-    private double busVoltage = 10;
+    private double busVoltage = NOM_BUS_VOLTAGE;
 
     @Log
     private double setpoint;
 
-    private ControlMode controlMode = ControlMode.Disabled;
-
     @Log
     private double lastStateUpdateTime = Clock.currentTimeMillis();
+    @Log
+    private double targetPercentOutput;
+    @Log
+    private double error, integral;
 
     public FPSSmartMotorSimulated(@JsonProperty(required = true) Type type,
                                   @JsonProperty(required = true) int port,
@@ -79,28 +116,98 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
                                   @Nullable List<SlaveSparkMax> slaveSparks) {
 
         this.name = "FAKE " + (name != null ? name : port);
+
+        //Most of the constructor is stolen from FPSSparkMax.
+
+        this.perGearSettings = new HashMap<>();
+
+        //If given no gear settings, use the default values.
+        if (perGearSettings == null || perGearSettings.size() == 0) {
+            this.perGearSettings.put(0, new PerGearSettings());
+        }
+        //Otherwise, map the settings to the gear they are.
+        else {
+            for (PerGearSettings settings : perGearSettings) {
+                this.perGearSettings.put(settings.gear, settings);
+            }
+        }
+
+        int currentGear;
+        //If the starting gear isn't given, assume we start in low gear.
+        if (startingGear == null) {
+            if (startingGearNum == null) {
+                currentGear = Integer.MAX_VALUE;
+                for (Integer gear : this.perGearSettings.keySet()) {
+                    if (gear < currentGear) {
+                        currentGear = gear;
+                    }
+                }
+            } else {
+                currentGear = startingGearNum;
+            }
+        } else {
+            currentGear = startingGear.getNumVal();
+        }
+        currentGearSettings = this.perGearSettings.get(currentGear);
+        //Set up gear-based settings.
+        setGear(currentGear);
+    }
+
+    public void setControlModeAndSetpoint(ControlMode controlMode, double setpoint) {
+        // TODO: Possible race condition?
+        this.controlMode = controlMode;
+        this.setpoint = setpoint;
+        this.integral = 0;
     }
 
     /**
      * Performs simulated PID logic and simulates physical state changes since last call.
      */
     private void updateSimulatedState() {
+        // ***** Simulation timing
         double now = Clock.currentTimeMillis();
-        double deltaSecs = (now - lastStateUpdateTime) / 1000.0;
 
+        double deltaMillis = (now - lastStateUpdateTime);
+        if (deltaMillis < 10) return;
+        double deltaSecs = deltaMillis * 0.001;
+
+        double newError = 0;
         switch (this.controlMode) {
             case PercentOutput:
-                this.percentOutput = this.setpoint;
+                this.targetPercentOutput = setpoint;
                 break;
+
             case Velocity:
-                this.percentOutput = Math.min(this.busVoltage, 1.1 * (this.setpoint - this.velocity));
-                break;
             case Position:
-                this.percentOutput = Math.min(this.busVoltage, 1.1 * (this.setpoint - this.position));
+                newError = this.setpoint - (this.controlMode == ControlMode.Velocity ? this.velocity : this.position);
+                this.integral += (this.error + newError) * 0.5 * deltaSecs;
+                this.integral = clamp(this.integral, MAX_INTEGRAL);
+                double derivative = (newError - this.error) / deltaSecs;
+                if (this.controlMode == ControlMode.Velocity) {
+                    this.targetPercentOutput = this.currentGearSettings.kP * newError + this.currentGearSettings.kI * integral + this.currentGearSettings.kD * derivative;
+                } else {
+                    this.targetPercentOutput = this.currentGearSettings.posKP * newError + this.currentGearSettings.posKI * integral + this.currentGearSettings.posKD * derivative;
+                }
+                this.error = newError;
                 break;
+
+            case Disabled:
+                this.lastStateUpdateTime = now;
+                return;
+
+            default:
+                System.out.println(getLogPrefix(this) + "UNSUPPORTED CONTROL MODE " + this.controlMode);
+                return;
         }
 
-        this.velocity += Math.min(MAX_ACCEL, 10 * (this.busVoltage * this.percentOutput - this.velocity)) * deltaSecs;
+        // ***** Physics
+        // Use a local to prevent racing observers from seeing invalid value.
+
+        this.percentOutput = this.percentOutput +
+                Math.min(Objects.requireNonNullElse(this.currentGearSettings.rampRate, this.busVoltage) * deltaSecs, this.targetPercentOutput - this.percentOutput);
+        this.percentOutput = Util.clamp(this.percentOutput);
+
+        this.velocity = this.velocity + Math.min(MAX_ACCEL, MAX_SPEED_COEFF * this.busVoltage * this.percentOutput - this.velocity) * deltaSecs;
         this.position += this.velocity * deltaSecs;
 
         this.lastStateUpdateTime = now;
@@ -113,9 +220,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public void setPercentVoltage(double percentVoltage) {
-        System.out.println("SIM MOTOR %Voltage: " + percentVoltage);
-        this.setpoint = percentVoltage;
-        this.controlMode = ControlMode.PercentOutput;
+        this.setControlModeAndSetpoint(ControlMode.PercentOutput, percentVoltage);
     }
 
     /**
@@ -126,7 +231,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public double encoderToFeet(double nativeUnits) {
-        return 0;
+        return nativeUnits;
     }
 
     /**
@@ -207,8 +312,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public void setPositionSetpoint(double feet) {
-        this.setpoint = this.feetToEncoder(feet);
-        this.controlMode = ControlMode.Position;
+        this.setControlModeAndSetpoint(ControlMode.Position, this.feetToEncoder(feet));
     }
 
     /**
@@ -238,8 +342,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public void setVelocity(double velocity) {
-        this.setpoint = velocity;
-        this.controlMode = ControlMode.Velocity;
+        this.setVelocityFPS(velocity * MAX_SPEED);
     }
 
     /**
@@ -249,8 +352,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public void setVelocityFPS(double velocity) {
-        this.setpoint = this.FPSToEncoder(velocity);
-        this.controlMode = ControlMode.Velocity;
+        this.setControlModeAndSetpoint(ControlMode.Velocity, this.FPSToEncoder(velocity));
     }
 
     /**
@@ -311,7 +413,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
     @Override
     @Log
     public double getOutputCurrent() {
-        return 0;
+        return this.getOutputVoltage() / MOTOR_RESISTANCE;
     }
 
     /**
@@ -331,9 +433,14 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given gear.
      * @param gear     The number of the gear to use the max speed from to scale the velocity.
      */
+
     @Override
     public void setGearScaledVelocity(double velocity, int gear) {
-
+        if (currentGearSettings.maxSpeed != null) {
+            setVelocityFPS(currentGearSettings.maxSpeed * velocity);
+        } else {
+            setPercentVoltage(velocity);
+        }
     }
 
     /**
@@ -343,8 +450,8 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @param gear     The gear to use the max speed from to scale the velocity.
      */
     @Override
-    public void setGearScaledVelocity(double velocity, gear gear) {
-
+    public void setGearScaledVelocity(double velocity, Shiftable.gear gear) {
+        setGearScaledVelocity(velocity, gear.getNumVal());
     }
 
     /**
@@ -416,7 +523,10 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     @Override
     public void setGear(int gear) {
+        //Set the current gear
+        currentGearSettings = perGearSettings.get(gear);
     }
+
 
     @Override
     public String configureLogName() {

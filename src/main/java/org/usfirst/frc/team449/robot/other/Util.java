@@ -10,6 +10,7 @@ public class Util {
     /**
      * Make a runnable out of a method
      * TODO log the errors instead of just throwing them
+     *
      * @param object
      * @param methodName
      * @return
@@ -26,6 +27,7 @@ public class Util {
 
     /**
      * Do not use this
+     *
      * @param e
      * @param <T>
      * @throws T
@@ -52,5 +54,41 @@ public class Util {
      */
     public static String getLogPrefix(Class<?> clazz) {
         return "[" + clazz.getSimpleName() + "] ";
+    }
+
+    /**
+     * Clamps the specified value to be within the specified bounds by returning the nearer bound if the value is out of range.
+     *
+     * @param value  the value to clamp
+     * @param lBound the lower bound to clamp to
+     * @param uBound the upper bound to clamp to
+     * @return {@code min(max(value, lBound), uBound)}
+     */
+    public static double clamp(double value, double lBound, double uBound) {
+        if (uBound < lBound) throw new IllegalArgumentException("uBound < lBound");
+        if (value > uBound) return uBound;
+        if (value < lBound) return lBound;
+        return value;
+    }
+
+    /**
+     * Clamps the absolute value of the specified value to the interval {@code [-absBound, absBound]}
+     *
+     * @param value    the value to clamp
+     * @param absBound the absolute bound to clamp to
+     * @return {@code clamp(value, -absBound, absBound)}
+     */
+    public static double clamp(double value, double absBound) {
+        return clamp(value, -absBound, absBound);
+    }
+
+    /**
+     * Clamps the absolute value of the specified value to the interval {@code [-1, 1]}.
+     *
+     * @param value the value to clamp
+     * @return {@code clamp(value, 1)}
+     */
+    public static double clamp(double value) {
+        return clamp(value, 1);
     }
 }
