@@ -251,7 +251,7 @@ commands:
   # DEFAULT COMMANDS
   defaultCommands:
 #***********************************************************************************************************************
-# DEFAULT DRIVE COMMAND
+  # DRIVE COMMAND (default)
   #    - subsystem:
   #        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
   #          drive
@@ -596,4 +596,5 @@ updater:
       #      - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
       #      - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
       #      - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS: navX
+      - org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberCurrentLimited: climberCurrentLimitSystem
       - org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
