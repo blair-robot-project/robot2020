@@ -33,10 +33,7 @@ public class LoadShooter<T extends Subsystem & SubsystemIntake & SubsystemSoleno
             addCommands(new TurnAllOff(subsystemFlywheel));
         }
         if (subsystemIntake != null) {
-            addCommands(
-                    new SolenoidReverse(subsystemIntake),
-                    new SetIntakeMode(subsystemIntake, SubsystemIntake.IntakeMode.IN_FAST)
-            );
+            addCommands(new SetIntakeMode(subsystemIntake, SubsystemIntake.IntakeMode.IN_FAST));
         }
     }
 }

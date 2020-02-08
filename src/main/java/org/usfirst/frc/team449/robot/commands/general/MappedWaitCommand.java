@@ -7,11 +7,12 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /**
- * A jackson-compatible wrapper on {@link WaitCommand}.
+ * Does nothing but takes a specified amount of time to finish.
+ *
+ * @see WaitCommand
  */
 //@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedWaitCommand extends WaitCommand {
-
     /**
      * Instantiates a {@link WaitCommand} with the given timeout.
      *

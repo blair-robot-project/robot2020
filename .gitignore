@@ -14,8 +14,8 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 # IntelliJ files
-.idea/
-*.idea
+.idea/*
+*.idea/*
 gen/
 classes/
 out/
@@ -24,6 +24,10 @@ build
 *.iml
 *.ipr
 *.iws
+
+# But do include certain IntelliJ run configurations
+!.idea/runConfigurations/deploy.xml
+!.idea/runConfigurations/test.xml
 
 # GradleRIO files
 robot2017.iml
