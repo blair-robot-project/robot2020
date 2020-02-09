@@ -736,6 +736,11 @@ public class FPSTalon implements FPSSmartMotor {
     }
 
     @Override
+    public int getPort() {
+        return this.canTalon.getDeviceID();
+    }
+
+    @Override
     public String configureLogName() {
         return name;
     }

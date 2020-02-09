@@ -14,48 +14,40 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.components.Limelight;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.IllegalFormatException;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.io.StringWriter;
+import java.util.*;
 
 /**
  * The main class of the robot, constructs all the subsystems and initializes default commands.
  */
 public class Robot extends TimedRobot {
-
     /**
      * The absolute filepath to the resources folder containing the config files when the robot is real.
      */
     @NotNull
     public static final String RESOURCES_PATH_REAL = Filesystem.getDeployDirectory().getAbsolutePath();
-
     /**
      * The relative filepath to the resources folder containing the config files when the robot is simulated.
      */
     @NotNull
     public static final String RESOURCES_PATH_SIMULATED = "./src/main/deploy/";
-
     /**
      * The name of the map to read from. Should be overriden by a subclass to change the name.
      */
     @NotNull
     public static final String mapName = "map.yml";
-
     /**
      * The filepath to the resources folder containing the config files.
      */
     @NotNull
     public static final String RESOURCES_PATH = RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
-
+    private static final FORMAT MAP_ERR_FORMAT = FORMAT.RPAD;
     /**
      * The object constructed directly from the yaml map.
      */
@@ -69,12 +61,12 @@ public class Robot extends TimedRobot {
     public static @Nullable RobotMap loadMap() {
         try {
             //Read the yaml file with SnakeYaml so we can use anchors and merge syntax.
-            Map<?, ?> normalized = (Map<?, ?>) new Yaml().load(new FileReader(RESOURCES_PATH + "/" + mapName));
+            final Map<?, ?> normalized = (Map<?, ?>) new Yaml().load(new FileReader(RESOURCES_PATH + "/" + mapName));
 
-            YAMLMapper mapper = new YAMLMapper();
+            final YAMLMapper mapper = new YAMLMapper();
 
             //Turn the Map read by SnakeYaml into a String so Jackson can read it.
-            String fixed = mapper.writeValueAsString(normalized);
+            final String fixed = mapper.writeValueAsString(normalized);
 
             //Use a parameter name module so we don't have to specify name for every field.
             mapper.registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES));
@@ -86,21 +78,58 @@ public class Robot extends TimedRobot {
             //Deserialize the map into an object.
             return mapper.readValue(fixed, RobotMap.class);
 
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             //The map file is either absent from the file system or improperly formatted.
             System.out.println("Config file is bad/nonexistent!");
 
-            ex.printStackTrace(new PrintWriter(System.err, true) {
-                @Override
-                public void println(String x) {
-                    super.println(x.replace("->", "\n\t\t->"));
-                }
+            final var out = new StringWriter();
+            ex.printStackTrace(new PrintWriter(out));
+            final String[] lines = out.toString().split("[\\r\\n]");
 
-                @Override
-                public void println(Object x) {
-                    this.println(String.valueOf(x));
+            for (final String line : lines) {
+                if (line.length() == 0) continue;
+
+                final String SEP = "->";
+                if (line.contains(SEP) | MAP_ERR_FORMAT == FORMAT.NONE) {
+                    final String[] refs = line.split(SEP);
+                    switch (MAP_ERR_FORMAT) {
+                        case RPAD:
+                            final Optional<String> longest = Arrays.stream(refs).skip(1).max(Comparator.comparingInt(String::length));
+
+                            if (longest.isPresent()) {
+                                final int maxLen = longest.get().length();
+                                final String fmt = "\t\t->%s$" + maxLen + "s\n";
+
+                                for (int i = 1; i < refs.length; i++) {
+                                    System.err.format(fmt, refs[i]);
+                                }
+                            }
+                            break;
+
+                        case TABLE:
+                            final List<List<String>> formatted = new ArrayList<>(refs.length + 1);
+                            for (int i = 0; i < refs.length; i++) {
+                                final String ref = refs[i];
+
+                                final int locationBegin = ref.lastIndexOf('[');
+                                final String location = ref.substring(locationBegin + 1, ref.lastIndexOf(']'));
+
+                                String className = ref.substring(0, locationBegin);
+
+                                if (i == 0) {
+                                    final int prefixEnd = className.lastIndexOf(":");
+                                    formatted.add(List.of("", className.substring(0, prefixEnd + 1)));
+                                    className = className.substring(prefixEnd + 2);
+                                }
+                                formatted.add(List.of(String.format("\t\t-> %s", location), className));
+                            }
+                            System.err.print(formatTable(formatted));
+                            break;
+                    }
+                } else {
+                    System.err.println(line);
                 }
-            });
+            }
 
             //Prevent watchdog from restarting by looping infinitely, but only when on the robot in order not to hang unit tests.
             if (RobotBase.isSimulation()) return null;
@@ -109,6 +138,39 @@ public class Robot extends TimedRobot {
         }
     }
 
+    /**
+     * Converts a {@code String[][]} array representation of a table to its {@code String} representation where every
+     * column is the same width as the widest cell in that column.
+     *
+     * @param rows a {@code String[][]} array containing the data of the table stored in row-major order
+     * @return a {@code String} containing the result of formatting the table
+     */
+    public static String formatTable(final List<List<String>> rows) {
+        final int columnCount = rows.get(0).size();
+
+        final StringBuilder sb = new StringBuilder();
+
+        // Make each column the same width as the widest item in it.
+        final int[] maxColumnWidths = new int[columnCount];
+        for (final var row : rows) {
+            for (int column = 0; column < columnCount; column++) {
+                maxColumnWidths[column] = Math.max(maxColumnWidths[column], row.get(column).length() + 1);
+            }
+        }
+
+        // Write to the StringBuilder row by row.
+        for (final var row : rows) {
+            for (int column = 0; column < columnCount; column++) {
+                // Use the thin vertical box-drawing character.
+                sb.append(String.format("%-" + maxColumnWidths[column] + "s", row.get(column)));
+            }
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    @Override
     public void robotInit() {
         //Set up start time
         Clock.setStartTime();
@@ -116,20 +178,20 @@ public class Robot extends TimedRobot {
         //Yes this should be a print statement, it's useful to know that robotInit started.
         System.out.println("Started robotInit.");
 
-        if (robotMap.useCameraServer()) {
+        if (this.robotMap.useCameraServer()) {
             CameraServer.getInstance().startAutomaticCapture();
         }
 
         //Read sensors
         this.robotMap.getUpdater().run();
 
-        Logger.configureLoggingAndConfig(robotMap, false);
+        Logger.configureLoggingAndConfig(this.robotMap, false);
         Shuffleboard.setRecordingFileNameFormat("log-${time}");
         Shuffleboard.startRecording();
 
         //start systems
-        if (robotMap.getRobotStartupCommands() != null) {
-            robotMap.getRobotStartupCommands().forEachRemaining(Command::schedule);
+        if (this.robotMap.getRobotStartupCommands() != null) {
+            this.robotMap.getRobotStartupCommands().forEachRemaining(Command::schedule);
         }
     }
 
@@ -151,13 +213,13 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         //cancel remaining auto commands
-        if (robotMap.getAutoStartupCommands() != null) {
-            robotMap.getAutoStartupCommands().forEachRemaining(Command::cancel);
+        if (this.robotMap.getAutoStartupCommands() != null) {
+            this.robotMap.getAutoStartupCommands().forEachRemaining(Command::cancel);
         }
 
         //Run teleop startup commands
-        if (robotMap.getTeleopStartupCommands() != null) {
-            robotMap.getTeleopStartupCommands().forEachRemaining(Command::schedule);
+        if (this.robotMap.getTeleopStartupCommands() != null) {
+            this.robotMap.getTeleopStartupCommands().forEachRemaining(Command::schedule);
         }
     }
 
@@ -167,8 +229,8 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         //Run the auto startup command
-        if (robotMap.getAutoStartupCommands() != null && !DriverStation.getInstance().getGameSpecificMessage().isEmpty()) {
-            robotMap.getAutoStartupCommands().forEachRemaining(Command::schedule);
+        if (this.robotMap.getAutoStartupCommands() != null && !DriverStation.getInstance().getGameSpecificMessage().isEmpty()) {
+            this.robotMap.getAutoStartupCommands().forEachRemaining(Command::schedule);
         }
     }
 
@@ -178,8 +240,12 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         //Run startup command if we start in test mode.
-        if (robotMap.getTestStartupCommands() != null) {
-            robotMap.getTestStartupCommands().forEachRemaining(Command::schedule);
+        if (this.robotMap.getTestStartupCommands() != null) {
+            this.robotMap.getTestStartupCommands().forEachRemaining(Command::schedule);
         }
+    }
+
+    private enum FORMAT {
+        TABLE, RPAD, NONE;
     }
 }

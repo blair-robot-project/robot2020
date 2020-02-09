@@ -318,6 +318,7 @@ public class FPSSparkMax implements FPSSmartMotor {
     }
 
     @Override
+    @Log
     public int getGear() {
         return currentGearSettings.gear;
     }
@@ -577,6 +578,11 @@ public class FPSSparkMax implements FPSSmartMotor {
     @Override
     public boolean isInhibitedReverse() {
         return spark.getFault(CANSparkMax.FaultID.kHardLimitRev);
+    }
+
+    @Override
+    public int getPort() {
+        return this.spark.getDeviceId();
     }
 
     @Override

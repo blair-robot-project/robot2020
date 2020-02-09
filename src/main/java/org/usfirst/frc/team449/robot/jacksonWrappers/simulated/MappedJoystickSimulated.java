@@ -26,7 +26,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      *
      * @param port The USB port of this joystick, on [0, 5].
      */
-    public MappedJoystickSimulated(int port) {
+    public MappedJoystickSimulated(final int port) {
         super(port);
 
         this.logName = "SIMJOY " + this.getPort();
@@ -38,18 +38,20 @@ public class MappedJoystickSimulated extends MappedJoystick {
             }
 
             @Override
-            protected void processKeyEvent(KeyEvent e) {
-                String keyName = KeyEvent.getKeyText(e.getKeyCode());
+            protected void processKeyEvent(final KeyEvent e) {
+                final String keyName = KeyEvent.getKeyText(e.getKeyCode());
 
                 switch (e.getID()) {
                     case KeyEvent.KEY_PRESSED:
-                        pressedKeys.put(keyName, true);
-                        System.out.println(logPrefix + keyName + " [#]");
+                        if (!MappedJoystickSimulated.this.pressedKeys.getOrDefault(keyName, false))
+                            System.out.println(MappedJoystickSimulated.this.logPrefix + keyName + " [#]");
+                        MappedJoystickSimulated.this.pressedKeys.put(keyName, true);
                         break;
 
                     case KeyEvent.KEY_RELEASED:
-                        pressedKeys.put(keyName, false);
-                        System.out.println(logPrefix + keyName + " [ ]");
+                        if (MappedJoystickSimulated.this.pressedKeys.getOrDefault(keyName, false))
+                            System.out.println(MappedJoystickSimulated.this.logPrefix + keyName + " [ ]");
+                        MappedJoystickSimulated.this.pressedKeys.put(keyName, false);
                         break;
                 }
             }
@@ -66,8 +68,8 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @return The state of the button.
      */
     @Override
-    public boolean getRawButton(int button) {
-        return pressedKeys.getOrDefault(String.valueOf(button), false);
+    public boolean getRawButton(final int button) {
+        return this.pressedKeys.getOrDefault(String.valueOf(button), false);
     }
 
     /**
@@ -78,7 +80,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @return Whether the button was pressed since the last check.
      */
     @Override
-    public boolean getRawButtonPressed(int button) {
+    public boolean getRawButtonPressed(final int button) {
         return false;
     }
 
@@ -90,7 +92,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @return Whether the button was released since the last check.
      */
     @Override
-    public boolean getRawButtonReleased(int button) {
+    public boolean getRawButtonReleased(final int button) {
         return false;
     }
 
@@ -101,7 +103,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @return The value of the axis.
      */
     @Override
-    public double getRawAxis(int axis) {
+    public double getRawAxis(final int axis) {
         return 0;
     }
 
@@ -115,7 +117,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @return the angle of the POV in degrees, or -1 if the POV is not pressed.
      */
     @Override
-    public int getPOV(int pov) {
+    public int getPOV(final int pov) {
         return 0;
     }
 
@@ -176,7 +178,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @return the axis type of a joystick axis.
      */
     @Override
-    public int getAxisType(int axis) {
+    public int getAxisType(final int axis) {
         return 0;
     }
 
@@ -197,7 +199,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param value        The value to set the output to
      */
     @Override
-    public void setOutput(int outputNumber, boolean value) {
+    public void setOutput(final int outputNumber, final boolean value) {
     }
 
     /**
@@ -206,7 +208,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param value The 32 bit output value (1 bit for each output)
      */
     @Override
-    public void setOutputs(int value) {
+    public void setOutputs(final int value) {
     }
 
     /**
@@ -217,7 +219,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param value The normalized value (0 to 1) to set the rumble to
      */
     @Override
-    public void setRumble(RumbleType type, double value) {
+    public void setRumble(final RumbleType type, final double value) {
     }
 
     /**
@@ -236,7 +238,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param channel The channel to set the axis to.
      */
     @Override
-    public void setXChannel(int channel) {
+    public void setXChannel(final int channel) {
     }
 
     /**
@@ -255,7 +257,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param channel The channel to set the axis to.
      */
     @Override
-    public void setYChannel(int channel) {
+    public void setYChannel(final int channel) {
     }
 
     /**
@@ -274,7 +276,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param channel The channel to set the axis to.
      */
     @Override
-    public void setZChannel(int channel) {
+    public void setZChannel(final int channel) {
     }
 
     /**
@@ -293,7 +295,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param channel The channel to set the axis to.
      */
     @Override
-    public void setTwistChannel(int channel) {
+    public void setTwistChannel(final int channel) {
     }
 
     /**
@@ -312,7 +314,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param channel The channel to set the axis to.
      */
     @Override
-    public void setThrottleChannel(int channel) {
+    public void setThrottleChannel(final int channel) {
     }
 
     /**
@@ -445,6 +447,6 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param right The strength to rumble the right side, on [-1, 1]
      */
     @Override
-    public void rumble(double left, double right) {
+    public void rumble(final double left, final double right) {
     }
 }

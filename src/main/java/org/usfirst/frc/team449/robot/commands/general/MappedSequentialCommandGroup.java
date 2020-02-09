@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
 
 import java.util.List;
 
@@ -23,15 +24,13 @@ public class MappedSequentialCommandGroup extends SequentialCommandGroup {
      * Creates a new SequentialCommandGroup.  The given commands will be run sequentially, with
      * the CommandGroup finishing when the last command finishes.
      *
-     * @param commands the commands to include in this group.
-     * @param requires the list of subsystems that this command requires
+     * @param commands           the commands to include in this group.
+     * @param requiredSubsystems the list of subsystems that this command requires
      */
     @JsonCreator
-    public MappedSequentialCommandGroup(@NotNull @JsonProperty(required = true) List<Command> commands,
-                                        @Nullable List<Subsystem> requires) {
-        super(commands.toArray(new Command[]{}));
-        if (requires != null)
-            for (var subsystem : requires)
-                this.addRequirements(subsystem);
+    public MappedSequentialCommandGroup(@NotNull @JsonProperty(required = true) Command[] commands,
+                                        @Nullable Subsystem[] requiredSubsystems) {
+        super(commands);
+        if (requiredSubsystems != null) this.addRequirements(requiredSubsystems);
     }
 }

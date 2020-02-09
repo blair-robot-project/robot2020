@@ -29,54 +29,59 @@ import java.util.*;
 public class SpinUpFlywheelUntilIntakeStops extends SequentialCommandGroup implements ISpinUpFlywheelCommand {
 
     Command x;
+
     /**
-     *
-      * @param timeToStart how long the feeder waits to start. Not sure how necessary this is
+     * @param timeToStart           how long the feeder waits to start. Not sure how necessary this is
      * @param spinUpFlywheelCommand
      * @param shooterFlywheel
-     * @param feeder the feeder
-     * @param timeToStop how long the feeder keeps running after feeder stops, in sec
+     * @param feeder                the feeder
+     * @param timeToStop            how long the feeder keeps running after feeder stops, in sec
      */
     @JsonCreator
-  public SpinUpFlywheelUntilIntakeStops(@Nullable Double timeToStart,
-                                        @NotNull @JsonProperty(required=true) final SpinUpFlywheel spinUpFlywheelCommand,
-                                        @NotNull @JsonProperty(required=true) final LoggingFlywheel shooterFlywheel,
-                                        @NotNull @JsonProperty(required=true) final IntakeSimple feeder,
-                                        @Nullable Double timeToStop) {
-    super(new MappedWaitCommand(timeToStart == null ? 1.0 : timeToStart),
-            makePerpetualCommand(spinUpFlywheelCommand, shooterFlywheel, feeder, timeToStop));
-  }
+    public SpinUpFlywheelUntilIntakeStops(@Nullable Double timeToStart,
+                                          @NotNull @JsonProperty(required = true) final SpinUpFlywheel spinUpFlywheelCommand,
+                                          @NotNull @JsonProperty(required = true) final LoggingFlywheel shooterFlywheel,
+                                          @NotNull @JsonProperty(required = true) final IntakeSimple feeder,
+                                          @Nullable Double timeToStop) {
+        super(new MappedWaitCommand(timeToStart == null ? 1.0 : timeToStart),
+                makePerpetualCommand(spinUpFlywheelCommand, shooterFlywheel, feeder, timeToStop));
+    }
 
-  public static Command makePerpetualCommand(@NotNull final SpinUpFlywheel spinUpFlywheelCommand,
-                   @NotNull final LoggingFlywheel shooterFlywheel,
-                   @NotNull final IntakeSimple intake,
-                   @Nullable Double timeToStop) {
-      //todo should this be a perpetual command?
-      System.out.println("Hello there!!!");
-      return new PerpetualCommand(
-              //TODO make this less complicated, this is even worse than before
-              new ConditionalCommandFunctional(new CommandBase() {
-                  Runnable endCommand = () -> {
-                          this.end(false);
-                  };
-                  @Override
-                  public void execute() {
-                      //stop after timeToStop seconds
-                      Timer timer = new Timer();
-                      timer.schedule(new TimerTask() {
-                          public void run() {
-                            //TODO is it interrupted? Does making it false keep it from starting up again?
-                            endCommand.run();
-                          }
-                      }, (long) (timeToStop == null ? 3000 : timeToStop * 1000L));
-                  }
-              }, new ConditionalCommandFunctional(
-                      new TurnAllOn(shooterFlywheel),
-                      spinUpFlywheelCommand,
-                      shooterFlywheel::isConditionTrueCached),
-                      //whether or not it is off
-                      () -> intake.getMode().compareTo(SubsystemIntake.IntakeMode.OFF) == 0)
-      );
-  }
+    public static Command makePerpetualCommand(@NotNull final SpinUpFlywheel spinUpFlywheelCommand,
+                                               @NotNull final LoggingFlywheel shooterFlywheel,
+                                               @NotNull final IntakeSimple intake,
+                                               @Nullable Double timeToStop) {
+        //todo should this be a perpetual command?
+        System.out.println("Hello there!!!");
+        return new PerpetualCommand(
+                //TODO make this less complicated, this is even worse than before
+                new ConditionalCommandFunctional(
+                        new CommandBase() {
+                            Runnable endCommand = () -> {
+                                this.end(false);
+                            };
+
+                            @Override
+                            public void execute() {
+                                //stop after timeToStop seconds
+                                Timer timer = new Timer();
+                                timer.schedule(new TimerTask() {
+                                    public void run() {
+                                        //TODO is it interrupted? Does making it false keep it from starting up again?
+                                        endCommand.run();
+                                    }
+                                }, (long) (timeToStop == null ? 3000 : timeToStop * 1000L));
+                            }
+                        },
+                        new ConditionalCommandFunctional(
+                                new TurnAllOn(shooterFlywheel),
+                                spinUpFlywheelCommand,
+                                shooterFlywheel::isConditionTrueCached,
+                                null),
+                        //whether or not it is off
+                        () -> intake.getMode().compareTo(SubsystemIntake.IntakeMode.OFF) == 0,
+                        null)
+        );
+    }
 
 }

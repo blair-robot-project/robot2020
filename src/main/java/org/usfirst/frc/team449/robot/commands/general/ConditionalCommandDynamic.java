@@ -15,24 +15,32 @@ import java.util.Objects;
 import java.util.function.BooleanSupplier;
 
 /**
- * A generic ConditionalCommand that takes a lambda for determining which command to run.
+ * A ConditionalCommand that takes a lambda for determining which command to run and that checks its condition every time that it executes.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class ConditionalCommandFunctional extends ConditionalCommand {
+public class ConditionalCommandDynamic extends ConditionalCommand {
     /**
      * Default constructor
      *
-     * @param onTrue          The Command to execute if BooleanSupplier returns true
+     * @param onTrue          The Command to execute if BooleanSupplier returns true.
      * @param onFalse         The Command to execute if BooleanSupplier returns false.
      * @param booleanSupplier A method for determining which command to run.
      */
     @JsonCreator
-    public ConditionalCommandFunctional(@Nullable Command onTrue,
-                                        @Nullable Command onFalse,
-                                        @NotNull @JsonProperty(required = true) BooleanSupplier booleanSupplier,
-                                        @Nullable Subsystem[] requiredSubsystems) {
-        super(onTrue, onFalse, booleanSupplier);
+    public ConditionalCommandDynamic(@Nullable Command onTrue,
+                                     @Nullable Command onFalse,
+                                     @NotNull @JsonProperty(required = true) BooleanSupplier booleanSupplier,
+                                     @Nullable Subsystem[] requiredSubsystems) {
+        super(Objects.requireNonNullElse(onTrue, new PlaceholderCommand()), Objects.requireNonNullElse(onFalse, new PlaceholderCommand()), booleanSupplier);
         if (requiredSubsystems != null) this.addRequirements(requiredSubsystems);
+    }
+
+    /**
+     * Calls {@link ConditionalCommand#initialize()} (which queries the condition) and then {@link ConditionalCommand#execute()}.
+     */
+    @Override
+    public void execute() {
         super.initialize();
+        super.execute();
     }
 }

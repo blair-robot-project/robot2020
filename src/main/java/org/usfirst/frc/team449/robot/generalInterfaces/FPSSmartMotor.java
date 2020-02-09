@@ -23,7 +23,9 @@ import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.*;
 import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.FPSSmartMotorSimulated;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
@@ -94,65 +96,65 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      *                                   Each key can be an instance of {@link String}, {@link CANSparkMaxLowLevel.PeriodicFrame}, or {@link StatusFrameEnhanced}.
      */
     @JsonCreator
-    static FPSSmartMotor create(@JsonProperty(required = true) Type type,
-                                @JsonProperty(required = true) int port,
-                                @JsonProperty(required = true) boolean enableBrakeMode,
-                                @Nullable String name,
-                                boolean reverseOutput,
-                                @Nullable PDP PDP,
-                                @Nullable Boolean fwdLimitSwitchNormallyOpen,
-                                @Nullable Boolean revLimitSwitchNormallyOpen,
-                                @Nullable Integer remoteLimitSwitchID,
-                                @Nullable Double fwdSoftLimit,
-                                @Nullable Double revSoftLimit,
-                                @Nullable Double postEncoderGearing,
-                                @Nullable Double feetPerRotation,
-                                @Nullable Integer currentLimit,
-                                boolean enableVoltageComp,
-                                @Nullable List<PerGearSettings> perGearSettings,
-                                @Nullable Shiftable.gear startingGear,
-                                @Nullable Integer startingGearNum,
+    static FPSSmartMotor create(@JsonProperty(required = true) final Type type,
+                                @JsonProperty(required = true) final int port,
+                                @JsonProperty(required = true) final boolean enableBrakeMode,
+                                @Nullable final String name,
+                                final boolean reverseOutput,
+                                @Nullable final PDP PDP,
+                                @Nullable final Boolean fwdLimitSwitchNormallyOpen,
+                                @Nullable final Boolean revLimitSwitchNormallyOpen,
+                                @Nullable final Integer remoteLimitSwitchID,
+                                @Nullable final Double fwdSoftLimit,
+                                @Nullable final Double revSoftLimit,
+                                @Nullable final Double postEncoderGearing,
+                                @Nullable final Double feetPerRotation,
+                                @Nullable final Integer currentLimit,
+                                final boolean enableVoltageComp,
+                                @Nullable final List<PerGearSettings> perGearSettings,
+                                @Nullable final Shiftable.gear startingGear,
+                                @Nullable final Integer startingGearNum,
                                 // Spark-specific
                                 @Nullable final Integer controlFrameRateMillis,
                                 // Talon-specific
                                 @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
-                                @Nullable RunningLinRegComponent voltagePerCurrentLinReg,
-                                @Nullable Integer voltageCompSamples,
-                                @Nullable FeedbackDevice feedbackDevice,
-                                @Nullable Integer encoderCPR,
-                                @Nullable Boolean reverseSensor,
-                                @Nullable Double updaterProcessPeriodSecs,
-                                @Nullable List<SlaveTalon> slaveTalons,
-                                @Nullable List<SlaveVictor> slaveVictors,
-                                @Nullable List<SlaveSparkMax> slaveSparks,
+                                @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
+                                @Nullable final Integer voltageCompSamples,
+                                @Nullable final FeedbackDevice feedbackDevice,
+                                @Nullable final Integer encoderCPR,
+                                @Nullable final Boolean reverseSensor,
+                                @Nullable final Double updaterProcessPeriodSecs,
+                                @Nullable final List<SlaveTalon> slaveTalons,
+                                @Nullable final List<SlaveVictor> slaveVictors,
+                                @Nullable final List<SlaveSparkMax> slaveSparks,
                                 // Handled specially.
                                 @Nullable final Map<?, Integer> statusFrameRatesMillis) {
         final String motorLogName = type.toString() + " \"" + name + "\" on port " + port;
         System.out.println("[" + FPSSmartMotor.class.getSimpleName() + "] Constructing " + motorLogName);
 
         final var helper = new Object() {
-            public void logUnsupported(String property) {
+            public void logUnsupported(final String property) {
                 System.out.println("\tWARNING: Property " + property + " is not supported for " + type);
             }
         };
 
         // The status frame map must be dealt with manually because Jackson gives the frames as raw strings due to the
         // type parameter being a wildcard (Object). The solution is to invoke Jackson again to parse them.
-        var sparkStatusFramesMap = new HashMap<CANSparkMaxLowLevel.PeriodicFrame, Integer>();
-        var talonStatusFramesMap = new HashMap<StatusFrameEnhanced, Integer>();
+        final var sparkStatusFramesMap = new HashMap<CANSparkMaxLowLevel.PeriodicFrame, Integer>();
+        final var talonStatusFramesMap = new HashMap<StatusFrameEnhanced, Integer>();
 
         if (statusFrameRatesMillis != null) {
-            for (Object frame : statusFrameRatesMillis.keySet()) {
+            for (final Object frame : statusFrameRatesMillis.keySet()) {
                 if (frame instanceof String) {
                     // Must put it in quotes so Jackson recognizes it as a string.
-                    String toBeParsed = "\"" + frame.toString() + "\"";
+                    final String toBeParsed = "\"" + frame.toString() + "\"";
                     try {
                         if (type == Type.TALON) {
                             talonStatusFramesMap.put(new ObjectMapper().readValue(toBeParsed, StatusFrameEnhanced.class), statusFrameRatesMillis.get(frame));
                         } else if (type == Type.SPARK) {
                             sparkStatusFramesMap.put(new ObjectMapper().readValue(toBeParsed, CANSparkMaxLowLevel.PeriodicFrame.class), statusFrameRatesMillis.get(frame));
                         }
-                    } catch (Exception ex) {
+                    } catch (final Exception ex) {
                         System.out.println("\tERROR: Could not parse status frame rate key value " + toBeParsed);
                         throw new RuntimeException(ex);
                     }
@@ -209,7 +211,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
                     slaveSparks);
         }
 
-        FPSSmartMotor result;
+        final FPSSmartMotor result;
 
         switch (type) {
             case SPARK:
@@ -336,6 +338,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      *
      * @param velocity the desired velocity, on [-1, 1].
      */
+    @Override
     void setVelocity(double velocity);
 
     /**
@@ -437,6 +440,13 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
 
     boolean isInhibitedReverse();
 
+    /**
+     * Gets the CAN port of this controller.
+     *
+     * @return the CAN port of this controller
+     */
+    int getPort();
+
     @Override
     default LayoutType configureLayoutType() {
         return BuiltInLayouts.kGrid;
@@ -462,7 +472,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
 
         public final String friendlyName;
 
-        Type(String friendlyName) {
+        Type(final String friendlyName) {
             this.friendlyName = friendlyName;
         }
 

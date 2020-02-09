@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * A command that runs any number of {@link Runnable} objects every tick.
+ * A command that runs any number of {@link Runnable} objects once or every tick.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class RunRunnables extends CommandBase {
@@ -31,11 +31,12 @@ public class RunRunnables extends CommandBase {
     /**
      * Default constructor
      *
-     * @param runnables The runnables to run.
+     * @param keepRunning Whether to keep running after the first tick.
+     * @param runnables   The runnables to run.
      */
     @JsonCreator
-    public RunRunnables(@NotNull @JsonProperty(required = true) Runnable[] runnables,
-                        @Nullable Boolean keepRunning) {
+    public RunRunnables(@Nullable Boolean keepRunning,
+                        @NotNull @JsonProperty(required = true) Runnable... runnables) {
         this.runnables = runnables;
         this.keepRunning = keepRunning != null ? keepRunning : true;
     }
@@ -59,18 +60,13 @@ public class RunRunnables extends CommandBase {
     }
 
     /**
-     * @return false
+     * If {@code keepRunning} was specified to be true, false; otherwise, whether the command has finished running.
+     *
+     * @return whether the command has finished running
      */
     @Override
     public boolean isFinished() {
-        //This does NOT have to be true.
         return !this.keepRunning;
-    }
-
-    @Override
-    public Set<Subsystem> getRequirements() {
-        // This shouldn't return null.
-        return Set.of();
     }
 
     /**

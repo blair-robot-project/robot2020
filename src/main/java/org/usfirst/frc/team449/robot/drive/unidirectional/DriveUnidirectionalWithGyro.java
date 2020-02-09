@@ -15,9 +15,7 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
-import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
 
@@ -56,12 +54,10 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * Drivetrain odometry tracker for tracking position
      */
     private final DifferentialDriveOdometry driveOdometry;
-
     /**
      * Whether or not to use the NavX for driving straight
      */
     private boolean overrideGyro;
-
     /**
      * Cached values for various sensor readings.
      */
@@ -71,16 +67,16 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     /**
      * Default constructor.
      *
-     * @param leftMaster  The master talon on the left side of the drive.
-     * @param rightMaster The master talon on the right side of the drive.
-     * @param ahrs        The NavX gyro for calculating this drive's heading and angular velocity.
+     * @param leftMaster       The master talon on the left side of the drive.
+     * @param rightMaster      The master talon on the right side of the drive.
+     * @param ahrs             The NavX gyro for calculating this drive's heading and angular velocity.
      * @param trackWidthMeters The width between the left and right wheels in meters
      */
     @JsonCreator
-    public DriveUnidirectionalWithGyro(@NotNull @JsonProperty(required = true) FPSSmartMotor leftMaster,
-                                       @NotNull @JsonProperty(required = true) FPSSmartMotor rightMaster,
-                                       @NotNull @JsonProperty(required = true) MappedAHRS ahrs,
-                                       @JsonProperty(required = true) double trackWidthMeters) {
+    public DriveUnidirectionalWithGyro(@NotNull @JsonProperty(required = true) final FPSSmartMotor leftMaster,
+                                       @NotNull @JsonProperty(required = true) final FPSSmartMotor rightMaster,
+                                       @NotNull @JsonProperty(required = true) final MappedAHRS ahrs,
+                                       @JsonProperty(required = true) final double trackWidthMeters) {
         super();
         //Initialize stuff
         this.rightMaster = rightMaster;
@@ -88,7 +84,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
         this.ahrs = ahrs;
         this.overrideGyro = false;
         this.driveKinematics = new DifferentialDriveKinematics(trackWidthMeters);
-        this.driveOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+        this.driveOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(this.getHeading()));
     }
 
     /**
@@ -98,21 +94,21 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * @param right the output for the right side of the drive, from [-1, 1]
      */
     @Override
-    public void setOutput(double left, double right) {
+    public void setOutput(final double left, final double right) {
         //scale by the max speed
-        leftMaster.setVelocity(left);
-        rightMaster.setVelocity(right);
+        this.leftMaster.setVelocity(left);
+        this.rightMaster.setVelocity(right);
     }
 
     /**
      * Set voltage output raw
      *
-     * @param left The voltage output for the left side of the drive from [-12, 12]
+     * @param left  The voltage output for the left side of the drive from [-12, 12]
      * @param right The voltage output for the right side of the drive from [-12, 12]
      */
-    public void setVoltage(double left, double right){
-        leftMaster.setPercentVoltage(left / 12);
-        rightMaster.setPercentVoltage(right / 12);
+    public void setVoltage(final double left, final double right) {
+        this.leftMaster.setPercentVoltage(left / 12);
+        this.rightMaster.setPercentVoltage(right / 12);
     }
 
     /**
@@ -123,7 +119,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Override
     @Nullable
     public Double getLeftVel() {
-        return leftMaster.getVelocity();
+        return this.leftMaster.getVelocity();
     }
 
     /**
@@ -134,7 +130,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Override
     @Nullable
     public Double getRightVel() {
-        return rightMaster.getVelocity();
+        return this.rightMaster.getVelocity();
     }
 
     /**
@@ -145,7 +141,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Nullable
     @Override
     public Double getLeftPos() {
-        return leftMaster.getPositionFeet();
+        return this.leftMaster.getPositionFeet();
     }
 
     /**
@@ -156,7 +152,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Nullable
     @Override
     public Double getRightPos() {
-        return rightMaster.getPositionFeet();
+        return this.rightMaster.getPositionFeet();
     }
 
     /**
@@ -167,7 +163,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Nullable
     @Override
     public Double getLeftVelCached() {
-        return cachedLeftVel;
+        return this.cachedLeftVel;
     }
 
     /**
@@ -178,7 +174,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Nullable
     @Override
     public Double getRightVelCached() {
-        return cachedRightVel;
+        return this.cachedRightVel;
     }
 
     /**
@@ -189,7 +185,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Nullable
     @Override
     public Double getLeftPosCached() {
-        return cachedLeftPos;
+        return this.cachedLeftPos;
     }
 
     /**
@@ -200,21 +196,21 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Nullable
     @Override
     public Double getRightPosCached() {
-        return cachedRightPos;
+        return this.cachedRightPos;
     }
 
     /**
      * @return The feedforward calculator for left motors
      */
-    public SimpleMotorFeedforward getLeftFeedforwardCalculator(){
-        return leftMaster.getCurrentGearFeedForward();
+    public SimpleMotorFeedforward getLeftFeedforwardCalculator() {
+        return this.leftMaster.getCurrentGearFeedForward();
     }
 
     /**
      * @return The feedforward calculator for right motors
      */
-    public SimpleMotorFeedforward getRightFeedforwardCalculator(){
-        return rightMaster.getCurrentGearFeedForward();
+    public SimpleMotorFeedforward getRightFeedforwardCalculator() {
+        return this.rightMaster.getCurrentGearFeedForward();
     }
 
     /**
@@ -222,8 +218,8 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Override
     public void fullStop() {
-        leftMaster.setPercentVoltage(0);
-        rightMaster.setPercentVoltage(0);
+        this.leftMaster.setPercentVoltage(0);
+        this.rightMaster.setPercentVoltage(0);
     }
 
     /**
@@ -231,8 +227,8 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Override
     public void enableMotors() {
-        leftMaster.enable();
-        rightMaster.enable();
+        this.leftMaster.enable();
+        this.rightMaster.enable();
     }
 
     /**
@@ -242,7 +238,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Override
     public double getHeading() {
-        return ahrs.getHeading();
+        return this.ahrs.getHeading();
     }
 
     /**
@@ -251,8 +247,8 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * @param heading The heading to set to, in degrees on [-180, 180].
      */
     @Override
-    public void setHeading(double heading) {
-        ahrs.setHeading(heading);
+    public void setHeading(final double heading) {
+        this.ahrs.setHeading(heading);
     }
 
     /**
@@ -262,7 +258,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Override
     public double getHeadingCached() {
-        return ahrs.getCachedHeading();
+        return this.ahrs.getCachedHeading();
     }
 
     /**
@@ -272,7 +268,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Override
     public double getAngularVel() {
-        return ahrs.getAngularVelocity();
+        return this.ahrs.getAngularVelocity();
     }
 
     /**
@@ -282,7 +278,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Override
     public double getAngularVelCached() {
-        return ahrs.getCachedAngularVelocity();
+        return this.ahrs.getCachedAngularVelocity();
     }
 
     /**
@@ -292,7 +288,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Override
     public double getAngularDisplacement() {
-        return ahrs.getAngularDisplacement();
+        return this.ahrs.getAngularDisplacement();
     }
 
     /**
@@ -302,7 +298,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Override
     public double getAngularDisplacementCached() {
-        return ahrs.getCachedAngularDisplacement();
+        return this.ahrs.getCachedAngularDisplacement();
     }
 
     /**
@@ -312,7 +308,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Override
     public double getPitch() {
-        return ahrs.getPitch();
+        return this.ahrs.getPitch();
     }
 
     /**
@@ -322,7 +318,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Override
     public double getCachedPitch() {
-        return ahrs.getCachedPitch();
+        return this.ahrs.getCachedPitch();
     }
 
     /**
@@ -331,54 +327,48 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Override
     @Log
     public boolean getOverrideGyro() {
-        return overrideGyro;
+        return this.overrideGyro;
     }
 
     /**
      * @param override true to override the NavX, false to un-override it.
      */
     @Override
-    public void setOverrideGyro(boolean override) {
-        overrideGyro = override;
+    public void setOverrideGyro(final boolean override) {
+        this.overrideGyro = override;
     }
 
     /**
      * Reset odometry tracker to current robot pose
      */
     @Log
-    public void resetOdometry(Pose2d pose){
-        resetPosition();;
-        driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
+    public void resetOdometry(final Pose2d pose) {
+        this.resetPosition();
+        ;
+        this.driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(this.getHeading()));
     }
 
     /**
      * Update odometry tracker with current heading, and encoder readings
      */
-    public void updateOdometry(){
+    public void updateOdometry() {
         //need to convert to meters
-        driveOdometry.update(Rotation2d.fromDegrees(getHeading()), Units.feetToMeters(getLeftPos()), Units.feetToMeters(getRightPos()));
+        this.driveOdometry.update(Rotation2d.fromDegrees(this.getHeading()), Units.feetToMeters(this.getLeftPos()), Units.feetToMeters(this.getRightPos()));
     }
 
     /**
      * @return Current estimated pose based on odometry tracker data
      */
-    public Pose2d getCurrentPose(){
-        return driveOdometry.getPoseMeters() != null ? driveOdometry.getPoseMeters() : new Pose2d(new Translation2d(0, 0),new Rotation2d(0));
+    public Pose2d getCurrentPose() {
+        return this.driveOdometry.getPoseMeters() != null ? this.driveOdometry.getPoseMeters() : new Pose2d(new Translation2d(0, 0), new Rotation2d(0));
     }
 
     /**
      * @return Current wheel speeds based on encoder readings for future pose correction
      */
-    public DifferentialDriveWheelSpeeds getWheelSpeeds(){
+    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
         //need to convert to meters
-        return new DifferentialDriveWheelSpeeds(Units.feetToMeters(getLeftVel()), Units.feetToMeters(getRightVel()));
-    }
-
-    /**
-     * @return Kinematics processor for wheel speeds
-     */
-    public DifferentialDriveKinematics getDriveKinematics(){
-        return driveKinematics;
+        return new DifferentialDriveWheelSpeeds(Units.feetToMeters(this.getLeftVel()), Units.feetToMeters(this.getRightVel()));
     }
 //
 //    /**
@@ -417,11 +407,18 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
 //    }
 
     /**
+     * @return Kinematics processor for wheel speeds
+     */
+    public DifferentialDriveKinematics getDriveKinematics() {
+        return this.driveKinematics;
+    }
+
+    /**
      * Disable the motors.
      */
     public void disable() {
-        leftMaster.disable();
-        rightMaster.disable();
+        this.leftMaster.disable();
+        this.rightMaster.disable();
     }
 
     /**
@@ -429,8 +426,8 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      *
      * @param pos the position to stop at
      */
-    public void holdPosition(double pos) {
-        holdPosition(pos, pos);
+    public void holdPosition(final double pos) {
+        this.holdPosition(pos, pos);
     }
 
     /**
@@ -438,8 +435,8 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Override
     public void resetPosition() {
-        leftMaster.resetPosition();
-        rightMaster.resetPosition();
+        this.leftMaster.resetPosition();
+        this.rightMaster.resetPosition();
     }
 
     /**
@@ -447,22 +444,31 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Override
     public void update() {
-        updateOdometry();
-        cachedLeftVel = getLeftVel();
-        cachedLeftPos = getLeftPos();
-        cachedRightVel = getRightVel();
-        cachedRightPos = getRightPos();
+        this.updateOdometry();
+        this.cachedLeftVel = this.getLeftVel();
+        this.cachedLeftPos = this.getLeftPos();
+        this.cachedRightVel = this.getRightVel();
+        this.cachedRightPos = this.getRightPos();
     }
-
 
     /**
      * Hold the current position.
      *
-     * @param leftPos the position to stop the left side at
+     * @param leftPos  the position to stop the left side at
      * @param rightPos the position to stop the right side at
      */
-    public void holdPosition(double leftPos, double rightPos){
-        leftMaster.setPositionSetpoint(leftPos);
-        rightMaster.setPositionSetpoint(rightPos);
+    public void holdPosition(final double leftPos, final double rightPos) {
+        this.leftMaster.setPositionSetpoint(leftPos);
+        this.rightMaster.setPositionSetpoint(rightPos);
+    }
+
+    @Override
+    public String getName() {
+        return this.getClass().getSimpleName() + "_" + this.leftMaster.getPort() + "_" + this.rightMaster.getPort();
+    }
+
+    @Override
+    public String configureLogName() {
+        return this.getName();
     }
 }

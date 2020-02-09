@@ -13,26 +13,33 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * Runs another command in perpetuity, ignoring that command's end conditions.
+ * Runs another command in perpetuity, ignoring that command's end conditions and reinitializing it when it finishes.
  *
  * @see PerpetualCommand
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MappedPerpetualCommand extends PerpetualCommand {
+public class PerpetualCommandReinitializing extends PerpetualCommand {
     /**
      * Creates a new PerpetualCommand.  Will run another command in perpetuity, ignoring that
      * command's end conditions, unless this command itself is interrupted.
      *
-     * @param command the command to run perpetually
+     * @param command            the command to run perpetually
      * @param requiredSubsystems the list of subsystems that this command requires
      */
     @JsonCreator
-    public MappedPerpetualCommand(@NotNull @JsonProperty(required = true) Command command,
-                                  @Nullable List<Subsystem> requiredSubsystems) {
-        // TODO: We should requireNonNull such parameters because map errors can cause them to be null.
+    public PerpetualCommandReinitializing(@NotNull @JsonProperty(required = true) Command command,
+                                          @Nullable Subsystem[] requiredSubsystems) {
+        // TODO: We should requireNonNull all @Nullable parameters because map errors can cause them to be null and cause weird exceptions.
         super(command);
-        if (requiredSubsystems != null)
-            for (var subsystem : requiredSubsystems)
-                this.addRequirements(subsystem);
+        if (requiredSubsystems != null) this.addRequirements(requiredSubsystems);
+    }
+
+    @Override
+    public void execute() {
+        if (this.m_command.isFinished()) {
+            this.m_command.end(false);
+            this.m_command.initialize();
+        }
+        super.execute();
     }
 }

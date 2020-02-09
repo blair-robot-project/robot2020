@@ -7,13 +7,17 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
-import org.usfirst.frc.team449.robot.jacksonWrappers.*;
+import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
+import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
+import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
+import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.other.Util;
 
@@ -21,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.DoubleSupplier;
 
 import static org.usfirst.frc.team449.robot.other.Util.clamp;
 import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
@@ -37,85 +42,109 @@ import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
  */
 public class FPSSmartMotorSimulated implements FPSSmartMotor {
     /**
-     * Nominal bus voltage; used to calculate maximum speed.
+     * (V) Nominal bus voltage; used to calculate maximum speed.
      */
     private static final double NOM_BUS_VOLTAGE = 12;
     /**
-     * Maximum acceleration in RPS.
+     * (Kg*m) Moment of moving parts.
      */
-    private static final double MAX_ACCEL = 100;
+    private static final double MOMENT = 1;
     private static final double MAX_SPEED_COEFF = 10. / 12;
     private static final double MAX_SPEED = NOM_BUS_VOLTAGE * MAX_SPEED_COEFF;
     /**
-     * Maximum value for {@link FPSSmartMotorSimulated#integral} (for PID anti-windup).
-     */
-    private static final double MAX_INTEGRAL = 10;
-    /**
-     * Used to calculate output voltaeg.
+     * (V) Used to calculate output current.
      */
     private static final double MOTOR_RESISTANCE = 1;
+    /**
+     * (N*m / V) Torque per volt due to force of motor.
+     */
+    private static final double TORQUE_COEFF = 450;
+    /**
+     * (N*m / (R/s)) Torque per RPS due to motor internal friction.
+     */
+    private static final double MOTOR_FRICTION_COEFF = -1;
+    /**
+     * Maximum PID integral for anti-windup.
+     */
+    private static final double MAX_INTEGRAL = 100;
 
     @NotNull
     private final String name;
+    private final Type type;
+    private final int port;
+    private final boolean reverseOutput;
+    private final double feetPerRotation;
 
+    /**
+     * (Depends on mode)
+     */
+    @Log
+    private double setpoint;
     @NotNull
     private ControlMode controlMode = ControlMode.Disabled;
     @NotNull
+    private final FPSSmartMotorSimulated.PID pid = new PID(MAX_INTEGRAL, () -> this.setpoint, 0, 0, 0);
+    @NotNull
     private PerGearSettings currentGearSettings;
     @NotNull
-    private Map<Integer, PerGearSettings> perGearSettings;
+    private final Map<Integer, PerGearSettings> perGearSettings;
 
     // Log the getters instead because logging the fields doesn't cause physics updates.
     private double percentOutput;
+    /**
+     * (R/s) Signed rotations per second
+     */
     private double velocity;
+    /**
+     * Absolute rotation value
+     */
     private double position;
-    private double busVoltage = NOM_BUS_VOLTAGE;
-
-    @Log
-    private double setpoint;
+    /**
+     * (V)
+     */
+    private final double busVoltage = NOM_BUS_VOLTAGE;
 
     @Log
     private double lastStateUpdateTime = Clock.currentTimeMillis();
-    @Log
-    private double targetPercentOutput;
-    @Log
-    private double error, integral;
 
-    public FPSSmartMotorSimulated(@JsonProperty(required = true) Type type,
-                                  @JsonProperty(required = true) int port,
-                                  @JsonProperty(required = true) boolean enableBrakeMode,
-                                  @Nullable String name,
-                                  boolean reverseOutput,
-                                  @Nullable PDP PDP,
-                                  @Nullable Boolean fwdLimitSwitchNormallyOpen,
-                                  @Nullable Boolean revLimitSwitchNormallyOpen,
-                                  @Nullable Integer remoteLimitSwitchID,
-                                  @Nullable Double fwdSoftLimit,
-                                  @Nullable Double revSoftLimit,
-                                  @Nullable Double postEncoderGearing,
-                                  @Nullable Double feetPerRotation,
-                                  @Nullable Integer currentLimit,
-                                  boolean enableVoltageComp,
-                                  @Nullable List<PerGearSettings> perGearSettings,
-                                  @Nullable Shiftable.gear startingGear,
-                                  @Nullable Integer startingGearNum,
+    public FPSSmartMotorSimulated(@JsonProperty(required = true) final Type type,
+                                  @JsonProperty(required = true) final int port,
+                                  @JsonProperty(required = true) final boolean enableBrakeMode,
+                                  @Nullable final String name,
+                                  final boolean reverseOutput,
+                                  @Nullable final PDP PDP,
+                                  @Nullable final Boolean fwdLimitSwitchNormallyOpen,
+                                  @Nullable final Boolean revLimitSwitchNormallyOpen,
+                                  @Nullable final Integer remoteLimitSwitchID,
+                                  @Nullable final Double fwdSoftLimit,
+                                  @Nullable final Double revSoftLimit,
+                                  @Nullable final Double postEncoderGearing,
+                                  @Nullable final Double feetPerRotation,
+                                  @Nullable final Integer currentLimit,
+                                  final boolean enableVoltageComp,
+                                  @Nullable final List<PerGearSettings> perGearSettings,
+                                  @Nullable final Shiftable.gear startingGear,
+                                  @Nullable final Integer startingGearNum,
                                   // Spark-specific
-                                  @Nullable HashMap<CANSparkMaxLowLevel.PeriodicFrame, Integer> sparkStatusFramesMap,
+                                  @Nullable final HashMap<CANSparkMaxLowLevel.PeriodicFrame, Integer> sparkStatusFramesMap,
                                   @Nullable final Integer controlFrameRateMillis,
                                   // Talon-specific
-                                  @Nullable HashMap<StatusFrameEnhanced, Integer> talonStatusFramesMap,
+                                  @Nullable final HashMap<StatusFrameEnhanced, Integer> talonStatusFramesMap,
                                   @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
-                                  @Nullable RunningLinRegComponent voltagePerCurrentLinReg,
-                                  @Nullable Integer voltageCompSamples,
-                                  @Nullable FeedbackDevice feedbackDevice,
-                                  @Nullable Integer encoderCPR,
-                                  @Nullable Boolean reverseSensor,
-                                  @Nullable Double updaterProcessPeriodSecs,
-                                  @Nullable List<SlaveTalon> slaveTalons,
-                                  @Nullable List<SlaveVictor> slaveVictors,
-                                  @Nullable List<SlaveSparkMax> slaveSparks) {
-
-        this.name = "FAKE " + (name != null ? name : port);
+                                  @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
+                                  @Nullable final Integer voltageCompSamples,
+                                  @Nullable final FeedbackDevice feedbackDevice,
+                                  @Nullable final Integer encoderCPR,
+                                  @Nullable final Boolean reverseSensor,
+                                  @Nullable final Double updaterProcessPeriodSecs,
+                                  @Nullable final List<SlaveTalon> slaveTalons,
+                                  @Nullable final List<SlaveVictor> slaveVictors,
+                                  @Nullable final List<SlaveSparkMax> slaveSparks) {
+        this.type = type;
+        this.port = port;
+        this.reverseOutput = reverseOutput;
+        this.feetPerRotation = Objects.requireNonNullElse(feetPerRotation, 1.0);
+        this.name = String.format("FAKE %s %d %s", type, port, name);
 
         //Most of the constructor is stolen from FPSSparkMax.
 
@@ -127,7 +156,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
         }
         //Otherwise, map the settings to the gear they are.
         else {
-            for (PerGearSettings settings : perGearSettings) {
+            for (final PerGearSettings settings : perGearSettings) {
                 this.perGearSettings.put(settings.gear, settings);
             }
         }
@@ -137,7 +166,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
         if (startingGear == null) {
             if (startingGearNum == null) {
                 currentGear = Integer.MAX_VALUE;
-                for (Integer gear : this.perGearSettings.keySet()) {
+                for (final Integer gear : this.perGearSettings.keySet()) {
                     if (gear < currentGear) {
                         currentGear = gear;
                     }
@@ -148,16 +177,38 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
         } else {
             currentGear = startingGear.getNumVal();
         }
-        currentGearSettings = this.perGearSettings.get(currentGear);
+        this.currentGearSettings = this.perGearSettings.get(currentGear);
         //Set up gear-based settings.
-        setGear(currentGear);
+        this.setGear(currentGear);
     }
 
-    public void setControlModeAndSetpoint(ControlMode controlMode, double setpoint) {
-        // TODO: Possible race condition?
+    public void setControlModeAndSetpoint(final ControlMode controlMode, final double setpoint) {
         this.controlMode = controlMode;
         this.setpoint = setpoint;
-        this.integral = 0;
+
+        switch (controlMode) {
+            case Velocity:
+                this.pid.reconfigure(this.currentGearSettings.kP, this.currentGearSettings.kI, this.currentGearSettings.kD);
+                break;
+            case Position:
+                this.pid.reconfigure(this.currentGearSettings.posKP, this.currentGearSettings.posKI, this.currentGearSettings.posKD);
+                break;
+
+            case Current:
+            case Follower:
+                System.out.println("WARNING: Not yet implemented.");
+                break;
+
+            case MotionProfile:
+            case MotionMagic:
+            case MotionProfileArc:
+                System.out.println("WARNING: Unlikely to be implemented.");
+                break;
+
+            case Disabled:
+            case PercentOutput:
+                break;
+        }
     }
 
     /**
@@ -165,30 +216,23 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
     private void updateSimulatedState() {
         // ***** Simulation timing
-        double now = Clock.currentTimeMillis();
+        final double now = Clock.currentTimeMillis();
 
-        double deltaMillis = (now - lastStateUpdateTime);
+        final double deltaMillis = (now - this.lastStateUpdateTime);
         if (deltaMillis < 10) return;
-        double deltaSecs = deltaMillis * 0.001;
+        final double deltaSecs = deltaMillis * 0.001;
 
-        double newError = 0;
+        final double targetPercentOutput;
         switch (this.controlMode) {
             case PercentOutput:
-                this.targetPercentOutput = setpoint;
+                targetPercentOutput = this.setpoint;
                 break;
 
             case Velocity:
             case Position:
-                newError = this.setpoint - (this.controlMode == ControlMode.Velocity ? this.velocity : this.position);
-                this.integral += (this.error + newError) * 0.5 * deltaSecs;
-                this.integral = clamp(this.integral, MAX_INTEGRAL);
-                double derivative = (newError - this.error) / deltaSecs;
-                if (this.controlMode == ControlMode.Velocity) {
-                    this.targetPercentOutput = this.currentGearSettings.kP * newError + this.currentGearSettings.kI * integral + this.currentGearSettings.kD * derivative;
-                } else {
-                    this.targetPercentOutput = this.currentGearSettings.posKP * newError + this.currentGearSettings.posKI * integral + this.currentGearSettings.posKD * derivative;
-                }
-                this.error = newError;
+                final double newActualValue = (this.controlMode == ControlMode.Velocity ? this.velocity : this.position);
+                this.pid.update(newActualValue, deltaSecs);
+                targetPercentOutput = this.pid.getOutput();
                 break;
 
             case Disabled:
@@ -201,16 +245,58 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
         }
 
         // ***** Physics
-        // Use a local to prevent racing observers from seeing invalid value.
-
         this.percentOutput = this.percentOutput +
-                Math.min(Objects.requireNonNullElse(this.currentGearSettings.rampRate, this.busVoltage) * deltaSecs, this.targetPercentOutput - this.percentOutput);
+                Math.min(Objects.requireNonNullElse(this.currentGearSettings.rampRate, this.busVoltage) * deltaSecs, targetPercentOutput - this.percentOutput);
         this.percentOutput = Util.clamp(this.percentOutput);
+        if (this.reverseOutput) this.percentOutput *= -1;
 
-        this.velocity = this.velocity + Math.min(MAX_ACCEL, MAX_SPEED_COEFF * this.busVoltage * this.percentOutput - this.velocity) * deltaSecs;
+        final double motorTorque = TORQUE_COEFF * this.busVoltage * this.percentOutput;
+        final double frictionTorque = MOTOR_FRICTION_COEFF * this.velocity;
+        final double netTorque = motorTorque + frictionTorque;
+        final double angularAcceleration = netTorque / MOMENT;
+
+        this.velocity += angularAcceleration * deltaSecs;
         this.position += this.velocity * deltaSecs;
 
         this.lastStateUpdateTime = now;
+    }
+
+    private static class PID implements Loggable {
+        @Log
+        private double error, integral, derivative;
+        private final DoubleSupplier getSetPoint;
+        private double kP;
+        private double kI;
+        private double kD;
+        private final double maxIntegral;
+
+        public PID(final double maxIntegral, final DoubleSupplier getSetPoint, final double kP, final double kI, final double kD) {
+            this.maxIntegral = maxIntegral;
+            this.getSetPoint = getSetPoint;
+            this.kP = kP;
+            this.kI = kI;
+            this.kD = kD;
+        }
+
+        public void update(final double newActualValue, final double deltaSecs) {
+            final double newError = this.getSetPoint.getAsDouble() - newActualValue;
+            this.integral += (this.error + newError) * 0.5 * deltaSecs;
+            this.integral = clamp(this.integral, this.maxIntegral);
+            this.derivative = (newError - this.error) / deltaSecs;
+            this.error = newError;
+        }
+
+        @Log
+        public double getOutput() {
+            return this.kP * this.error + this.kI * this.integral + this.kD * this.derivative;
+        }
+
+        public void reconfigure(final double kP, final double kI, final double kD) {
+            this.kP = kP;
+            this.kI = kI;
+            this.kD = kD;
+            this.error = this.derivative = this.integral = 0;
+        }
     }
 
     /**
@@ -219,7 +305,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @param percentVoltage percent of total voltage from [-1, 1]
      */
     @Override
-    public void setPercentVoltage(double percentVoltage) {
+    public void setPercentVoltage(final double percentVoltage) {
         this.setControlModeAndSetpoint(ControlMode.PercentOutput, percentVoltage);
     }
 
@@ -230,8 +316,8 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @return That distance in feet, or null if no encoder CPR was given.
      */
     @Override
-    public double encoderToFeet(double nativeUnits) {
-        return nativeUnits;
+    public double encoderToFeet(final double nativeUnits) {
+        return nativeUnits * this.feetPerRotation;
     }
 
     /**
@@ -242,8 +328,8 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @return That distance in native units as measured by the encoder, or null if no encoder CPR was given.
      */
     @Override
-    public double feetToEncoder(double feet) {
-        return feet;
+    public double feetToEncoder(final double feet) {
+        return feet / this.feetPerRotation;
     }
 
     /**
@@ -255,8 +341,8 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * was given.
      */
     @Override
-    public double encoderToFPS(double encoderReading) {
-        return encoderReading;
+    public double encoderToFPS(final double encoderReading) {
+        return encoderReading * this.feetPerRotation;
     }
 
     /**
@@ -267,8 +353,8 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was given.
      */
     @Override
-    public double FPSToEncoder(double FPS) {
-        return FPS;
+    public double FPSToEncoder(final double FPS) {
+        return FPS / this.feetPerRotation;
     }
 
     /**
@@ -279,7 +365,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @return That velocity in RPS, or null if no encoder CPR was given.
      */
     @Override
-    public Double nativeToRPS(double nat) {
+    public Double nativeToRPS(final double nat) {
         return nat;
     }
 
@@ -291,7 +377,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @return That velocity in native units, or null if no encoder CPR was given.
      */
     @Override
-    public double RPSToNative(double RPS) {
+    public double RPSToNative(final double RPS) {
         return RPS;
     }
 
@@ -307,11 +393,9 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
 
     /**
      * Set a position setpoint for the controller.
-     *
-     * @param feet
      */
     @Override
-    public void setPositionSetpoint(double feet) {
+    public void setPositionSetpoint(final double feet) {
         this.setControlModeAndSetpoint(ControlMode.Position, this.feetToEncoder(feet));
     }
 
@@ -341,7 +425,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @param velocity the desired velocity, on [-1, 1].
      */
     @Override
-    public void setVelocity(double velocity) {
+    public void setVelocity(final double velocity) {
         this.setVelocityFPS(velocity * MAX_SPEED);
     }
 
@@ -351,7 +435,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @param velocity velocity setpoint in FPS.
      */
     @Override
-    public void setVelocityFPS(double velocity) {
+    public void setVelocityFPS(final double velocity) {
         this.setControlModeAndSetpoint(ControlMode.Velocity, this.FPSToEncoder(velocity));
     }
 
@@ -371,7 +455,8 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @return The setpoint in sensible units for the current control mode.
      */
     @Override
-    public @Nullable Double getSetpoint() {
+    @Nullable
+    public Double getSetpoint() {
         switch (this.controlMode) {
             case Velocity:
                 return this.encoderToFPS(this.setpoint);
@@ -435,11 +520,11 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      */
 
     @Override
-    public void setGearScaledVelocity(double velocity, int gear) {
-        if (currentGearSettings.maxSpeed != null) {
-            setVelocityFPS(currentGearSettings.maxSpeed * velocity);
+    public void setGearScaledVelocity(final double velocity, final int gear) {
+        if (this.currentGearSettings.maxSpeed != null) {
+            this.setVelocityFPS(this.currentGearSettings.maxSpeed * velocity);
         } else {
-            setPercentVoltage(velocity);
+            this.setPercentVoltage(velocity);
         }
     }
 
@@ -450,8 +535,8 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @param gear     The gear to use the max speed from to scale the velocity.
      */
     @Override
-    public void setGearScaledVelocity(double velocity, Shiftable.gear gear) {
-        setGearScaledVelocity(velocity, gear.getNumVal());
+    public void setGearScaledVelocity(final double velocity, final Shiftable.gear gear) {
+        this.setGearScaledVelocity(velocity, gear.getNumVal());
     }
 
     /**
@@ -508,6 +593,11 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
         return false;
     }
 
+    @Override
+    public int getPort() {
+        return this.port;
+    }
+
     /**
      * @return The gear this subsystem is currently in.
      */
@@ -522,9 +612,9 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor {
      * @param gear Which gear to shift to.
      */
     @Override
-    public void setGear(int gear) {
+    public void setGear(final int gear) {
         //Set the current gear
-        currentGearSettings = perGearSettings.get(gear);
+        this.currentGearSettings = this.perGearSettings.get(gear);
     }
 
 
