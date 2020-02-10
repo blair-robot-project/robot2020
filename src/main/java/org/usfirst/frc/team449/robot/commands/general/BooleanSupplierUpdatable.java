@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 
+import java.util.Objects;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -22,9 +23,10 @@ public class BooleanSupplierUpdatable implements BooleanSupplier, Updatable {
      * @param source the {@link BooleanSupplier} from which to obtain values
      */
     @JsonCreator
-    public BooleanSupplierUpdatable(@NotNull @JsonProperty(required = true) BooleanSupplier source) {
+    public BooleanSupplierUpdatable(@NotNull @JsonProperty(required = true) final BooleanSupplier source,
+                                    @Nullable final Boolean initialValue) {
         this.source = source;
-        this.cachedValue = source.getAsBoolean();
+        this.cachedValue = Objects.requireNonNullElseGet(initialValue, source::getAsBoolean);
     }
 
     /**

@@ -27,15 +27,15 @@ public class ShootWhenFlywheelAtSpeed<T extends Subsystem & SubsystemFlywheel> e
      * @param pollingInterval The duration, in seconds, to wait between iterations of this command.
      */
     @JsonCreator
-    public ShootWhenFlywheelAtSpeed(@NotNull @JsonProperty(required = true) T flywheel,
-                                    @Nullable SubsystemIntake feeder,
-                                    @Nullable Double pollingInterval) {
+    public ShootWhenFlywheelAtSpeed(@NotNull @JsonProperty(required = true) final T flywheel,
+                                    @Nullable final SubsystemIntake feeder,
+                                    @Nullable final Double pollingInterval) {
         super(new SequentialCommandGroup(
-                new WaitCommand(Objects.requireNonNullElse(pollingInterval, 1.0)),
                 new ConditionalCommand(
                         new TurnAllOn(flywheel),
                         new SpinUpFlywheel(flywheel, feeder),
-                        flywheel::isAtShootingSpeed)));
+                        flywheel::isAtShootingSpeed),
+                new WaitCommand(Objects.requireNonNullElse(pollingInterval, 1.0))));
         this.addRequirements(flywheel);
     }
 }

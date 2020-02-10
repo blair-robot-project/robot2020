@@ -16,7 +16,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemC
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
 
 /**
- * A flywheel multiSubsystem with a single flywheel and a single-motor feeder system.
+ * A flywheel multiSubsystem with a single flywheel and a single-motor feeder system. Does not manage its own state.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel, SubsystemConditional, Loggable {
@@ -80,13 +80,13 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      *                            Defaults to {@literal null}, meaning that there is no speed requirement.
      */
     @JsonCreator
-    public LoggingFlywheel(@NotNull @JsonProperty(required = true) FPSSmartMotor shooterMotor,
-                           @NotNull @JsonProperty(required = true) FPSSmartMotor otherShooterMotor,
-                           @JsonProperty(required = true) double shooterThrottle,
-                           @NotNull @JsonProperty(required = true) SimpleMotor kickerMotor,
-                           @JsonProperty(required = true) double kickerThrottle,
-                           @JsonProperty(required = true) double spinUpTimeoutSecs,
-                           @Nullable Double minShootingSpeedFPS) {
+    public LoggingFlywheel(@NotNull @JsonProperty(required = true) final FPSSmartMotor shooterMotor,
+                           @NotNull @JsonProperty(required = true) final FPSSmartMotor otherShooterMotor,
+                           @JsonProperty(required = true) final double shooterThrottle,
+                           @NotNull @JsonProperty(required = true) final SimpleMotor kickerMotor,
+                           @JsonProperty(required = true) final double kickerThrottle,
+                           @JsonProperty(required = true) final double spinUpTimeoutSecs,
+                           @Nullable final Double minShootingSpeedFPS) {
         this.shooterMotor = shooterMotor;
         this.otherShooterMotor = otherShooterMotor;
         this.shooterThrottle = shooterThrottle;
@@ -103,10 +103,10 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void turnFlywheelOn() {
-        shooterMotor.enable();
-        otherShooterMotor.enable();
-        shooterMotor.setVelocity(shooterThrottle);
-        otherShooterMotor.setVelocity(shooterThrottle);
+        this.shooterMotor.enable();
+        this.otherShooterMotor.enable();
+        this.shooterMotor.setVelocity(this.shooterThrottle);
+        this.otherShooterMotor.setVelocity(this.shooterThrottle);
     }
 
     /**
@@ -114,9 +114,8 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void turnFlywheelOff() {
-        shooterMotor.disable();
-        otherShooterMotor.disable();
-        this.setFlywheelState(FlywheelState.OFF);
+        this.shooterMotor.disable();
+        this.otherShooterMotor.disable();
     }
 
     /**
@@ -124,8 +123,8 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void turnFeederOn() {
-        kickerMotor.enable();
-        kickerMotor.setVelocity(kickerThrottle);
+        this.kickerMotor.enable();
+        this.kickerMotor.setVelocity(this.kickerThrottle);
     }
 
     /**
@@ -133,7 +132,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void turnFeederOff() {
-        kickerMotor.disable();
+        this.kickerMotor.disable();
     }
 
     /**
@@ -142,21 +141,21 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     @NotNull
     @Override
     public SubsystemFlywheel.FlywheelState getFlywheelState() {
-        return state;
+        return this.state;
     }
 
     /**
      * @param state The state to switch the multiSubsystem to.
      */
     @Override
-    public void setFlywheelState(@NotNull SubsystemFlywheel.FlywheelState state) {
+    public void setFlywheelState(@NotNull final SubsystemFlywheel.FlywheelState state) {
         this.state = state;
         if (state == FlywheelState.SPINNING_UP) this.lastSpinUpTimeMS = Clock.currentTimeMillis();
     }
 
     @Log
     public String state() {
-        return state.name();
+        return this.state.name();
     }
 
     /**
@@ -165,22 +164,25 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     @Override
     @Log
     public double getSpinUpTimeoutSecs() {
-        return spinUpTimeoutSecs;
+        return this.spinUpTimeoutSecs;
     }
 
+    // TODO: Also account for speed difference between flywheels?
+    // TODO: Split into FlywheelTwoSides like how intake does it?
     @Override
     @Log
     public boolean isAtShootingSpeed() {
         if (this.state == FlywheelState.OFF) return false;
 
-        double timeSinceLastSpinUp = Clock.currentTimeMillis() - this.lastSpinUpTimeMS;
-        boolean timeoutExceeded = timeSinceLastSpinUp > 1000 * this.spinUpTimeoutSecs;
+        final double timeSinceLastSpinUp = Clock.currentTimeMillis() - this.lastSpinUpTimeMS;
+        final boolean timeoutExceeded = timeSinceLastSpinUp > 1000 * this.spinUpTimeoutSecs;
         if (timeoutExceeded) return true;
 
         if (this.minShootingSpeedFPS == null) return false;
 
-        Double actualVelocity = this.shooterMotor.getVelocity();
-        return !Double.isNaN(actualVelocity) && actualVelocity > this.minShootingSpeedFPS;
+        final Double actualVelocity = this.shooterMotor.getVelocity();
+        // TODO: Should we be looking at velocity or speed?
+        return !Double.isNaN(actualVelocity) && Math.abs(actualVelocity) > this.minShootingSpeedFPS;
     }
 
     /**
@@ -197,7 +199,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     @Override
     @Log
     public boolean isConditionTrueCached() {
-        return conditionMetCached;
+        return this.conditionMetCached;
     }
 
     /**
@@ -205,6 +207,6 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void update() {
-        conditionMetCached = isConditionTrue();
+        this.conditionMetCached = this.isConditionTrue();
     }
 }

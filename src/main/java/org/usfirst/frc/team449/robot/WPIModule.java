@@ -2,15 +2,16 @@ package org.usfirst.frc.team449.robot;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import org.usfirst.frc.team449.robot.mixIn.BooleanSupplierMixin;
-import org.usfirst.frc.team449.robot.mixIn.CommandMixIn;
-import org.usfirst.frc.team449.robot.mixIn.SubsystemMixIn;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import org.usfirst.frc.team449.robot.mixIn.*;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleUnaryOperator;
 
 /**
- * A Jackson {@link com.fasterxml.jackson.databind.Module} for adding mix-in annotations to some WPI classes.
+ * A Jackson {@link com.fasterxml.jackson.databind.Module} for adding mix-in annotations to classes.
  */
 public class WPIModule extends SimpleModule {
 
@@ -27,10 +28,15 @@ public class WPIModule extends SimpleModule {
      * @param context the context to set up
      */
     @Override
-    public void setupModule(SetupContext context) {
+    public void setupModule(final SetupContext context) {
         super.setupModule(context);
-        context.setMixInAnnotations(BooleanSupplier.class, BooleanSupplierMixin.class);
-        context.setMixInAnnotations(Command.class, CommandMixIn.class);
+        context.setMixInAnnotations(DoubleUnaryOperator.class, DoubleUnaryOperatorMixIn.class);
+        context.setMixInAnnotations(BooleanSupplier.class, BooleanSupplierMixIn.class);
+
         context.setMixInAnnotations(Subsystem.class, SubsystemMixIn.class);
+
+        context.setMixInAnnotations(Command.class, CommandMixIn.class);
+        context.setMixInAnnotations(WaitCommand.class, WaitCommandMixIn.class);
+        context.setMixInAnnotations(ConditionalCommand.class, ConditionalCommandMixIn.class);
     }
 }

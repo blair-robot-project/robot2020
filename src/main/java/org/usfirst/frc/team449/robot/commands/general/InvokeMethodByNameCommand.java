@@ -26,13 +26,13 @@ public class InvokeMethodByNameCommand extends InstantCommand {
      *
      * @param object       the object instance whose method to invoke
      * @param method       the name of the method to invoke
-     * @param requirements the subsystems required by this command
+     * @param requiredSubsystems the subsystems required by this command
      */
     @JsonCreator
     public InvokeMethodByNameCommand(@NotNull @JsonProperty(required = true) final Subsystem object,
                                      @NotNull @JsonProperty(required = true) final String method,
-                                     @Nullable final Subsystem[] requirements) {
-        super(getRunnableFromMethodUsingReflection(object, method), requirements != null ? requirements : EMPTY_ARR);
+                                     @Nullable final Subsystem[] requiredSubsystems) {
+        super(getRunnableFromMethodUsingReflection(object, method), requiredSubsystems != null ? requiredSubsystems : EMPTY_ARR);
     }
 
     /**

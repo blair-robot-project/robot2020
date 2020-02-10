@@ -20,14 +20,14 @@ public class MappedJoystick extends Joystick implements Rumbleable {
      * Whether to construct instances of {@link MappedJoystickSimulated} instead of {@link MappedJoystick} when the
      * robot is running in a simulation.
      */
-    private static final boolean FAKE_IF_SIM = true;
+    private static final boolean SIMULATE = true;
 
     /**
      * Default constructor
      *
      * @param port The USB port of this joystick, on [0, 5].
      */
-    public MappedJoystick(@JsonProperty(required = true) int port) {
+    public MappedJoystick(@JsonProperty(required = true) final int port) {
         super(port);
     }
 
@@ -37,8 +37,8 @@ public class MappedJoystick extends Joystick implements Rumbleable {
      * @param port The USB port of this joystick, on [0, 5].
      */
     @JsonCreator
-    public static MappedJoystick create(@JsonProperty(required = true) int port) {
-        if (!FAKE_IF_SIM || RobotBase.isReal()) {
+    public static MappedJoystick create(@JsonProperty(required = true) final int port) {
+        if (!SIMULATE || RobotBase.isReal()) {
             return new MappedJoystick(port);
         }
 
@@ -53,8 +53,8 @@ public class MappedJoystick extends Joystick implements Rumbleable {
      * @param right The strength to rumble the right side, on [-1, 1]
      */
     @Override
-    public void rumble(double left, double right) {
-        setRumble(RumbleType.kLeftRumble, left);
-        setRumble(RumbleType.kRightRumble, right);
+    public void rumble(final double left, final double right) {
+        this.setRumble(RumbleType.kLeftRumble, left);
+        this.setRumble(RumbleType.kRightRumble, right);
     }
 }

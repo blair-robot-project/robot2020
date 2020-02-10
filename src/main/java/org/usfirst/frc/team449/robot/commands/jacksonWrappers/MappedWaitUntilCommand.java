@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot.commands.general;
+package org.usfirst.frc.team449.robot.commands.jacksonWrappers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -20,7 +20,7 @@ public class MappedWaitUntilCommand extends WaitUntilCommand {
      * @param time The time, in seconds after auto starts, to wait until.
      */
     @JsonCreator
-    public MappedWaitUntilCommand(@JsonProperty(required = true) double time) {
+    public MappedWaitUntilCommand(@JsonProperty(required = true) final double time) {
         super(time);
     }
 }

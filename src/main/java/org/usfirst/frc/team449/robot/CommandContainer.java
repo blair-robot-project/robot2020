@@ -1,8 +1,8 @@
 package org.usfirst.frc.team449.robot;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.oi.buttons.CommandButton;
@@ -29,12 +29,12 @@ public class CommandContainer implements Loggable {
   private final List<Command> testStartupCommand;
 
   @JsonCreator
-  public CommandContainer(@Nullable List<DefaultCommand> defaultCommands,
-                          @Nullable List<CommandButton> buttons,
-                          @Nullable List<Command> robotStartupCommand,
-                          @Nullable List<Command> autoStartupCommand,
-                          @Nullable List<Command> teleopStartupCommand,
-                          @Nullable List<Command> testStartupCommand) {
+  public CommandContainer(@Nullable @JsonInclude(content = JsonInclude.Include.NON_NULL) final List<DefaultCommand> defaultCommands,
+                          @Nullable @JsonInclude(content = JsonInclude.Include.NON_NULL) final List<CommandButton> buttons,
+                          @Nullable @JsonInclude(content = JsonInclude.Include.NON_NULL) final List<Command> robotStartupCommand,
+                          @Nullable @JsonInclude(content = JsonInclude.Include.NON_NULL) final List<Command> autoStartupCommand,
+                          @Nullable @JsonInclude(content = JsonInclude.Include.NON_NULL) final List<Command> teleopStartupCommand,
+                          @Nullable @JsonInclude(content = JsonInclude.Include.NON_NULL) final List<Command> testStartupCommand) {
     this.defaultCommands = defaultCommands;
     this.buttons = buttons;
     this.robotStartupCommand = robotStartupCommand;
@@ -44,19 +44,19 @@ public class CommandContainer implements Loggable {
   }
 
   public List<Command> getRobotStartupCommand() {
-    return robotStartupCommand;
+      return this.robotStartupCommand;
   }
 
   public List<Command> getAutoStartupCommand() {
-    return autoStartupCommand;
+      return this.autoStartupCommand;
   }
 
   public List<Command> getTeleopStartupCommand() {
-    return teleopStartupCommand;
+      return this.teleopStartupCommand;
   }
 
   public List<Command> getTestStartupCommand(){
-    return testStartupCommand;
+      return this.testStartupCommand;
   }
 
   @Override

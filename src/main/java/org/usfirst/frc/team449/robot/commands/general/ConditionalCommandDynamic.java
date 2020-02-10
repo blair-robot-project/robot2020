@@ -10,12 +10,11 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
 
 /**
- * A ConditionalCommand that takes a lambda for determining which command to run and that checks its condition every time that it executes.
+ * A ConditionalCommand that takes a lambda for determining which command to run and that checks its condition every time it executes.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ConditionalCommandDynamic extends ConditionalCommand {
@@ -27,10 +26,10 @@ public class ConditionalCommandDynamic extends ConditionalCommand {
      * @param booleanSupplier A method for determining which command to run.
      */
     @JsonCreator
-    public ConditionalCommandDynamic(@Nullable Command onTrue,
-                                     @Nullable Command onFalse,
-                                     @NotNull @JsonProperty(required = true) BooleanSupplier booleanSupplier,
-                                     @Nullable Subsystem[] requiredSubsystems) {
+    public ConditionalCommandDynamic(@Nullable final Command onTrue,
+                                     @Nullable final Command onFalse,
+                                     @NotNull @JsonProperty(required = true) final BooleanSupplier booleanSupplier,
+                                     @Nullable final Subsystem[] requiredSubsystems) {
         super(Objects.requireNonNullElse(onTrue, new PlaceholderCommand()), Objects.requireNonNullElse(onFalse, new PlaceholderCommand()), booleanSupplier);
         if (requiredSubsystems != null) this.addRequirements(requiredSubsystems);
     }
@@ -40,7 +39,11 @@ public class ConditionalCommandDynamic extends ConditionalCommand {
      */
     @Override
     public void execute() {
-        super.initialize();
+        // TODO This is jank.
+        if (this.isFinished()) {
+            super.end(false);
+            super.initialize();
+        }
         super.execute();
     }
 }

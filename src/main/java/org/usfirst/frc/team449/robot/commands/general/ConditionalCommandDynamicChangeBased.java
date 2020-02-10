@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.other.Clock;
 
 import java.util.function.BooleanSupplier;
 
@@ -24,31 +26,37 @@ public class ConditionalCommandDynamicChangeBased extends ConditionalCommandDyna
      * @param booleanSupplier    a method for determining which command to run
      */
     @JsonCreator
-    public ConditionalCommandDynamicChangeBased(@Nullable final Command afterBecomingTrue,
-                                                @Nullable final Command afterBecomingFalse,
+    public ConditionalCommandDynamicChangeBased(@Nullable final InstantCommand afterBecomingTrue,
+                                                @Nullable final InstantCommand afterBecomingFalse,
                                                 @NotNull @JsonProperty(required = true) final BooleanSupplierUpdatable booleanSupplier,
-                                                @Nullable final Subsystem[] requiredSubsystems) {
+                                                @Nullable final Subsystem[] requiredSubsystems,
+                                                @Nullable final Double pollingInterval) {
+
         super(
-                new RunRunnables(
-                        false,
-                        () -> {
-                            if (booleanSupplier.getAsBoolean()) {
-                                if (afterBecomingTrue != null) afterBecomingTrue.execute();
-                            } else {
-                                if (afterBecomingFalse != null) afterBecomingFalse.execute();
-                            }
-                        }),
+                new InstantCommand(() -> {
+                    final Command selected = booleanSupplier.getAsBoolean() ? afterBecomingTrue : afterBecomingFalse;
+
+                    if (selected != null) {
+                        selected.initialize();
+                        selected.execute();
+                        selected.end(false);
+                    }
+                }),
 
                 // Don't do anything when the condition isn't changing.
                 null,
 
-                // Only run when
                 new BooleanSupplier() {
-                    private long lastTime;
+                    private long lastPollTime;
                     private boolean lastState;
 
                     @Override
                     public boolean getAsBoolean() {
+                        final var now = Clock.currentTimeMillis();
+                        if (pollingInterval != null && now - this.lastPollTime < pollingInterval)
+                            return false;
+
+                        this.lastPollTime = now;
                         booleanSupplier.update();
 
                         final boolean current = booleanSupplier.getAsBoolean();

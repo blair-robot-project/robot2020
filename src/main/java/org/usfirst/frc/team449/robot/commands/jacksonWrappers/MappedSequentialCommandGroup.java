@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot.commands.general;
+package org.usfirst.frc.team449.robot.commands.jacksonWrappers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -9,9 +9,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
-
-import java.util.List;
 
 /**
  * Runs a list of commands in sequence.
@@ -28,8 +25,8 @@ public class MappedSequentialCommandGroup extends SequentialCommandGroup {
      * @param requiredSubsystems the list of subsystems that this command requires
      */
     @JsonCreator
-    public MappedSequentialCommandGroup(@NotNull @JsonProperty(required = true) Command[] commands,
-                                        @Nullable Subsystem[] requiredSubsystems) {
+    public MappedSequentialCommandGroup(@NotNull @JsonProperty(required = true) final Command[] commands,
+                                        @Nullable final Subsystem[] requiredSubsystems) {
         super(commands);
         if (requiredSubsystems != null) this.addRequirements(requiredSubsystems);
     }

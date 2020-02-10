@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot.commands.general;
+package org.usfirst.frc.team449.robot.commands.jacksonWrappers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -27,12 +27,12 @@ public class MappedPerpetualCommand extends PerpetualCommand {
      * @param requiredSubsystems the list of subsystems that this command requires
      */
     @JsonCreator
-    public MappedPerpetualCommand(@NotNull @JsonProperty(required = true) Command command,
-                                  @Nullable List<Subsystem> requiredSubsystems) {
+    public MappedPerpetualCommand(@NotNull @JsonProperty(required = true) final Command command,
+                                  @Nullable final List<Subsystem> requiredSubsystems) {
         // TODO: We should requireNonNull such parameters because map errors can cause them to be null.
         super(command);
         if (requiredSubsystems != null)
-            for (var subsystem : requiredSubsystems)
+            for (final var subsystem : requiredSubsystems)
                 this.addRequirements(subsystem);
     }
 }

@@ -1,10 +1,13 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers.simulated;
 
 import org.jetbrains.annotations.NotNull;
+import org.usfirst.frc.team449.robot.Robot;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MappedJoystickSimulated extends MappedJoystick {
     @NotNull
-    private final Map<String, Boolean> pressedKeys = new ConcurrentHashMap<>();
+    private final Map<String, Boolean> keyStates = new ConcurrentHashMap<>();
     @NotNull
     private final String logName;
     @NotNull
@@ -32,29 +35,8 @@ public class MappedJoystickSimulated extends MappedJoystick {
         this.logName = "SIMJOY " + this.getPort();
         this.logPrefix = "[" + this.logName + "] ";
 
-        new JFrame(this.logName) {
-            {
-                this.setVisible(true);
-            }
-
-            @Override
-            protected void processKeyEvent(final KeyEvent e) {
-                final String keyName = KeyEvent.getKeyText(e.getKeyCode());
-
-                switch (e.getID()) {
-                    case KeyEvent.KEY_PRESSED:
-                        if (!MappedJoystickSimulated.this.pressedKeys.getOrDefault(keyName, false))
-                            System.out.println(MappedJoystickSimulated.this.logPrefix + keyName + " [#]");
-                        MappedJoystickSimulated.this.pressedKeys.put(keyName, true);
-                        break;
-
-                    case KeyEvent.KEY_RELEASED:
-                        if (MappedJoystickSimulated.this.pressedKeys.getOrDefault(keyName, false))
-                            System.out.println(MappedJoystickSimulated.this.logPrefix + keyName + " [ ]");
-                        MappedJoystickSimulated.this.pressedKeys.put(keyName, false);
-                        break;
-                }
-            }
+        // The virtual joystick user interface.
+        new SimulatedJoystickUI(this.logName) {
         };
     }
 
@@ -69,7 +51,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      */
     @Override
     public boolean getRawButton(final int button) {
-        return this.pressedKeys.getOrDefault(String.valueOf(button), false);
+        return this.keyStates.getOrDefault(String.valueOf(button), false);
     }
 
     /**
@@ -448,5 +430,68 @@ public class MappedJoystickSimulated extends MappedJoystick {
      */
     @Override
     public void rumble(final double left, final double right) {
+    }
+
+    // Janky awt for now.
+    private class SimulatedJoystickUI extends JFrame {
+        private final JLabel[][] buttonStateLayout = new JLabel[3][3];
+        private final Map<String, JLabel> buttonStateLabels = new HashMap<>();
+
+        public SimulatedJoystickUI(final String logName) {
+            super(logName);
+        }
+
+        {
+            this.setLayout(new GridLayout(3, 3));
+            for (int r = 0; r < 3; r++) {
+                for (int c = 0; c < 3; c++) {
+                    final var label = new JLabel();
+                    label.setOpaque(true);
+                    label.setHorizontalAlignment(SwingConstants.CENTER);
+                    this.add(String.format("r%dc%d", r, c), this.buttonStateLayout[r][c] = label);
+                }
+            }
+
+            this.buttonStateLabels.put("1", this.buttonStateLayout[0][1]);
+            this.buttonStateLabels.put("2", this.buttonStateLayout[1][2]);
+            this.buttonStateLabels.put("3", this.buttonStateLayout[2][1]);
+            this.buttonStateLabels.put("4", this.buttonStateLayout[1][0]);
+
+            this.buttonStateLabels.forEach((name, label) -> {
+                label.setBackground(Color.LIGHT_GRAY);
+                label.setText(name);
+            });
+
+            this.doLayout();
+
+            if (!Robot.isUnitTesting()) this.setVisible(true);
+        }
+
+        @Override
+        protected void processKeyEvent(final KeyEvent e) {
+            final String keyName = KeyEvent.getKeyText(e.getKeyCode());
+
+            final boolean newState;
+            switch (e.getID()) {
+                case KeyEvent.KEY_PRESSED:
+                    newState = true;
+                    break;
+
+                case KeyEvent.KEY_RELEASED:
+                    newState = false;
+                    break;
+
+                default:
+                    return;
+            }
+
+            if (MappedJoystickSimulated.this.keyStates.getOrDefault(keyName, false) != newState) {
+                System.out.println(MappedJoystickSimulated.this.logPrefix + keyName + (newState ? " [#]" : " [ ]"));
+                if (this.buttonStateLabels.containsKey(keyName))
+                    this.buttonStateLabels.get(keyName).setBackground(newState ? Color.GREEN.darker() : Color.LIGHT_GRAY);
+
+                MappedJoystickSimulated.this.keyStates.put(keyName, newState);
+            }
+        }
     }
 }

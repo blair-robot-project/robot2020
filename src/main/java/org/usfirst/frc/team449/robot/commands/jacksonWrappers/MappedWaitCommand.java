@@ -1,9 +1,7 @@
-package org.usfirst.frc.team449.robot.commands.general;
+package org.usfirst.frc.team449.robot.commands.jacksonWrappers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /**
@@ -19,7 +17,7 @@ public class MappedWaitCommand extends WaitCommand {
      * @param timeout the time the command takes to run (seconds)
      */
     @JsonCreator
-    public MappedWaitCommand(@JsonProperty(required = true) double timeout) {
+    public MappedWaitCommand(@JsonProperty(required = true) final double timeout) {
         super(timeout);
     }
 }

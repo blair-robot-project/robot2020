@@ -26,7 +26,8 @@ public class SolenoidSimple extends SubsystemBase implements SubsystemSolenoid, 
     /**
      * The piston's current position
      */
-    private DoubleSolenoid.Value pistonPos;
+    @NotNull
+    private DoubleSolenoid.Value pistonPos = DoubleSolenoid.Value.kOff;
 
     /**
      * Default constructor
@@ -34,16 +35,16 @@ public class SolenoidSimple extends SubsystemBase implements SubsystemSolenoid, 
      * @param piston The piston that comprises this subsystem.
      */
     @JsonCreator
-    public SolenoidSimple(@NotNull @JsonProperty(required = true) MappedDoubleSolenoid piston) {
+    public SolenoidSimple(@NotNull @JsonProperty(required = true) final MappedDoubleSolenoid piston) {
         this.piston = piston;
     }
-
     /**
      * @param value The position to set the solenoid to.
      */
-    public void setSolenoid(@NotNull DoubleSolenoid.Value value) {
-        piston.set(value);
-        pistonPos = value;
+    @Override
+    public void setSolenoid(@NotNull final DoubleSolenoid.Value value) {
+        this.piston.set(value);
+        this.pistonPos = value;
     }
 
     /**
@@ -51,12 +52,8 @@ public class SolenoidSimple extends SubsystemBase implements SubsystemSolenoid, 
      */
     @NotNull
     @Override
+    @Log.ToString
     public DoubleSolenoid.Value getSolenoidPosition() {
-        return pistonPos;
-    }
-
-    @Log
-    public String loggingSolenoidPosition() {
-        return String.valueOf(this.getSolenoidPosition());
+        return this.pistonPos;
     }
 }

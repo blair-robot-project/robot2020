@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot.commands.general;
+package org.usfirst.frc.team449.robot.commands.jacksonWrappers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;

@@ -19,10 +19,16 @@ public class MappedDoubleSolenoid extends DoubleSolenoid {
      * @param forward The forward port on the PCM.
      * @param reverse The reverse port on the PCM.
      */
-    @JsonCreator
-    public MappedDoubleSolenoid(int module,
-                                @JsonProperty(required = true) int forward,
-                                @JsonProperty(required = true) int reverse) {
+    public MappedDoubleSolenoid(final int module,
+                                @JsonProperty(required = true) final int forward,
+                                @JsonProperty(required = true) final int reverse) {
         super(module, forward, reverse);
+    }
+
+    @JsonCreator
+    public static MappedDoubleSolenoid create(final int module,
+                                              @JsonProperty(required = true) final int forward,
+                                              @JsonProperty(required = true) final int reverse) {
+        return new MappedDoubleSolenoid(module, forward, reverse);
     }
 }

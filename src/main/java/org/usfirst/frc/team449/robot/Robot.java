@@ -28,6 +28,11 @@ import java.util.*;
  */
 public class Robot extends TimedRobot {
     /**
+     * Format for the reference chain (place in the map where the error occured) when a map error is printed.
+     */
+    private static final MapErrorFormat MAP_REF_CHAIN_FORMAT = MapErrorFormat.TABLE;
+
+    /**
      * The absolute filepath to the resources folder containing the config files when the robot is real.
      */
     @NotNull
@@ -47,7 +52,6 @@ public class Robot extends TimedRobot {
      */
     @NotNull
     public static final String RESOURCES_PATH = RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
-    private static final FORMAT MAP_ERR_FORMAT = FORMAT.RPAD;
     /**
      * The object constructed directly from the yaml map.
      */
@@ -57,7 +61,6 @@ public class Robot extends TimedRobot {
     /**
      * The method that runs when the robot is turned on. Initializes all subsystems from the map.
      */
-
     public static @Nullable RobotMap loadMap() {
         try {
             //Read the yaml file with SnakeYaml so we can use anchors and merge syntax.
@@ -82,92 +85,15 @@ public class Robot extends TimedRobot {
             //The map file is either absent from the file system or improperly formatted.
             System.out.println("Config file is bad/nonexistent!");
 
-            final var out = new StringWriter();
-            ex.printStackTrace(new PrintWriter(out));
-            final String[] lines = out.toString().split("[\\r\\n]");
+            formatAndPrintMapException(ex);
 
-            for (final String line : lines) {
-                if (line.length() == 0) continue;
-
-                final String SEP = "->";
-                if (line.contains(SEP) | MAP_ERR_FORMAT == FORMAT.NONE) {
-                    final String[] refs = line.split(SEP);
-                    switch (MAP_ERR_FORMAT) {
-                        case RPAD:
-                            final Optional<String> longest = Arrays.stream(refs).skip(1).max(Comparator.comparingInt(String::length));
-
-                            if (longest.isPresent()) {
-                                final int maxLen = longest.get().length();
-                                final String fmt = "\t\t->%s$" + maxLen + "s\n";
-
-                                for (int i = 1; i < refs.length; i++) {
-                                    System.err.format(fmt, refs[i]);
-                                }
-                            }
-                            break;
-
-                        case TABLE:
-                            final List<List<String>> formatted = new ArrayList<>(refs.length + 1);
-                            for (int i = 0; i < refs.length; i++) {
-                                final String ref = refs[i];
-
-                                final int locationBegin = ref.lastIndexOf('[');
-                                final String location = ref.substring(locationBegin + 1, ref.lastIndexOf(']'));
-
-                                String className = ref.substring(0, locationBegin);
-
-                                if (i == 0) {
-                                    final int prefixEnd = className.lastIndexOf(":");
-                                    formatted.add(List.of("", className.substring(0, prefixEnd + 1)));
-                                    className = className.substring(prefixEnd + 2);
-                                }
-                                formatted.add(List.of(String.format("\t\t-> %s", location), className));
-                            }
-                            System.err.print(formatTable(formatted));
-                            break;
-                    }
-                } else {
-                    System.err.println(line);
-                }
-            }
-
-            //Prevent watchdog from restarting by looping infinitely, but only when on the robot in order not to hang unit tests.
+            //Prevent watchdog from restarting by looping infinitely but only when on the robot is in a simulation in order not to hang unit tests.
             if (RobotBase.isSimulation()) return null;
+            // Suppress IntelliJ inspections.
+            //noinspection InfiniteLoopStatement,StatementWithEmptyBody
             while (true) {
             }
         }
-    }
-
-    /**
-     * Converts a {@code String[][]} array representation of a table to its {@code String} representation where every
-     * column is the same width as the widest cell in that column.
-     *
-     * @param rows a {@code String[][]} array containing the data of the table stored in row-major order
-     * @return a {@code String} containing the result of formatting the table
-     */
-    public static String formatTable(final List<List<String>> rows) {
-        final int columnCount = rows.get(0).size();
-
-        final StringBuilder sb = new StringBuilder();
-
-        // Make each column the same width as the widest item in it.
-        final int[] maxColumnWidths = new int[columnCount];
-        for (final var row : rows) {
-            for (int column = 0; column < columnCount; column++) {
-                maxColumnWidths[column] = Math.max(maxColumnWidths[column], row.get(column).length() + 1);
-            }
-        }
-
-        // Write to the StringBuilder row by row.
-        for (final var row : rows) {
-            for (int column = 0; column < columnCount; column++) {
-                // Use the thin vertical box-drawing character.
-                sb.append(String.format("%-" + maxColumnWidths[column] + "s", row.get(column)));
-            }
-            sb.append("\n");
-        }
-
-        return sb.toString();
     }
 
     @Override
@@ -199,10 +125,10 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         //save current time
         Clock.updateTime();
-        //update shuffleboard
-        Logger.updateEntries();
         //Read sensors
         this.robotMap.getUpdater().run();
+        //update shuffleboard
+        Logger.updateEntries();
         //Run all commands. This is a WPILib thing you don't really have to worry about.
         CommandScheduler.getInstance().run();
     }
@@ -245,7 +171,154 @@ public class Robot extends TimedRobot {
         }
     }
 
-    private enum FORMAT {
-        TABLE, RPAD, NONE;
+    /**
+     * Whether robot code is being unit tested. Note that this is NOT the same as test mode.
+     * <p>
+     * The return value will never change observably. {@link Robot#notifyTesting()}
+     * will thus throw an exception if it is called after the first time that this method is called.
+     * </p>
+     *
+     * @return whether the current run is a unit test
+     */
+    public static boolean isUnitTesting() {
+        isTestingHasBeenCalled = true;
+        return isUnitTesting;
+    }
+
+    private static boolean isUnitTesting = false;
+    private static boolean isTestingHasBeenCalled = false;
+
+    /**
+     * Notifies robot code that it is being unit tested.
+     *
+     * @throws UnsupportedOperationException if the robot is not running in a simulation
+     * @throws IllegalStateException         if {@link Robot#isUnitTesting()} has already been called before this method is called
+     */
+    public static void notifyTesting() throws UnsupportedOperationException, IllegalStateException {
+        if (RobotBase.isReal())
+            throw new IllegalStateException("Attempt to enable unit testing mode while not running in simulation");
+        if (isTestingHasBeenCalled)
+            throw new IllegalStateException("isTesting() has already been called at least once");
+
+        System.out.println("ROBOT UNIT TESTING");
+        isUnitTesting = true;
+    }
+
+    /**
+     * Formats and prints the stack trace of an exception raised by Jackson due to a problem with the map
+     *
+     * @param ex the exception to format and print
+     */
+    private static void formatAndPrintMapException(final IOException ex) {
+        final var out = new StringWriter();
+        ex.printStackTrace(new PrintWriter(out));
+        final String[] lines = out.toString().split("[\\r\\n]");
+
+        for (final String line : lines) {
+            if (line.length() == 0) continue;
+
+            final String SEP = "->";
+
+            if (MAP_REF_CHAIN_FORMAT == MapErrorFormat.NONE || !line.contains(SEP)) {
+                System.err.println(line);
+                continue;
+            }
+
+            final String[] links = line.split(SEP);
+
+            // Remove the prefix from the first link and print it separately.
+            final int prefixEndIndex = links[0].lastIndexOf(':');
+            final String prefix = links[0].substring(0, prefixEndIndex + 1);
+            links[0] = links[0].substring(prefixEndIndex + 2);
+            System.err.println(prefix);
+
+            // Remove the suffix (a closing parenthesis) from the last link.
+            final String lastLink = links[links.length - 1];
+            links[links.length - 1] = lastLink.substring(0, lastLink.length() - 1);
+
+            switch (MAP_REF_CHAIN_FORMAT) {
+                case LEFT_ALIGN:
+                case RIGHT_ALIGN:
+                    final Optional<String> longest = Arrays.stream(links).max(Comparator.comparingInt(String::length));
+
+                    final int maxLinkLength = longest.get().length();
+                    final String linkFormat = "\t\t->%" + (MAP_REF_CHAIN_FORMAT == MapErrorFormat.LEFT_ALIGN ? "" : maxLinkLength) + "s\n";
+
+                    for (final String s : links) {
+                        System.err.format(linkFormat, s);
+                    }
+                    break;
+
+                case TABLE:
+                    final List<List<String>> formattedLinks = new ArrayList<>(links.length);
+
+                    for (final String link : links) {
+                        // Each link is of the format className[location]
+                        final int locationBegin = link.lastIndexOf('[');
+
+                        final String location = link.substring(locationBegin + 1, link.length() - 1);
+                        final String className = link.substring(0, locationBegin);
+
+                        formattedLinks.add(List.of(String.format("\t\t-> %s", location), className));
+                    }
+
+                    System.err.print(formatTable(formattedLinks));
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Converts a {@code String[][]} representation of a table to its {@code String} representation where every
+     * column is the same width as the widest cell in that column.
+     *
+     * @param rows a {@code String[][]} containing the data of the table stored in row-major order
+     * @return a {@code String} containing the result of formatting the table
+     */
+    private static String formatTable(final List<List<String>> rows) {
+        final int columnCount = rows.get(0).size();
+
+        final StringBuilder sb = new StringBuilder();
+
+        // Make each column the same width as the widest cell in it.
+        final int[] maxColumnWidths = new int[columnCount];
+        for (final var row : rows) {
+            for (int column = 0; column < columnCount; column++) {
+                maxColumnWidths[column] = Math.max(maxColumnWidths[column], row.get(column).length() + 1);
+            }
+        }
+
+        // Write to the StringBuilder row by row.
+        for (final var row : rows) {
+            for (int column = 0; column < columnCount; column++) {
+                // Use the thin vertical box-drawing character.
+                sb.append(String.format("%-" + maxColumnWidths[column] + "s", row.get(column)));
+            }
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Formatting for map reference chain of exception caused by map error.
+     */
+    private enum MapErrorFormat {
+        /**
+         * The chain is printed as-is on one line.
+         */
+        NONE,
+        /**
+         * The chain is split up into one frame per line and left-justified.
+         */
+        LEFT_ALIGN,
+        /**
+         * The chain is split up into one frame per line and right-justified.
+         */
+        RIGHT_ALIGN,
+        /**
+         * The chain is split up into one frame per line and formatted as a table with locations to the left of class names.
+         */
+        TABLE
     }
 }

@@ -1,12 +1,8 @@
-package org.usfirst.frc.team449.robot.commands.general;
+package org.usfirst.frc.team449.robot.commands.jacksonWrappers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.DigitalInput;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
 
 import java.util.function.BooleanSupplier;
 
@@ -20,7 +16,7 @@ public class MappedBooleanSupplierBooleanSupplierBased implements BooleanSupplie
      * Default constructor.
      */
     @JsonCreator
-    public MappedBooleanSupplierBooleanSupplierBased(@NotNull @JsonProperty(required = true) BooleanSupplier supplier) {
+    public MappedBooleanSupplierBooleanSupplierBased(@NotNull @JsonProperty(required = true) final BooleanSupplier supplier) {
         this.source = supplier;
     }
 

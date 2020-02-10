@@ -1,8 +1,11 @@
 package org.usfirst.frc.team449.robot.mixIn;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.Nulls;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /**
  * A mix-in for {@link edu.wpi.first.wpilibj.command.Command} that adds JsonTypeInfo and then ignores any setters. Don't
@@ -22,4 +25,7 @@ public abstract class CommandMixIn {
 
     @JsonIgnore
     abstract void setRunWhenDisabled(boolean run);
+
+    @JsonSetter(value = "requirements", nulls = Nulls.SKIP, contentNulls = Nulls.FAIL)
+    abstract void addRequirements(Subsystem... requirements);
 }
