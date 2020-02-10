@@ -1,8 +1,32 @@
 ---
 
+# IntelliJ supports Ctrl+clicking anchors to find usages and declarations... so, hyperlinks! Yooooooooo!
+# Basically a table of contents; Ctrl+click on a heading in UPPER_SNAKE_CASE to jump back and forth between the
+# table of contents and actual location in the map.
+NAVIGATION:
+  # Since the anchors are in the place of map key values, they must have the values of the keys that they replace.
+  - &PDP pdp
+  # This works magically because the anchor refers to the key of the mapping only, which is the string "subsystems".
+  - &SUBSYSTEMS subsystems:
+      - &ROBOT_DRIVE_SUBSYSTEM
+      - &INTAKE_SUBSYSTEM
+      - &FEEDER_SUBSYSTEM
+      - &SHOOTER_SUBSYSTEM
+      - &CLIMBER_SUBSYSTEM
+  - &COMMANDS commands:
+      - &BUTTONS buttons:
+          - &DRIVE_COMMANDS
+          - &INTAKE_COMMANDS
+          - &SHOOTER_COMMANDS
+          - &CLIMBER_COMMANDS
+      - &DEFAULT_COMMANDS defaultCommands:
+          - &DRIVE_DEFAULT_COMMAND
+          - &FEEDER_DEFAULT_COMMAND
+  - &UPDATER updater
+
 # Anchors for transclusion into the rest of the map.
-# Ignored by Jackson; can contain any structure for organizational purposes.
-# IntelliJ supports Ctrl + Clicking anchors to find usages and declarations... wait a minute, hyperlinks! Yooooooooo!
+# Ignored by Jackson (so is NAVIGATION); can contain any valid YAML suitable for organizational purposes.
+# Make sure there aren't any colons after the anchors; Jackson gives "Null key for a Map not allowed in JSON"
 CONSTANTS:
   - MotorPorts:
       # Spinnyboiz
@@ -36,8 +60,7 @@ CONSTANTS:
 useCameraServer: false
 
 ########################################################################################################################
-# PDP
-pdp:
+*PDP:
   org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
     '@id': PDP
     canID: 0
@@ -47,17 +70,15 @@ pdp:
 
 
 ########################################################################################################################
-# ROBOT SUBSYSTEMS
-subsystems:
-
+*SUBSYSTEMS:
   #***********************************************************************************************************************
-  # ROBOT DRIVE SUBSYSTEM
+  - *ROBOT_DRIVE_SUBSYSTEM
   - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
       '@id': drive
       #Wheelbase: 2.14
       leftMaster:
         org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
-          &leftMaster
+          &Left_Master
           '@id': leftMaster
           type: SPARK
           name: left
@@ -78,7 +99,7 @@ subsystems:
           encoderCPR: 256
           startingGear: LOW
           perGearSettings:
-            - &lowGear
+            - &Low_Gear
               gear: LOW
               maxSpeed: 2.2
               kP: 0.2
@@ -87,7 +108,7 @@ subsystems:
                   kS: 0.954
                   kV: 5.19
                   kA: 0.573
-            - &highGear
+            - &High_Gear
               gear: HIGH
               maxSpeed: 5
               kP: 0.2
@@ -106,20 +127,20 @@ subsystems:
               invertType: FollowMaster
       rightMaster:
         org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
-          <<: *leftMaster
+          <<: *Left_Master
           '@id': rightMaster
           name: right
           port: *rightMasterPort
           reverseOutput: false
           reverseSensor: false
           perGearSettings:
-            - <<: *lowGear
+            - <<: *Low_Gear
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                   kS: 0.954
                   kV: 5.19
                   kA: 0.573
-            - <<: *highGear
+            - <<: *High_Gear
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                   kS: 1.15
@@ -153,7 +174,7 @@ subsystems:
           startingGear: LOW
 
   #***********************************************************************************************************************
-  # INTAKE SUBSYSTEM
+  - *INTAKE_SUBSYSTEM
   - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
       '@id': intake
       motor:
@@ -170,7 +191,7 @@ subsystems:
       outFastVel: -0.02
 
   #***********************************************************************************************************************
-  # FEEDER SUBSYSTEM
+  - *FEEDER_SUBSYSTEM
   - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
       '@id': feeder
       motor:
@@ -196,7 +217,7 @@ subsystems:
       outFastVel: -0.02
 
   #***********************************************************************************************************************
-  # SHOOTER SUBSYSTEM
+  - *SHOOTER_SUBSYSTEM
   - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
       '@id': shooterFlywheel
       shooterThrottle: 1.0 #.55 #percent
@@ -259,7 +280,7 @@ subsystems:
   #          brakeMode: false
 
   #***********************************************************************************************************************
-  # CLIMBER SUBSYSTEM
+  - *CLIMBER_SUBSYSTEM
   - org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber:
       '@id': climber
       motorSubsystem:
@@ -286,64 +307,63 @@ subsystems:
             reverse: 2
 
 
-commands:
+*COMMANDS:
   ########################################################################################################################
-  # BUTTON COMMANDS
-  buttons:
+  *BUTTONS:
 
     #***********************************************************************************************************************
-    # DRIVE COMMANDS
-    #    - button:
-    #        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-    #          '@id': shiftdown
-    #          joystick:
-    #            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-    #              '@id': mechanismsJoystick
-    #              port: 1
-    #          buttonNumber: 6 #shoulder right
-    #      command:
-    #        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
-    #          '@id': overrideAndShift
-    #          commandList:
-    #            - org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
-    #                '@id': overrideAutoshift
-    #                drive:
-    #                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-    #                    drive
-    #                override: true
-    #            - org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToLowGear:
-    #                '@id': downshift
-    #                subsystem:
-    #                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-    #                    drive
-    #      action: WHEN_PRESSED
-    #    - button:
-    #        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-    #          '@id': shiftUp
-    #          joystick:
-    #            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-    #              '@id': mechanismsJoystick
-    #              port: 1
-    #          buttonNumber: 5 #shoulder left
-    #      command:
-    #        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
-    #          '@id': overrideAndShift
-    #          commandList:
-    #            - org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
-    #                '@id': overrideAutoshift
-    #                drive:
-    #                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-    #                    drive
-    #                override: true
-    #            - org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToHighGear:
-    #                '@id': downshift
-    #                subsystem:
-    #                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-    #                    drive
-    #      action: WHEN_PRESSED
+    - *DRIVE_COMMANDS
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': shiftdown
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              '@id': mechanismsJoystick
+              port: 1
+          buttonNumber: 6 #shoulder right
+      command:
+        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+          '@id': overrideAndShift
+          commandList:
+            - org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
+                '@id': overrideAutoshift
+                drive:
+                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                    drive
+                override: true
+            - org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToLowGear:
+                '@id': downshift
+                subsystem:
+                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                    drive
+      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': shiftUp
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              '@id': mechanismsJoystick
+              port: 1
+          buttonNumber: 5 #shoulder left
+      command:
+        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+          '@id': overrideAndShift
+          commandList:
+            - org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
+                '@id': overrideAutoshift
+                drive:
+                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                    drive
+                override: true
+            - org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToHighGear:
+                '@id': downshift
+                subsystem:
+                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                    drive
+      action: WHEN_PRESSED
 
     #***********************************************************************************************************************
-    # INTAKE COMMANDS
+    - *INTAKE_COMMANDS
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': intakeStartButton
@@ -378,7 +398,25 @@ commands:
       action: WHEN_PRESSED
 
     #***********************************************************************************************************************
-    # SHOOTER COMMANDS
+    # FEEDER COMMANDS (UNUSED)
+    #    - button:
+    #        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+    #          '@id': feederToggleButton
+    #          joystick:
+    #            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+    #              mechanismsJoystick
+    #          buttonNumber: 3 #X
+    #      command:
+    #        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.ToggleIntaking:
+    #          '@id': feederToggleCommand
+    #          subsystem:
+    #            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+    #              feeder
+    #          mode: IN_FAST
+    #      action: WHEN_PRESSED
+
+    #***********************************************************************************************************************
+    - *SHOOTER_COMMANDS
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': shooterStartButton
@@ -463,7 +501,7 @@ commands:
                           - org.usfirst.frc.team449.robot.commands.general.PlaceholderCommand:
                               debugMessage: SHOOTING
                           - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
-                              &feederStartCommand
+                              &Feeder_Start_Command
                               '@id': feederStartCommand_shooter
                               subsystem:
                                 org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
@@ -505,7 +543,7 @@ commands:
                   org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
                     shooterFlywheel
             - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
-                &feederStopCommand
+                &Feeder_Stop_Command
                 '@id': feederStopCommand_shooter
                 subsystem:
                   org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
@@ -524,7 +562,7 @@ commands:
     #              feeder
 
     #***********************************************************************************************************************
-    # CLIMBER COMMANDS
+    - *CLIMBER_COMMANDS
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': climberOffButton
@@ -585,30 +623,10 @@ commands:
               climber
       action: WHEN_PRESSED
 
-  #***********************************************************************************************************************
-  # FEEDER COMMANDS (UNUSED)
-  #    - button:
-  #        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-  #          '@id': feederToggleButton
-  #          joystick:
-  #            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-  #              mechanismsJoystick
-  #          buttonNumber: 3 #X
-  #      command:
-  #        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.ToggleIntaking:
-  #          '@id': feederToggleCommand
-  #          subsystem:
-  #            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-  #              feeder
-  #          mode: IN_FAST
-  #      action: WHEN_PRESSED
-
-
   ########################################################################################################################
-  # DEFAULT COMMANDS
-  defaultCommands:
+  *DEFAULT_COMMANDS:
     #***********************************************************************************************************************
-    # DRIVE COMMAND (default)
+    - *DRIVE_DEFAULT_COMMAND
     - subsystem:
         org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
           drive
@@ -707,7 +725,7 @@ commands:
             upshiftFwdThresh: 0.4
 
     #***********************************************************************************************************************
-    # FEEDER COMMAND (default)
+    - *FEEDER_DEFAULT_COMMAND
     - subsystem:
         org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
           feeder
@@ -731,7 +749,7 @@ commands:
                             channel: 1
                     afterBecomingTrue:
                       org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
-                        <<: *feederStartCommand
+                        <<: *Feeder_Start_Command
                         '@id': feederStartCommand_irsensor
                 - org.usfirst.frc.team449.robot.commands.general.ConditionalCommandDynamicChangeBased:
                     '@id': feederSensorSecondCommand
@@ -743,13 +761,12 @@ commands:
                             channel: 2
                     afterBecomingFalse:
                       org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
-                        <<: *feederStopCommand
+                        <<: *Feeder_Stop_Command
                         '@id': feederStopCommand_irsensor
 
 
 ########################################################################################################################
-# UPDATER
-updater:
+*UPDATER:
   org.usfirst.frc.team449.robot.other.Updater:
     '@id': updater
     updatables:
