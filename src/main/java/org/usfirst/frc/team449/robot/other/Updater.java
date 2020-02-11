@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.List;
  * A Runnable for updating cached variables.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class Updater implements MappedRunnable, Updatable {
+public class Updater implements Runnable {
 
     /**
      * The objects to update.
@@ -42,6 +41,9 @@ public class Updater implements MappedRunnable, Updatable {
         }
     }
 
+    /**
+     * Default instance that is run whenever any instance is run.
+     */
     private static final Updater defaultInstance = new Updater(new ArrayList<>());
 
     /**
@@ -52,23 +54,13 @@ public class Updater implements MappedRunnable, Updatable {
     }
 
     /**
-     * Injects the default updatable instance into the specified list of updatables.
+     * Constructs an updatable that also calls {@link Updater#run()} on the default updatable instance whenever it is run.
      *
      * @param updatables The objects to update.
      */
     @JsonCreator
-    public static Updater create(@NotNull @JsonProperty(required = true) final List<Updatable> updatables) {
-        final var listWithDefaultInstance = new ArrayList<Updatable>(updatables.size() + 1);
-        listWithDefaultInstance.addAll(updatables);
-        listWithDefaultInstance.add(defaultInstance);
-        return new Updater(listWithDefaultInstance);
-    }
-
-    /**
-     * Updates all cached values with current ones.
-     */
-    @Override
-    public void update() {
-        this.run();
+    public static Updater subscribe(@NotNull @JsonProperty(required = true) final List<Updatable> updatables) {
+        defaultInstance.updatables.addAll(updatables);
+        return defaultInstance;
     }
 }

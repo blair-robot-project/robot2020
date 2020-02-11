@@ -4,10 +4,11 @@
 # Basically a table of contents; Ctrl+click on a heading in UPPER_SNAKE_CASE to jump back and forth between the
 # table of contents and actual location in the map.
 NAVIGATION:
-  # Since the anchors are in the place of map key values, they must have the values of the keys that they replace.
+  # The anchors that replace map key values must have the values of the keys that they replace.
   - &PDP pdp
   # This works magically because the anchor refers to the key of the mapping only, which is the string "subsystems".
   - &SUBSYSTEMS subsystems:
+      # Other anchors, like these, become null list items and are explicitly ignored using @JsonInclude
       - &ROBOT_DRIVE_SUBSYSTEM
       - &INTAKE_SUBSYSTEM
       - &FEEDER_SUBSYSTEM
@@ -319,14 +320,14 @@ useCameraServer: false
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               '@id': mechanismsJoystick
-              port: 1
+              port: *mechanismsJoystickPort
           buttonNumber: 6 #shoulder right
       command:
-        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
-          '@id': overrideAndShift
-          commandList:
+        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
+          '@id': overrideAndShiftDown
+          commands:
             - org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
-                '@id': overrideAutoshift
+                '@id': overrideAutoshiftDown
                 drive:
                   org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
                     drive
@@ -342,21 +343,20 @@ useCameraServer: false
           '@id': shiftUp
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              '@id': mechanismsJoystick
-              port: 1
+              driveJoystick
           buttonNumber: 5 #shoulder left
       command:
-        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
-          '@id': overrideAndShift
-          commandList:
+        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
+          '@id': overrideAndShiftUp
+          commands:
             - org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
-                '@id': overrideAutoshift
+                '@id': overrideAutoshiftUp
                 drive:
                   org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
                     drive
                 override: true
             - org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToHighGear:
-                '@id': downshift
+                '@id': upshift
                 subsystem:
                   org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
                     drive
@@ -369,8 +369,7 @@ useCameraServer: false
           '@id': intakeStartButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              '@id': mechanismsJoystick
-              port: *mechanismsJoystickPort
+              mechanismsJoystick
           buttonNumber: *intakeStartButtonNumber
       command:
         org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
@@ -450,7 +449,7 @@ useCameraServer: false
         #                    booleanSupplier:
         #                      org.usfirst.frc.team449.robot.commands.general.BooleanSupplierUpdatable:
         #                        source:
-        #                          org.usfirst.frc.team449.robot.commands.jacksonWrappers.MappedBooleanSupplierSubsystemBased:
+        #                          org.usfirst.frc.team449.robot.commands.jacksonWrappers.BooleanSupplierSubsystemBased:
         #                            subsystem:
         #                              org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
         #                                shooterFlywheel
@@ -484,13 +483,13 @@ useCameraServer: false
             - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
                 shooterFlywheel
           command:
-            org.usfirst.frc.team449.robot.commands.jacksonWrappers.MappedSequentialCommandGroup:
+            edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
               '@id': startShootingOrSpinUpFlywheelCommmandSequence
               commands:
                 - org.usfirst.frc.team449.robot.commands.general.ConditionalCommandDynamic:
                     '@id': startShootingOrSpinUpFlywheelCommmand
                     onTrue:
-                      org.usfirst.frc.team449.robot.commands.jacksonWrappers.MappedSequentialCommandGroup:
+                      edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
                         '@id': startShootingCommandSequence
                         commands:
                           - org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOn:
@@ -498,8 +497,8 @@ useCameraServer: false
                               subsystem:
                                 org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
                                   shooterFlywheel
-                          - org.usfirst.frc.team449.robot.commands.general.PlaceholderCommand:
-                              debugMessage: SHOOTING
+                          - edu.wpi.first.wpilibj2.command.PrintCommand:
+                              SHOOTING
                           - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
                               &Feeder_Start_Command
                               '@id': feederStartCommand_shooter
@@ -517,13 +516,13 @@ useCameraServer: false
                           org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
                             feeder
                     booleanSupplier:
-                      org.usfirst.frc.team449.robot.commands.jacksonWrappers.MappedBooleanSupplierSubsystemBased:
+                      org.usfirst.frc.team449.robot.commands.jacksonWrappers.BooleanSupplierSubsystemBased:
                         subsystem:
                           org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
                             shooterFlywheel
                         useCached: true
                 - edu.wpi.first.wpilibj2.command.WaitCommand:
-                    timeout: 1
+                    seconds: 1
 
       action: WHEN_PRESSED
     - button:
@@ -534,7 +533,7 @@ useCameraServer: false
               mechanismsJoystick
           buttonNumber: *shooterStopButtonNumber
       command:
-        org.usfirst.frc.team449.robot.commands.jacksonWrappers.MappedParallelCommandGroup:
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
           '@id': shooterStopCommandSequence
           commands:
             - org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOffWithRequires:
@@ -733,7 +732,7 @@ useCameraServer: false
         org.usfirst.frc.team449.robot.commands.general.PerpetualCommandReinitializing:
           '@id': defaultFeederCommand
           command:
-            org.usfirst.frc.team449.robot.commands.jacksonWrappers.MappedParallelCommandGroup:
+            edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
               '@id': feederSensorCommandGroup
               requiredSubsystems:
                 - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:

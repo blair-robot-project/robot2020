@@ -4,15 +4,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import edu.wpi.first.wpilibj2.command.button.Button;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedButton;
 import org.usfirst.frc.team449.robot.oi.throttles.Throttle;
 
 /**
  * A button that gets triggered by a specific throttle being held down at or over a certain amount.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class TriggerButton extends MappedButton {
+public class TriggerButton extends Button {
 
     /**
      * The relevant throttle.
@@ -32,8 +32,8 @@ public class TriggerButton extends MappedButton {
      * @param triggerAt The percentage pressed to trigger at, from (0, 1]
      */
     @JsonCreator
-    public TriggerButton(@NotNull @JsonProperty(required = true) Throttle throttle,
-                         @JsonProperty(required = true) double triggerAt) {
+    public TriggerButton(@NotNull @JsonProperty(required = true) final Throttle throttle,
+                         @JsonProperty(required = true) final double triggerAt) {
         this.throttle = throttle;
         this.triggerAt = triggerAt;
     }
@@ -45,6 +45,6 @@ public class TriggerButton extends MappedButton {
      */
     @Override
     public boolean get() {
-        return Math.abs(throttle.getValueCached()) >= triggerAt;
+        return Math.abs(this.throttle.getValueCached()) >= this.triggerAt;
     }
 }

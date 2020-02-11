@@ -6,10 +6,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.PerpetualCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.commands.general.ConditionalCommandFunctional;
-import org.usfirst.frc.team449.robot.commands.jacksonWrappers.MappedWaitCommand;
 import org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
@@ -40,7 +40,7 @@ public class SpinUpFlywheelUntilIntakeStops extends SequentialCommandGroup imple
                                           @NotNull @JsonProperty(required = true) final LoggingFlywheel shooterFlywheel,
                                           @NotNull @JsonProperty(required = true) final IntakeSimple feeder,
                                           @Nullable final Double timeToStop) {
-        super(new MappedWaitCommand(timeToStart == null ? 1.0 : timeToStart),
+        super(new WaitCommand(timeToStart == null ? 1.0 : timeToStart),
                 makePerpetualCommand(spinUpFlywheelCommand, shooterFlywheel, feeder, timeToStop));
     }
 

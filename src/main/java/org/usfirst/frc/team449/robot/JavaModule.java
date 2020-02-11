@@ -1,11 +1,9 @@
 package org.usfirst.frc.team449.robot;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import io.github.oblarg.oblog.Loggable;
-import org.usfirst.frc.team449.robot.mixIn.DoubleSupplierMixIn;
-import org.usfirst.frc.team449.robot.mixIn.DoubleUnaryOperatorMixIn;
-import org.usfirst.frc.team449.robot.mixIn.LoggableMixIn;
+import org.usfirst.frc.team449.robot.mixIn.UseCLASSIncludeWRAPPER_OBJECTMixIn;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.DoubleUnaryOperator;
 
@@ -27,10 +25,14 @@ public class JavaModule extends SimpleModule {
      * @param context the context to set up
      */
     @Override
-    public void setupModule(SetupContext context) {
+    public void setupModule(final SetupContext context) {
         super.setupModule(context);
-        context.setMixInAnnotations(DoubleUnaryOperator.class, DoubleUnaryOperatorMixIn.class);
-        context.setMixInAnnotations(DoubleSupplier.class, DoubleSupplierMixIn.class);
+
+        context.setMixInAnnotations(BooleanSupplier.class, UseCLASSIncludeWRAPPER_OBJECTMixIn.class);
+        context.setMixInAnnotations(DoubleSupplier.class, UseCLASSIncludeWRAPPER_OBJECTMixIn.class);
+        context.setMixInAnnotations(DoubleUnaryOperator.class, UseCLASSIncludeWRAPPER_OBJECTMixIn.class);
+        context.setMixInAnnotations(Runnable.class, UseCLASSIncludeWRAPPER_OBJECTMixIn.class);
+
 //        context.setMixInAnnotations(Loggable.class, LoggableMixIn.class);
     }
 }

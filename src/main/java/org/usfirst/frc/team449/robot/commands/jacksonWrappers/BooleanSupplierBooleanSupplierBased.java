@@ -9,14 +9,14 @@ import java.util.function.BooleanSupplier;
 /**
  * Intended to be used as a base class.
  */
-public class MappedBooleanSupplierBooleanSupplierBased implements BooleanSupplier {
+public class BooleanSupplierBooleanSupplierBased implements BooleanSupplier {
     private final BooleanSupplier source;
 
     /**
      * Default constructor.
      */
     @JsonCreator
-    public MappedBooleanSupplierBooleanSupplierBased(@NotNull @JsonProperty(required = true) final BooleanSupplier supplier) {
+    public BooleanSupplierBooleanSupplierBased(@NotNull @JsonProperty(required = true) final BooleanSupplier supplier) {
         this.source = supplier;
     }
 

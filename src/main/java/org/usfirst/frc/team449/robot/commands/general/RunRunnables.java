@@ -7,13 +7,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedRunnable;
-
-import java.util.Objects;
-import java.util.Set;
 
 /**
  * A command that runs any number of {@link Runnable} objects once or every tick.
@@ -35,8 +30,8 @@ public class RunRunnables extends CommandBase {
      * @param runnables   The runnables to run.
      */
     @JsonCreator
-    public RunRunnables(@Nullable Boolean keepRunning,
-                        @NotNull @JsonProperty(required = true) Runnable... runnables) {
+    public RunRunnables(@Nullable final Boolean keepRunning,
+                        @NotNull @JsonProperty(required = true) final Runnable... runnables) {
         this.runnables = runnables;
         this.keepRunning = keepRunning != null ? keepRunning : true;
     }
@@ -54,7 +49,7 @@ public class RunRunnables extends CommandBase {
      */
     @Override
     public void execute() {
-        for (Runnable runnable : runnables) {
+        for (final Runnable runnable : this.runnables) {
             runnable.run();
         }
     }
@@ -73,7 +68,7 @@ public class RunRunnables extends CommandBase {
      * Log on exit.
      */
     @Override
-    public void end(boolean interrupted) {
+    public void end(final boolean interrupted) {
         if (interrupted) {
             Shuffleboard.addEventMarker("RunRunnables interrupted", this.getClass().getSimpleName(), EventImportance.kNormal);
         }

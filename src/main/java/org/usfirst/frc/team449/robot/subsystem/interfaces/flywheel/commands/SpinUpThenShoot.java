@@ -4,9 +4,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.commands.general.RunRunnables;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
 
@@ -27,10 +31,10 @@ public class SpinUpThenShoot<T extends Subsystem & SubsystemFlywheel> extends Se
      * @param flywheel The subsystem to execute this command on.
      */
     @JsonCreator
-    public SpinUpThenShoot(@NotNull @JsonProperty(required = true) T flywheel,
-                           @NotNull @JsonProperty(required = true) SubsystemIntake feeder) {
+    public SpinUpThenShoot(@NotNull @JsonProperty(required = true) final T flywheel,
+                           @NotNull @JsonProperty(required = true) final SubsystemIntake feeder) {
         this.addRequirements(flywheel);
-        addCommands(
+        this.addCommands(
                 new SpinUpFlywheel(flywheel, feeder),
                 new ParallelRaceGroup(
                         new WaitUntilCommand(flywheel::isAtShootingSpeed),

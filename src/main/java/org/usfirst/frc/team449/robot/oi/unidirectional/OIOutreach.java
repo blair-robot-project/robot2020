@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedButton;
 
 import java.util.Arrays;
 
@@ -49,9 +48,9 @@ public class OIOutreach implements OIUnidirectional {
     private Object[] loggingData, overridenData, overridingData;
 
     @JsonCreator
-    public OIOutreach(@NotNull @JsonProperty(required = true) OIUnidirectional overridingOI,
-                      @NotNull @JsonProperty(required = true) OIUnidirectional overridenOI,
-                      @NotNull @JsonProperty(required = true) MappedButton button) {
+    public OIOutreach(@NotNull @JsonProperty(required = true) final OIUnidirectional overridingOI,
+                      @NotNull @JsonProperty(required = true) final OIUnidirectional overridenOI,
+                      @NotNull @JsonProperty(required = true) final Button button) {
         this.overridingOI = overridingOI;
         this.overridenOI = overridenOI;
         this.button = button;
@@ -65,10 +64,10 @@ public class OIOutreach implements OIUnidirectional {
      */
     @Override
     public double[] getLeftRightOutput() {
-        if (!Arrays.equals(overridingOI.getLeftRightOutput(), new double[]{0, 0}) || button.get()) {
-            return overridingOI.getLeftRightOutput();
+        if (!Arrays.equals(this.overridingOI.getLeftRightOutput(), new double[]{0, 0}) || this.button.get()) {
+            return this.overridingOI.getLeftRightOutput();
         } else {
-            return overridenOI.getLeftRightOutput();
+            return this.overridenOI.getLeftRightOutput();
         }
     }
 
@@ -81,7 +80,7 @@ public class OIOutreach implements OIUnidirectional {
     @Override
     @Log
     public double[] getLeftRightOutputCached() {
-        return cachedLeftRightOutput;
+        return this.cachedLeftRightOutput;
     }
 
     /**
@@ -92,10 +91,10 @@ public class OIOutreach implements OIUnidirectional {
      */
     @Override
     public double[] getFwdRotOutput() {
-        if (!Arrays.equals(overridingOI.getLeftRightOutput(), new double[]{0, 0}) || button.get()) {
-            return overridingOI.getFwdRotOutput();
+        if (!Arrays.equals(this.overridingOI.getLeftRightOutput(), new double[]{0, 0}) || this.button.get()) {
+            return this.overridingOI.getFwdRotOutput();
         } else {
-            return overridenOI.getFwdRotOutput();
+            return this.overridenOI.getFwdRotOutput();
         }
     }
 
@@ -108,7 +107,7 @@ public class OIOutreach implements OIUnidirectional {
     @Override
     @Log
     public double[] getFwdRotOutputCached() {
-        return cachedFwdRotOutput;
+        return this.cachedFwdRotOutput;
     }
 
     /**
@@ -119,7 +118,7 @@ public class OIOutreach implements OIUnidirectional {
     @Override
     @Log
     public boolean commandingStraight() {
-        return getLeftRightOutputCached()[0] == getLeftRightOutputCached()[1];
+        return this.getLeftRightOutputCached()[0] == this.getLeftRightOutputCached()[1];
     }
 
     /**
@@ -127,10 +126,10 @@ public class OIOutreach implements OIUnidirectional {
      */
     @Override
     public void update() {
-        overridenOI.update();
-        overridingOI.update();
-        cachedLeftRightOutput = getLeftRightOutput();
-        cachedFwdRotOutput = getFwdRotOutput();
+        this.overridenOI.update();
+        this.overridingOI.update();
+        this.cachedLeftRightOutput = this.getLeftRightOutput();
+        this.cachedFwdRotOutput = this.getFwdRotOutput();
     }
 
 //    /**

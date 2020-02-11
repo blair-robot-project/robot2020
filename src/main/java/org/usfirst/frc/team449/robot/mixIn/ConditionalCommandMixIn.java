@@ -7,7 +7,10 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 
 import java.util.function.BooleanSupplier;
 
-// TODO: Test this
+/**
+ * A mix-in for {@link edu.wpi.first.wpilibj2.command.Command} that annotates its constructor for use with Jackson. Don't
+ * make sublasses of this.
+ */
 public abstract class ConditionalCommandMixIn {
     /**
      * @see ConditionalCommand#ConditionalCommand(edu.wpi.first.wpilibj2.command.Command, edu.wpi.first.wpilibj2.command.Command, java.util.function.BooleanSupplier)

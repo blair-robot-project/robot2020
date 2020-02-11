@@ -496,7 +496,6 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor, Updatable {
      * @return Control mode as a string.
      */
     @Override
-    @Log
     public String getControlMode() {
         return this.controlMode.name();
     }

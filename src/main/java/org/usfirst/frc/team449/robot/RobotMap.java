@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.MotorContainer;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedRunnable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
 
 import java.util.Iterator;
@@ -37,7 +36,7 @@ public class RobotMap {
      * A runnable that updates cached variables.
      */
     @NotNull
-    private final Runnable updater;
+    private final java.lang.Runnable updater;
 
     @NotNull
     private final CommandContainer commands;
@@ -62,7 +61,7 @@ public class RobotMap {
     @JsonCreator
     public RobotMap(@NotNull @JsonProperty(required = true) @JsonInclude(content = JsonInclude.Include.NON_NULL) final List<Subsystem> subsystems,
                     @NotNull @JsonProperty(required = true) final PDP pdp,
-                    @NotNull @JsonProperty(required = true) final MappedRunnable updater,
+                    @NotNull @JsonProperty(required = true) final Runnable updater,
                     @NotNull @JsonProperty(required = true) final CommandContainer commands,
 //                    @Nullable @JsonAlias("integerConstants") final double[] intConstants,
 //                    @Nullable final double[] doubleConstants,
@@ -128,7 +127,7 @@ public class RobotMap {
      * @return A runnable that updates cached variables.
      */
     @NotNull
-    public Runnable getUpdater() {
+    public java.lang.Runnable getUpdater() {
         return this.updater;
     }
 

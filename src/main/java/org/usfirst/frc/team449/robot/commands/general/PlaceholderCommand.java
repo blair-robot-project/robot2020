@@ -1,42 +1,32 @@
 package org.usfirst.frc.team449.robot.commands.general;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
 /**
- * A command that either does nothing or prints a message when run. Used for debugging or if a command is required somewhere but no side effects are desired.
+ * A command that does nothing when run. Used if a command is required somewhere but no side effects are desired.
+ *
+ * <p>
+ * For a command that prints something to the console every time that it is run, use {@link edu.wpi.first.wpilibj2.command.PrintCommand}
+ * </p>
  */
-public class PlaceholderCommand extends InstantCommand {
-    private final String debugMessage;
-
-    /**
-     * Constructs a placeholder command that logs the specified message (if not null) when executed.
-     *
-     * @param debugMessage the message to print every time this command is executed; null to not do anything
-     */
+public class PlaceholderCommand implements Command {
     @JsonCreator
-    public PlaceholderCommand(@Nullable final String debugMessage) {
-        this.debugMessage = debugMessage;
+    private PlaceholderCommand() {
     }
 
     /**
-     * Constructs a placeholder command that does nothing when executed.
-     */
-    public PlaceholderCommand() {
-        this(null);
-    }
-
-    /**
-     * The initial subroutine of a command.  Called once when the command is initially scheduled.
+     * Whether the command has finished.  Once a command finishes, the scheduler will call its
+     * end() method and un-schedule it.
+     *
+     * @return whether the command has finished.
      */
     @Override
-    public void initialize() {
-        if (this.debugMessage != null)
-            System.out.println(this.debugMessage);
+    public boolean isFinished() {
+        return true;
     }
 
     /**
@@ -56,6 +46,17 @@ public class PlaceholderCommand extends InstantCommand {
     }
 
     /**
+     * Gets around WPILib's no-more-than-one-group-per-command rule by never being equal to any other object.
+     *
+     * @param obj the reference object with which to compare
+     * @return {@literal false}
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        return false;
+    }
+
+    /**
      * The singleton instance.
      */
     private static final PlaceholderCommand instance = new PlaceholderCommand();
@@ -65,6 +66,7 @@ public class PlaceholderCommand extends InstantCommand {
      *
      * @return a default instance
      */
+    @JsonCreator
     public static PlaceholderCommand getInstance() {
         return instance;
     }

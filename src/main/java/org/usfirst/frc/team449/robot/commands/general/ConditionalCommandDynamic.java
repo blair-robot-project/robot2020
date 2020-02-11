@@ -30,7 +30,7 @@ public class ConditionalCommandDynamic extends ConditionalCommand {
                                      @Nullable final Command onFalse,
                                      @NotNull @JsonProperty(required = true) final BooleanSupplier booleanSupplier,
                                      @Nullable final Subsystem[] requiredSubsystems) {
-        super(Objects.requireNonNullElse(onTrue, new PlaceholderCommand()), Objects.requireNonNullElse(onFalse, new PlaceholderCommand()), booleanSupplier);
+        super(Objects.requireNonNullElse(onTrue, PlaceholderCommand.getInstance()), Objects.requireNonNullElse(onFalse, PlaceholderCommand.getInstance()), booleanSupplier);
         if (requiredSubsystems != null) this.addRequirements(requiredSubsystems);
     }
 
@@ -39,7 +39,7 @@ public class ConditionalCommandDynamic extends ConditionalCommand {
      */
     @Override
     public void execute() {
-        // TODO This is jank.
+        // TODO This is janky.
         if (this.isFinished()) {
             super.end(false);
             super.initialize();

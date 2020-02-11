@@ -6,13 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.usfirst.frc.team449.robot.generalInterfaces.rumbleable.Rumbleable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedRunnable;
 
 import javax.annotation.Nullable;
 
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class TalonRumbleComponent implements MappedRunnable {
+public class TalonRumbleComponent implements Runnable {
 
     FPSTalon talon;
     Rumbleable joystick;
@@ -20,10 +19,10 @@ public class TalonRumbleComponent implements MappedRunnable {
     Double rumbleAmount;
 
     @JsonCreator
-    public TalonRumbleComponent(@JsonProperty(required = true) FPSTalon talon,
-                                @JsonProperty(required = true) Rumbleable joystick,
-                                @Nullable Double rumbleAmount,
-                                boolean inverted) {
+    public TalonRumbleComponent(@JsonProperty(required = true) final FPSTalon talon,
+                                @JsonProperty(required = true) final Rumbleable joystick,
+                                @Nullable final Double rumbleAmount,
+                                final boolean inverted) {
         this.talon = talon;
         this.joystick = joystick;
         this.inverted = inverted;
@@ -32,12 +31,12 @@ public class TalonRumbleComponent implements MappedRunnable {
 
     @Override
     public void run() {
-        if (talon.isInhibitedForward() ^ inverted) {
-            joystick.rumble(0, rumbleAmount);
-        } else if (talon.isInhibitedReverse() ^ inverted) {
-            joystick.rumble(rumbleAmount, 0);
+        if (this.talon.isInhibitedForward() ^ this.inverted) {
+            this.joystick.rumble(0, this.rumbleAmount);
+        } else if (this.talon.isInhibitedReverse() ^ this.inverted) {
+            this.joystick.rumble(this.rumbleAmount, 0);
         } else {
-            joystick.rumble(0, 0);
+            this.joystick.rumble(0, 0);
         }
     }
 }

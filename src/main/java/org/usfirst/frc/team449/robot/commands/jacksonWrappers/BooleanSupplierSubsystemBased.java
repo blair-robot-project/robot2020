@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * A condition based on the condition of a conditional subsystem.
  */
-public class MappedBooleanSupplierSubsystemBased extends MappedBooleanSupplierBooleanSupplierBased {
+public class BooleanSupplierSubsystemBased extends BooleanSupplierBooleanSupplierBased {
     /**
      * Default constructor.
      *
@@ -20,8 +20,8 @@ public class MappedBooleanSupplierSubsystemBased extends MappedBooleanSupplierBo
      *                  otherwise, use {@link SubsystemConditional#isConditionTrue()}
      */
     @JsonCreator
-    public MappedBooleanSupplierSubsystemBased(@NotNull @JsonProperty(required = true) final SubsystemConditional subsystem,
-                                               final @Nullable Boolean useCached) {
+    public BooleanSupplierSubsystemBased(@NotNull @JsonProperty(required = true) final SubsystemConditional subsystem,
+                                         final @Nullable Boolean useCached) {
         super(Objects.requireNonNullElse(useCached, true) ? subsystem::isConditionTrueCached : subsystem::isConditionTrue);
     }
 }

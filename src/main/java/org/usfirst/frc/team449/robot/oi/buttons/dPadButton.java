@@ -5,15 +5,15 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.button.Button;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedButton;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 
 /**
  * A Button triggered by pushing the D-pad to a specific angle.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class dPadButton extends MappedButton {
+public class dPadButton extends Button {
 
     /**
      * The angle that the D-pad must be pushed to to trigger this button.
@@ -33,8 +33,8 @@ public class dPadButton extends MappedButton {
      * @param angle    The angle that the D-pad must be pushed to to trigger this button.
      */
     @JsonCreator
-    public dPadButton(@NotNull @JsonProperty(required = true) MappedJoystick joystick,
-                      @JsonProperty(required = true) int angle) {
+    public dPadButton(@NotNull @JsonProperty(required = true) final MappedJoystick joystick,
+                      @JsonProperty(required = true) final int angle) {
         this.angle = angle;
         this.joystick = joystick;
     }
@@ -46,6 +46,6 @@ public class dPadButton extends MappedButton {
      */
     @Override
     public boolean get() {
-        return joystick.getPOV() == angle;
+        return this.joystick.getPOV() == this.angle;
     }
 }

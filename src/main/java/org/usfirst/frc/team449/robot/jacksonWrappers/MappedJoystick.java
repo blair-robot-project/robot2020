@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import org.usfirst.frc.team449.robot.generalInterfaces.rumbleable.Rumbleable;
-import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.MappedJoystickSimulated;
+import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.JoystickSimulated;
 
 import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
@@ -17,7 +17,7 @@ import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedJoystick extends Joystick implements Rumbleable {
     /**
-     * Whether to construct instances of {@link MappedJoystickSimulated} instead of {@link MappedJoystick} when the
+     * Whether to construct instances of {@link JoystickSimulated} instead of {@link MappedJoystick} when the
      * robot is running in a simulation.
      */
     private static final boolean SIMULATE = true;
@@ -43,7 +43,7 @@ public class MappedJoystick extends Joystick implements Rumbleable {
         }
 
         System.out.println(getLogPrefix(MappedJoystick.class) + "Creating simulated joystick on port " + port);
-        return new MappedJoystickSimulated(port);
+        return new JoystickSimulated(port);
     }
 
     /**

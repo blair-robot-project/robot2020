@@ -4,8 +4,11 @@ import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.Robot;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import java.awt.Color;
+import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * This class is automatically instantiated by the MappedJoystick factory method when the robot is running in a
  * simulation and should not be otherwise referenced in code.
  */
-public class MappedJoystickSimulated extends MappedJoystick {
+public class JoystickSimulated extends MappedJoystick {
     @NotNull
     private final Map<String, Boolean> keyStates = new ConcurrentHashMap<>();
     @NotNull
@@ -29,7 +32,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      *
      * @param port The USB port of this joystick, on [0, 5].
      */
-    public MappedJoystickSimulated(final int port) {
+    public JoystickSimulated(final int port) {
         super(port);
 
         this.logName = "SIMJOY " + this.getPort();
@@ -485,12 +488,12 @@ public class MappedJoystickSimulated extends MappedJoystick {
                     return;
             }
 
-            if (MappedJoystickSimulated.this.keyStates.getOrDefault(keyName, false) != newState) {
-                System.out.println(MappedJoystickSimulated.this.logPrefix + keyName + (newState ? " [#]" : " [ ]"));
+            if (JoystickSimulated.this.keyStates.getOrDefault(keyName, false) != newState) {
+                System.out.println(JoystickSimulated.this.logPrefix + keyName + (newState ? " [#]" : " [ ]"));
                 if (this.buttonStateLabels.containsKey(keyName))
                     this.buttonStateLabels.get(keyName).setBackground(newState ? Color.GREEN.darker() : Color.LIGHT_GRAY);
 
-                MappedJoystickSimulated.this.keyStates.put(keyName, newState);
+                JoystickSimulated.this.keyStates.put(keyName, newState);
             }
         }
     }

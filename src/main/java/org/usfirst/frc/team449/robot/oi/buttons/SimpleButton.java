@@ -5,15 +5,15 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.button.Button;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedButton;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 
 /**
- * A version of {@link edu.wpi.first.wpilibj.buttons.JoystickButton} that is a MappedButton.
+ * A version of {@link edu.wpi.first.wpilibj.buttons.JoystickButton} that is a Button.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class SimpleButton extends MappedButton {
+public class SimpleButton extends Button {
 
     /**
      * The joystick the button is on.
@@ -33,8 +33,8 @@ public class SimpleButton extends MappedButton {
      * @param buttonNumber The port of the button. Note that button numbers begin at 1, not 0.
      */
     @JsonCreator
-    public SimpleButton(@NotNull @JsonProperty(required = true) MappedJoystick joystick,
-                        @JsonProperty(required = true) int buttonNumber) {
+    public SimpleButton(@NotNull @JsonProperty(required = true) final MappedJoystick joystick,
+                        @JsonProperty(required = true) final int buttonNumber) {
         this.joystick = joystick;
         this.buttonNumber = buttonNumber;
     }
@@ -46,6 +46,6 @@ public class SimpleButton extends MappedButton {
      */
     @Override
     public boolean get() {
-        return joystick.getRawButton(buttonNumber);
+        return this.joystick.getRawButton(this.buttonNumber);
     }
 }
