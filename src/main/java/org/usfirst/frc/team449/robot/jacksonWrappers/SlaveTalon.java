@@ -1,6 +1,11 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers;
 
-import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,11 +14,12 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
+import org.usfirst.frc.team449.robot.generalInterfaces.SlaveMotor;
 
 /**
  * A {@link TalonSRX} that will be slaved to another TalonSRX or a {@link com.ctre.phoenix.motorcontrol.can.VictorSPX}.
  */
-public class SlaveTalon implements Loggable {
+public class SlaveTalon implements SlaveMotor, Loggable {
 
     /**
      * The TalonSRX this object wraps.
@@ -39,35 +45,35 @@ public class SlaveTalon implements Loggable {
      * @param invertType Whether or not to invert this Talon. Defaults to FollowMaster , but can be changed to OpposeMaster.
      */
     @JsonCreator
-    public SlaveTalon(@JsonProperty(required = true) int port,
-                      InvertType invertType) {
+    public SlaveTalon(@JsonProperty(required = true) final int port,
+                      final InvertType invertType) {
         this.talonSRX = new TalonSRX(port);
         //this.talonSRX.setInverted(inverted);
 
         //Turn off features we don't want a slave to have
-        talonSRX.setInverted(invertType == null ? InvertType.FollowMaster : invertType);
-        talonSRX.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-        talonSRX.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
-        talonSRX.configForwardSoftLimitEnable(false, 0);
-        talonSRX.configReverseSoftLimitEnable(false, 0);
-        talonSRX.configPeakOutputForward(1, 0);
-        talonSRX.enableVoltageCompensation(true);
-        talonSRX.configVoltageCompSaturation(12, 0);
-        talonSRX.configVoltageMeasurementFilter(32, 0);
+        this.talonSRX.setInverted(invertType == null ? InvertType.FollowMaster : invertType);
+        this.talonSRX.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+        this.talonSRX.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+        this.talonSRX.configForwardSoftLimitEnable(false, 0);
+        this.talonSRX.configReverseSoftLimitEnable(false, 0);
+        this.talonSRX.configPeakOutputForward(1, 0);
+        this.talonSRX.enableVoltageCompensation(true);
+        this.talonSRX.configVoltageCompSaturation(12, 0);
+        this.talonSRX.configVoltageMeasurementFilter(32, 0);
 
         //Slow down frames so we don't overload the CAN bus
-        talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100, 0);
-        talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 100, 0);
-        talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_7_CommStatus, 100, 0);
-        talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 100, 0);
-        talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 100, 0);
-        talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 100, 0);
-        talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 100, 0);
-        talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 100, 0);
-        talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_15_FirmwareApiStatus, 100, 0);
-        talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 100, 0);
-        talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 100, 0);
-        talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_11_UartGadgeteer, 100, 0);
+        this.talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 100, 0);
+        this.talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 100, 0);
+        this.talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_7_CommStatus, 100, 0);
+        this.talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 100, 0);
+        this.talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 100, 0);
+        this.talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 100, 0);
+        this.talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 100, 0);
+        this.talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 100, 0);
+        this.talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_15_FirmwareApiStatus, 100, 0);
+        this.talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 100, 0);
+        this.talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 100, 0);
+        this.talonSRX.setStatusFramePeriod(StatusFrameEnhanced.Status_11_UartGadgeteer, 100, 0);
     }
 
     /**
@@ -80,29 +86,29 @@ public class SlaveTalon implements Loggable {
      * @param PDP                The PDP this Talon is connected to.
      * @param linRegComponent    The linear regression component for logging resistance.
      */
-    public void setMaster(int port, boolean brakeMode, @Nullable Integer currentLimit,
-                          @Nullable Integer voltageCompSamples, @Nullable PDP PDP, @Nullable RunningLinRegComponent linRegComponent) {
+    public void setMaster(final int port, final boolean brakeMode, @Nullable final Integer currentLimit,
+                          @Nullable final Integer voltageCompSamples, @Nullable final PDP PDP, @Nullable final RunningLinRegComponent linRegComponent) {
         //Brake mode doesn't automatically follow master
         this.talonSRX.setNeutralMode(brakeMode ? NeutralMode.Brake : NeutralMode.Coast);
 
         //Current limiting might not automatically follow master, set it just to be safe
         if (currentLimit != null) {
-            talonSRX.configContinuousCurrentLimit(currentLimit, 0);
-            talonSRX.configPeakCurrentDuration(0, 0);
-            talonSRX.configPeakCurrentLimit(0, 0); // No duration
-            talonSRX.enableCurrentLimit(true);
+            this.talonSRX.configContinuousCurrentLimit(currentLimit, 0);
+            this.talonSRX.configPeakCurrentDuration(0, 0);
+            this.talonSRX.configPeakCurrentLimit(0, 0); // No duration
+            this.talonSRX.enableCurrentLimit(true);
         } else {
             //If we don't have a current limit, disable current limiting.
-            talonSRX.enableCurrentLimit(false);
+            this.talonSRX.enableCurrentLimit(false);
         }
 
         //Voltage comp might not follow master either
         if (voltageCompSamples != null) {
-            talonSRX.enableVoltageCompensation(true);
-            talonSRX.configVoltageCompSaturation(12, 0);
-            talonSRX.configVoltageMeasurementFilter(voltageCompSamples, 0);
+            this.talonSRX.enableVoltageCompensation(true);
+            this.talonSRX.configVoltageCompSaturation(12, 0);
+            this.talonSRX.configVoltageMeasurementFilter(voltageCompSamples, 0);
         } else {
-            talonSRX.enableVoltageCompensation(false);
+            this.talonSRX.enableVoltageCompensation(false);
         }
 
         //Follow the leader
@@ -158,16 +164,16 @@ public class SlaveTalon implements Loggable {
 
     @Log
     public double getOutputCurrent (){
-        return  talonSRX.getSupplyCurrent();
+        return this.talonSRX.getSupplyCurrent();
     }
 
     @Log
     public double getMotorOutputVoltage(){
-        return talonSRX.getMotorOutputVoltage();
+        return this.talonSRX.getMotorOutputVoltage();
     }
 
     @Log
     public Double getResistance(){
-        return (linRegComponent != null && PDP != null) ? -linRegComponent.getSlope() : Double.NaN;
+        return (this.linRegComponent != null && this.PDP != null) ? -this.linRegComponent.getSlope() : Double.NaN;
     }
 }

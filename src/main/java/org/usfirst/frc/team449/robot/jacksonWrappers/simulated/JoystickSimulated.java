@@ -1,10 +1,16 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers.simulated;
 
 import org.jetbrains.annotations.NotNull;
+import org.usfirst.frc.team449.robot.Robot;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import java.awt.Color;
+import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,9 +19,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * This class is automatically instantiated by the MappedJoystick factory method when the robot is running in a
  * simulation and should not be otherwise referenced in code.
  */
-public class MappedJoystickSimulated extends MappedJoystick {
+public class JoystickSimulated extends MappedJoystick {
     @NotNull
-    private final Map<String, Boolean> pressedKeys = new ConcurrentHashMap<>();
+    private final Map<String, Boolean> keyStates = new ConcurrentHashMap<>();
     @NotNull
     private final String logName;
     @NotNull
@@ -26,33 +32,14 @@ public class MappedJoystickSimulated extends MappedJoystick {
      *
      * @param port The USB port of this joystick, on [0, 5].
      */
-    public MappedJoystickSimulated(int port) {
+    public JoystickSimulated(final int port) {
         super(port);
 
         this.logName = "SIMJOY " + this.getPort();
         this.logPrefix = "[" + this.logName + "] ";
 
-        new JFrame(this.logName) {
-            {
-                this.setVisible(true);
-            }
-
-            @Override
-            protected void processKeyEvent(KeyEvent e) {
-                String keyName = KeyEvent.getKeyText(e.getKeyCode());
-
-                switch (e.getID()) {
-                    case KeyEvent.KEY_PRESSED:
-                        pressedKeys.put(keyName, true);
-                        System.out.println(logPrefix + keyName + " [#]");
-                        break;
-
-                    case KeyEvent.KEY_RELEASED:
-                        pressedKeys.put(keyName, false);
-                        System.out.println(logPrefix + keyName + " [ ]");
-                        break;
-                }
-            }
+        // The virtual joystick user interface.
+        new SimulatedJoystickUI(this.logName) {
         };
     }
 
@@ -66,8 +53,8 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @return The state of the button.
      */
     @Override
-    public boolean getRawButton(int button) {
-        return pressedKeys.getOrDefault(String.valueOf(button), false);
+    public boolean getRawButton(final int button) {
+        return this.keyStates.getOrDefault(String.valueOf(button), false);
     }
 
     /**
@@ -78,7 +65,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @return Whether the button was pressed since the last check.
      */
     @Override
-    public boolean getRawButtonPressed(int button) {
+    public boolean getRawButtonPressed(final int button) {
         return false;
     }
 
@@ -90,7 +77,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @return Whether the button was released since the last check.
      */
     @Override
-    public boolean getRawButtonReleased(int button) {
+    public boolean getRawButtonReleased(final int button) {
         return false;
     }
 
@@ -101,7 +88,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @return The value of the axis.
      */
     @Override
-    public double getRawAxis(int axis) {
+    public double getRawAxis(final int axis) {
         return 0;
     }
 
@@ -115,7 +102,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @return the angle of the POV in degrees, or -1 if the POV is not pressed.
      */
     @Override
-    public int getPOV(int pov) {
+    public int getPOV(final int pov) {
         return 0;
     }
 
@@ -176,7 +163,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @return the axis type of a joystick axis.
      */
     @Override
-    public int getAxisType(int axis) {
+    public int getAxisType(final int axis) {
         return 0;
     }
 
@@ -197,7 +184,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param value        The value to set the output to
      */
     @Override
-    public void setOutput(int outputNumber, boolean value) {
+    public void setOutput(final int outputNumber, final boolean value) {
     }
 
     /**
@@ -206,7 +193,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param value The 32 bit output value (1 bit for each output)
      */
     @Override
-    public void setOutputs(int value) {
+    public void setOutputs(final int value) {
     }
 
     /**
@@ -217,7 +204,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param value The normalized value (0 to 1) to set the rumble to
      */
     @Override
-    public void setRumble(RumbleType type, double value) {
+    public void setRumble(final RumbleType type, final double value) {
     }
 
     /**
@@ -236,7 +223,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param channel The channel to set the axis to.
      */
     @Override
-    public void setXChannel(int channel) {
+    public void setXChannel(final int channel) {
     }
 
     /**
@@ -255,7 +242,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param channel The channel to set the axis to.
      */
     @Override
-    public void setYChannel(int channel) {
+    public void setYChannel(final int channel) {
     }
 
     /**
@@ -274,7 +261,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param channel The channel to set the axis to.
      */
     @Override
-    public void setZChannel(int channel) {
+    public void setZChannel(final int channel) {
     }
 
     /**
@@ -293,7 +280,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param channel The channel to set the axis to.
      */
     @Override
-    public void setTwistChannel(int channel) {
+    public void setTwistChannel(final int channel) {
     }
 
     /**
@@ -312,7 +299,7 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param channel The channel to set the axis to.
      */
     @Override
-    public void setThrottleChannel(int channel) {
+    public void setThrottleChannel(final int channel) {
     }
 
     /**
@@ -445,6 +432,69 @@ public class MappedJoystickSimulated extends MappedJoystick {
      * @param right The strength to rumble the right side, on [-1, 1]
      */
     @Override
-    public void rumble(double left, double right) {
+    public void rumble(final double left, final double right) {
+    }
+
+    // Janky awt for now.
+    private class SimulatedJoystickUI extends JFrame {
+        private final JLabel[][] buttonStateLayout = new JLabel[3][3];
+        private final Map<String, JLabel> buttonStateLabels = new HashMap<>();
+
+        public SimulatedJoystickUI(final String logName) {
+            super(logName);
+        }
+
+        {
+            this.setLayout(new GridLayout(3, 3));
+            for (int r = 0; r < 3; r++) {
+                for (int c = 0; c < 3; c++) {
+                    final var label = new JLabel();
+                    label.setOpaque(true);
+                    label.setHorizontalAlignment(SwingConstants.CENTER);
+                    this.add(String.format("r%dc%d", r, c), this.buttonStateLayout[r][c] = label);
+                }
+            }
+
+            this.buttonStateLabels.put("1", this.buttonStateLayout[0][1]);
+            this.buttonStateLabels.put("2", this.buttonStateLayout[1][2]);
+            this.buttonStateLabels.put("3", this.buttonStateLayout[2][1]);
+            this.buttonStateLabels.put("4", this.buttonStateLayout[1][0]);
+
+            this.buttonStateLabels.forEach((name, label) -> {
+                label.setBackground(Color.LIGHT_GRAY);
+                label.setText(name);
+            });
+
+            this.doLayout();
+
+            if (!Robot.isUnitTesting()) this.setVisible(true);
+        }
+
+        @Override
+        protected void processKeyEvent(final KeyEvent e) {
+            final String keyName = KeyEvent.getKeyText(e.getKeyCode());
+
+            final boolean newState;
+            switch (e.getID()) {
+                case KeyEvent.KEY_PRESSED:
+                    newState = true;
+                    break;
+
+                case KeyEvent.KEY_RELEASED:
+                    newState = false;
+                    break;
+
+                default:
+                    return;
+            }
+
+            if (JoystickSimulated.this.keyStates.getOrDefault(keyName, false) != newState) {
+                System.out.println(JoystickSimulated.this.logPrefix + keyName + (newState ? " [#]" : " [ ]"));
+                if (this.buttonStateLabels.containsKey(keyName))
+                    this.buttonStateLabels.get(keyName).setBackground(newState ? Color.GREEN.darker() : Color.LIGHT_GRAY);
+
+                JoystickSimulated.this.keyStates.put(keyName, newState);
+            }
+        }
     }
 }

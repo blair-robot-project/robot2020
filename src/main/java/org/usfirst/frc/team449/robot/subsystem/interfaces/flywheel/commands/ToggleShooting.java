@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
@@ -22,8 +22,8 @@ public final class ToggleShooting<T extends Subsystem & SubsystemFlywheel> exten
      * @param subsystem The subsystem to execute this command on.
      */
     @JsonCreator
-    public ToggleShooting(@NotNull @JsonProperty(required = true) T subsystem,
-                          @NotNull @JsonProperty(required = true) SubsystemIntake feeder) {
+    public ToggleShooting(@NotNull @JsonProperty(required = true) final T subsystem,
+                          @NotNull @JsonProperty(required = true) final SubsystemIntake feeder) {
         super(() -> {
             final CommandBase commandToSchedule;
 

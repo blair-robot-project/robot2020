@@ -1,6 +1,10 @@
 package org.usfirst.frc.team449.robot.oi.throttles;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.LinearFilter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,11 +44,11 @@ public class ThrottleDeadbanded extends ThrottleBasic {
      * @param inverted          Whether or not to invert the joystick input. Defaults to false.
      */
     @JsonCreator
-    public ThrottleDeadbanded(@NotNull @JsonProperty(required = true) MappedJoystick stick,
-                              @JsonProperty(required = true) int axis,
-                              double deadband,
-                              @Nullable Double smoothingTimeSecs,
-                              boolean inverted) {
+    public ThrottleDeadbanded(@NotNull @JsonProperty(required = true) final MappedJoystick stick,
+                              @JsonProperty(required = true) final int axis,
+                              final double deadband,
+                              @Nullable final Double smoothingTimeSecs,
+                              final boolean inverted) {
         super(stick, axis, inverted);
         this.deadband = deadband;
         this.filter = LinearFilter.singlePoleIIR(smoothingTimeSecs != null ? smoothingTimeSecs : 0.02,0.02);
@@ -58,19 +62,19 @@ public class ThrottleDeadbanded extends ThrottleBasic {
     @Override
     public double getValue() {
         //Get the smoothed value
-        input = filter.calculate(pidGet());
+        this.input = this.filter.calculate(this.pidGet());
 
-        sign = Math.signum(input);
-        input = Math.abs(input);
+        this.sign = Math.signum(this.input);
+        this.input = Math.abs(this.input);
 
         //apply the deadband.
-        if (input < deadband) {
+        if (this.input < this.deadband) {
             return 0;
         }
 
         //scale so f(deadband) is 0 and f(1) is 1.
-        input = (input - deadband) / (1. - deadband);
+        this.input = (this.input - this.deadband) / (1. - this.deadband);
 
-        return sign * input;
+        return this.sign * this.input;
     }
 }

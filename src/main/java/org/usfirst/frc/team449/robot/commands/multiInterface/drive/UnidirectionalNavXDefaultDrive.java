@@ -1,9 +1,13 @@
 package org.usfirst.frc.team449.robot.commands.multiInterface.drive;
 
-import com.fasterxml.jackson.annotation.*;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -87,20 +91,20 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
      *                                    ramp.
      */
     @JsonCreator
-    public UnidirectionalNavXDefaultDrive(@JsonProperty(required = true) double absoluteTolerance,
-                                          @Nullable BufferTimer onTargetBuffer,
-                                          double minimumOutput, @Nullable Double maximumOutput,
-                                          @Nullable Integer loopTimeMillis,
-                                          double deadband,
-                                          @Nullable Double maxAngularVelToEnterLoop,
-                                          boolean inverted,
-                                          double kP,
-                                          double kI,
-                                          double kD,
-                                          @NotNull @JsonProperty(required = true) BufferTimer driveStraightLoopEntryTimer,
-                                          @NotNull @JsonProperty(required = true) T subsystem,
-                                          @NotNull @JsonProperty(required = true) OIUnidirectional oi,
-                                          @Nullable RampComponent rampComponent) {
+    public UnidirectionalNavXDefaultDrive(@JsonProperty(required = true) final double absoluteTolerance,
+                                          @Nullable final BufferTimer onTargetBuffer,
+                                          final double minimumOutput, @Nullable final Double maximumOutput,
+                                          @Nullable final Integer loopTimeMillis,
+                                          final double deadband,
+                                          @Nullable final Double maxAngularVelToEnterLoop,
+                                          final boolean inverted,
+                                          final double kP,
+                                          final double kI,
+                                          final double kD,
+                                          @NotNull @JsonProperty(required = true) final BufferTimer driveStraightLoopEntryTimer,
+                                          @NotNull @JsonProperty(required = true) final T subsystem,
+                                          @NotNull @JsonProperty(required = true) final OIUnidirectional oi,
+                                          @Nullable final RampComponent rampComponent) {
         //Assign stuff
         super(absoluteTolerance, onTargetBuffer, minimumOutput, maximumOutput, loopTimeMillis, deadband, inverted,
                 subsystem, kP, kI, kD);
@@ -114,7 +118,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
         this.maxAngularVelToEnterLoop = maxAngularVelToEnterLoop != null ? maxAngularVelToEnterLoop : 180;
 
         //Needs a requires because it's a default command.
-        addRequirements(this.subsystem);
+        this.addRequirements(this.subsystem);
 
         //Logging, but in Spanish.
         Shuffleboard.addEventMarker("Drive Robot bueno", this.getClass().getSimpleName(), EventImportance.kNormal);
@@ -132,7 +136,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
         //Logger.addEvent("UnidirectionalNavXArcadeDrive init.", this.getClass());
 
         //Initial assignment
-        drivingStraight = false;
+        this.drivingStraight = false;
     }
 
     /**
@@ -141,52 +145,52 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
     @Override
     public void execute() {
         //If we're driving straight but the driver tries to turn or overrides the AHRS:
-        if (drivingStraight && (!oi.commandingStraight() || subsystem.getOverrideGyro())) {
+        if (this.drivingStraight && (!this.oi.commandingStraight() || this.subsystem.getOverrideGyro())) {
             //Switch to free drive
-            drivingStraight = false;
+            this.drivingStraight = false;
         }
         //If we're free driving and the driver stops turning:
-        else if (driveStraightLoopEntryTimer.get(!(subsystem.getOverrideGyro()) && !(drivingStraight) &&
-                oi.commandingStraight() && Math.abs(subsystem.getAngularVelCached()) <= maxAngularVelToEnterLoop)) {
+        else if (this.driveStraightLoopEntryTimer.get(!(this.subsystem.getOverrideGyro()) && !(this.drivingStraight) &&
+                this.oi.commandingStraight() && Math.abs(this.subsystem.getAngularVelCached()) <= this.maxAngularVelToEnterLoop)) {
             //Switch to driving straight
-            drivingStraight = true;
+            this.drivingStraight = true;
             //Set the setpoint to the current heading and reset the AHRS
             this.getController().reset();
-            this.setSetpoint(subsystem.getHeadingCached());
+            this.setSetpoint(this.subsystem.getHeadingCached());
         }
 
         //Get the outputs
-        rawOutput = this.getRawOutput();
-        leftOutput = oi.getLeftRightOutputCached()[0];
-        rightOutput = oi.getLeftRightOutputCached()[1];
+        this.rawOutput = this.getRawOutput();
+        this.leftOutput = this.oi.getLeftRightOutputCached()[0];
+        this.rightOutput = this.oi.getLeftRightOutputCached()[1];
 
         //Ramp if it exists
-        if (leftRamp != null) {
-            leftOutput = leftRamp.applyAsDouble(leftOutput);
-            rightOutput = rightRamp.applyAsDouble(rightOutput);
+        if (this.leftRamp != null) {
+            this.leftOutput = this.leftRamp.applyAsDouble(this.leftOutput);
+            this.rightOutput = this.rightRamp.applyAsDouble(this.rightOutput);
         }
 
         //If we're driving straight..
-        if (drivingStraight) {
+        if (this.drivingStraight) {
             //Process the output (minimumOutput, deadband, etc.)
-            processedOutput = getOutput();
+            this.processedOutput = this.getOutput();
 
             //Deadband if we're stationary
-            if (leftOutput == 0 && rightOutput == 0) {
-                finalOutput = deadbandOutput(processedOutput);
+            if (this.leftOutput == 0 && this.rightOutput == 0) {
+                this.finalOutput = this.deadbandOutput(this.processedOutput);
             } else {
-                finalOutput = processedOutput;
+                this.finalOutput = this.processedOutput;
             }
 
             //Adjust the heading according to the PID output, it'll be positive if we want to go right.
-            subsystem.setOutput(leftOutput - finalOutput, rightOutput + finalOutput);
+            this.subsystem.setOutput(this.leftOutput - this.finalOutput, this.rightOutput + this.finalOutput);
         }
         //If we're free driving...
         else {
-            processedOutput = 0;
-            finalOutput = 0;
+            this.processedOutput = 0;
+            this.finalOutput = 0;
             //Set the throttle to normal arcade throttle.
-            subsystem.setOutput(leftOutput, rightOutput);
+            this.subsystem.setOutput(this.leftOutput, this.rightOutput);
         }
     }
 
@@ -205,11 +209,11 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
      * Log when this command ends
      */
     @Override
-    public void end(boolean interrupted) {
-        if(interrupted){
+    public void end(final boolean interrupted) {
+        if (interrupted) {
             Shuffleboard.addEventMarker("UnidirectionalNavXArcadeDrive Interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
         }
-        subsystem.fullStop();
+        this.subsystem.fullStop();
         Shuffleboard.addEventMarker("UnidirectionalNavXArcadeDrive End.", this.getClass().getSimpleName(), EventImportance.kNormal);
         //Logger.addEvent("UnidirectionalNavXArcadeDrive End.", this.getClass());
     }
@@ -261,22 +265,23 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
 //    }
 
     @Log
-    public boolean isDrivingStraight(){
-        return drivingStraight;
+    public boolean isDrivingStraight() {
+        return this.drivingStraight;
     }
 
-//    @Log
-    public double getRawOutput(){
-        return rawOutput;
-    }
-
-    @Log
-    public double getProcessedOutput(){
-        return processedOutput;
+    //    @Log
+    @Override
+    public double getRawOutput() {
+        return this.rawOutput;
     }
 
     @Log
-    public double getFinalOutput(){
-        return finalOutput;
+    public double getProcessedOutput() {
+        return this.processedOutput;
+    }
+
+    @Log
+    public double getFinalOutput() {
+        return this.finalOutput;
     }
 }

@@ -1,6 +1,10 @@
 package org.usfirst.frc.team449.robot.components;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Notifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -81,14 +85,14 @@ public class ShiftWithSensorComponent extends ShiftComponent {
      *                                in seconds.
      */
     @JsonCreator
-    public ShiftWithSensorComponent(@NotNull @JsonProperty(required = true) List<Shiftable> otherShiftables,
-                                    @NotNull @JsonProperty(required = true) MappedDoubleSolenoid piston,
-                                    @Nullable Shiftable.gear startingGear,
-                                    @NotNull @JsonProperty(required = true) List<MappedDigitalInput> highGearSensors,
-                                    @NotNull @JsonProperty(required = true) List<MappedDigitalInput> lowGearSensors,
-                                    @NotNull @JsonProperty(required = true) List<SimpleMotor> motorsToDisable,
-                                    @NotNull @JsonProperty(required = true) BufferTimer motorDisableTimer,
-                                    @JsonProperty(required = true) double sensorCheckerPeriodSecs) {
+    public ShiftWithSensorComponent(@NotNull @JsonProperty(required = true) final List<Shiftable> otherShiftables,
+                                    @NotNull @JsonProperty(required = true) final MappedDoubleSolenoid piston,
+                                    @Nullable final Shiftable.gear startingGear,
+                                    @NotNull @JsonProperty(required = true) final List<MappedDigitalInput> highGearSensors,
+                                    @NotNull @JsonProperty(required = true) final List<MappedDigitalInput> lowGearSensors,
+                                    @NotNull @JsonProperty(required = true) final List<SimpleMotor> motorsToDisable,
+                                    @NotNull @JsonProperty(required = true) final BufferTimer motorDisableTimer,
+                                    @JsonProperty(required = true) final double sensorCheckerPeriodSecs) {
         super(otherShiftables, piston, startingGear);
         this.highGearSensors = highGearSensors;
         this.lowGearSensors = lowGearSensors;
@@ -104,48 +108,48 @@ public class ShiftWithSensorComponent extends ShiftComponent {
      */
     private void checkToReenable() {
         //Check if the piston is in correct position by making sure each sensor is reading correctly.
-        pistonCorrect = true;
-        if (currentGear == Shiftable.gear.HIGH.getNumVal()) {
-            for (MappedDigitalInput sensor : highGearSensors) {
+        this.pistonCorrect = true;
+        if (this.currentGear == Shiftable.gear.HIGH.getNumVal()) {
+            for (final MappedDigitalInput sensor : this.highGearSensors) {
                 //The position is correct if all the sensors read true.
-                pistonCorrect = pistonCorrect && sensor.get();
+                this.pistonCorrect = this.pistonCorrect && sensor.get();
             }
         } else {
-            for (MappedDigitalInput sensor : lowGearSensors) {
+            for (final MappedDigitalInput sensor : this.lowGearSensors) {
                 //The position is correct if all the sensors read true.
-                pistonCorrect = pistonCorrect && sensor.get();
+                this.pistonCorrect = this.pistonCorrect && sensor.get();
             }
         }
 
         //If the pistons haven't been correct for more than a certain amount of time, we assume something went wrong and
         // keep the motors enabled (essentially ignoring the sensors) so the robot can still drive.
-        if (motorDisableTimer.get(!pistonCorrect)) {
+        if (this.motorDisableTimer.get(!this.pistonCorrect)) {
             //We set pistonCorrect here because we're basically just overriding what the sensors say.
-            pistonCorrect = true;
-            for (SimpleMotor motor : motorsToDisable) {
+            this.pistonCorrect = true;
+            for (final SimpleMotor motor : this.motorsToDisable) {
                 motor.enable();
             }
-            sensorChecker.stop();
+            this.sensorChecker.stop();
         }
         //Otherwise, if the piston is wrong, disable all the motors. We do this constantly in case some other part of
         //the code tries to re-enable them.
         //TODO set up a lock system so no other part of the code can re-enable the motors.
-        else if (!pistonCorrect) {
-            for (SimpleMotor motor : motorsToDisable) {
+        else if (!this.pistonCorrect) {
+            for (final SimpleMotor motor : this.motorsToDisable) {
                 motor.disable();
             }
         }
         //If the piston is correct, but wasn't the last time we checked, that means the piston has finished shifting and
         //we should re-enable the motors.
-        else if (!pistonWasCorrect) {
-            for (SimpleMotor motor : motorsToDisable) {
+        else if (!this.pistonWasCorrect) {
+            for (final SimpleMotor motor : this.motorsToDisable) {
                 motor.enable();
             }
-            sensorChecker.stop();
+            this.sensorChecker.stop();
         }
 
         //Record the piston position so we can have rising/falling edge detection
-        pistonWasCorrect = pistonCorrect;
+        this.pistonWasCorrect = this.pistonCorrect;
     }
 
     /**
@@ -154,8 +158,8 @@ public class ShiftWithSensorComponent extends ShiftComponent {
      * @param gear The gear to shift to.
      */
     @Override
-    public void shiftToGear(int gear) {
+    public void shiftToGear(final int gear) {
         super.shiftToGear(gear);
-        sensorChecker.startPeriodic(sensorCheckerPeriodSecs);
+        this.sensorChecker.startPeriodic(this.sensorCheckerPeriodSecs);
     }
 }

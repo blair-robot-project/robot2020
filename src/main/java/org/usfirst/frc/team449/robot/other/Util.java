@@ -6,34 +6,7 @@ import org.jetbrains.annotations.NotNull;
  * Stuff that doesn't fit anywhere else
  */
 public class Util {
-
-    /**
-     * Make a runnable out of a method
-     * TODO log the errors instead of just throwing them
-     *
-     * @param object
-     * @param methodName
-     * @return
-     */
-    public static Runnable getMethod(Object object, String methodName) {
-        return () -> {
-            try {
-                object.getClass().getMethod(methodName).invoke(object);
-            } catch (Exception e) {
-                sneakyThrow(e);
-            }
-        };
-    }
-
-    /**
-     * Do not use this
-     *
-     * @param e
-     * @param <T>
-     * @throws T
-     */
-    public static <T extends Throwable> void sneakyThrow(Exception e) throws T {
-        throw (T) e;
+    private Util() {
     }
 
     /**
@@ -42,7 +15,7 @@ public class Util {
      * @param o the object to retrieve a prefix for
      * @return the prefix to be prepended to the message when the specified object logs
      */
-    public static String getLogPrefix(@NotNull Object o) {
+    public static String getLogPrefix(@NotNull final Object o) {
         return "[" + o.getClass().getSimpleName() + "] ";
     }
 
@@ -52,7 +25,7 @@ public class Util {
      * @param clazz the type to retrieve a prefix for
      * @return the prefix to be prepended to the message when the specified type logs
      */
-    public static String getLogPrefix(Class<?> clazz) {
+    public static String getLogPrefix(final Class<?> clazz) {
         return "[" + clazz.getSimpleName() + "] ";
     }
 
@@ -64,7 +37,7 @@ public class Util {
      * @param uBound the upper bound to clamp to
      * @return {@code min(max(value, lBound), uBound)}
      */
-    public static double clamp(double value, double lBound, double uBound) {
+    public static double clamp(final double value, final double lBound, final double uBound) {
         if (uBound < lBound) throw new IllegalArgumentException("uBound < lBound");
         if (value > uBound) return uBound;
         if (value < lBound) return lBound;
@@ -78,7 +51,7 @@ public class Util {
      * @param absBound the absolute bound to clamp to
      * @return {@code clamp(value, -absBound, absBound)}
      */
-    public static double clamp(double value, double absBound) {
+    public static double clamp(final double value, final double absBound) {
         return clamp(value, -absBound, absBound);
     }
 
@@ -88,7 +61,7 @@ public class Util {
      * @param value the value to clamp
      * @return {@code clamp(value, 1)}
      */
-    public static double clamp(double value) {
+    public static double clamp(final double value) {
         return clamp(value, 1);
     }
 }

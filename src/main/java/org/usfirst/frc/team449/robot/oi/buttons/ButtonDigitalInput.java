@@ -5,15 +5,15 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj2.command.button.Button;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedButton;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput;
 
 /**
  * A button triggered off of a digital input switch on the RoboRIO.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class ButtonDigitalInput extends MappedButton {
+public class ButtonDigitalInput extends Button {
 
     /**
      * The input to read from.
@@ -27,7 +27,7 @@ public class ButtonDigitalInput extends MappedButton {
      * @param input The input to read from.
      */
     @JsonCreator
-    public ButtonDigitalInput(@NotNull @JsonProperty(required = true) MappedDigitalInput input) {
+    public ButtonDigitalInput(@NotNull @JsonProperty(required = true) final MappedDigitalInput input) {
         this.input = input;
     }
 
@@ -38,6 +38,6 @@ public class ButtonDigitalInput extends MappedButton {
      */
     @Override
     public boolean get() {
-        return input.get();
+        return this.input.get();
     }
 }

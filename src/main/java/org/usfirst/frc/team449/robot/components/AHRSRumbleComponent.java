@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.generalInterfaces.rumbleable.Rumbleable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedRunnable;
 import org.usfirst.frc.team449.robot.other.Clock;
 
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.List;
  * A component to rumble controllers based off the jerk measurements from an AHRS.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class AHRSRumbleComponent implements MappedRunnable {
+public class AHRSRumbleComponent implements Runnable {
 
     /**
      * The NavX to get jerk measurements from.
@@ -85,21 +84,21 @@ public class AHRSRumbleComponent implements MappedRunnable {
      * @param invertLeftRight Whether to invert the left-right jerk measurement. Defaults to false.
      */
     @JsonCreator
-    public AHRSRumbleComponent(@NotNull @JsonProperty(required = true) MappedAHRS ahrs,
-                               @NotNull @JsonProperty(required = true) List<Rumbleable> rumbleables,
-                               @JsonProperty(required = true) double minJerk,
-                               @JsonProperty(required = true) double maxJerk,
-                               boolean yIsFrontBack,
-                               boolean invertLeftRight) {
+    public AHRSRumbleComponent(@NotNull @JsonProperty(required = true) final MappedAHRS ahrs,
+                               @NotNull @JsonProperty(required = true) final List<Rumbleable> rumbleables,
+                               @JsonProperty(required = true) final double minJerk,
+                               @JsonProperty(required = true) final double maxJerk,
+                               final boolean yIsFrontBack,
+                               final boolean invertLeftRight) {
         this.ahrs = ahrs;
         this.rumbleables = rumbleables;
         this.minJerk = minJerk;
         this.maxJerk = maxJerk;
         this.yIsFrontBack = yIsFrontBack;
         this.invertLeftRight = invertLeftRight;
-        timeLastCalled = 0;
-        lastFrontBackAccel = 0;
-        lastLeftRightAccel = 0;
+        this.timeLastCalled = 0;
+        this.lastFrontBackAccel = 0;
+        this.lastLeftRightAccel = 0;
     }
 
     /**
@@ -107,40 +106,40 @@ public class AHRSRumbleComponent implements MappedRunnable {
      */
     @Override
     public void run() {
-        if (yIsFrontBack) {
+        if (this.yIsFrontBack) {
             //Put an abs() here because we can't differentiate front vs back when rumbling, so we only care about
             // magnitude.
-            frontBack = Math.abs(ahrs.getYAccel());
-            leftRight = ahrs.getXAccel() * (invertLeftRight ? -1 : 1);
+            this.frontBack = Math.abs(this.ahrs.getYAccel());
+            this.leftRight = this.ahrs.getXAccel() * (this.invertLeftRight ? -1 : 1);
         } else {
-            frontBack = Math.abs(ahrs.getYAccel());
-            leftRight = ahrs.getXAccel() * (invertLeftRight ? -1 : 1);
+            this.frontBack = Math.abs(this.ahrs.getYAccel());
+            this.leftRight = this.ahrs.getXAccel() * (this.invertLeftRight ? -1 : 1);
         }
 
         //Left is negative jerk, so we subtract it from left so that when we're going left, left is bigger and vice
         // versa
-        left = ((frontBack - lastFrontBackAccel) - (leftRight - lastLeftRightAccel)) / (Clock.currentTimeMillis() - timeLastCalled);
-        right = ((frontBack - lastFrontBackAccel) + (leftRight - lastLeftRightAccel)) / (Clock.currentTimeMillis() - timeLastCalled);
+        this.left = ((this.frontBack - this.lastFrontBackAccel) - (this.leftRight - this.lastLeftRightAccel)) / (Clock.currentTimeMillis() - this.timeLastCalled);
+        this.right = ((this.frontBack - this.lastFrontBackAccel) + (this.leftRight - this.lastLeftRightAccel)) / (Clock.currentTimeMillis() - this.timeLastCalled);
 
-        if (left > minJerk) {
-            left = (left - minJerk) / maxJerk;
+        if (this.left > this.minJerk) {
+            this.left = (this.left - this.minJerk) / this.maxJerk;
         } else {
-            left = 0;
+            this.left = 0;
         }
 
-        if (right > minJerk) {
-            right = (right - minJerk) / maxJerk;
+        if (this.right > this.minJerk) {
+            this.right = (this.right - this.minJerk) / this.maxJerk;
         } else {
-            right = 0;
+            this.right = 0;
         }
 
-        for (Rumbleable rumbleable : rumbleables) {
-            rumbleable.rumble(left, right);
+        for (final Rumbleable rumbleable : this.rumbleables) {
+            rumbleable.rumble(this.left, this.right);
         }
 
-        lastLeftRightAccel = leftRight;
-        lastFrontBackAccel = frontBack;
-        timeLastCalled = Clock.currentTimeMillis();
+        this.lastLeftRightAccel = this.leftRight;
+        this.lastFrontBackAccel = this.frontBack;
+        this.timeLastCalled = Clock.currentTimeMillis();
     }
 
 }

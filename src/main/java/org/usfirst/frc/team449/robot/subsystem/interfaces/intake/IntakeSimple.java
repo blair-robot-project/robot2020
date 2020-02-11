@@ -10,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 
+import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
+
 /**
  * A simple intake subsystem.
  */
@@ -55,17 +57,21 @@ public class IntakeSimple extends SubsystemBase implements SubsystemIntake, Logg
      *                   [-1, 1]. Can be null to indicate that this intake doesn't have/use OUT_FAST.
      */
     @JsonCreator
-    public IntakeSimple(@JsonProperty(required = true) @NotNull SimpleMotor motor,
-                        @Nullable Double inSlowVel,
-                        @Nullable Double inFastVel,
-                        @Nullable Double outSlowVel,
-                        @Nullable Double outFastVel) {
+    public IntakeSimple(@JsonProperty(required = true) @NotNull final SimpleMotor motor,
+                        @Nullable final Double inSlowVel,
+                        @Nullable final Double inFastVel,
+                        @Nullable final Double outSlowVel,
+                        @Nullable final Double outFastVel) {
         this.motor = motor;
         this.inSlowVel = inSlowVel;
         this.inFastVel = inFastVel;
         this.outSlowVel = outSlowVel;
         this.outFastVel = outFastVel;
         this.mode = IntakeMode.OFF;
+
+        if (inSlowVel == null && inFastVel == null && outSlowVel == null && outFastVel == null) {
+            System.err.println(getLogPrefix(this) + "Warning: without any defined velocities; motor will never spin.");
+        }
     }
 
     /**
@@ -74,45 +80,45 @@ public class IntakeSimple extends SubsystemBase implements SubsystemIntake, Logg
     @NotNull
     @Override
     public SubsystemIntake.IntakeMode getMode() {
-        return mode;
+        return this.mode;
     }
 
     /**
      * @param mode The mode to switch the intake to.
      */
     @Override
-    public void setMode(@NotNull SubsystemIntake.IntakeMode mode) {
+    public void setMode(@NotNull final SubsystemIntake.IntakeMode mode) {
         switch (mode) {
             case OFF:
-                motor.setVelocity(0);
-                motor.disable();
+                this.motor.setVelocity(0);
+                this.motor.disable();
                 this.mode = IntakeMode.OFF;
                 break;
             case IN_FAST:
-                if (inFastVel != null) {
-                    motor.enable();
-                    motor.setVelocity(inFastVel);
+                if (this.inFastVel != null) {
+                    this.motor.enable();
+                    this.motor.setVelocity(this.inFastVel);
                     this.mode = IntakeMode.IN_FAST;
                 }
                 break;
             case IN_SLOW:
-                if (inSlowVel != null) {
-                    motor.enable();
-                    motor.setVelocity(inSlowVel);
+                if (this.inSlowVel != null) {
+                    this.motor.enable();
+                    this.motor.setVelocity(this.inSlowVel);
                     this.mode = IntakeMode.IN_SLOW;
                 }
                 break;
             case OUT_FAST:
-                if (outFastVel != null) {
-                    motor.enable();
-                    motor.setVelocity(outFastVel);
+                if (this.outFastVel != null) {
+                    this.motor.enable();
+                    this.motor.setVelocity(this.outFastVel);
                     this.mode = IntakeMode.OUT_FAST;
                 }
                 break;
             case OUT_SLOW:
-                if (outSlowVel != null) {
-                    motor.enable();
-                    motor.setVelocity(outSlowVel);
+                if (this.outSlowVel != null) {
+                    this.motor.enable();
+                    this.motor.setVelocity(this.outSlowVel);
                     this.mode = IntakeMode.OUT_SLOW;
                 }
                 break;

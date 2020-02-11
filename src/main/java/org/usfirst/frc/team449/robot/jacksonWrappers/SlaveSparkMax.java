@@ -8,8 +8,9 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.generalInterfaces.SlaveMotor;
 
-public class SlaveSparkMax implements Loggable {
+public class SlaveSparkMax implements SlaveMotor, Loggable {
 
     CANSparkMax slaveSpark;
 
@@ -18,42 +19,42 @@ public class SlaveSparkMax implements Loggable {
     boolean inverted;
 
     @JsonCreator
-    public SlaveSparkMax(@JsonProperty(required = true) int port,
-                         @Nullable Boolean invert,
-                         @Nullable PDP PDP) {
+    public SlaveSparkMax(@JsonProperty(required = true) final int port,
+                         @Nullable final Boolean invert,
+                         @Nullable final PDP PDP) {
 
-        slaveSpark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
+        this.slaveSpark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-        inverted = invert == null ? false : invert;
+        this.inverted = invert == null ? false : invert;
 
-        slaveSpark.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen).enableLimitSwitch(false);
-        slaveSpark.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen).enableLimitSwitch(false);
+        this.slaveSpark.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen).enableLimitSwitch(false);
+        this.slaveSpark.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen).enableLimitSwitch(false);
 
-        slaveSpark.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100);
-        slaveSpark.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 100);
-        slaveSpark.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 100);
+        this.slaveSpark.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100);
+        this.slaveSpark.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 100);
+        this.slaveSpark.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 100);
 
         this.PDP = PDP;
     }
 
-    public void setMasterSpark(CANSparkMax masterController, boolean brakeMode) {
-        slaveSpark.follow(masterController, inverted);
-        slaveSpark.setIdleMode(brakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
+    public void setMasterSpark(final CANSparkMax masterController, final boolean brakeMode) {
+        this.slaveSpark.follow(masterController, this.inverted);
+        this.slaveSpark.setIdleMode(brakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
     }
 
-    public void setMasterPhoenix(int masterPort, boolean brakeMode){
-        slaveSpark.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, masterPort);
-        slaveSpark.setIdleMode(brakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
-        slaveSpark.setInverted(inverted);
+    public void setMasterPhoenix(final int masterPort, final boolean brakeMode) {
+        this.slaveSpark.follow(CANSparkMax.ExternalFollower.kFollowerPhoenix, masterPort);
+        this.slaveSpark.setIdleMode(brakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
+        this.slaveSpark.setInverted(this.inverted);
     }
 
     @Log
     public double getOutputCurrent (){
-        return  slaveSpark.getOutputCurrent();
+        return this.slaveSpark.getOutputCurrent();
     }
 
     @Log
     public double getMotorOutputVoltage(){
-        return slaveSpark.getAppliedOutput();
+        return this.slaveSpark.getAppliedOutput();
     }
 }
