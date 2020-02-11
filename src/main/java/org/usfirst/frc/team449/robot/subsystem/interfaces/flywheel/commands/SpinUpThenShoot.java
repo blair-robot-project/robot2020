@@ -37,7 +37,7 @@ public class SpinUpThenShoot<T extends Subsystem & SubsystemFlywheel> extends Se
         this.addCommands(
                 new SpinUpFlywheel(flywheel, feeder),
                 new ParallelRaceGroup(
-                        new WaitUntilCommand(flywheel::isAtShootingSpeed),
+                        new WaitUntilCommand(flywheel::isReadyToShoot),
                         new WaitCommand(flywheel.getSpinUpTimeoutSecs())
                 ),
                 new TurnAllOn(flywheel)

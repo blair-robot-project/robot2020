@@ -38,7 +38,7 @@ public class ShootWhenFlywheelAtSpeed<T extends Subsystem & SubsystemFlywheel> e
                 new ConditionalCommand(
                         new TurnAllOn(flywheel),
                         new SpinUpFlywheel(flywheel, feeder),
-                        flywheel::isAtShootingSpeed),
+                        flywheel::isReadyToShoot),
                 new WaitCommand(Objects.requireNonNullElse(pollingInterval, 1.0))));
         this.addRequirements(flywheel);
     }

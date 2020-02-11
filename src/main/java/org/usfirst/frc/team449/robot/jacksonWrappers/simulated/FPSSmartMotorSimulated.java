@@ -5,13 +5,14 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
+import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotorBase;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
@@ -24,27 +25,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.DoubleSupplier;
 
 import static org.usfirst.frc.team449.robot.other.Util.clamp;
 import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
+/*
+TODO
+ Normalized[Distance/Angle/etc]
+ Static factory returns double or wrapper class (for type safety)
+ Perhaps pooling class instances via AutoClosable
+ */
+
 /**
  * Class that implements {@link FPSSmartMotor} without relying on the existence of actual hardware.
- * This class simulates a smart motor controller. Motor physics are simulated by {@link SimulatedMotor}.
+ * This class simulates a smart motor controller. Motor physics are simulated by {@link SimulatedMotorSimple}.
  * <p>
  * This class is automatically instantiated by the FPSSmartMotor factory method when the robot is running in a
  * simulation and should not be otherwise referenced in code.
  * </p>
- * <p>
- * The current implementation relies on fictional physics and does not involve
- * </p>
  */
-public class FPSSmartMotorSimulated implements FPSSmartMotor, Updatable {
+public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatable {
     /**
      * Maximum PID integral for anti-windup.
      */
-    private static final double MAX_INTEGRAL = Double.POSITIVE_INFINITY;
+    private static final double MAX_INTEGRAL = 100;
     @NotNull
     private final String name;
     private final Type controllerType;
@@ -56,10 +60,12 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor, Updatable {
      */
     @Log
     private double setpoint;
+
+    @Log.ToString
     @NotNull
     private ControlMode controlMode = ControlMode.Disabled;
     @NotNull
-    private final FPSSmartMotorSimulated.PID pid = new PID(MAX_INTEGRAL, () -> this.setpoint, 0, 0, 0);
+    private final PIDController controller;
     @NotNull
     private PerGearSettings currentGearSettings;
     @NotNull
@@ -67,11 +73,11 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor, Updatable {
     // Log the getters instead because logging the fields doesn't cause physics updates.
     private double percentOutput;
     /**
-     * (V)
+     * (V) Voltage supplied to controller.
      */
-    private final double busVoltage = SimulatedMotor.NOMINAL_VOLTAGE;
+    private final double busVoltage = SimulatedMotorSimple.DefaultConstants.NOMINAL_VOLTAGE;
     @NotNull
-    private final SimulatedMotor motor = new SimulatedMotor(() -> this.busVoltage * this.percentOutput);
+    private final SimulatedMotor motor = new SimulatedMotorSimple();
     @Log
     private double lastStateUpdateTime = Clock.currentTimeMillis();
 
@@ -113,6 +119,9 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor, Updatable {
         this.reverseOutput = reverseOutput;
         this.feetPerRotation = Objects.requireNonNullElse(feetPerRotation, 1.0);
         this.name = name != null ? name : String.format("%s_%d", type == Type.SPARK ? "spark" : type == Type.TALON ? "talon" : "MotorControllerUnknownType", port);
+
+//        this.pid = new PID(MAX_INTEGRAL, "PID " + name, 0, 0, 0);
+        this.controller = new PIDController(0, 0, 0);
 
         //Most of the constructor is stolen from FPSSparkMax.
 
@@ -156,10 +165,10 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor, Updatable {
 
         switch (controlMode) {
             case Velocity:
-                this.pid.reconfigure(this.currentGearSettings.kP, this.currentGearSettings.kI, this.currentGearSettings.kD);
+                this.controller.setPID(this.currentGearSettings.kP, this.currentGearSettings.kI, this.currentGearSettings.kD);
                 break;
             case Position:
-                this.pid.reconfigure(this.currentGearSettings.posKP, this.currentGearSettings.posKI, this.currentGearSettings.posKD);
+                this.controller.setPID(this.currentGearSettings.posKP, this.currentGearSettings.posKI, this.currentGearSettings.posKD);
                 break;
 
             case Current:
@@ -190,7 +199,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor, Updatable {
         final double deltaSecs = deltaMillis * 0.001;
 
         this.updateControllerLogic(deltaSecs);
-        this.motor.updatePhysics(deltaSecs);
+        this.motor.updatePhysics(deltaSecs, this.busVoltage * this.percentOutput);
 
         this.lastStateUpdateTime = now;
     }
@@ -205,9 +214,7 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor, Updatable {
             case Velocity:
             case Position:
                 final double newActualValue = (this.controlMode == ControlMode.Velocity ? this.motor.getVelocity() : this.motor.getPosition());
-                final double newError = this.setpoint - newActualValue;
-                this.pid.update(this.reverseOutput ? -newError : newError, deltaSecs);
-                targetPercentOutput = this.pid.getOutput();
+                targetPercentOutput = this.controller.calculate(newActualValue, this.setpoint);
                 break;
 
             case Disabled:
@@ -229,46 +236,58 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor, Updatable {
         this.percentOutput = clamp(this.percentOutput + percentOutputDelta);
     }
 
-    private static class PID implements Loggable {
-        @Log
-        private double error, integral, derivative;
-        private final DoubleSupplier getSetPoint;
-        private double kP;
-        private double kI;
-        private double kD;
-        private final double maxIntegral;
-
-        public PID(final double maxIntegral, final DoubleSupplier getSetPoint, final double kP, final double kI, final double kD) {
-            this.maxIntegral = maxIntegral;
-            this.getSetPoint = getSetPoint;
-            this.kP = kP;
-            this.kI = kI;
-            this.kD = kD;
-        }
-
-        public void update(final double newError, final double deltaSecs) {
-            this.integral += (this.error + newError) * 0.5 * deltaSecs;
-            this.integral = clamp(this.integral, this.maxIntegral);
-            this.derivative = (newError - this.error) / deltaSecs;
-            this.error = newError;
-        }
-
-        @Log
-        public double getOutput() {
-            return this.kP * this.error + this.kI * this.integral + this.kD * this.derivative;
-        }
-
-        public void reconfigure(final double kP, final double kI, final double kD) {
-            this.kP = kP;
-            this.kI = kI;
-            this.kD = kD;
-            this.resetState();
-        }
-
-        public void resetState() {
-            this.error = this.derivative = this.integral = 0;
-        }
-    }
+//    private static class PID implements Loggable {
+//        @Log
+//        private double error, integral, derivative;
+//        private final String name;
+//        @Log
+//        private double kP;
+//        @Log
+//        private double kI;
+//        @Log
+//        private double kD;
+//        private final double maxIntegral;
+//
+//        public PID(final double maxIntegral, final String name, final double kP, final double kI, final double kD) {
+//            this.maxIntegral = maxIntegral;
+//            this.name = name;
+//            this.kP = kP;
+//            this.kI = kI;
+//            this.kD = kD;
+//        }
+//
+//        public void update(final double newError, final double deltaSecs) {
+//            this.integral += (this.error + newError) * 0.5 * deltaSecs;
+//            this.integral = clamp(this.integral, this.maxIntegral);
+//            this.derivative = (newError - this.error) / deltaSecs;
+//            this.error = newError;
+//        }
+//
+//        @Log
+//        public double getOutput() {
+//            return this.kP * this.error + this.kI * this.integral + this.kD * this.derivative;
+//        }
+//
+//        public void reconfigure(final double kP, final double kI, final double kD) {
+//            this.kP = kP;
+//            this.kI = kI;
+//            this.kD = kD;
+//            this.resetState();
+//        }
+//
+//        public void setP(final double pValue) {
+//            this.kP = pValue;
+//        }
+//
+//        public void resetState() {
+//            this.error = this.derivative = this.integral = 0;
+//        }
+//
+//        @Override
+//        public String configureLogName() {
+//            return this.name;
+//        }
+//    }
 
     /**
      * Set the motor output voltage to a given percent of available voltage.
@@ -548,8 +567,8 @@ public class FPSSmartMotorSimulated implements FPSSmartMotor, Updatable {
      */
     @Override
     public void resetPosition() {
-        this.motor.resetPosition();
-        this.pid.resetState();
+        this.motor.setPosition(0);
+        this.controller.reset();
     }
 
     /**

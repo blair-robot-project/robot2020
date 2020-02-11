@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
-import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
+import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotorBase;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import java.util.Map;
  * in this class takes arguments in post-gearing FPS.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class FPSTalon implements FPSSmartMotor {
+public class FPSTalon extends FPSSmartMotorBase {
 
     Faults faults = new Faults();
 
@@ -155,7 +155,7 @@ public class FPSTalon implements FPSSmartMotor {
      * @param slaveTalons                The other {@link TalonSRX}s that are slaved to this one.
      * @param slaveVictors               The {@link com.ctre.phoenix.motorcontrol.can.VictorSPX}s that are slaved to
      *                                   this Talon.
-     * @param slaveSparks             The Spark/Neo combinations slaved to this Talon.
+     * @param slaveSparks                The Spark/Neo combinations slaved to this Talon.
      */
     @JsonCreator
     public FPSTalon(@JsonProperty(required = true) final int port,
@@ -353,8 +353,8 @@ public class FPSTalon implements FPSSmartMotor {
             }
         }
 
-        if (slaveSparks != null){
-            for(final SlaveSparkMax slave :slaveSparks){
+        if (slaveSparks != null) {
+            for (final SlaveSparkMax slave : slaveSparks) {
                 slave.setMasterPhoenix(port, enableBrakeMode);
             }
         }
@@ -588,7 +588,7 @@ public class FPSTalon implements FPSSmartMotor {
         this.setpoint = velocity;
         this.canTalon.config_kF(0, 0, 0);
         this.canTalon.set(ControlMode.Velocity, this.nativeSetpoint, DemandType.ArbitraryFeedForward,
-                this.currentGearSettings.feedForwardCalculator.calculate(velocity) / 12. );
+                this.currentGearSettings.feedForwardCalculator.calculate(velocity) / 12.);
     }
 
     /**
@@ -612,7 +612,6 @@ public class FPSTalon implements FPSSmartMotor {
      * @return The setpoint in sensible units for the current control mode.
      */
     @Nullable
-    @Log
     @Override
     public Double getSetpoint() {
         return this.setpoint;
@@ -623,7 +622,6 @@ public class FPSTalon implements FPSSmartMotor {
      *
      * @return Voltage in volts.
      */
-    @Log
     @Override
     public double getOutputVoltage() {
         return this.canTalon.getMotorOutputVoltage();
@@ -692,7 +690,7 @@ public class FPSTalon implements FPSSmartMotor {
      * @return Feedforward calculator for this gear
      */
     @Override
-    public SimpleMotorFeedforward getCurrentGearFeedForward(){
+    public SimpleMotorFeedforward getCurrentGearFeedForward() {
         return this.currentGearSettings.feedForwardCalculator;
     }
 

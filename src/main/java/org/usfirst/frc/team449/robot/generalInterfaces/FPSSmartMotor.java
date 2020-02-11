@@ -30,6 +30,7 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.FPSSmartMotorSimulated;
+import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.FPSSmartMotorUnimplemented;
 import org.usfirst.frc.team449.robot.other.Updater;
 
 import java.util.HashMap;
@@ -53,6 +54,11 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      * Whether to simulate sparks if they cause a HAL error when constructed.
      */
     boolean SIMULATE_SPARKS_IF_ERR = true;
+    /**
+     * Whether the simulation controllers constructed do any actual simulation calculations.
+     * Turn off if their impact on loop time is a concern.
+     */
+    boolean ACTUAL_SIMULATION = true;
 
     /**
      * Creates a new <b>SPARK</b> or <b>Talon</b> motor controller.
@@ -306,39 +312,77 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
 
             case SIMULATED:
                 logHelper.log("SIM:  " + motorLogName);
-                final var simulated = new FPSSmartMotorSimulated(
-                        actualType,
-                        port,
-                        enableBrakeMode,
-                        name,
-                        reverseOutput,
-                        PDP,
-                        fwdLimitSwitchNormallyOpen,
-                        revLimitSwitchNormallyOpen,
-                        remoteLimitSwitchID,
-                        fwdSoftLimit,
-                        revSoftLimit,
-                        postEncoderGearing,
-                        feetPerRotation,
-                        currentLimit,
-                        enableVoltageComp,
-                        perGearSettings,
-                        startingGear,
-                        startingGearNum,
-                        sparkStatusFramesMap,
-                        controlFrameRateMillis,
-                        talonStatusFramesMap,
-                        controlFrameRatesMillis,
-                        voltagePerCurrentLinReg,
-                        voltageCompSamples,
-                        feedbackDevice,
-                        encoderCPR,
-                        reverseSensor,
-                        updaterProcessPeriodSecs,
-                        slaveTalons,
-                        slaveVictors,
-                        slaveSparks);
-                Updater.subscribe(simulated);
+                final FPSSmartMotor simulated;
+
+                if (ACTUAL_SIMULATION) {
+                    final var actualSimulated = new FPSSmartMotorSimulated(
+                            actualType,
+                            port,
+                            enableBrakeMode,
+                            name,
+                            reverseOutput,
+                            PDP,
+                            fwdLimitSwitchNormallyOpen,
+                            revLimitSwitchNormallyOpen,
+                            remoteLimitSwitchID,
+                            fwdSoftLimit,
+                            revSoftLimit,
+                            postEncoderGearing,
+                            feetPerRotation,
+                            currentLimit,
+                            enableVoltageComp,
+                            perGearSettings,
+                            startingGear,
+                            startingGearNum,
+                            sparkStatusFramesMap,
+                            controlFrameRateMillis,
+                            talonStatusFramesMap,
+                            controlFrameRatesMillis,
+                            voltagePerCurrentLinReg,
+                            voltageCompSamples,
+                            feedbackDevice,
+                            encoderCPR,
+                            reverseSensor,
+                            updaterProcessPeriodSecs,
+                            slaveTalons,
+                            slaveVictors,
+                            slaveSparks);
+                    Updater.subscribe(actualSimulated);
+                    simulated = actualSimulated;
+                } else {
+                    simulated = new FPSSmartMotorUnimplemented(
+                            actualType,
+                            port,
+                            enableBrakeMode,
+                            name,
+                            reverseOutput,
+                            PDP,
+                            fwdLimitSwitchNormallyOpen,
+                            revLimitSwitchNormallyOpen,
+                            remoteLimitSwitchID,
+                            fwdSoftLimit,
+                            revSoftLimit,
+                            postEncoderGearing,
+                            feetPerRotation,
+                            currentLimit,
+                            enableVoltageComp,
+                            perGearSettings,
+                            startingGear,
+                            startingGearNum,
+                            sparkStatusFramesMap,
+                            controlFrameRateMillis,
+                            talonStatusFramesMap,
+                            controlFrameRatesMillis,
+                            voltagePerCurrentLinReg,
+                            voltageCompSamples,
+                            feedbackDevice,
+                            encoderCPR,
+                            reverseSensor,
+                            updaterProcessPeriodSecs,
+                            slaveTalons,
+                            slaveVictors,
+                            slaveSparks);
+                }
                 result = simulated;
                 break;
 
@@ -563,11 +607,8 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
     @Override
     String configureLogName();
 
-    int LOG_WIDTH = 4, LOG_HEIGHT = 3;
-
     /**
      * Gets the default width and height of the layout of this instance of the class in Shuffleboard.
-     * f
      *
      * @return an array of {width, height}.
      */
@@ -576,10 +617,15 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
         return new int[] {4, 3};
     }
 
-//    @Override
-//    default int[] configureLayoutPosition() {
-//        return new int[] {3, 4};
-//    }
+    /**
+     * Gets the default position of the layout of this instance of the class in Shuffleboard.
+     *
+     * @return an array of {x, y}.
+     */
+    @Override
+    default int[] configureLayoutPosition() {
+        return new int[] {3, 3};
+    }
 
     /**
      * Gets whether the motor is a simulated motor.
@@ -605,7 +651,11 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
          *
          * @see FPSSmartMotorSimulated
          */
-        SIMULATED("SIMULATED");
+        SIMULATED("SIMULATED"),
+        /**
+         * Simulated motor that lacks implementation for performance
+         */
+        UNIMPLEMENTED("UNIMPLEMENTED");
 
         public final String friendlyName;
 
@@ -619,13 +669,3 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
         }
     }
 }
-
-
-/*
-    /**
-     * Simulation implementation: {@link FPSSmartMotorSimulated}
-     *
-     * Supports {@link SimulationMode#WHEN_NECESSARY} for sparks if they cause a HAL error when constructed.
-     *
-SimulationMode SIMULATION_MODE = SimulationMode.NEVER;
- */

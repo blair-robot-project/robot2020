@@ -5,7 +5,12 @@ import org.jetbrains.annotations.Contract;
 /**
  * A wrapper on {@link System}.currentTimeMillis that caches the time, to avoid calling the currentTimeMillis method.
  */
-public class Clock {
+public final class Clock {
+    /**
+     * Make constructor private so it can't be called
+     */
+    private Clock() {
+    }
 
     /**
      * The starting time for this clock.
@@ -16,12 +21,6 @@ public class Clock {
      * The time since startTime, in milliseconds.
      */
     private static long currentTime;
-
-    /**
-     * Make constructor private so it can't be called
-     */
-    private Clock() {
-    }
 
     /**
      * Updates the current time.

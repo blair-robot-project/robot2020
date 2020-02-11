@@ -171,7 +171,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     // TODO: Split into FlywheelTwoSides like how intake does it?
     @Override
     @Log
-    public boolean isAtShootingSpeed() {
+    public boolean isReadyToShoot() {
         if (this.state == FlywheelState.OFF) return false;
 
         final double timeSinceLastSpinUp = Clock.currentTimeMillis() - this.lastSpinUpTimeMS;
@@ -181,7 +181,6 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
         if (this.minShootingSpeedFPS == null) return false;
 
         final Double actualVelocity = this.shooterMotor.getVelocity();
-        // TODO: Should we be looking at velocity or speed?
         return !Double.isNaN(actualVelocity) && Math.abs(actualVelocity) > this.minShootingSpeedFPS;
     }
 
@@ -190,7 +189,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public boolean isConditionTrue() {
-        return this.isAtShootingSpeed();
+        return this.isReadyToShoot();
     }
 
     /**

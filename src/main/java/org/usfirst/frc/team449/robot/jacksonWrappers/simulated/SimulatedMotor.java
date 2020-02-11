@@ -2,104 +2,31 @@ package org.usfirst.frc.team449.robot.jacksonWrappers.simulated;
 
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-import java.util.function.DoubleSupplier;
-
-/**
- * Units are in rotations.
- */
-public class SimulatedMotor implements Loggable {
+public interface SimulatedMotor extends Loggable {
     /**
-     * (V) Nominal bus voltage; used to calculate maximum speed.
+     * Updates the motor's state.
+     *
+     * @param deltaSecs  (s) - the amount of time that has passed since the motor was last updated
+     * @param voltage    (V) - the current voltage applied to the motor
+     * @param loadTorque T_l (N*m) - the current torque of load on the motor
      */
-    public static final double NOMINAL_VOLTAGE = 12;
-    /**
-     * (Kg * m^2) Moment of moving parts.
-     */
-    private static final double MOMENT = 20;
-    /**
-     * (Ohms) Used to calculate output current.
-     */
-    private static final double RESISTANCE = 1;
-    /**
-     * (N*m / V) Torque per volt due to force of motor.
-     */
-    private static final double TORQUE_COEFF = 450;
-    /**
-     * (N*m / (R/s)) Torque per RPS due to motor internal friction.
-     */
-    private static final double FRICTION_COEFF = -10;
-    /**
-     * The maximum speed that the simulation will by nature allow the motor to sustain. Not really used for anything.
-     */
-    @Log(name = "maxSpeed")
-    private static final double TRUE_MAX_SPEED = TORQUE_COEFF * NOMINAL_VOLTAGE / -FRICTION_COEFF;
+    void updatePhysics(double deltaSecs, double voltage, double loadTorque);
 
-    private final double moment;
-    private final double torqueCoeff;
-    private final double frictionCoeff;
-
-    @NotNull
-    @Log(methodName = "getAsDouble")
-    private final DoubleSupplier voltageSource;
-
-    /**
-     * (R/s) Signed rotations per second
-     */
-    private double velocity;
-    /**
-     * Absolute rotation value
-     */
-    private double position;
-
-    public SimulatedMotor(@Nullable final DoubleSupplier voltageSource,
-                          @Nullable final Double moment,
-                          @Nullable final Double torqueCoeff,
-                          @Nullable final Double frictionCoeff) {
-        this.moment = Objects.requireNonNullElse(moment, MOMENT);
-        this.voltageSource = Objects.requireNonNullElse(voltageSource, () -> NOMINAL_VOLTAGE);
-        this.torqueCoeff = Objects.requireNonNullElse(torqueCoeff, TORQUE_COEFF);
-        this.frictionCoeff = Objects.requireNonNullElse(frictionCoeff, FRICTION_COEFF);
-    }
-
-    public SimulatedMotor(@NotNull final DoubleSupplier voltageSource) {
-        this(voltageSource, null, null, null);
-    }
-
-    public SimulatedMotor() {
-        this(null, null, null, null);
-    }
-
-    public void updatePhysics(final double deltaSecs) {
-        final double motorTorque = this.torqueCoeff * this.voltageSource.getAsDouble();
-        final double frictionTorque = this.frictionCoeff * this.velocity;
-        final double netTorque = motorTorque + frictionTorque;
-        final double angularAcceleration = netTorque / this.moment;
-
-        this.velocity += angularAcceleration * deltaSecs;
-        this.position += this.velocity * deltaSecs;
-
+    default void updatePhysics(final double deltaSecs, final double voltage) {
+        this.updatePhysics(deltaSecs, voltage, 0);
     }
 
     @Log
-    public double getVelocity() {
-        return this.velocity;
-    }
+    double getVelocity();
 
     @Log
-    public double getPosition() {
-        return this.position;
-    }
-
-    public void resetPosition() {
-        this.position = 0;
-    }
+    double getPosition();
 
     @Log
-    public double getCurrent() {
-        return this.voltageSource.getAsDouble() / RESISTANCE;
-    }
+    double getCurrent();
+
+    void setPosition(double value);
+
+    void setVelocity(double value);
 }

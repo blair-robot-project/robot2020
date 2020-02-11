@@ -1,11 +1,13 @@
 package org.usfirst.frc.team449.robot.other;
 
+import edu.wpi.first.wpiutil.math.MathUtil;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Stuff that doesn't fit anywhere else
+ * Utility class.
  */
-public class Util {
+public final class Util {
     private Util() {
     }
 
@@ -39,9 +41,7 @@ public class Util {
      */
     public static double clamp(final double value, final double lBound, final double uBound) {
         if (uBound < lBound) throw new IllegalArgumentException("uBound < lBound");
-        if (value > uBound) return uBound;
-        if (value < lBound) return lBound;
-        return value;
+        return MathUtil.clamp(value, lBound, uBound);
     }
 
     /**
@@ -63,5 +63,12 @@ public class Util {
      */
     public static double clamp(final double value) {
         return clamp(value, 1);
+    }
+
+    /**
+     * Holds constants for common class or member names for uses such as providing values to {@link Log#methodName()}.
+     */
+    public static class WellKnownNames {
+        public static final String GET_AS_DOUBLE = "getAsDouble";
     }
 }

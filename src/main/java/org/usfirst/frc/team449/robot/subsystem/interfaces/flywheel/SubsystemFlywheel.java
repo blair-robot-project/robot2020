@@ -1,7 +1,6 @@
 package org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -47,19 +46,27 @@ public interface SubsystemFlywheel {
     double getSpinUpTimeoutSecs();
 
     /**
-     * @return Whether the flywheel has attained a speed specified to be sufficient for shooting.
+     * @return Whether the flywheel has met its requirements for shooting such as attaining a certain speed.
      */
-    default boolean isAtShootingSpeed() { return true; }
+    default boolean isReadyToShoot() {
+        return true;
+    }
 
     /**
-     * An enum for the possible states of the flywheel.
+     * The possible states of the flywheel.
      */
     enum FlywheelState {
-        //Both flywheel and feeder off
+        /**
+         * Both flywheel and feeder off.
+         */
         OFF,
-        //Feeder off, flywheel on
+        /**
+         * Feeder off, flywheel on.
+         */
         SPINNING_UP,
-        //Both flywheel and feeder on
+        /**
+         * Both flywheel and feeder on.
+         */
         SHOOTING
     }
 }

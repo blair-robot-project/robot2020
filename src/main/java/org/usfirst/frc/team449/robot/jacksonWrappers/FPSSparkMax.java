@@ -17,7 +17,7 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
+import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotorBase;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class FPSSparkMax implements FPSSmartMotor {
+public class FPSSparkMax extends FPSSmartMotorBase {
     /**
      * REV brushless controller object
      */
@@ -124,7 +124,7 @@ public class FPSSparkMax implements FPSSmartMotor {
      *
      * @param port                       CAN port of this Spark.
      * @param name                       The Spark's name, used for logging purposes. Defaults to "spark_&gt;port&lt;"
-     * @param reverseOutput                   Whether to reverse the output.
+     * @param reverseOutput              Whether to reverse the output.
      * @param enableBrakeMode            Whether to brake or coast when stopped.
      * @param PDP                        The PDP this Spark is connected to.
      * @param fwdLimitSwitchNormallyOpen Whether the forward limit switch is normally open or closed. If this is null,

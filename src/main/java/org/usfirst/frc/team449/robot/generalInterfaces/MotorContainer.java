@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MotorContainer implements Loggable {
+public final class MotorContainer implements Loggable {
     @NotNull
     @Log.Exclude
     private static final MotorContainer instance = new MotorContainer();

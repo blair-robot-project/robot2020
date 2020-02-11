@@ -24,9 +24,6 @@ import java.util.TimerTask;
  */
 //@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SpinUpFlywheelUntilIntakeStops extends SequentialCommandGroup implements ISpinUpFlywheelCommand {
-
-    Command x;
-
     /**
      * @param timeToStart           how long the feeder waits to start. Not sure how necessary this is
      * @param spinUpFlywheelCommand
@@ -54,9 +51,7 @@ public class SpinUpFlywheelUntilIntakeStops extends SequentialCommandGroup imple
                 //TODO make this less complicated, this is even worse than before
                 new ConditionalCommandFunctional(
                         new CommandBase() {
-                            final Runnable endCommand = () -> {
-                                this.end(false);
-                            };
+                            final Runnable endCommand = () -> this.end(false);
 
                             @Override
                             public void execute() {
@@ -81,5 +76,4 @@ public class SpinUpFlywheelUntilIntakeStops extends SequentialCommandGroup imple
                         null)
         );
     }
-
 }

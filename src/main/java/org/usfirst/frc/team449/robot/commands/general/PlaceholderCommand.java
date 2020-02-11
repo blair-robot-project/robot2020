@@ -13,7 +13,7 @@ import java.util.Set;
  * For a command that prints something to the console every time that it is run, use {@link edu.wpi.first.wpilibj2.command.PrintCommand}
  * </p>
  */
-public class PlaceholderCommand implements Command {
+public final class PlaceholderCommand implements Command {
     @JsonCreator
     private PlaceholderCommand() {
     }
