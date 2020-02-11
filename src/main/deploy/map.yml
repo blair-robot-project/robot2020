@@ -23,12 +23,10 @@ subsystems:
           port: 1
           reverseOutput: true
           slaveTalons:
-            - org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon:
-                port: 2
-                invertType: FollowMaster
-            - org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon:
-                port: 3
-                invertType: FollowMaster
+            - port: 2
+              invertType: FollowMaster
+            - port: 3
+              invertType: FollowMaster
       rightMotor:
         org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
           '@id': rightdrive
@@ -36,12 +34,10 @@ subsystems:
           port: 4
           reverseOutput: false
           slaveTalons:
-            - org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon:
-                port: 5
-                invertType: FollowMaster
-            - org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon:
-                port: 6
-                invertType: FollowMaster
+            - port: 5
+              invertType: FollowMaster
+            - port: 6
+              invertType: FollowMaster
 
 # COMMANDS
 commands:
