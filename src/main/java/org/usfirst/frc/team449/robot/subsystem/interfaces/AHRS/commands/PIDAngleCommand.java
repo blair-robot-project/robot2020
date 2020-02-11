@@ -128,6 +128,11 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
         pidController.setSetpoint(setpoint);
     }
 
+    @Log
+    protected double getSetpoint(){
+        return pidController.getSetpoint();
+    }
+
     /**
      * Raw output of the PID loop for later processing
      *
@@ -138,9 +143,6 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
         return pidController.calculate(subsystem.getHeadingCached());
     }
 
-    protected double getRawOutputHardcoded(double setpoint){
-        return pidController.calculate(subsystem.getHeadingCached(), setpoint);
-    }
 
     @Log
     public double getError() {
@@ -156,6 +158,21 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
     @Log
     protected double getOutput() {
         double controllerOutput = getRawOutput();
+        //Set the output to the minimum if it's too small.
+        if (controllerOutput > 0 && controllerOutput < minimumOutput) {
+            controllerOutput = minimumOutput;
+        } else if (controllerOutput < 0 && controllerOutput > -minimumOutput) {
+            controllerOutput = -minimumOutput;
+        }
+        if (inverted) {
+            controllerOutput *= -1;
+        }
+
+        return controllerOutput;
+    }
+
+    protected double getOutputHardcoded(double setpoint){
+        double controllerOutput = pidController.calculate(subsystem.getHeadingCached(), setpoint);
         //Set the output to the minimum if it's too small.
         if (controllerOutput > 0 && controllerOutput < minimumOutput) {
             controllerOutput = minimumOutput;

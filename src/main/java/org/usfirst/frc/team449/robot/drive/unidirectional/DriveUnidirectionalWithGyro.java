@@ -1,6 +1,9 @@
 package org.usfirst.frc.team449.robot.drive.unidirectional;
 
 import com.fasterxml.jackson.annotation.*;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -65,6 +68,12 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Nullable
     private Double cachedLeftVel, cachedRightVel, cachedLeftPos, cachedRightPos;
 
+    private NetworkTableInstance tableInst = NetworkTableInstance.getDefault();
+
+    private NetworkTable table = tableInst.getTable("SmartDashboard");
+
+    private NetworkTableEntry xEntry = new NetworkTableEntry(tableInst, 1), yEntry = new NetworkTableEntry(tableInst, 0);
+
     /**
      * Default constructor.
      *
@@ -86,6 +95,15 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
         this.overrideGyro = false;
         this.driveKinematics = new DifferentialDriveKinematics(trackWidthMeters);
         this.driveOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+    }
+
+    @Override
+    public void periodic() {
+        updateOdometry();
+        var translation = driveOdometry.getPoseMeters().getTranslation();
+        xEntry.setNumber(translation.getX());
+        yEntry.setNumber(translation.getY());
+        //m_xEntry.setNumber(translation.getX());
     }
 
     /**
@@ -344,7 +362,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Log
     public void resetOdometry(Pose2d pose){
-        resetPosition();;
+        resetPosition();
         driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
     }
 
@@ -361,6 +379,11 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     public Pose2d getCurrentPose(){
         return driveOdometry.getPoseMeters() != null ? driveOdometry.getPoseMeters() : new Pose2d(new Translation2d(0, 0),new Rotation2d(0));
+    }
+
+    @Log
+    public double getPoseHeading(){
+        return getCurrentPose().getRotation().getRadians();
     }
 
     /**

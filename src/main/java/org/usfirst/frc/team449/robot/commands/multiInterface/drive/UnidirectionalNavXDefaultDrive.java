@@ -181,7 +181,6 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
 
             //Adjust the heading according to the PID output, it'll be positive if we want to go right.
             subsystem.setOutput(leftOutput - finalOutput, rightOutput + finalOutput);
-            System.out.println("Setpoint: " + pidController.getSetpoint() + "PID: " + getRawOutputHardcoded(20));
         }
         //If we're free driving...
         else {
@@ -267,9 +266,9 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
         return drivingStraight;
     }
 
-//    @Log
+    @Override
     public double getRawOutput(){
-        return rawOutput;
+        return super.getRawOutput();
     }
 
     @Log

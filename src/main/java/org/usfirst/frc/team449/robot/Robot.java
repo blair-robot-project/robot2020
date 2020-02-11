@@ -45,7 +45,7 @@ public class Robot extends TimedRobot {
     /**
      * The name of the map to read from. Should be overriden by a subclass to change the name.
      */
-    protected String mapName = "sparkdrive.yml";
+    protected String mapName = "trajtest.yml";
 
     /**
      * The object constructed directly from the yaml map.
@@ -137,7 +137,8 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         //Run the auto startup command
-        if (robotMap.getAutoStartupCommands() != null && !DriverStation.getInstance().getGameSpecificMessage().isEmpty()) {
+        // && !DriverStation.getInstance().getGameSpecificMessage().isEmpty()
+        if (robotMap.getAutoStartupCommands() != null) {
             robotMap.getAutoStartupCommands().forEachRemaining(Command::schedule);
         }
     }

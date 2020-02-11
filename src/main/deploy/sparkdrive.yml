@@ -40,9 +40,9 @@ subsystems:
               kP: 0
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 0.141
-                  kV: 5.36
-                  kA: 0.566
+                  kS: 0.12
+                  kV: 5.21
+                  kA: 0.354
             - &highGear
               gear: HIGH
               postEncoderGearing: 0.12936611
@@ -69,9 +69,9 @@ subsystems:
             - <<: *lowGear
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 0.103
-                  kV: 5.31
-                  kA: 0.423
+                  kS: 0.128
+                  kV: 5.12
+                  kA: 0.397
             - <<: *highGear
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
@@ -104,77 +104,77 @@ subsystems:
             forward: 1
             reverse: 0
           startingGear: LOW
-  # SHOOTER
-  - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-      '@id': shooterFlywheel
-      shooterMotor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.UPSSparkMax:
-          '@id': shooterMotor
-          port: 7 #TODO
-          name: rightMotor
-          inverted: true
-          enableBrakeMode: true
-          PDP: PDP
-          enableVoltageComp: true #TODO
-          perGearSettings:
-          - gearNum: 0
-            feedForwardCalculator:
-              org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                kS: 0
-                kV: 0.126
-                kA: 0
-            maxSpeed: 90 #rps
-            kP: 0 #5e-5 #0.0001
-            kI: 0.
-            kD: 0
-          startingGearNum: 0 #TODO
-      otherShooterMotor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.UPSSparkMax:
-          '@id': shooterMotor2
-          port: 8 #TODO
-          name: leftMotor
-          inverted: false
-          enableBrakeMode: true
-          PDP: PDP
-          enableVoltageComp: true #TODO
-          perGearSettings:
-            - gearNum: 0
-              feedForwardCalculator:
-                org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 0
-                  kV: 0.126
-                  kA: 0
-              maxSpeed: 90 #rps
-              kP: 0 #0.0001
-              kI: 0
-              kD: 0
-          startingGearNum: 0 #TODO
-      shooterThrottle: 1 #.55 #percent
-      kickerMotor:
-        org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.MappedVictorSPX: #TODO TODO
-          '@id': kickerVictor
-          port: 7
-          inverted: false
-          brakeMode: false
-      kickerThrottle: 1 #percent
-  # FEEDER
-  - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-      '@id': feeder
-      motor:
-        org.usfirst.frc.team449.robot.jacksonWrappers.UPSTalon: #TODO TODO
-          '@id': feederMotor
-          port: 8 #TODO
-          name: feederMotor
-          reverseOutput: false
-          enableBrakeMode: false
-          PDP: PDP
-          currentLimit: 10 #TODO
-          reverseSensor: false #TODO
-          startingGearNum: 0 #TODO
-      inSlowVel: 0
-      inFastVel: 0.15
-      outSlowVel: -0.1
-      outFastVel: -0.2
+#  # SHOOTER
+#  - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
+#      '@id': shooterFlywheel
+#      shooterMotor:
+#        org.usfirst.frc.team449.robot.jacksonWrappers.UPSSparkMax:
+#          '@id': shooterMotor
+#          port: 7 #TODO
+#          name: rightMotor
+#          inverted: true
+#          enableBrakeMode: true
+#          PDP: PDP
+#          enableVoltageComp: true #TODO
+#          perGearSettings:
+#          - gearNum: 0
+#            feedForwardCalculator:
+#              org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
+#                kS: 0
+#                kV: 0.126
+#                kA: 0
+#            maxSpeed: 90 #rps
+#            kP: 0 #5e-5 #0.0001
+#            kI: 0.
+#            kD: 0
+#          startingGearNum: 0 #TODO
+#      otherShooterMotor:
+#        org.usfirst.frc.team449.robot.jacksonWrappers.UPSSparkMax:
+#          '@id': shooterMotor2
+#          port: 8 #TODO
+#          name: leftMotor
+#          inverted: false
+#          enableBrakeMode: true
+#          PDP: PDP
+#          enableVoltageComp: true #TODO
+#          perGearSettings:
+#            - gearNum: 0
+#              feedForwardCalculator:
+#                org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
+#                  kS: 0
+#                  kV: 0.126
+#                  kA: 0
+#              maxSpeed: 90 #rps
+#              kP: 0 #0.0001
+#              kI: 0
+#              kD: 0
+#          startingGearNum: 0 #TODO
+#      shooterThrottle: 1 #.55 #percent
+#      kickerMotor:
+#        org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.MappedVictorSPX: #TODO TODO
+#          '@id': kickerVictor
+#          port: 7
+#          inverted: false
+#          brakeMode: false
+#      kickerThrottle: 1 #percent
+#  # FEEDER
+#  - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+#      '@id': feeder
+#      motor:
+#        org.usfirst.frc.team449.robot.jacksonWrappers.UPSTalon: #TODO TODO
+#          '@id': feederMotor
+#          port: 8 #TODO
+#          name: feederMotor
+#          reverseOutput: false
+#          enableBrakeMode: false
+#          PDP: PDP
+#          currentLimit: 10 #TODO
+#          reverseSensor: false #TODO
+#          startingGearNum: 0 #TODO
+#      inSlowVel: 0
+#      inFastVel: 0.15
+#      outSlowVel: -0.1
+#      outFastVel: -0.2
 
 
 
@@ -328,53 +328,53 @@ commands:
 #                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
 #                    drive
 #      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': shooterStartButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              '@id': mechanismsJoystick
-              port: 0
-          buttonNumber: 1 #A
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpThenShoot:
-          '@id': shootCommand
-          flywheel:
-            org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-              shooterFlywheel
-          feeder:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-              feeder
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': shooterStopButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: 2 #B
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOff:
-          '@id': shooterStopCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-              shooterFlywheel
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': feederStopButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: 3 #X
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
-          '@id': feederStopCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-              feeder
-          mode: IN_SLOW
-      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': shooterStartButton
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              '@id': mechanismsJoystick
+#              port: 0
+#          buttonNumber: 1 #A
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpThenShoot:
+#          '@id': shootCommand
+#          flywheel:
+#            org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
+#              shooterFlywheel
+#          feeder:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+#              feeder
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': shooterStopButton
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              mechanismsJoystick
+#          buttonNumber: 2 #B
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOff:
+#          '@id': shooterStopCommand
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
+#              shooterFlywheel
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': feederStopButton
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              mechanismsJoystick
+#          buttonNumber: 3 #X
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
+#          '@id': feederStopCommand
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+#              feeder
+#          mode: IN_SLOW
+#      action: WHEN_PRESSED
 
 
 # UPDATER
