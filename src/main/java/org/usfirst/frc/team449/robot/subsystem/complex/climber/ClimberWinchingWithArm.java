@@ -18,6 +18,7 @@ import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
  * A climber subsystem that has an arm that is raised pneumatically and lowered with force by means of a winch.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
+@Deprecated
 public class ClimberWinchingWithArm extends SubsystemBase implements SubsystemClimberWithArm, SubsystemBinaryMotor, SubsystemSolenoid, Loggable {
     @NotNull
     private final ClimberCurrentLimited motorSubsystem;
