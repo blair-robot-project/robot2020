@@ -1,5 +1,34 @@
 ---
 
+speeds:
+  - .TimesUnit:
+      first:
+        .Meter: 84
+      second:
+        .ReciprocalUnit:
+          .Second: 2
+  - .DividedUnit:
+      top:
+        .Meter: 1
+      bottom:
+        .Second: 1
+  - .DividedUnit:
+      top:
+        .Meter: 1
+      bottom:
+        .Minute: 1
+  - .TimesUnit:
+      first:
+        .Meter: 1
+      second:
+        .ReciprocalUnit:
+          .Minute: 1
+  - .DividedUnit:
+      top:
+        .Foot: 1
+      bottom:
+        .Second: 1
+
 # IntelliJ supports Ctrl+clicking anchors to find usages and declarations... so, hyperlinks! Yooooooooo!
 # Basically a table of contents; Ctrl+click on a heading in UPPER_SNAKE_CASE to jump back and forth between the
 # table of contents and actual location in the map.
