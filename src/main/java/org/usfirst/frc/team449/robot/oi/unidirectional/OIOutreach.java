@@ -28,10 +28,10 @@ public class OIOutreach implements OIUnidirectional {
     private final OIUnidirectional overridenOI;
 
     /**
-     * A button that overrides the lower priority controller
+     * A stopButton that overrides the lower priority controller
      */
     @NotNull
-    private final Button button;
+    private final Button stopButton;
 
     /**
      * The cached outputs for the left and right sides of the drive.
@@ -51,10 +51,10 @@ public class OIOutreach implements OIUnidirectional {
     @JsonCreator
     public OIOutreach(@NotNull @JsonProperty(required = true) OIUnidirectional overridingOI,
                       @NotNull @JsonProperty(required = true) OIUnidirectional overridenOI,
-                      @NotNull @JsonProperty(required = true) MappedButton button) {
+                      @NotNull @JsonProperty(required = true) MappedButton stopButton) {
         this.overridingOI = overridingOI;
         this.overridenOI = overridenOI;
-        this.button = button;
+        this.stopButton = stopButton;
     }
 
     /**
@@ -65,7 +65,7 @@ public class OIOutreach implements OIUnidirectional {
      */
     @Override
     public double[] getLeftRightOutput() {
-        if (!Arrays.equals(overridingOI.getLeftRightOutput(), new double[]{0, 0}) || button.get()) {
+        if (!Arrays.equals(overridingOI.getLeftRightOutput(), new double[]{0, 0}) || stopButton.get()) {
             return overridingOI.getLeftRightOutput();
         } else {
             return overridenOI.getLeftRightOutput();
@@ -92,7 +92,7 @@ public class OIOutreach implements OIUnidirectional {
      */
     @Override
     public double[] getFwdRotOutput() {
-        if (!Arrays.equals(overridingOI.getLeftRightOutput(), new double[]{0, 0}) || button.get()) {
+        if (!Arrays.equals(overridingOI.getLeftRightOutput(), new double[]{0, 0}) || stopButton.get()) {
             return overridingOI.getFwdRotOutput();
         } else {
             return overridenOI.getFwdRotOutput();

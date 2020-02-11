@@ -20,6 +20,7 @@ subsystems:
         org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
           '@id': leftdrive
           name: left
+          enableBrakeMode: true
           port: 1
           reverseOutput: true
           slaveTalons:
@@ -31,6 +32,7 @@ subsystems:
         org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon:
           '@id': rightdrive
           name: right
+          enableBrakeMode: true
           port: 4
           reverseOutput: false
           slaveTalons:
@@ -119,7 +121,7 @@ commands:
                         1: 0.75
               overridingOI:
                 org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad:
-                  '@id': oi
+                  '@id': oiOverride
                   gamepad:
                     org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
                       '@id': driverGamepad
@@ -180,7 +182,13 @@ commands:
                         0: 0.2
                         #1 : 0.25
                         #2: 0.25
-
+              stopButton:
+                org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+                  '@id': override
+                  joystick:
+                    org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                      driverGamepad
+                  buttonNumber: 1 #A
 # UPDATER
 updater:
   org.usfirst.frc.team449.robot.other.Updater:

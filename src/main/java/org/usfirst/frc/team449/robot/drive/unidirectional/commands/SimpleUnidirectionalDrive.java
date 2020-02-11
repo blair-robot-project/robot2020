@@ -58,7 +58,7 @@ public class SimpleUnidirectionalDrive<T extends Subsystem & DriveUnidirectional
      */
     @Override
     public void execute() {
-        subsystem.setOutput(oi.getLeftRightOutputCached()[0], oi.getLeftRightOutputCached()[1]);
+        subsystem.setOutput(oi.getLeftRightOutputCached()[0] * 0.5, oi.getLeftRightOutputCached()[1] * 0.5);
     }
 
     /**
