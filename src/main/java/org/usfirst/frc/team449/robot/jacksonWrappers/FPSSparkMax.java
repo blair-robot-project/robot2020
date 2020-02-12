@@ -506,13 +506,11 @@ public class FPSSparkMax extends FPSSmartMotorBase {
 
     @Nullable
     @Override
-    @Log
     public Double getSetpoint() {
         return this.setpoint;
     }
 
     @Override
-    @Log
     public double getOutputVoltage() {
         return this.spark.getAppliedOutput() * this.spark.getBusVoltage();
     }

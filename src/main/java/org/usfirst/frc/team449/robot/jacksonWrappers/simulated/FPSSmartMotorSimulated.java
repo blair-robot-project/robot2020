@@ -482,7 +482,6 @@ public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatab
      * @return Voltage in volts.
      */
     @Override
-    @Log
     public double getOutputVoltage() {
         return this.getBatteryVoltage() * this.percentOutput;
     }
