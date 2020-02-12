@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.MotorContainer;
 import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
+import org.usfirst.frc.team449.robot.units.AngleUnit;
 import org.usfirst.frc.team449.robot.units.DistanceUnit;
 import org.usfirst.frc.team449.robot.units.NormalizedUnit;
 import org.usfirst.frc.team449.robot.units.ReciprocalUnit;
@@ -70,14 +71,20 @@ public class RobotMap {
                     @NotNull @JsonProperty(required = true) final Runnable updater,
                     @NotNull @JsonProperty(required = true) final CommandContainer commands,
                     final boolean useCameraServer,
-                    final TimesUnit<DistanceUnit, ReciprocalUnit<TimeUnit>>[] speeds) {
+                    final DistanceUnit dist,
+                    final TimesUnit<? extends DistanceUnit,? extends TimeUnit> distTime,
+                    final TimesUnit<? extends DistanceUnit, ? extends ReciprocalUnit<? extends TimeUnit>>[] speeds,
+                    final TimesUnit<? extends AngleUnit, ? extends ReciprocalUnit<? extends TimesUnit<? extends TimeUnit, ? extends TimeUnit>>>[] angularAccelerations) {
         this.updater = updater;
         this.pdp = pdp;
         this.useCameraServer = useCameraServer;
         this.subsystems = subsystems;
         this.commands = commands;
 
+        System.err.println(dist.getNormalizedValue());
+        System.err.println(distTime.getNormalizedValue());
         Arrays.stream(speeds).mapToDouble(NormalizedUnit::getNormalizedValue).forEach(System.err::println);
+        Arrays.stream(angularAccelerations).mapToDouble(NormalizedUnit::getNormalizedValue).forEach(System.err::println);
     }
 
 //    /**
