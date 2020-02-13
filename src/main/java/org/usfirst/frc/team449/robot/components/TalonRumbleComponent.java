@@ -19,7 +19,7 @@ public class TalonRumbleComponent implements Runnable {
     Double rumbleAmount;
 
     @JsonCreator
-    public TalonRumbleComponent(@JsonProperty(required = true) FPSTalon talon,
+    public TalonRumbleComponent(@JsonProperty(required = true) MappedTalon talon,
                                 @JsonProperty(required = true) Rumbleable joystick,
                                 @Nullable Double rumbleAmount,
                                 boolean inverted) {

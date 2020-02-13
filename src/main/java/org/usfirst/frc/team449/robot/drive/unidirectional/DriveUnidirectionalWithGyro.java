@@ -145,7 +145,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Nullable
     @Override
     public Double getLeftPos() {
-        return this.leftMaster.getPositionFeet();
+        return this.leftMaster.getPositionUnits();
     }
 
     /**
@@ -156,7 +156,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Nullable
     @Override
     public Double getRightPos() {
-        return this.rightMaster.getPositionFeet();
+        return this.rightMaster.getPositionUnits();
     }
 
     /**

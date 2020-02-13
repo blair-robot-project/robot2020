@@ -278,13 +278,13 @@ public class MappedTalon implements SmartMotor {
             //Only enable the software limits if they were given a value and there's an encoder.
             if (fwdSoftLimit != null) {
                 this.canTalon.configForwardSoftLimitEnable(true, 0);
-                this.canTalon.configForwardSoftLimitThreshold((int) this.feetToEncoder(fwdSoftLimit), 0);
+                this.canTalon.configForwardSoftLimitThreshold((int) this.unitToEncoder(fwdSoftLimit), 0);
             } else {
                 this.canTalon.configForwardSoftLimitEnable(false, 0);
             }
             if (revSoftLimit != null) {
                 this.canTalon.configReverseSoftLimitEnable(true, 0);
-                this.canTalon.configReverseSoftLimitThreshold((int) this.feetToEncoder(revSoftLimit), 0);
+                this.canTalon.configReverseSoftLimitThreshold((int) this.unitToEncoder(revSoftLimit), 0);
             } else {
                 this.canTalon.configReverseSoftLimitEnable(false, 0);
             }
@@ -523,7 +523,7 @@ public class MappedTalon implements SmartMotor {
     @Override
     public void setPositionSetpoint(final double feet) {
         this.setpoint = feet;
-        this.nativeSetpoint = this.feetToEncoder(feet);
+        this.nativeSetpoint = this.unitToEncoder(feet);
         this.canTalon.config_kF(0, 0);
         this.canTalon.set(ControlMode.Position, this.nativeSetpoint, DemandType.ArbitraryFeedForward,
                 this.currentGearSettings.feedForwardCalculator.ks / 12.);
@@ -585,9 +585,9 @@ public class MappedTalon implements SmartMotor {
     @Override
     public double getError() {
         if (canTalon.getControlMode().equals(ControlMode.Velocity)) {
-            return encoderToFPS(canTalon.getClosedLoopError(0));
+            return this.encoderToUPS(canTalon.getClosedLoopError(0));
         } else {
-            return encoderToFeet(canTalon.getClosedLoopError(0));
+            return this.encoderToUnit(canTalon.getClosedLoopError(0));
         }
     }
 
@@ -655,7 +655,7 @@ public class MappedTalon implements SmartMotor {
     @Override
     public void setGearScaledVelocity(final double velocity, final int gear) {
         if (this.currentGearSettings.maxSpeed != null) {
-            this.setVelocityFPS(this.currentGearSettings.maxSpeed * velocity);
+            this.setVelocityUPS(this.currentGearSettings.maxSpeed * velocity);
         } else {
             this.setPercentVoltage(velocity);
         }

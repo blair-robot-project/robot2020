@@ -6,11 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.revrobotics.*;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
-import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.util.Units;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -435,7 +432,7 @@ public class MappedSparkMax implements SmartMotor {
     @Override
     public void setPositionSetpoint(final double feet) {
         this.setpoint = feet;
-        this.nativeSetpoint = this.feetToEncoder(feet);
+        this.nativeSetpoint = this.unitToEncoder(feet);
         this.pidController.setFF(this.currentGearSettings.feedForwardCalculator.ks / 12.);
         this.pidController.setReference(this.nativeSetpoint,
                 ControlType.kPosition,

@@ -14,7 +14,7 @@ public class MotorContainer implements Loggable {
     private static final MotorContainer instance = new MotorContainer();
 
     @NotNull
-    private final List<FPSSmartMotor> motors = new ArrayList<>();
+    private final List<SmartMotor> motors = new ArrayList<>();
 
     private MotorContainer() {
         Logger.setCycleWarningsEnabled(false);
@@ -30,7 +30,7 @@ public class MotorContainer implements Loggable {
      *
      * @param motor the motor to be registered
      */
-    public static void register(@NotNull final FPSSmartMotor motor) {
+    public static void register(@NotNull final SmartMotor motor) {
         instance.motors.add(motor);
     }
 
