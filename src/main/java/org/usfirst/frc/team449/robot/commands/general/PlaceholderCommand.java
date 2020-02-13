@@ -49,7 +49,7 @@ public final class PlaceholderCommand implements Command {
      * Gets around WPILib's no-more-than-one-group-per-command rule by never being equal to any other object.
      *
      * @param obj the reference object with which to compare
-     * @return {@literal false}
+     * @return {@code false}
      */
     @Override
     public boolean equals(final Object obj) {

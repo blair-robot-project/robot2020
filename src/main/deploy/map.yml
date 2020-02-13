@@ -1,13 +1,17 @@
 ---
 
-dist:
-  .Meter: 1
-distTime:
-  .TimesUnit:
-    first:
-      .Meter: 1
-    second:
-      .Second: 5
+genericTest:
+  .MappedGenericTest<org.usfirst.frc.team449.robot.units.Meter>:
+      .Meter: 10
+
+distances:
+  - .Meter: 1
+distTimes:
+  - .TimesUnit:
+      first:
+        .Meter: 1
+      second:
+        .Second: 5
 speeds:
   - .TimesUnit:
       first:
@@ -36,6 +40,17 @@ speeds:
         .Foot: 1
       bottom:
         .Second: 1
+angularSpeeds:
+  - .DividedUnit:
+      top:
+        .Revolution: 100
+      bottom:
+        .Minute: 2
+  - .UnitRateUnit:
+      top:
+        .Revolution: 100
+      bottom:
+        .Minute: {}
 angularAccelerations:
   - .DividedUnit:
       top:
@@ -51,7 +66,16 @@ angularAccelerations:
         .Revolution: 1
       bottom:
         .SquaredUnit:
-          .Second: 2
+            .Second: 4
+  - .DividedUnit:
+      top:
+        .Revolution: 100
+      bottom:
+        .TimesUnit:
+          first:
+            .Minute: 1
+          second:
+            .Second: 1
 
 # IntelliJ supports Ctrl+clicking anchors to find usages and declarations... so, hyperlinks! Yooooooooo!
 # Basically a table of contents; Ctrl+click on a heading in UPPER_SNAKE_CASE to jump back and forth between the
@@ -77,6 +101,7 @@ NAVIGATION:
           - &DRIVE_DEFAULT_COMMAND
           - &FEEDER_DEFAULT_COMMAND
   - &UPDATER updater
+  - &SIMULATION_CONFIG simulationConfig
 
 # Anchors for transclusion into the rest of the map.
 # Ignored by Jackson (so is NAVIGATION); can contain any valid YAML suitable for organizational purposes.
@@ -137,7 +162,7 @@ useCameraServer: false
         org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
           &Left_Master
           '@id': leftMaster
-          type: SPARK
+          type: TALON
           name: left
           port: *leftMasterPort
           PDP:
@@ -831,3 +856,4 @@ useCameraServer: false
       - org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberCurrentLimited: climberCurrentLimitSystem
       - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel: shooterFlywheel
       - org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
+

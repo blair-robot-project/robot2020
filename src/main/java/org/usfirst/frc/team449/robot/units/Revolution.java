@@ -10,8 +10,15 @@ public class Revolution extends AngleUnit<Revolution> {
     }
 
     @Override
+    public Revolution withValue(final double value) {
+        return new Revolution(value);
+    }
+
+    private static final Revolution UNIT = new Revolution(2 * Math.PI);
+
+    @Override
     public Revolution getUnit() {
-        return new Revolution(1);
+        return UNIT;
     }
 
     @Override

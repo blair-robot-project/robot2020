@@ -10,8 +10,15 @@ public class Radian extends AngleUnit<Radian> {
     }
 
     @Override
+    public Radian withValue(final double value) {
+        return new Radian(value);
+    }
+
+    private static final Radian UNIT = new Radian(1);
+
+    @Override
     public Radian getUnit() {
-        return new Radian(0.5 / Math.PI);
+        return UNIT;
     }
 
     @Override

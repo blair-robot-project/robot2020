@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.SimulationConfig;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
@@ -45,20 +46,20 @@ import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
-    /**
-     * Whether to construct instances of {@link FPSSmartMotorSimulated} instead of the specified controllers when the
-     * robot is running in a simulation.
-     */
-    boolean SIMULATE = true;
-    /**
-     * Whether to simulate sparks if they cause a HAL error when constructed.
-     */
-    boolean SIMULATE_SPARKS_IF_ERR = true;
-    /**
-     * Whether the simulation controllers constructed do any actual simulation calculations.
-     * Turn off if their impact on loop time is a concern.
-     */
-    boolean ACTUAL_SIMULATION = true;
+//    /**
+//     * Whether to construct instances of {@link FPSSmartMotorSimulated} instead of the specified controllers when the
+//     * robot is running in a simulation.
+//     */
+//    boolean SIMULATE = true;
+//    /**
+//     * Whether to simulate sparks if they cause a HAL error when constructed.
+//     */
+//    boolean SIMULATE_SPARKS_IF_ERR = true;
+//    /**
+//     * Whether the simulation controllers constructed do any actual simulation calculations.
+//     * Turn off if their impact on loop time is a concern.
+//     */
+//    boolean ACTUAL_SIMULATION = true;
 
     /**
      * Creates a new <b>SPARK</b> or <b>Talon</b> motor controller.
@@ -172,14 +173,14 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
 
         final Type actualType;
 
-        if (SIMULATE && RobotBase.isSimulation()) {
+        if (SimulationConfig.get().motors().simulateAllWhenInSimulation() && RobotBase.isSimulation()) {
             actualType = Type.SIMULATED;
-        } else if (SIMULATE_SPARKS_IF_ERR && type == Type.SPARK) {
+        } else if (SimulationConfig.get().motors().simulateIfMissing() && type == Type.SPARK) {
             try (final var spark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless)) {
                 spark.restoreFactoryDefaults();
                 if (spark.getLastError() == CANError.kHALError) {
                     actualType = Type.SIMULATED;
-                    logHelper.warning("error for spark on port " + port + "; assuming nonexistent and replacing with simulated controller");
+                    logHelper.warning("HAL error for spark on port " + port + "; assuming nonexistent and replacing with simulated controller");
                 } else {
                     actualType = type;
                 }
@@ -314,7 +315,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
                 logHelper.log("SIM:  " + motorLogName);
                 final FPSSmartMotor simulated;
 
-                if (ACTUAL_SIMULATION) {
+                if (SimulationConfig.get().motors().replaceSimulationWithUnimplemented()) {
                     final var actualSimulated = new FPSSmartMotorSimulated(
                             actualType,
                             port,

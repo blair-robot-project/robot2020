@@ -21,6 +21,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -42,35 +43,42 @@ public class Robot extends TimedRobot {
      * The absolute filepath to the resources folder containing the config files when the robot is real.
      */
     @NotNull
-    public static final String RESOURCES_PATH_REAL = Filesystem.getDeployDirectory().getAbsolutePath();
+    public static final Path RESOURCES_PATH_REAL = Filesystem.getDeployDirectory().toPath();
     /**
      * The relative filepath to the resources folder containing the config files when the robot is simulated.
      */
     @NotNull
-    public static final String RESOURCES_PATH_SIMULATED = "./src/main/deploy/";
+    public static final Path RESOURCES_PATH_SIMULATED = Path.of("./src/main/deploy/");
     /**
      * The name of the map to read from. Should be overriden by a subclass to change the name.
      */
     @NotNull
-    public static final String mapName = "map.yml";
+    public static final Path MAP_NAME = Path.of("map.yml");
     /**
      * The filepath to the resources folder containing the config files.
      */
     @NotNull
-    public static final String RESOURCES_PATH = RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
+    public static final Path RESOURCES_PATH = RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
     /**
      * The object constructed directly from the yaml map.
      */
+    /**
+     * The path to the map.
+     */
     @NotNull
-    protected final RobotMap robotMap = Objects.requireNonNull(loadMap());
+    public static final Path MAP_PATH = RESOURCES_PATH.resolve(MAP_NAME);
+
+    @NotNull
+    protected final RobotMap robotMap = Objects.requireNonNull(loadMap(RobotMap.class, MAP_PATH));
 
     /**
      * The method that runs when the robot is turned on. Initializes all subsystems from the map.
      */
-    public static @Nullable RobotMap loadMap() {
+    @Nullable
+    public static <T> T loadMap(final Class<T> clazz, final Path fileName) {
         try {
             //Read the yaml file with SnakeYaml so we can use anchors and merge syntax.
-            final Map<?, ?> normalized = (Map<?, ?>) new Yaml().load(new FileReader(RESOURCES_PATH + "/" + mapName));
+            final Map<?, ?> normalized = (Map<?, ?>) new Yaml().load(new FileReader(fileName.toFile()));
 
             final YAMLMapper mapper = new YAMLMapper();
 
@@ -85,7 +93,7 @@ public class Robot extends TimedRobot {
             mapper.registerModule(new JavaModule());
 
             //Deserialize the map into an object.
-            return mapper.readValue(fixed, RobotMap.class);
+            return mapper.readValue(fixed, clazz);
 
         } catch (final IOException ex) {
             //The map file is either absent from the file system or improperly formatted.

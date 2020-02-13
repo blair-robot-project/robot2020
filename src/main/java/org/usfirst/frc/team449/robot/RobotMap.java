@@ -6,31 +6,36 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.MotorContainer;
 import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
 import org.usfirst.frc.team449.robot.units.AngleUnit;
-import org.usfirst.frc.team449.robot.units.DistanceUnit;
-import org.usfirst.frc.team449.robot.units.NormalizedUnit;
+import org.usfirst.frc.team449.robot.units.DisplacementUnit;
+import org.usfirst.frc.team449.robot.units.DividedUnit;
+import org.usfirst.frc.team449.robot.units.Meter;
 import org.usfirst.frc.team449.robot.units.ReciprocalUnit;
+import org.usfirst.frc.team449.robot.units.Second;
 import org.usfirst.frc.team449.robot.units.TimeUnit;
 import org.usfirst.frc.team449.robot.units.TimesUnit;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * The Jackson-compatible object representing the entire robot.
  */
 @JsonIgnoreProperties({"CONSTANTS", "NAVIGATION"})
 public class RobotMap {
-
     @NotNull
+    @Log.Include
     private final List<Subsystem> subsystems;
 
     @NotNull
+    @Log.Include
     private final MotorContainer motors = MotorContainer.getInstance();
 
 //    /**
@@ -49,6 +54,7 @@ public class RobotMap {
     private final CommandContainer commands;
 
     @NotNull
+    @Log.Include
     private final PDP pdp;
 
     /**
@@ -66,25 +72,33 @@ public class RobotMap {
      * @param useCameraServer Whether the camera server should be run. Defaults to false.
      */
     @JsonCreator
-    public RobotMap(@NotNull @JsonProperty(required = true) @JsonInclude(content = JsonInclude.Include.NON_NULL) final List<Subsystem> subsystems,
+    public RobotMap(@NotNull @JsonInclude(content = JsonInclude.Include.NON_NULL) final List<Subsystem> subsystems,
                     @NotNull @JsonProperty(required = true) final PDP pdp,
-                    @NotNull @JsonProperty(required = true) final Runnable updater,
-                    @NotNull @JsonProperty(required = true) final CommandContainer commands,
+                    @NotNull final Runnable updater,
+                    @NotNull final CommandContainer commands,
                     final boolean useCameraServer,
-                    final DistanceUnit dist,
-                    final TimesUnit<? extends DistanceUnit,? extends TimeUnit> distTime,
-                    final TimesUnit<? extends DistanceUnit, ? extends ReciprocalUnit<? extends TimeUnit>>[] speeds,
-                    final TimesUnit<? extends AngleUnit, ? extends ReciprocalUnit<? extends TimesUnit<? extends TimeUnit, ? extends TimeUnit>>>[] angularAccelerations) {
+                    final DisplacementUnit[] distances,
+                    final MappedGenericTest genericTest,
+                    // TODO Don't use wildcards here either
+                    final TimesUnit<? extends DisplacementUnit<?>, ? extends Foot, ? extends TimeUnit<?>, ? extends Second>[] distTimes,
+                    final TimesUnit<? extends DisplacementUnit<?>, ? extends Meter, ? extends ReciprocalUnit<? extends TimeUnit<?>, ? extends Second>, ? extends ReciprocalUnit<? extends TimeUnit, ? extends Second>>[] speeds,
+                    final DividedUnit<? extends AngleUnit<?>, ? extends TimeUnit>[] angularSpeeds,
+                    final TimesUnit<? extends AngleUnit<?>, ? extends ReciprocalUnit<? extends TimesUnit<? extends TimeUnit<?>, ? extends Second, ? extends TimeUnit<?>, ? extends Second>>, ? extends ReciprocalUnit<? extends TimesUnit<? extends TimeUnit, ? extends Second, ? extends TimeUnit, ? extends Second>>>[] angularAccelerations) {
         this.updater = updater;
         this.pdp = pdp;
         this.useCameraServer = useCameraServer;
         this.subsystems = subsystems;
         this.commands = commands;
 
-        System.err.println(dist.getNormalizedValue());
-        System.err.println(distTime.getNormalizedValue());
-        Arrays.stream(speeds).mapToDouble(NormalizedUnit::getNormalizedValue).forEach(System.err::println);
-        Arrays.stream(angularAccelerations).mapToDouble(NormalizedUnit::getNormalizedValue).forEach(System.err::println);
+        Stream.concat(Arrays.stream(distances),
+                Stream.concat(Arrays.stream(distTimes),
+                        Stream.concat(Arrays.stream(speeds),
+                                Stream.concat(Arrays.stream(angularSpeeds),
+                                        Arrays.stream(angularAccelerations)
+                                )
+                        )
+                )
+        ).map(u -> u.toString() + ": " + u.getNormalizedValue()).forEach(System.err::println);
     }
 
 //    /**

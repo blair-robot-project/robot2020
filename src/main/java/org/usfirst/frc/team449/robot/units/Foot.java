@@ -12,6 +12,11 @@ public class Foot extends DisplacementUnit<Foot> {
     }
 
     @Override
+    public Foot withValue(final double value) {
+        return new Foot(value);
+    }
+
+    @Override
     public Foot getUnit() {
         return new Foot(Units.feetToMeters(1));
     }

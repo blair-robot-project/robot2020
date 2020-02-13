@@ -15,6 +15,7 @@ public abstract class FPSSmartMotorBase implements FPSSmartMotor {
     @Override
     public abstract double getOutputVoltage();
 
+    // TODO This causes NullPointerException
     @Override
     @Nullable
     public abstract Double getSetpoint();

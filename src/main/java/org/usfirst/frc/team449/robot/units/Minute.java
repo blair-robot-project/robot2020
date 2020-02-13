@@ -12,7 +12,7 @@ public class Minute extends TimeUnit<Minute> {
     }
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public static Minute s_getUnit() {
+    public static Minute s_getUnit(){
         return UNIT;
     }
 
@@ -20,6 +20,17 @@ public class Minute extends TimeUnit<Minute> {
     @Override
     public Minute getUnit() {
         return UNIT;
+    }
+
+    /**
+     * Polymorphic prototype constructor.
+     *
+     * @param value
+     * @return
+     */
+    @Override
+    public Minute withValue(final double value) {
+        return new Minute(value);
     }
 
     @Override

@@ -29,13 +29,6 @@ import java.util.Objects;
 import static org.usfirst.frc.team449.robot.other.Util.clamp;
 import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
-/*
-TODO
- Normalized[Distance/Angle/etc]
- Static factory returns double or wrapper class (for type safety)
- Perhaps pooling class instances via AutoClosable
- */
-
 /**
  * Class that implements {@link FPSSmartMotor} without relying on the existence of actual hardware.
  * This class simulates a smart motor controller. Motor physics are simulated by {@link SimulatedMotorSimple}.

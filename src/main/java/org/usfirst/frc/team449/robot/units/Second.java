@@ -6,12 +6,19 @@ public class Second extends TimeUnit<Second> {
     }
 
     public Second(final int value) {
-        this((double)value);
+        this((double) value);
     }
 
     @Override
+    public Second withValue(final double value) {
+        return new Second(value);
+    }
+
+    private static final Second UNIT = new Second(1);
+
+    @Override
     public Second getUnit() {
-        return new Second(1);
+        return UNIT;
     }
 
     @Override

@@ -1,0 +1,12 @@
+---
+
+motors:
+  alwaysSimulateAll: false
+  simulateAllWhenInSimulation: false
+  simulateMissing: true
+  replaceSimulationWithUnimplemented: false
+joysticks:
+  alwaysSimulateAll: false
+  simulateAllWhenInSimulation: false
+  simulateMissing: false
+  replaceSimulationWithUnimplemented: false
