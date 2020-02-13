@@ -1,6 +1,6 @@
 package org.usfirst.frc.team449.robot.units;
 
-public class DimensionlessUnit extends NormalizedUnit<DimensionlessUnit> {
+public class DimensionlessUnit extends ValueUnit<DimensionlessUnit> {
     public DimensionlessUnit(final double value) {
         super(value);
     }
@@ -10,7 +10,12 @@ public class DimensionlessUnit extends NormalizedUnit<DimensionlessUnit> {
     }
 
     @Override
-    protected DimensionlessUnit getUnit() {
+    public DimensionlessUnit getUnit() {
         return new DimensionlessUnit(1);
+    }
+
+    @Override
+    public String getShortUnitName() {
+        return "u";
     }
 }

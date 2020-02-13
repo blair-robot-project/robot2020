@@ -10,7 +10,12 @@ public class Revolution extends AngleUnit<Revolution> {
     }
 
     @Override
-    protected Revolution getUnit() {
+    public Revolution getUnit() {
         return new Revolution(1);
+    }
+
+    @Override
+    public String getShortUnitName() {
+        return "rev";
     }
 }

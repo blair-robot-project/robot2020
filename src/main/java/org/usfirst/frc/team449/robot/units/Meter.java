@@ -1,6 +1,6 @@
 package org.usfirst.frc.team449.robot.units;
 
-public class Meter extends DistanceUnit<Meter> {
+public class Meter extends DisplacementUnit<Meter> {
     public Meter(final double value){
         super(value);
     }
@@ -10,7 +10,12 @@ public class Meter extends DistanceUnit<Meter> {
     }
 
     @Override
-    protected Meter getUnit() {
+    public Meter getUnit() {
         return new Meter(1);
+    }
+
+    @Override
+    public String getShortUnitName() {
+        return "m";
     }
 }

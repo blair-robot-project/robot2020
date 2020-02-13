@@ -10,7 +10,12 @@ public class Second extends TimeUnit<Second> {
     }
 
     @Override
-    protected Second getUnit() {
+    public Second getUnit() {
         return new Second(1);
+    }
+
+    @Override
+    public String getShortUnitName() {
+        return "s";
     }
 }

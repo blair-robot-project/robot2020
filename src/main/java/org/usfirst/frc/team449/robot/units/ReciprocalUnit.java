@@ -3,6 +3,8 @@ package org.usfirst.frc.team449.robot.units;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public class ReciprocalUnit<U extends NormalizedUnit<U>> extends NormalizedUnit<ReciprocalUnit<U>> {
+    private final U unit;
+
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public ReciprocalUnit(final U unit) {
         super(1.0 / unit.getRawValue());
@@ -10,9 +12,17 @@ public class ReciprocalUnit<U extends NormalizedUnit<U>> extends NormalizedUnit<
     }
 
     @Override
-    protected ReciprocalUnit<U> getUnit() {
+    public String toString() {
+        return String.format("%s^-1", this.valueOfConsideringPrecedence(this.unit));
+    }
+
+    @Override
+    public ReciprocalUnit<U> getUnit() {
         return new ReciprocalUnit<>(this.unit.getUnit());
     }
 
-    private final U unit;
+    @Override
+    protected int getPrecedence() {
+        return 2;
+    }
 }

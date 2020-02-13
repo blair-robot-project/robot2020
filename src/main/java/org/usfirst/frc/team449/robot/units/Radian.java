@@ -10,7 +10,12 @@ public class Radian extends AngleUnit<Radian> {
     }
 
     @Override
-    protected Radian getUnit() {
+    public Radian getUnit() {
         return new Radian(0.5 / Math.PI);
+    }
+
+    @Override
+    public String getShortUnitName() {
+        return "rad";
     }
 }

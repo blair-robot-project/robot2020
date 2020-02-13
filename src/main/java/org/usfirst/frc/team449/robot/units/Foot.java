@@ -2,7 +2,7 @@ package org.usfirst.frc.team449.robot.units;
 
 import edu.wpi.first.wpilibj.util.Units;
 
-public class Foot extends DistanceUnit<Foot> {
+public class Foot extends DisplacementUnit<Foot> {
     public Foot(final double value) {
         super(value);
     }
@@ -12,7 +12,12 @@ public class Foot extends DistanceUnit<Foot> {
     }
 
     @Override
-    protected Foot getUnit() {
+    public Foot getUnit() {
         return new Foot(Units.feetToMeters(1));
+    }
+
+    @Override
+    public String getShortUnitName() {
+        return "ft";
     }
 }
