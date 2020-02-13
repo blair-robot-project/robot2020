@@ -84,7 +84,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
                            @JsonProperty(required = true) double shooterThrottle,
                            @NotNull @JsonProperty(required = true) SimpleMotor kickerMotor,
                            @JsonProperty(required = true) double kickerThrottle,
-                           double spinUpTimeoutSecs,
+                           @JsonProperty(required = true) double spinUpTimeoutSecs,
                            @Nullable Double minShootingSpeedFPS) {
         this.shooterMotor = shooterMotor;
         this.otherShooterMotor = otherShooterMotor;
@@ -115,6 +115,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     public void turnFlywheelOff() {
         shooterMotor.disable();
         otherShooterMotor.disable();
+        this.setFlywheelState(FlywheelState.OFF);
     }
 
     /**
@@ -153,7 +154,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     }
 
     @Log
-    public String getFlywheelStateLogged() {
+    public String state() {
         return state.name();
     }
 
@@ -169,14 +170,16 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     @Override
     @Log
     public boolean isAtShootingSpeed() {
+        if (this.state == FlywheelState.OFF) return false;
+
         double timeSinceLastSpinUp = Clock.currentTimeMillis() - this.lastSpinUpTimeMS;
-        boolean timeoutExceeded = timeSinceLastSpinUp * 1000 > this.spinUpTimeoutSecs;
+        boolean timeoutExceeded = timeSinceLastSpinUp > 1000 * this.spinUpTimeoutSecs;
         if (timeoutExceeded) return true;
 
-        if (this.minShootingSpeedFPS == null ) return true;
+        if (this.minShootingSpeedFPS == null) return false;
 
         Double actualVelocity = this.shooterMotor.getVelocity();
-        return (!Double.isNaN(actualVelocity) && actualVelocity > this.minShootingSpeedFPS);
+        return !Double.isNaN(actualVelocity) && actualVelocity > this.minShootingSpeedFPS;
     }
 
     /**

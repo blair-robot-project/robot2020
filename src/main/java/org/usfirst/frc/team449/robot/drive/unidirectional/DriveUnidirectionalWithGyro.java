@@ -1,9 +1,6 @@
 package org.usfirst.frc.team449.robot.drive.unidirectional;
 
 import com.fasterxml.jackson.annotation.*;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -11,13 +8,16 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.UPSSmartMotor;
+import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
+import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
 
@@ -33,13 +33,13 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * Right master Talon
      */
     @NotNull
-    protected final UPSSmartMotor rightMaster;
+    protected final FPSSmartMotor rightMaster;
 
     /**
      * Left master Talon
      */
     @NotNull
-    protected final UPSSmartMotor leftMaster;
+    protected final FPSSmartMotor leftMaster;
 
     /**
      * The NavX gyro
@@ -68,12 +68,6 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Nullable
     private Double cachedLeftVel, cachedRightVel, cachedLeftPos, cachedRightPos;
 
-    private NetworkTableInstance tableInst = NetworkTableInstance.getDefault();
-
-    private NetworkTable table = tableInst.getTable("SmartDashboard");
-
-    private NetworkTableEntry xEntry = new NetworkTableEntry(tableInst, 1), yEntry = new NetworkTableEntry(tableInst, 0);
-
     /**
      * Default constructor.
      *
@@ -83,8 +77,8 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * @param trackWidthMeters The width between the left and right wheels in meters
      */
     @JsonCreator
-    public DriveUnidirectionalWithGyro(@NotNull @JsonProperty(required = true) UPSSmartMotor leftMaster,
-                                       @NotNull @JsonProperty(required = true) UPSSmartMotor rightMaster,
+    public DriveUnidirectionalWithGyro(@NotNull @JsonProperty(required = true) FPSSmartMotor leftMaster,
+                                       @NotNull @JsonProperty(required = true) FPSSmartMotor rightMaster,
                                        @NotNull @JsonProperty(required = true) MappedAHRS ahrs,
                                        @JsonProperty(required = true) double trackWidthMeters) {
         super();
@@ -95,15 +89,6 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
         this.overrideGyro = false;
         this.driveKinematics = new DifferentialDriveKinematics(trackWidthMeters);
         this.driveOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
-    }
-
-    @Override
-    public void periodic() {
-        updateOdometry();
-        var translation = driveOdometry.getPoseMeters().getTranslation();
-        xEntry.setNumber(translation.getX());
-        yEntry.setNumber(translation.getY());
-        //m_xEntry.setNumber(translation.getX());
     }
 
     /**
@@ -160,7 +145,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Nullable
     @Override
     public Double getLeftPos() {
-        return leftMaster.getPositionUnits();
+        return leftMaster.getPositionFeet();
     }
 
     /**
@@ -171,7 +156,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Nullable
     @Override
     public Double getRightPos() {
-        return rightMaster.getPositionUnits();
+        return rightMaster.getPositionFeet();
     }
 
     /**
@@ -362,7 +347,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Log
     public void resetOdometry(Pose2d pose){
-        resetPosition();
+        resetPosition();;
         driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
     }
 
@@ -371,7 +356,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     public void updateOdometry(){
         //need to convert to meters
-        driveOdometry.update(Rotation2d.fromDegrees(getHeading()), getLeftPos(), getRightPos());
+        driveOdometry.update(Rotation2d.fromDegrees(getHeading()), Units.feetToMeters(getLeftPos()), Units.feetToMeters(getRightPos()));
     }
 
     /**
@@ -381,17 +366,12 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
         return driveOdometry.getPoseMeters() != null ? driveOdometry.getPoseMeters() : new Pose2d(new Translation2d(0, 0),new Rotation2d(0));
     }
 
-    @Log
-    public double getPoseHeading(){
-        return getCurrentPose().getRotation().getRadians();
-    }
-
     /**
      * @return Current wheel speeds based on encoder readings for future pose correction
      */
     public DifferentialDriveWheelSpeeds getWheelSpeeds(){
         //need to convert to meters
-        return new DifferentialDriveWheelSpeeds(getLeftVel(), getRightVel());
+        return new DifferentialDriveWheelSpeeds(Units.feetToMeters(getLeftVel()), Units.feetToMeters(getRightVel()));
     }
 
     /**

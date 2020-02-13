@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.usfirst.frc.team449.robot.components.Limelight;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.yaml.snakeyaml.Yaml;
 import java.io.FileReader;
@@ -55,6 +56,8 @@ public class Robot extends TimedRobot {
     /**
      * The method that runs when the robot is turned on. Initializes all subsystems from the map.
      */
+
+    Limelight netTableGetter;
     public void robotInit() {
         //Set up start time
         Clock.setStartTime();
@@ -63,7 +66,7 @@ public class Robot extends TimedRobot {
         System.out.println("Started robotInit.");
 
         RESOURCES_PATH = RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
-
+        netTableGetter = new Limelight();
         Yaml yaml = new Yaml();
 
         try {

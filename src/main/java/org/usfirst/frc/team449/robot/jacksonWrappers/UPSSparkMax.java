@@ -6,13 +6,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.revrobotics.*;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.util.Units;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.UPSSmartMotor;
+import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 
 import java.util.HashMap;
@@ -20,8 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class UPSSparkMax implements UPSSmartMotor {
-
+public class FPSSparkMax implements FPSSmartMotor {
     /**
      * REV brushless controller object
      */
@@ -43,22 +45,24 @@ public class UPSSparkMax implements UPSSmartMotor {
     private ControlType currentControlMode;
 
     /**
-     * The PDP this Talon is connected to.
+     * The PDP this Spark is connected to.
      */
     @Nullable
     @Log.Exclude
     protected final PDP PDP;
+
     /**
      * The counts per rotation of the encoder being used, or null if there is no encoder.
      */
     @Nullable
     private final Integer encoderCPR;
+
     /**
      * The coefficient the output changes by after being measured by the encoder, e.g. this would be 1/70 if there was a
      * 70:1 gearing between the encoder and the final output.
      */
-    @Log
-    private double postEncoderGearing;
+    private final double postEncoderGearing;
+
     /**
      * The number of feet travelled per rotation of the motor this is attached to, or null if there is no encoder.
      */
@@ -81,7 +85,7 @@ public class UPSSparkMax implements UPSSmartMotor {
     private CANDigitalInput reverseLimitSwitch;
 
     /**
-     * The talon's name, used for logging purposes.
+     * The Spark's name, used for logging purposes.
      */
     @NotNull
     private final String name;
@@ -92,14 +96,16 @@ public class UPSSparkMax implements UPSSmartMotor {
     private final boolean fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen;
 
     /**
-     * The settings currently being used by this Talon.
+     * The settings currently being used by this Spark.
      */
     @NotNull
     protected PerGearSettings currentGearSettings;
+
     /**
      * The most recently set setpoint.
      */
     private double setpoint;
+
     /**
      * RPS as used in a unit conversion method. Field to avoid garbage collection.
      */
@@ -114,18 +120,17 @@ public class UPSSparkMax implements UPSSmartMotor {
     /**
      * Create a new SPARK MAX Controller
      *
-     * @param port                       CAN port of this Talon.
-     * @param name                       The talon's name, used for logging purposes. Defaults to talon_portnum
-     * @param inverted              Whether to reverse the output.
+     * @param port                       CAN port of this Spark.
+     * @param name                       The Spark's name, used for logging purposes. Defaults to "spark_&gt;port&lt;"
+     * @param reverseOutput                   Whether to reverse the output.
      * @param enableBrakeMode            Whether to brake or coast when stopped.
-     * @param PDP                        The PDP this Talon is connected to.
+     * @param PDP                        The PDP this Spark is connected to.
      * @param fwdLimitSwitchNormallyOpen Whether the forward limit switch is normally open or closed. If this is null,
      *                                   the forward limit switch is disabled.
      * @param revLimitSwitchNormallyOpen Whether the reverse limit switch is normally open or closed. If this is null,
      *                                   the reverse limit switch is disabled.
-     * @param remoteLimitSwitchID        The CAN port of the Talon the limit switch to use for this talon is plugged
-     *                                   into, or null to not use a limit switch or use the limit switch plugged into
-     *                                   this talon.
+     * @param remoteLimitSwitchID        The CAN ID the limit switch to use for this Spark is plugged
+     *                                   into, or null to not use a limit switch.
      * @param fwdSoftLimit               The forward software limit, in feet. If this is null, the forward software
      *                                   limit is disabled. Ignored if there's no encoder.
      * @param revSoftLimit               The reverse software limit, in feet. If this is null, the reverse software
@@ -133,7 +138,7 @@ public class UPSSparkMax implements UPSSmartMotor {
      * @param postEncoderGearing         The coefficient the output changes by after being measured by the encoder, e.g.
      *                                   this would be 1/70 if there was a 70:1 gearing between the encoder and the
      *                                   final output. Defaults to 1.
-     * @param unitPerRotation            The number of feet travelled per rotation of the motor this is attached to.
+     * @param feetPerRotation            The number of feet travelled per rotation of the motor this is attached to.
      *                                   Defaults to 1.
      * @param currentLimit               The max amps this device can draw. If this is null, no current limit is used.
      * @param enableVoltageComp          Whether or not to use voltage compensation. Defaults to false.
@@ -142,13 +147,13 @@ public class UPSSparkMax implements UPSSmartMotor {
      * @param startingGear               The gear to start in. Can be null to use startingGearNum instead.
      * @param startingGearNum            The number of the gear to start in. Ignored if startingGear isn't null.
      *                                   Defaults to the lowest gear.
-     * @param statusFrameRatesMillis     The update rates, in millis, for each of the Talon status frames.
-     * @param controlFrameRateMillis     The update rate, in milliseconds, for each of the control frame.
+     * @param statusFrameRatesMillis     The update rates, in millis, for each of the status frames.
+     * @param controlFrameRateMillis     The update rate, in milliseconds, for each control frame.
      */
     @JsonCreator
-    public UPSSparkMax(@JsonProperty(required = true) int port,
+    public FPSSparkMax(@JsonProperty(required = true) int port,
                        @Nullable String name,
-                       boolean inverted,
+                       boolean reverseOutput,
                        @JsonProperty(required = true) boolean enableBrakeMode,
                        @Nullable PDP PDP,
                        @Nullable Boolean fwdLimitSwitchNormallyOpen,
@@ -157,7 +162,7 @@ public class UPSSparkMax implements UPSSmartMotor {
                        @Nullable Double fwdSoftLimit,
                        @Nullable Double revSoftLimit,
                        @Nullable Double postEncoderGearing,
-                       @Nullable Double unitPerRotation,
+                       @Nullable Double feetPerRotation,
                        @Nullable Integer currentLimit,
                        boolean enableVoltageComp,
                        @Nullable List<PerGearSettings> perGearSettings,
@@ -171,10 +176,10 @@ public class UPSSparkMax implements UPSSmartMotor {
         canEncoder = spark.getEncoder();
         pidController = spark.getPIDController();
 
-        //Set the name to the given one or to talon_portnum
-        this.name = name != null ? name : ("talon_" + port);
+        //Set the name to the given one or to spark_<portnum>
+        this.name = name != null ? name : ("spark_" + port);
         //Set this to false because we only use reverseOutput for slaves.
-        spark.setInverted(inverted);
+        spark.setInverted(reverseOutput);
         //Set brake mode
         spark.setIdleMode(enableBrakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
         //Reset the position
@@ -195,7 +200,7 @@ public class UPSSparkMax implements UPSSmartMotor {
         this.PDP = PDP;
 
 
-        this.feetPerRotation = unitPerRotation != null ? unitPerRotation : 1;
+        this.feetPerRotation = feetPerRotation != null ? feetPerRotation : 1;
 
         //Initialize
         this.perGearSettings = new HashMap<>();
@@ -322,10 +327,6 @@ public class UPSSparkMax implements UPSSmartMotor {
         //Set the current gear
         currentGearSettings = perGearSettings.get(gear);
 
-        if(currentGearSettings.postEncoderGearing != null){
-            this.postEncoderGearing = currentGearSettings.postEncoderGearing;
-        }
-
         //note, no current limiting
 
         if (currentGearSettings.rampRate != null) {
@@ -349,7 +350,7 @@ public class UPSSparkMax implements UPSSmartMotor {
      * @return That distance in feet, or null if no encoder CPR was given.
      */
     @Override
-    public double encoderToUnit(double revs) {
+    public double encoderToFeet(double revs) {
         return revs * feetPerRotation * postEncoderGearing;
     }
 
@@ -361,12 +362,12 @@ public class UPSSparkMax implements UPSSmartMotor {
      * @return That distance in native units as measured by the encoder, or null if no encoder CPR was given.
      */
     @Override
-    public double unitToEncoder(double feet) {
+    public double feetToEncoder(double feet) {
         return feet / feetPerRotation / postEncoderGearing;
     }
 
     /**
-     * Converts the velocity read by the talon's getVelocity() method to the FPS of the output shaft. Note this DOES
+     * Converts the velocity read by the getVelocity() method to the FPS of the output shaft. Note this DOES
      * account for post-encoder gearing.
      *
      * @param encoderReading The velocity read from the encoder with no conversions.
@@ -374,25 +375,25 @@ public class UPSSparkMax implements UPSSmartMotor {
      * was given.
      */
     @Override
-    public double encoderToUPS(double encoderReading) {
+    public double encoderToFPS(double encoderReading) {
         RPS = nativeToRPS(encoderReading);
         return RPS * postEncoderGearing * feetPerRotation;
     }
 
     /**
-     * Converts from the velocity of the output shaft to what the talon's getVelocity() method would read at that
+     * Converts from the velocity of the output shaft to what the getVelocity() method would read at that
      * velocity. Note this DOES account for post-encoder gearing.
      *
-     * @param UPS The velocity of the output shaft, in UPS.
+     * @param FPS The velocity of the output shaft, in FPS.
      * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was given.
      */
     @Override
-    public double UPSToEncoder(double UPS) {
-        return RPSToNative((UPS / postEncoderGearing) / feetPerRotation);
+    public double FPSToEncoder(double FPS) {
+        return RPSToNative((FPS / postEncoderGearing) / feetPerRotation);
     }
 
     /**
-     * Convert from CANTalon native velocity units to output rotations per second. Note this DOES NOT account for
+     * Convert from native velocity units to output rotations per second. Note this DOES NOT account for
      * post-encoder gearing.
      *
      * @param nat A velocity in RPM
@@ -405,7 +406,7 @@ public class UPSSparkMax implements UPSSmartMotor {
     }
 
     /**
-     * Convert from output RPS to the CANTalon native velocity units. Note this DOES NOT account for post-encoder
+     * Convert from output RPS to native velocity units. Note this DOES NOT account for post-encoder
      * gearing.
      *
      * @param RPS The RPS velocity you want to convert.
@@ -426,14 +427,14 @@ public class UPSSparkMax implements UPSSmartMotor {
     }
 
     /**
-     * Set a position setpoint for the Talon.
+     * Set a position setpoint for the Spark.
      *
      * @param feet An absolute position setpoint, in feet.
      */
     @Override
     public void setPositionSetpoint(double feet) {
         setpoint = feet;
-        nativeSetpoint = unitToEncoder(feet);
+        nativeSetpoint = feetToEncoder(feet);
         pidController.setFF(currentGearSettings.feedForwardCalculator.ks / 12.);
         pidController.setReference(nativeSetpoint,
                 ControlType.kPosition,
@@ -458,7 +459,7 @@ public class UPSSparkMax implements UPSSmartMotor {
      */
     @Log
     public Double getVelocity() {
-        return encoderToUPS(canEncoder.getVelocity());
+        return encoderToFPS(canEncoder.getVelocity());
     }
 
     /**
@@ -469,7 +470,7 @@ public class UPSSparkMax implements UPSSmartMotor {
     @Override
     public void setVelocity(double velocity) {
         if (currentGearSettings.maxSpeed != null) {
-            setVelocityUPS(velocity * currentGearSettings.maxSpeed);
+            setVelocityFPS(velocity * currentGearSettings.maxSpeed);
         } else {
             setPercentVoltage(velocity);
         }
@@ -481,9 +482,9 @@ public class UPSSparkMax implements UPSSmartMotor {
      * @param velocity velocity setpoint in FPS.
      */
     @Override
-    public void setVelocityUPS(double velocity) {
+    public void setVelocityFPS(double velocity) {
         currentControlMode = ControlType.kVelocity;
-        nativeSetpoint = UPSToEncoder(velocity);
+        nativeSetpoint = FPSToEncoder(velocity);
         setpoint = velocity;
         pidController.setFF(0);
         pidController.setReference(nativeSetpoint,
@@ -532,7 +533,7 @@ public class UPSSparkMax implements UPSSmartMotor {
     @Override
     public void setGearScaledVelocity(double velocity, int gear) {
         if (currentGearSettings.maxSpeed != null) {
-            setVelocityUPS(currentGearSettings.maxSpeed * velocity);
+            setVelocityFPS(currentGearSettings.maxSpeed * velocity);
         } else {
             setPercentVoltage(velocity);
         }
@@ -549,9 +550,8 @@ public class UPSSparkMax implements UPSSmartMotor {
     }
 
     @Override
-    @Log
-    public Double getPositionUnits() {
-        return encoderToUnit(canEncoder.getPosition());
+    public Double getPositionFeet() {
+        return encoderToFeet(canEncoder.getPosition());
     }
 
     @Override
