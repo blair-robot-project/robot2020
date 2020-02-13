@@ -1,6 +1,10 @@
 package org.usfirst.frc.team449.robot.components;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,9 +46,9 @@ public class ShiftComponent {
      *                        piston's position.
      */
     @JsonCreator
-    public ShiftComponent(@NotNull @JsonProperty(required = true) List<Shiftable> otherShiftables,
-                          @NotNull @JsonProperty(required = true) MappedDoubleSolenoid piston,
-                          @Nullable Shiftable.gear startingGear) {
+    public ShiftComponent(@NotNull @JsonProperty(required = true) final List<Shiftable> otherShiftables,
+                          @NotNull @JsonProperty(required = true) final MappedDoubleSolenoid piston,
+                          @Nullable final Shiftable.gear startingGear) {
         this.otherShiftables = otherShiftables;
         this.piston = piston;
 
@@ -57,8 +61,8 @@ public class ShiftComponent {
         }
 
         //Set all the shiftables to the starting gear.
-        for (Shiftable shiftable : otherShiftables) {
-            shiftable.setGear(currentGear);
+        for (final Shiftable shiftable : otherShiftables) {
+            shiftable.setGear(this.currentGear);
         }
     }
 
@@ -67,13 +71,13 @@ public class ShiftComponent {
      *
      * @param gear The gear to shift to.
      */
-    public void shiftToGear(int gear) {
+    public void shiftToGear(final int gear) {
         //Do nothing if we try to switch to the current gear.
-        if (!(gear == currentGear)) {
-            for (Shiftable shiftable : otherShiftables) {
+        if (!(gear == this.currentGear)) {
+            for (final Shiftable shiftable : this.otherShiftables) {
                 shiftable.setGear(gear);
             }
-            shiftPiston(gear);
+            this.shiftPiston(gear);
             this.currentGear = gear;
         }
     }
@@ -82,7 +86,7 @@ public class ShiftComponent {
      * @return The gear the shifter is currently in.
      */
     public int getCurrentGear() {
-        return currentGear;
+        return this.currentGear;
     }
 
     /**
@@ -90,13 +94,13 @@ public class ShiftComponent {
      *
      * @param gear The gear to shift to
      */
-    protected void shiftPiston(int gear) {
+    protected void shiftPiston(final int gear) {
         if (gear == Shiftable.gear.LOW.getNumVal()) {
             //Switch to the low gear pos
-            piston.set(DoubleSolenoid.Value.kForward);
+            this.piston.set(DoubleSolenoid.Value.kForward);
         } else {
             //If we want to switch to high gear and the low gear pos is reverse, switch to forward
-            piston.set(DoubleSolenoid.Value.kReverse);
+            this.piston.set(DoubleSolenoid.Value.kReverse);
         }
     }
 

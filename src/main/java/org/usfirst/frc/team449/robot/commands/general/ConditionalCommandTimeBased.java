@@ -9,8 +9,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.BooleanSupplier;
-
 /**
  * A conditional command that picks which command to run based on match time.
  */
@@ -26,9 +24,9 @@ public class ConditionalCommandTimeBased extends ConditionalCommand {
      *                      changes.
      */
     @JsonCreator
-    public ConditionalCommandTimeBased(@Nullable Command beforeCommand,
-                                       @Nullable Command afterCommand,
-                                       @JsonProperty(required = true) double matchTimeSecs) {
-        super(beforeCommand, afterCommand, () -> Timer.getMatchTime() > matchTimeSecs);
+    public ConditionalCommandTimeBased(@Nullable final Command beforeCommand,
+                                       @Nullable final Command afterCommand,
+                                       @JsonProperty(required = true) final double matchTimeSecs) {
+        super(beforeCommand, afterCommand,  () -> Timer.getMatchTime() > matchTimeSecs);
     }
 }

@@ -15,5 +15,4 @@ public interface Rumbleable {
      * @param right The strength to rumble the right side, on [-1, 1]
      */
     void rumble(double left, double right);
-
 }

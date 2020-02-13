@@ -1,13 +1,14 @@
 package org.usfirst.frc.team449.robot;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedRunnable;
+import org.usfirst.frc.team449.robot.generalInterfaces.MotorContainer;
 import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
 
 import java.util.Iterator;
@@ -16,10 +17,14 @@ import java.util.List;
 /**
  * The Jackson-compatible object representing the entire robot.
  */
+@JsonIgnoreProperties({"CONSTANTS", "NAVIGATION"})
 public class RobotMap {
 
     @NotNull
     private final List<Subsystem> subsystems;
+
+    @NotNull
+    private final MotorContainer motors = MotorContainer.getInstance();
 
 //    /**
 //     * The logger for recording events and telemetry data.
@@ -31,7 +36,7 @@ public class RobotMap {
      * A runnable that updates cached variables.
      */
     @NotNull
-    private final Runnable updater;
+    private final java.lang.Runnable updater;
 
     @NotNull
     private final CommandContainer commands;
@@ -47,15 +52,21 @@ public class RobotMap {
     /**
      * Default constructor.
      *
-     * @param updater              A runnable that updates cached variables.
+     * @param subsystems      The robot's subsystems.
+     * @param pdp             The PDP
+     * @param updater         A runnable that updates cached variables.
+     * @param commands        A container to hold all of the robot's commands.
      * @param useCameraServer Whether the camera server should be run. Defaults to false.
      */
     @JsonCreator
-    public RobotMap(@NotNull @JsonProperty(required = true) List<Subsystem> subsystems,
-                    @NotNull @JsonProperty(required = true) PDP pdp,
-                    @NotNull @JsonProperty(required = true) MappedRunnable updater,
-                    @NotNull @JsonProperty(required = true) CommandContainer commands,
-                    boolean useCameraServer) {
+    public RobotMap(@NotNull @JsonProperty(required = true) @JsonInclude(content = JsonInclude.Include.NON_NULL) final List<Subsystem> subsystems,
+                    @NotNull @JsonProperty(required = true) final PDP pdp,
+                    @NotNull @JsonProperty(required = true) final Runnable updater,
+                    @NotNull @JsonProperty(required = true) final CommandContainer commands,
+//                    @Nullable @JsonAlias("integerConstants") final double[] intConstants,
+//                    @Nullable final double[] doubleConstants,
+//                    @Nullable final double[] booleanConstants,
+                    final boolean useCameraServer) {
         this.updater = updater;
         this.pdp = pdp;
         this.useCameraServer = useCameraServer;
@@ -76,10 +87,10 @@ public class RobotMap {
      */
     @Nullable
     public Iterator<Command> getAutoStartupCommands() {
-        if(commands.getAutoStartupCommand() == null){
+        if (this.commands.getAutoStartupCommand() == null) {
             return null;
         }
-        return commands.getAutoStartupCommand().iterator();
+        return this.commands.getAutoStartupCommand().iterator();
     }
 
     /**
@@ -87,18 +98,18 @@ public class RobotMap {
      */
     @Nullable
     public Iterator<Command> getTeleopStartupCommands() {
-        if(commands.getTeleopStartupCommand() == null){
+        if (this.commands.getTeleopStartupCommand() == null) {
             return null;
         }
-        return commands.getTeleopStartupCommand().iterator();
+        return this.commands.getTeleopStartupCommand().iterator();
     }
 
     @Nullable
-    public Iterator<Command> getTestStartupCommands(){
-        if(commands.getTestStartupCommand() == null){
+    public Iterator<Command> getTestStartupCommands() {
+        if (this.commands.getTestStartupCommand() == null) {
             return null;
         }
-        return commands.getTestStartupCommand().iterator();
+        return this.commands.getTestStartupCommand().iterator();
     }
 
     /**
@@ -106,25 +117,25 @@ public class RobotMap {
      */
     @Nullable
     public Iterator<Command> getRobotStartupCommands() {
-        if(commands.getRobotStartupCommand() == null){
+        if (this.commands.getRobotStartupCommand() == null) {
             return null;
         }
-        return commands.getRobotStartupCommand().iterator();
+        return this.commands.getRobotStartupCommand().iterator();
     }
 
     /**
      * @return A runnable that updates cached variables.
      */
     @NotNull
-    public Runnable getUpdater() {
-        return updater;
+    public java.lang.Runnable getUpdater() {
+        return this.updater;
     }
 
     /**
      * @return Whether the camera server should be run.
      */
     public boolean useCameraServer() {
-        return useCameraServer;
+        return this.useCameraServer;
     }
 
 }

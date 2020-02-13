@@ -1,6 +1,8 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 
 /**
@@ -17,9 +19,9 @@ public class MappedFeedForwardCalculator extends SimpleMotorFeedforward {
      * @param kA The acceleration gain.
      */
     @JsonCreator
-    public MappedFeedForwardCalculator(@JsonProperty(required = true) double kS,
-                                @JsonProperty(required = true) double kV,
-                                @JsonProperty(required = true) double kA) {
+    public MappedFeedForwardCalculator(@JsonProperty(required = true) final double kS,
+                                @JsonProperty(required = true) final double kV,
+                                @JsonProperty(required = true) final double kA) {
         super(kS, kV, kA);
     }
 

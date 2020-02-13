@@ -170,28 +170,28 @@ public class MappedTalon implements SmartMotor {
                        @Nullable List<SlaveVictor> slaveVictors,
                        @Nullable List<SlaveSparkMax> slaveSparks) {
         //Instantiate the base CANTalon this is a wrapper on.
-        canTalon = new TalonSRX(port);
+        this.canTalon = new TalonSRX(port);
         //Set the name to the given one or to talon_portnum
         this.name = name != null ? name : ("talon_" + port);
         //Set this to false because we only use reverseOutput for slaves.
-        canTalon.setInverted(reverseOutput);
+        this.canTalon.setInverted(reverseOutput);
         //Set brake mode
-        canTalon.setNeutralMode(enableBrakeMode ? NeutralMode.Brake : NeutralMode.Coast);
+        this.canTalon.setNeutralMode(enableBrakeMode ? NeutralMode.Brake : NeutralMode.Coast);
         //Reset the position
-        resetPosition();
+        this.resetPosition();
 
         this.PDP = PDP;
         this.voltagePerCurrentLinReg = voltagePerCurrentLinReg;
 
         //Set frame rates
         if (controlFrameRatesMillis != null) {
-            for (ControlFrame controlFrame : controlFrameRatesMillis.keySet()) {
-                canTalon.setControlFramePeriod(controlFrame, controlFrameRatesMillis.get(controlFrame));
+            for (final ControlFrame controlFrame : controlFrameRatesMillis.keySet()) {
+                this.canTalon.setControlFramePeriod(controlFrame, controlFrameRatesMillis.get(controlFrame));
             }
         }
         if (statusFrameRatesMillis != null) {
-            for (StatusFrameEnhanced statusFrame : statusFrameRatesMillis.keySet()) {
-                canTalon.setStatusFramePeriod(statusFrame, statusFrameRatesMillis.get(statusFrame), 0);
+            for (final StatusFrameEnhanced statusFrame : statusFrameRatesMillis.keySet()) {
+                this.canTalon.setStatusFramePeriod(statusFrame, statusFrameRatesMillis.get(statusFrame), 0);
             }
         }
 
@@ -207,7 +207,7 @@ public class MappedTalon implements SmartMotor {
         }
         //Otherwise, map the settings to the gear they are.
         else {
-            for (PerGearSettings settings : perGearSettings) {
+            for (final PerGearSettings settings : perGearSettings) {
                 this.perGearSettings.put(settings.gear, settings);
             }
         }
@@ -217,7 +217,7 @@ public class MappedTalon implements SmartMotor {
         if (startingGear == null) {
             if (startingGearNum == null) {
                 currentGear = Integer.MAX_VALUE;
-                for (Integer gear : this.perGearSettings.keySet()) {
+                for (final Integer gear : this.perGearSettings.keySet()) {
                     if (gear < currentGear) {
                         currentGear = gear;
                     }
@@ -228,37 +228,37 @@ public class MappedTalon implements SmartMotor {
         } else {
             currentGear = startingGear.getNumVal();
         }
-        currentGearSettings = this.perGearSettings.get(currentGear);
+        this.currentGearSettings = this.perGearSettings.get(currentGear);
 
         //Only enable the limit switches if it was specified if they're normally open or closed.
         if (fwdLimitSwitchNormallyOpen != null) {
             if (remoteLimitSwitchID != null) {
-                canTalon.configForwardLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX,
+                this.canTalon.configForwardLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX,
                         fwdLimitSwitchNormallyOpen ? LimitSwitchNormal.NormallyOpen : LimitSwitchNormal.NormallyClosed,
                         remoteLimitSwitchID, 0);
             } else {
-                canTalon.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+                this.canTalon.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
                         fwdLimitSwitchNormallyOpen ? LimitSwitchNormal.NormallyOpen :
                                 LimitSwitchNormal.NormallyClosed, 0);
             }
             this.fwdLimitSwitchNormallyOpen = fwdLimitSwitchNormallyOpen;
         } else {
-            canTalon.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+            this.canTalon.configForwardLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
             this.fwdLimitSwitchNormallyOpen = true;
         }
         if (revLimitSwitchNormallyOpen != null) {
             if (remoteLimitSwitchID != null) {
-                canTalon.configReverseLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX,
+                this.canTalon.configReverseLimitSwitchSource(RemoteLimitSwitchSource.RemoteTalonSRX,
                         revLimitSwitchNormallyOpen ? LimitSwitchNormal.NormallyOpen : LimitSwitchNormal.NormallyClosed,
                         remoteLimitSwitchID, 0);
             } else {
-                canTalon.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+                this.canTalon.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
                         revLimitSwitchNormallyOpen ? LimitSwitchNormal.NormallyOpen :
                                 LimitSwitchNormal.NormallyClosed, 0);
             }
             this.revLimitSwitchNormallyOpen = revLimitSwitchNormallyOpen;
         } else {
-            canTalon.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
+            this.canTalon.configReverseLimitSwitchSource(LimitSwitchSource.Deactivated, LimitSwitchNormal.Disabled, 0);
             this.revLimitSwitchNormallyOpen = true;
         }
 
@@ -268,60 +268,60 @@ public class MappedTalon implements SmartMotor {
             //having to support RPM.
             if (feedbackDevice.equals(FeedbackDevice.CTRE_MagEncoder_Absolute) ||
                     feedbackDevice.equals(FeedbackDevice.CTRE_MagEncoder_Relative)) {
-                canTalon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
+                this.canTalon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
             } else {
-                canTalon.configSelectedFeedbackSensor(feedbackDevice, 0, 0);
+                this.canTalon.configSelectedFeedbackSensor(feedbackDevice, 0, 0);
             }
             this.encoderCPR = encoderCPR;
-            canTalon.setSensorPhase(reverseSensor);
+            this.canTalon.setSensorPhase(reverseSensor);
 
             //Only enable the software limits if they were given a value and there's an encoder.
             if (fwdSoftLimit != null) {
-                canTalon.configForwardSoftLimitEnable(true, 0);
-                canTalon.configForwardSoftLimitThreshold((int) unitToEncoder(fwdSoftLimit), 0);
+                this.canTalon.configForwardSoftLimitEnable(true, 0);
+                this.canTalon.configForwardSoftLimitThreshold((int) this.feetToEncoder(fwdSoftLimit), 0);
             } else {
-                canTalon.configForwardSoftLimitEnable(false, 0);
+                this.canTalon.configForwardSoftLimitEnable(false, 0);
             }
             if (revSoftLimit != null) {
-                canTalon.configReverseSoftLimitEnable(true, 0);
-                canTalon.configReverseSoftLimitThreshold((int) unitToEncoder(revSoftLimit), 0);
+                this.canTalon.configReverseSoftLimitEnable(true, 0);
+                this.canTalon.configReverseSoftLimitThreshold((int) this.feetToEncoder(revSoftLimit), 0);
             } else {
-                canTalon.configReverseSoftLimitEnable(false, 0);
+                this.canTalon.configReverseSoftLimitEnable(false, 0);
             }
         } else {
             this.encoderCPR = null;
-            canTalon.configSelectedFeedbackSensor(FeedbackDevice.None, 0, 0);
+            this.canTalon.configSelectedFeedbackSensor(FeedbackDevice.None, 0, 0);
         }
 
         //postEncoderGearing defaults to 1
         this.postEncoderGearing = postEncoderGearing != null ? postEncoderGearing : 1.;
 
         //Set up gear-based settings.
-        setGear(currentGear);
+        this.setGear(currentGear);
 
         //Set the current limit if it was given
         if (currentLimit != null) {
-            canTalon.configContinuousCurrentLimit(currentLimit, 0);
-            canTalon.configPeakCurrentDuration(0, 0);
-            canTalon.configPeakCurrentLimit(0, 0); // No duration
-            canTalon.enableCurrentLimit(true);
+            this.canTalon.configContinuousCurrentLimit(currentLimit, 0);
+            this.canTalon.configPeakCurrentDuration(0, 0);
+            this.canTalon.configPeakCurrentLimit(0, 0); // No duration
+            this.canTalon.enableCurrentLimit(true);
         } else {
             //If we don't have a current limit, disable current limiting.
-            canTalon.enableCurrentLimit(false);
+            this.canTalon.enableCurrentLimit(false);
         }
 
         //Enable or disable voltage comp
-        canTalon.enableVoltageCompensation(enableVoltageComp);
-        canTalon.configVoltageCompSaturation(12, 0);
-        int notNullVoltageCompSamples = voltageCompSamples != null ? voltageCompSamples : 32;
-        canTalon.configVoltageMeasurementFilter(notNullVoltageCompSamples, 0);
+        this.canTalon.enableVoltageCompensation(enableVoltageComp);
+        this.canTalon.configVoltageCompSaturation(12, 0);
+        final int notNullVoltageCompSamples = voltageCompSamples != null ? voltageCompSamples : 32;
+        this.canTalon.configVoltageMeasurementFilter(notNullVoltageCompSamples, 0);
 
         //Use slot 0
-        canTalon.selectProfileSlot(0, 0);
+        this.canTalon.selectProfileSlot(0, 0);
 
         if (slaveTalons != null) {
             //Set up slaves.
-            for (SlaveTalon slave : slaveTalons) {
+            for (final SlaveTalon slave : slaveTalons) {
                 slave.setMaster(port, enableBrakeMode, currentLimit,
                         enableVoltageComp ? notNullVoltageCompSamples : null, PDP, voltagePerCurrentLinReg);
             }
@@ -329,14 +329,14 @@ public class MappedTalon implements SmartMotor {
 
         if (slaveVictors != null) {
             //Set up slaves.
-            for (SlaveVictor slave : slaveVictors) {
-                slave.setMaster(canTalon, enableBrakeMode,
+            for (final SlaveVictor slave : slaveVictors) {
+                slave.setMaster(this.canTalon, enableBrakeMode,
                         enableVoltageComp ? notNullVoltageCompSamples : null);
             }
         }
 
         if (slaveSparks != null){
-            for(SlaveSparkMax slave :slaveSparks){
+            for(final SlaveSparkMax slave :slaveSparks){
                 slave.setMasterPhoenix(port, enableBrakeMode);
             }
         }
@@ -347,7 +347,7 @@ public class MappedTalon implements SmartMotor {
      */
     @Override
     public void disable() {
-        canTalon.set(ControlMode.Disabled, 0);
+        this.canTalon.set(ControlMode.Disabled, 0);
     }
 
 
@@ -364,9 +364,9 @@ public class MappedTalon implements SmartMotor {
             percentVoltage = Math.signum(percentVoltage);
         }
 
-        setpoint = percentVoltage;
+        this.setpoint = percentVoltage;
 
-        canTalon.set(ControlMode.PercentOutput, percentVoltage);
+        this.canTalon.set(ControlMode.PercentOutput, percentVoltage);
     }
 
     /**
@@ -375,7 +375,7 @@ public class MappedTalon implements SmartMotor {
     @Override
     @Log
     public int getGear() {
-        return currentGearSettings.gear;
+        return this.currentGearSettings.gear;
     }
 
     /**
@@ -384,36 +384,36 @@ public class MappedTalon implements SmartMotor {
      * @param gear Which gear to shift to.
      */
     @Override
-    public void setGear(int gear) {
+    public void setGear(final int gear) {
         //Set the current gear
-        currentGearSettings = perGearSettings.get(gear);
+        this.currentGearSettings = this.perGearSettings.get(gear);
 
         if(currentGearSettings.postEncoderGearing != null){
             this.postEncoderGearing = currentGearSettings.postEncoderGearing;
         }
 
         //Set max voltage
-        canTalon.configPeakOutputForward(currentGearSettings.fwdPeakOutputVoltage / 12., 0);
-        canTalon.configPeakOutputReverse(currentGearSettings.revPeakOutputVoltage / 12., 0);
+        this.canTalon.configPeakOutputForward(this.currentGearSettings.fwdPeakOutputVoltage / 12., 0);
+        this.canTalon.configPeakOutputReverse(this.currentGearSettings.revPeakOutputVoltage / 12., 0);
 
         //Set min voltage
-        canTalon.configNominalOutputForward(currentGearSettings.fwdNominalOutputVoltage / 12., 0);
-        canTalon.configNominalOutputReverse(currentGearSettings.revNominalOutputVoltage / 12., 0);
+        this.canTalon.configNominalOutputForward(this.currentGearSettings.fwdNominalOutputVoltage / 12., 0);
+        this.canTalon.configNominalOutputReverse(this.currentGearSettings.revNominalOutputVoltage / 12., 0);
 
-        if (currentGearSettings.rampRate != null) {
+        if (this.currentGearSettings.rampRate != null) {
             //Set ramp rate, converting from volts/sec to seconds until 12 volts.
-            canTalon.configClosedloopRamp(1 / (currentGearSettings.rampRate / 12.), 0);
-            canTalon.configOpenloopRamp(1 / (currentGearSettings.rampRate / 12.), 0);
+            this.canTalon.configClosedloopRamp(1 / (this.currentGearSettings.rampRate / 12.), 0);
+            this.canTalon.configOpenloopRamp(1 / (this.currentGearSettings.rampRate / 12.), 0);
         } else {
-            canTalon.configClosedloopRamp(0, 0);
-            canTalon.configOpenloopRamp(0, 0);
+            this.canTalon.configClosedloopRamp(0, 0);
+            this.canTalon.configOpenloopRamp(0, 0);
         }
 
         //Set PID stuff
         //Slot 0 velocity gains. We don't set F yet because that changes based on setpoint.
-        canTalon.config_kP(0, currentGearSettings.kP, 0);
-        canTalon.config_kI(0, currentGearSettings.kI, 0);
-        canTalon.config_kD(0, currentGearSettings.kD, 0);
+        this.canTalon.config_kP(0, this.currentGearSettings.kP, 0);
+        this.canTalon.config_kI(0, this.currentGearSettings.kI, 0);
+        this.canTalon.config_kD(0, this.currentGearSettings.kD, 0);
     }
 
     /**
@@ -427,7 +427,7 @@ public class MappedTalon implements SmartMotor {
         if (encoderCPR == null) {
             return Double.NaN;
         }
-        return nativeUnits / (encoderCPR * 4) * postEncoderGearing * feetPerRotation;
+        return nativeUnits / (this.encoderCPR * 4) * this.postEncoderGearing * this.feetPerRotation;
     }
 
     /**
@@ -442,7 +442,7 @@ public class MappedTalon implements SmartMotor {
         if (encoderCPR == null) {
             return Double.NaN;
         }
-        return feet / feetPerRotation * (encoderCPR * 4) / postEncoderGearing;
+        return feet / this.feetPerRotation * (this.encoderCPR * 4) / this.postEncoderGearing;
     }
 
     /**
@@ -459,7 +459,7 @@ public class MappedTalon implements SmartMotor {
         if (RPS == null) {
             return Double.NaN;
         }
-        return RPS * postEncoderGearing * feetPerRotation;
+        return this.RPS * this.postEncoderGearing * this.feetPerRotation;
     }
 
     /**
@@ -484,11 +484,11 @@ public class MappedTalon implements SmartMotor {
     @Contract(pure = true)
     @Nullable
     @Override
-    public Double nativeToRPS(double nat) {
-        if (encoderCPR == null) {
+    public Double nativeToRPS(final double nat) {
+        if (this.encoderCPR == null) {
             return null;
         }
-        return (nat / (encoderCPR * 4)) * 10; //4 edges per count, and 10 100ms per second.
+        return (nat / (this.encoderCPR * 4)) * 10; //4 edges per count, and 10 100ms per second.
     }
 
     /**
@@ -500,11 +500,11 @@ public class MappedTalon implements SmartMotor {
      */
     @Contract(pure = true)
     @Override
-    public double RPSToNative(double RPS) {
-        if (encoderCPR == null) {
+    public double RPSToNative(final double RPS) {
+        if (this.encoderCPR == null) {
             return Double.NaN;
         }
-        return (RPS / 10) * (encoderCPR * 4); //4 edges per count, and 10 100ms per second.
+        return (RPS / 10) * (this.encoderCPR * 4); //4 edges per count, and 10 100ms per second.
     }
 
     /**
@@ -512,7 +512,7 @@ public class MappedTalon implements SmartMotor {
      */
     @Override
     public double encoderPosition() {
-        return canTalon.getSelectedSensorPosition();
+        return this.canTalon.getSelectedSensorPosition();
     }
 
     /**
@@ -521,12 +521,12 @@ public class MappedTalon implements SmartMotor {
      * @param feet An absolute position setpoint, in feet.
      */
     @Override
-    public void setPositionSetpoint(double feet) {
-        setpoint = feet;
-        nativeSetpoint = unitToEncoder(feet);
-        canTalon.config_kF(0, 0);
-        canTalon.set(ControlMode.Position, nativeSetpoint, DemandType.ArbitraryFeedForward,
-                currentGearSettings.feedForwardCalculator.ks / 12.);
+    public void setPositionSetpoint(final double feet) {
+        this.setpoint = feet;
+        this.nativeSetpoint = this.feetToEncoder(feet);
+        this.canTalon.config_kF(0, 0);
+        this.canTalon.set(ControlMode.Position, this.nativeSetpoint, DemandType.ArbitraryFeedForward,
+                this.currentGearSettings.feedForwardCalculator.ks / 12.);
     }
 
     /**
@@ -534,7 +534,7 @@ public class MappedTalon implements SmartMotor {
      */
     @Override
     public double encoderVelocity() {
-        return canTalon.getSelectedSensorVelocity();
+        return this.canTalon.getSelectedSensorVelocity();
     }
 
     /**
@@ -585,9 +585,9 @@ public class MappedTalon implements SmartMotor {
     @Override
     public double getError() {
         if (canTalon.getControlMode().equals(ControlMode.Velocity)) {
-            return encoderToUPS(canTalon.getClosedLoopError(0));
+            return encoderToFPS(canTalon.getClosedLoopError(0));
         } else {
-            return encoderToUnit(canTalon.getClosedLoopError(0));
+            return encoderToFeet(canTalon.getClosedLoopError(0));
         }
     }
 
@@ -643,7 +643,7 @@ public class MappedTalon implements SmartMotor {
      */
     @Override
     public String getControlMode() {
-        return canTalon.getControlMode().name();
+        return this.canTalon.getControlMode().name();
     }
 
     /**
@@ -653,11 +653,11 @@ public class MappedTalon implements SmartMotor {
      * @param gear     The number of the gear to use the max speed from to scale the velocity.
      */
     @Override
-    public void setGearScaledVelocity(double velocity, int gear) {
-        if (currentGearSettings.maxSpeed != null) {
-            setVelocityUPS(currentGearSettings.maxSpeed * velocity);
+    public void setGearScaledVelocity(final double velocity, final int gear) {
+        if (this.currentGearSettings.maxSpeed != null) {
+            this.setVelocityFPS(this.currentGearSettings.maxSpeed * velocity);
         } else {
-            setPercentVoltage(velocity);
+            this.setPercentVoltage(velocity);
         }
     }
 
@@ -668,8 +668,8 @@ public class MappedTalon implements SmartMotor {
      * @param gear     The gear to use the max speed from to scale the velocity.
      */
     @Override
-    public void setGearScaledVelocity(double velocity, Shiftable.gear gear) {
-        setGearScaledVelocity(velocity, gear.getNumVal());
+    public void setGearScaledVelocity(final double velocity, final Shiftable.gear gear) {
+        this.setGearScaledVelocity(velocity, gear.getNumVal());
     }
 
 
@@ -678,7 +678,7 @@ public class MappedTalon implements SmartMotor {
      */
     @Override
     public SimpleMotorFeedforward getCurrentGearFeedForward(){
-        return currentGearSettings.feedForwardCalculator;
+        return this.currentGearSettings.feedForwardCalculator;
     }
 
     /**
@@ -715,23 +715,28 @@ public class MappedTalon implements SmartMotor {
      */
     @Override
     public boolean getRevLimitSwitch() {
-        return revLimitSwitchNormallyOpen == canTalon.getSensorCollection().isRevLimitSwitchClosed();
+        return this.revLimitSwitchNormallyOpen == this.canTalon.getSensorCollection().isRevLimitSwitchClosed();
     }
 
     @Override
     public boolean isInhibitedForward() {
-        canTalon.getFaults(faults);
-        return faults.ForwardLimitSwitch;
+        this.canTalon.getFaults(this.faults);
+        return this.faults.ForwardLimitSwitch;
     }
 
     @Override
     public boolean isInhibitedReverse() {
-        canTalon.getFaults(faults);
-        return faults.ReverseLimitSwitch;
+        this.canTalon.getFaults(this.faults);
+        return this.faults.ReverseLimitSwitch;
+    }
+
+    @Override
+    public int getPort() {
+        return this.canTalon.getDeviceID();
     }
 
     @Override
     public String configureLogName() {
-        return name;
+        return this.name;
     }
 }

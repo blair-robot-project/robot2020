@@ -1,10 +1,11 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.util.Units;
 
+// TODO Unmap
 public class MappedPose2d  {
 
     public Pose2d pose;
@@ -17,9 +18,9 @@ public class MappedPose2d  {
      * @param angle     The angle at this position in degrees
      */
     @JsonCreator
-    public MappedPose2d(@JsonProperty(required = true) double xPosition,
-                        @JsonProperty(required = true) double yPosition,
-                        @JsonProperty(required = true) double angle){
-        pose = new Pose2d(xPosition, yPosition, Rotation2d.fromDegrees(angle));
+    public MappedPose2d(@JsonProperty(required = true) final double xPosition,
+                        @JsonProperty(required = true) final double yPosition,
+                        @JsonProperty(required = true) final double angle){
+        this.pose = new Pose2d(xPosition, yPosition, Rotation2d.fromDegrees(angle));
     }
 }

@@ -31,5 +31,4 @@ public class ConditionalCommandDigitalInputBased extends ConditionalCommand {
                                                @NotNull @JsonProperty(required = true) MappedDigitalInput digitalInput) {
         super(onTrue, onFalse, digitalInput::get);
     }
-
 }

@@ -1,9 +1,13 @@
 package org.usfirst.frc.team449.robot.commands.multiInterface.drive;
 
-import com.fasterxml.jackson.annotation.*;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.AutoshiftComponent;
@@ -75,20 +79,20 @@ public class FieldOrientedUnidirectionalDriveCommandShifting<T extends Subsystem
      * @param highGearAngularCoefficient The coefficient to multiply the loop output by in high gear. Defaults to 1.
      */
     @JsonCreator
-    public FieldOrientedUnidirectionalDriveCommandShifting(@JsonProperty(required = true) double absoluteTolerance,
-                                                           @Nullable BufferTimer onTargetBuffer,
-                                                           double minimumOutput, @Nullable Double maximumOutput,
-                                                           @Nullable Integer loopTimeMillis,
-                                                           double deadband,
-                                                           boolean inverted,
-                                                           double kP,
-                                                           double kI,
-                                                           double kD,
-                                                           @NotNull @JsonProperty(required = true) T subsystem,
-                                                           @NotNull @JsonProperty(required = true) OIFieldOriented oi,
-                                                           @Nullable List<AngularSnapPoint> snapPoints,
-                                                           @NotNull @JsonProperty(required = true) AutoshiftComponent autoshiftComponent,
-                                                           @Nullable Double highGearAngularCoefficient) {
+    public FieldOrientedUnidirectionalDriveCommandShifting(@JsonProperty(required = true) final double absoluteTolerance,
+                                                           @Nullable final BufferTimer onTargetBuffer,
+                                                           final double minimumOutput, @Nullable final Double maximumOutput,
+                                                           @Nullable final Integer loopTimeMillis,
+                                                           final double deadband,
+                                                           final boolean inverted,
+                                                           final double kP,
+                                                           final double kI,
+                                                           final double kD,
+                                                           @NotNull @JsonProperty(required = true) final T subsystem,
+                                                           @NotNull @JsonProperty(required = true) final OIFieldOriented oi,
+                                                           @Nullable final List<AngularSnapPoint> snapPoints,
+                                                           @NotNull @JsonProperty(required = true) final AutoshiftComponent autoshiftComponent,
+                                                           @Nullable final Double highGearAngularCoefficient) {
         //Assign stuff
         super(absoluteTolerance, onTargetBuffer, minimumOutput, maximumOutput, loopTimeMillis, deadband, inverted, kP
                 , kI, kD, subsystem, oi, snapPoints);
@@ -106,23 +110,23 @@ public class FieldOrientedUnidirectionalDriveCommandShifting<T extends Subsystem
      */
     @Override
     public void execute() {
-        if (!subsystem.getOverrideAutoshift()) {
-            autoshiftComponent.autoshift(oi.getVelCached(), subsystem.getLeftVelCached(),
-                    subsystem.getRightVelCached(), gear -> subsystem.setGear(gear));
+        if (!this.subsystem.getOverrideAutoshift()) {
+            this.autoshiftComponent.autoshift(this.oi.getVelCached(), this.subsystem.getLeftVelCached(),
+                    this.subsystem.getRightVelCached(), gear -> this.subsystem.setGear(gear));
         }
 
         //Gain schedule the loop if we shifted
-        if (lastGear != subsystem.getGear()) {
-            if (subsystem.getGear() == Shiftable.gear.LOW.getNumVal()) {
-                this.getController().setP(kP);
-                this.getController().setI(kI);
-                this.getController().setD(kD);
+        if (this.lastGear != this.subsystem.getGear()) {
+            if (this.subsystem.getGear() == Shiftable.gear.LOW.getNumVal()) {
+                this.getController().setP(this.kP);
+                this.getController().setI(this.kI);
+                this.getController().setD(this.kD);
             } else {
-                this.getController().setP(kP * highGearAngularCoefficient);
-                this.getController().setI(kI * highGearAngularCoefficient);
-                this.getController().setD(kD * highGearAngularCoefficient);
+                this.getController().setP(this.kP * this.highGearAngularCoefficient);
+                this.getController().setI(this.kI * this.highGearAngularCoefficient);
+                this.getController().setD(this.kD * this.highGearAngularCoefficient);
             }
-            lastGear = subsystem.getGear();
+            this.lastGear = this.subsystem.getGear();
         }
 
         super.execute();
@@ -132,7 +136,7 @@ public class FieldOrientedUnidirectionalDriveCommandShifting<T extends Subsystem
      * Log when this command ends
      */
     @Override
-    public void end(boolean interrupted) {
+    public void end(final boolean interrupted) {
         if(interrupted){
             Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommandShifting Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
         }

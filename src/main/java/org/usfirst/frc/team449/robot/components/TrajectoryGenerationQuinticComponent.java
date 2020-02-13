@@ -1,13 +1,16 @@
 package org.usfirst.frc.team449.robot.components;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.trajectory.constraint.TrajectoryConstraint;
-import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d;
 
@@ -24,30 +27,28 @@ public class TrajectoryGenerationQuinticComponent implements TrajectoryGeneratio
     Trajectory trajectory;
 
     @JsonCreator
-    public TrajectoryGenerationQuinticComponent(@JsonProperty(required = true) DriveUnidirectionalWithGyro drivetrain,
-                                                @JsonProperty(required = true) double maxSpeedMeters,
-                                                @JsonProperty(required = true) double maxAccelMeters,
-                                                @JsonProperty(required = true) List<MappedPose2d> waypoints,
-                                                @Nullable Boolean reversed){
-        constraint = new DifferentialDriveVoltageConstraint(
+    public TrajectoryGenerationQuinticComponent(@JsonProperty(required = true) final DriveUnidirectionalWithGyro drivetrain,
+                                                @JsonProperty(required = true) final double maxSpeedMeters,
+                                                @JsonProperty(required = true) final double maxAccelMeters,
+                                                @JsonProperty(required = true) final List<MappedPose2d> waypoints){
+        this.constraint = new DifferentialDriveVoltageConstraint(
                 drivetrain.getLeftFeedforwardCalculator(),
                 drivetrain.getDriveKinematics(),
                 12);
 
         // Create config for trajectory
-        configuration = new TrajectoryConfig(maxSpeedMeters, maxAccelMeters)
+        this.configuration = new TrajectoryConfig(maxSpeedMeters, maxAccelMeters)
                 .setKinematics(drivetrain.getDriveKinematics())
-                .addConstraint(constraint)
-                .setReversed(reversed != null ? reversed : false);
+                .addConstraint(this.constraint);
 
-        for(var entry : waypoints){
+        for(final var entry : waypoints){
             this.waypoints.add(entry.pose);
         }
     }
 
     @Override
     public Trajectory getTrajectory(){
-        trajectory = TrajectoryGenerator.generateTrajectory(waypoints, configuration);
-        return trajectory;
+        this.trajectory = TrajectoryGenerator.generateTrajectory(this.waypoints, this.configuration);
+        return this.trajectory;
     }
 }

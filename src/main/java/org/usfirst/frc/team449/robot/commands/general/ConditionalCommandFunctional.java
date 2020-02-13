@@ -6,9 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -20,14 +23,16 @@ public class ConditionalCommandFunctional extends ConditionalCommand {
      * Default constructor
      *
      * @param onTrue          The Command to execute if BooleanSupplier returns true
-     * @param onFalse         The Command to execute if BooleanSupplier returns false. Can be null to not execute a
-     *                        command if the supplier is false.
+     * @param onFalse         The Command to execute if BooleanSupplier returns false.
      * @param booleanSupplier A method for determining which command to run.
      */
     @JsonCreator
-    public ConditionalCommandFunctional(@NotNull @JsonProperty(required = true) Command onTrue,
+    public ConditionalCommandFunctional(@Nullable Command onTrue,
                                         @Nullable Command onFalse,
-                                        @NotNull @JsonProperty(required = true) MappedBooleanSupplier booleanSupplier) {
+                                        @NotNull @JsonProperty(required = true) BooleanSupplier booleanSupplier,
+                                        @Nullable Subsystem[] requiredSubsystems) {
         super(onTrue, onFalse, booleanSupplier);
+        if (requiredSubsystems != null) this.addRequirements(requiredSubsystems);
+        super.initialize();
     }
 }

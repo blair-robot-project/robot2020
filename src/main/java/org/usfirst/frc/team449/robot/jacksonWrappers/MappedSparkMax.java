@@ -6,8 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.revrobotics.*;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.util.Units;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -74,12 +77,12 @@ public class MappedSparkMax implements SmartMotor {
     /**
      * Forward limit switch object
      */
-    private CANDigitalInput forwardLimitSwitch;
+    private final CANDigitalInput forwardLimitSwitch;
 
     /**
      * Reverse limit switch object
      */
-    private CANDigitalInput reverseLimitSwitch;
+    private final CANDigitalInput reverseLimitSwitch;
 
     /**
      * The Spark's name, used for logging purposes.
@@ -148,49 +151,49 @@ public class MappedSparkMax implements SmartMotor {
      * @param controlFrameRateMillis     The update rate, in milliseconds, for each control frame.
      */
     @JsonCreator
-    public MappedSparkMax(@JsonProperty(required = true) int port,
-                          @Nullable String name,
-                          boolean reverseOutput,
-                          @JsonProperty(required = true) boolean enableBrakeMode,
-                          @Nullable PDP PDP,
-                          @Nullable Boolean fwdLimitSwitchNormallyOpen,
-                          @Nullable Boolean revLimitSwitchNormallyOpen,
-                          @Nullable Integer remoteLimitSwitchID,
-                          @Nullable Double fwdSoftLimit,
-                          @Nullable Double revSoftLimit,
-                          @Nullable Double postEncoderGearing,
-                          @Nullable Double feetPerRotation,
-                          @Nullable Integer currentLimit,
-                          boolean enableVoltageComp,
-                          @Nullable List<PerGearSettings> perGearSettings,
-                          @Nullable Shiftable.gear startingGear,
-                          @Nullable Integer startingGearNum,
+    public MappedSparkMax(@JsonProperty(required = true) final int port,
+                          @Nullable final String name,
+                          final boolean reverseOutput,
+                          @JsonProperty(required = true) final boolean enableBrakeMode,
+                          @Nullable final PDP PDP,
+                          @Nullable final Boolean fwdLimitSwitchNormallyOpen,
+                          @Nullable final Boolean revLimitSwitchNormallyOpen,
+                          @Nullable final Integer remoteLimitSwitchID,
+                          @Nullable final Double fwdSoftLimit,
+                          @Nullable final Double revSoftLimit,
+                          @Nullable final Double postEncoderGearing,
+                          @Nullable final Double feetPerRotation,
+                          @Nullable final Integer currentLimit,
+                          final boolean enableVoltageComp,
+                          @Nullable final List<PerGearSettings> perGearSettings,
+                          @Nullable final Shiftable.gear startingGear,
+                          @Nullable final Integer startingGearNum,
                           @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
                           @Nullable final Integer controlFrameRateMillis,
-                          @Nullable List<SlaveSparkMax> slaveSparks) {
-        spark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
-        spark.restoreFactoryDefaults();
-        canEncoder = spark.getEncoder();
-        pidController = spark.getPIDController();
+                          @Nullable final List<SlaveSparkMax> slaveSparks) {
+        this.spark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
+        this.spark.restoreFactoryDefaults();
+        this.canEncoder = this.spark.getEncoder();
+        this.pidController = this.spark.getPIDController();
 
         //Set the name to the given one or to spark_<portnum>
         this.name = name != null ? name : ("spark_" + port);
         //Set this to false because we only use reverseOutput for slaves.
-        spark.setInverted(reverseOutput);
+        this.spark.setInverted(reverseOutput);
         //Set brake mode
-        spark.setIdleMode(enableBrakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
+        this.spark.setIdleMode(enableBrakeMode ? CANSparkMax.IdleMode.kBrake : CANSparkMax.IdleMode.kCoast);
         //Reset the position
-        resetPosition();
+        this.resetPosition();
 
         //Set frame rates
         if (controlFrameRateMillis != null) {
             // Must be between 1 and 100 ms.
-            spark.setControlFramePeriodMs(controlFrameRateMillis);
+            this.spark.setControlFramePeriodMs(controlFrameRateMillis);
         }
 
         if (statusFrameRatesMillis != null) {
-            for (CANSparkMaxLowLevel.PeriodicFrame frame : statusFrameRatesMillis.keySet()) {
-                spark.setPeriodicFramePeriod(frame, statusFrameRatesMillis.get(frame));
+            for (final CANSparkMaxLowLevel.PeriodicFrame frame : statusFrameRatesMillis.keySet()) {
+                this.spark.setPeriodicFramePeriod(frame, statusFrameRatesMillis.get(frame));
             }
         }
 
@@ -208,7 +211,7 @@ public class MappedSparkMax implements SmartMotor {
         }
         //Otherwise, map the settings to the gear they are.
         else {
-            for (PerGearSettings settings : perGearSettings) {
+            for (final PerGearSettings settings : perGearSettings) {
                 this.perGearSettings.put(settings.gear, settings);
             }
         }
@@ -217,7 +220,7 @@ public class MappedSparkMax implements SmartMotor {
         if (startingGear == null) {
             if (startingGearNum == null) {
                 currentGear = Integer.MAX_VALUE;
-                for (Integer gear : this.perGearSettings.keySet()) {
+                for (final Integer gear : this.perGearSettings.keySet()) {
                     if (gear < currentGear) {
                         currentGear = gear;
                     }
@@ -228,80 +231,80 @@ public class MappedSparkMax implements SmartMotor {
         } else {
             currentGear = startingGear.getNumVal();
         }
-        currentGearSettings = this.perGearSettings.get(currentGear);
+        this.currentGearSettings = this.perGearSettings.get(currentGear);
         //Set up gear-based settings.
-        setGear(currentGear);
+        this.setGear(currentGear);
         //postEncoderGearing defaults to 1
         this.postEncoderGearing = postEncoderGearing != null ? postEncoderGearing : 1.;
 
-        this.encoderCPR = canEncoder.getCountsPerRevolution();
+        this.encoderCPR = this.canEncoder.getCountsPerRevolution();
 
         //Only enable the limit switches if it was specified if they're normally open or closed.
         if (fwdLimitSwitchNormallyOpen != null) {
             if (remoteLimitSwitchID != null) {
                 //set CANDigitalInput to other limit switch
-                forwardLimitSwitch = new CANSparkMax(remoteLimitSwitchID, CANSparkMaxLowLevel.MotorType.kBrushless)
+                this.forwardLimitSwitch = new CANSparkMax(remoteLimitSwitchID, CANSparkMaxLowLevel.MotorType.kBrushless)
                         .getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
             } else {
-                forwardLimitSwitch = spark.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
+                this.forwardLimitSwitch = this.spark.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
             }
             this.fwdLimitSwitchNormallyOpen = fwdLimitSwitchNormallyOpen;
         } else {
-            forwardLimitSwitch = spark.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
-            forwardLimitSwitch.enableLimitSwitch(false);
+            this.forwardLimitSwitch = this.spark.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
+            this.forwardLimitSwitch.enableLimitSwitch(false);
             this.fwdLimitSwitchNormallyOpen = true;
         }
         if (revLimitSwitchNormallyOpen != null) {
             if (remoteLimitSwitchID != null) {
-                reverseLimitSwitch = new CANSparkMax(remoteLimitSwitchID, CANSparkMaxLowLevel.MotorType.kBrushless)
+                this.reverseLimitSwitch = new CANSparkMax(remoteLimitSwitchID, CANSparkMaxLowLevel.MotorType.kBrushless)
                         .getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed);
             } else {
-                reverseLimitSwitch = spark.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed);
+                this.reverseLimitSwitch = this.spark.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyClosed);
             }
             this.revLimitSwitchNormallyOpen = revLimitSwitchNormallyOpen;
         } else {
-            reverseLimitSwitch = spark.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
-            reverseLimitSwitch.enableLimitSwitch(false);
+            this.reverseLimitSwitch = this.spark.getReverseLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
+            this.reverseLimitSwitch.enableLimitSwitch(false);
             this.revLimitSwitchNormallyOpen = true;
         }
 
         if (fwdSoftLimit != null) {
-            spark.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, fwdSoftLimit.floatValue());
+            this.spark.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, fwdSoftLimit.floatValue());
         }
         if (revSoftLimit != null) {
-            spark.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, revSoftLimit.floatValue());
+            this.spark.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, revSoftLimit.floatValue());
         }
 
         //Set the current limit if it was given
         if (currentLimit != null) {
-            spark.setSmartCurrentLimit(currentLimit);
+            this.spark.setSmartCurrentLimit(currentLimit);
         }
 
         if (enableVoltageComp) {
-            spark.enableVoltageCompensation(12);
+            this.spark.enableVoltageCompensation(12);
         } else {
-            spark.disableVoltageCompensation();
+            this.spark.disableVoltageCompensation();
         }
 
         if (slaveSparks != null) {
             //Set up slaves.
-            for (SlaveSparkMax slave : slaveSparks) {
-                slave.setMasterSpark(spark, enableBrakeMode);
+            for (final SlaveSparkMax slave : slaveSparks) {
+                slave.setMasterSpark(this.spark, enableBrakeMode);
             }
         }
 
-        spark.burnFlash();
+        this.spark.burnFlash();
     }
 
 
     @Override
     public void disable() {
-        spark.disable();
+        this.spark.disable();
     }
 
     @Override
     public void setPercentVoltage(double percentVoltage) {
-        currentControlMode = ControlType.kVoltage;
+        this.currentControlMode = ControlType.kVoltage;
         //Warn the user if they're setting Vbus to a number that's outside the range of values.
         if (Math.abs(percentVoltage) > 1.0) {
             Shuffleboard.addEventMarker("WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage, this.getClass().getSimpleName(), EventImportance.kNormal);
@@ -309,35 +312,36 @@ public class MappedSparkMax implements SmartMotor {
             percentVoltage = Math.signum(percentVoltage);
         }
 
-        setpoint = percentVoltage;
+        this.setpoint = percentVoltage;
 
-        spark.set(percentVoltage);
+        this.spark.set(percentVoltage);
     }
 
     @Override
+    @Log
     public int getGear() {
-        return currentGearSettings.gear;
+        return this.currentGearSettings.gear;
     }
 
     @Override
-    public void setGear(int gear) {
+    public void setGear(final int gear) {
         //Set the current gear
-        currentGearSettings = perGearSettings.get(gear);
+        this.currentGearSettings = this.perGearSettings.get(gear);
 
         //note, no current limiting
 
-        if (currentGearSettings.rampRate != null) {
+        if (this.currentGearSettings.rampRate != null) {
             //Set ramp rate, converting from volts/sec to seconds until 12 volts.
-            spark.setClosedLoopRampRate(1 / (currentGearSettings.rampRate / 12.));
-            spark.setOpenLoopRampRate(1 / (currentGearSettings.rampRate / 12.));
+            this.spark.setClosedLoopRampRate(1 / (this.currentGearSettings.rampRate / 12.));
+            this.spark.setOpenLoopRampRate(1 / (this.currentGearSettings.rampRate / 12.));
         } else {
-            spark.setClosedLoopRampRate(0);
-            spark.setOpenLoopRampRate(0);
+            this.spark.setClosedLoopRampRate(0);
+            this.spark.setOpenLoopRampRate(0);
         }
 
-        pidController.setP(currentGearSettings.kP, 0);
-        pidController.setI(currentGearSettings.kI, 0);
-        pidController.setD(currentGearSettings.kD, 0);
+        this.pidController.setP(this.currentGearSettings.kP, 0);
+        this.pidController.setI(this.currentGearSettings.kI, 0);
+        this.pidController.setD(this.currentGearSettings.kD, 0);
     }
 
     /**
@@ -398,7 +402,7 @@ public class MappedSparkMax implements SmartMotor {
      */
     @Contract(pure = true)
     @Override
-    public Double nativeToRPS(double nat) {
+    public Double nativeToRPS(final double nat) {
         return nat / 60.;
     }
 
@@ -411,7 +415,7 @@ public class MappedSparkMax implements SmartMotor {
      */
     @Contract(pure = true)
     @Override
-    public double RPSToNative(double RPS) {
+    public double RPSToNative(final double RPS) {
         return RPS * 60.;
     }
 
@@ -420,7 +424,7 @@ public class MappedSparkMax implements SmartMotor {
      */
     @Override
     public double encoderPosition() {
-        return canEncoder.getPosition();
+        return this.canEncoder.getPosition();
     }
 
     /**
@@ -429,14 +433,14 @@ public class MappedSparkMax implements SmartMotor {
      * @param feet An absolute position setpoint, in feet.
      */
     @Override
-    public void setPositionSetpoint(double feet) {
-        setpoint = feet;
-        nativeSetpoint = unitToEncoder(feet);
-        pidController.setFF(currentGearSettings.feedForwardCalculator.ks / 12.);
-        pidController.setReference(nativeSetpoint,
+    public void setPositionSetpoint(final double feet) {
+        this.setpoint = feet;
+        this.nativeSetpoint = this.feetToEncoder(feet);
+        this.pidController.setFF(this.currentGearSettings.feedForwardCalculator.ks / 12.);
+        this.pidController.setReference(this.nativeSetpoint,
                 ControlType.kPosition,
                 0,
-                currentGearSettings.feedForwardCalculator.ks,
+                this.currentGearSettings.feedForwardCalculator.ks,
                 CANPIDController.ArbFFUnits.kVoltage);
     }
 
@@ -446,7 +450,7 @@ public class MappedSparkMax implements SmartMotor {
     @Override
     @Log
     public double encoderVelocity() {
-        return canEncoder.getVelocity();
+        return this.canEncoder.getVelocity();
     }
 
     /**
@@ -454,9 +458,10 @@ public class MappedSparkMax implements SmartMotor {
      *
      * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
      */
+    @Override
     @Log
     public Double getVelocity() {
-        return encoderToUPS(canEncoder.getVelocity());
+        return this.encoderToUPS(canEncoder.getVelocity());
     }
 
     /**
@@ -469,7 +474,7 @@ public class MappedSparkMax implements SmartMotor {
         if (currentGearSettings.maxSpeed != null) {
             setVelocityUPS(velocity * currentGearSettings.maxSpeed);
         } else {
-            setPercentVoltage(velocity);
+            this.setPercentVoltage(velocity);
         }
     }
 
@@ -480,51 +485,51 @@ public class MappedSparkMax implements SmartMotor {
      */
     @Override
     public void setVelocityUPS(double velocity) {
-        currentControlMode = ControlType.kVelocity;
-        nativeSetpoint = UPSToEncoder(velocity);
-        setpoint = velocity;
-        pidController.setFF(0);
-        pidController.setReference(nativeSetpoint,
+        this.currentControlMode = ControlType.kVelocity;
+        this.nativeSetpoint = UPSToEncoder(velocity);
+        this.setpoint = velocity;
+        this.pidController.setFF(0);
+        this.pidController.setReference(nativeSetpoint,
                 ControlType.kVelocity,
                 0,
-                currentGearSettings.feedForwardCalculator.calculate(velocity),
+                this.currentGearSettings.feedForwardCalculator.calculate(velocity),
                 CANPIDController.ArbFFUnits.kVoltage);
     }
 
     @Override
     @Log
     public double getError() {
-        return getSetpoint() - getVelocity();
+        return this.getSetpoint() - this.getVelocity();
     }
 
     @Nullable
     @Override
     @Log
     public Double getSetpoint() {
-        return setpoint;
+        return this.setpoint;
     }
 
     @Override
     @Log
     public double getOutputVoltage() {
-        return spark.getAppliedOutput() * spark.getBusVoltage();
+        return this.spark.getAppliedOutput() * this.spark.getBusVoltage();
     }
 
     @Override
     @Log
     public double getBatteryVoltage() {
-        return spark.getBusVoltage();
+        return this.spark.getBusVoltage();
     }
 
     @Override
     @Log
     public double getOutputCurrent() {
-        return spark.getOutputCurrent();
+        return this.spark.getOutputCurrent();
     }
 
     @Override
     public String getControlMode() {
-        return currentControlMode.name();
+        return this.currentControlMode.name();
     }
 
     @Override
@@ -532,18 +537,18 @@ public class MappedSparkMax implements SmartMotor {
         if (currentGearSettings.maxSpeed != null) {
             setVelocityUPS(currentGearSettings.maxSpeed * velocity);
         } else {
-            setPercentVoltage(velocity);
+            this.setPercentVoltage(velocity);
         }
     }
 
     @Override
-    public void setGearScaledVelocity(double velocity, Shiftable.gear gear) {
-        setGearScaledVelocity(velocity, gear.getNumVal());
+    public void setGearScaledVelocity(final double velocity, final Shiftable.gear gear) {
+        this.setGearScaledVelocity(velocity, gear.getNumVal());
     }
 
     @Override
     public SimpleMotorFeedforward getCurrentGearFeedForward() {
-        return currentGearSettings.feedForwardCalculator;
+        return this.currentGearSettings.feedForwardCalculator;
     }
 
     @Override
@@ -553,31 +558,36 @@ public class MappedSparkMax implements SmartMotor {
 
     @Override
     public void resetPosition() {
-        canEncoder.setPosition(0);
+        this.canEncoder.setPosition(0);
     }
 
     @Override
     public boolean getFwdLimitSwitch() {
-        return forwardLimitSwitch.get();
+        return this.forwardLimitSwitch.get();
     }
 
     @Override
     public boolean getRevLimitSwitch() {
-        return reverseLimitSwitch.get();
+        return this.reverseLimitSwitch.get();
     }
 
     @Override
     public boolean isInhibitedForward() {
-        return spark.getFault(CANSparkMax.FaultID.kHardLimitFwd);
+        return this.spark.getFault(CANSparkMax.FaultID.kHardLimitFwd);
     }
 
     @Override
     public boolean isInhibitedReverse() {
-        return spark.getFault(CANSparkMax.FaultID.kHardLimitRev);
+        return this.spark.getFault(CANSparkMax.FaultID.kHardLimitRev);
+    }
+
+    @Override
+    public int getPort() {
+        return this.spark.getDeviceId();
     }
 
     @Override
     public String configureLogName() {
-        return name;
+        return this.name;
     }
 }

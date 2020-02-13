@@ -6,13 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedButton;
 
 /**
- * Negates another {@link MappedButton}.
+ * Negates another {@link Button}.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class NegateButton extends MappedButton {
+public class NegateButton extends Button {
 
     /**
      * The button to negate.
@@ -26,17 +25,17 @@ public class NegateButton extends MappedButton {
      * @param toNegate The button to negate.
      */
     @JsonCreator
-    public NegateButton(@NotNull @JsonProperty(required = true) MappedButton toNegate) {
+    public NegateButton(@NotNull @JsonProperty(required = true) final Button toNegate) {
         this.toNegate = toNegate;
     }
 
     /**
-     * Get the opposite of toNegate's {@link MappedButton#get()}.
+     * Get the opposite of toNegate's {@link Button#get()}.
      *
      * @return true if toNegate gets false, false otherwise.
      */
     @Override
     public boolean get() {
-        return !toNegate.get();
+        return !this.toNegate.get();
     }
 }

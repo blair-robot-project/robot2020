@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.UPSSmartMotor;
+import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
@@ -24,10 +24,10 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      * The flywheel's Talon
      */
     @NotNull
-    private final UPSSmartMotor shooterMotor;
+    private final SmartMotor shooterMotor;
 
     @NotNull
-    private final UPSSmartMotor otherShooterMotor;
+    private final SmartMotor otherShooterMotor;
 
     /**
      * The feeder's motor
@@ -79,8 +79,8 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      *                            Defaults to {@literal null}, meaning that there is no speed requirement.
      */
     @JsonCreator
-    public LoggingFlywheel(@NotNull @JsonProperty(required = true) UPSSmartMotor shooterMotor,
-                           @NotNull @JsonProperty(required = true) UPSSmartMotor otherShooterMotor,
+    public LoggingFlywheel(@NotNull @JsonProperty(required = true) SmartMotor shooterMotor,
+                           @NotNull @JsonProperty(required = true) SmartMotor otherShooterMotor,
                            @JsonProperty(required = true) double shooterThrottle,
                            @NotNull @JsonProperty(required = true) SimpleMotor kickerMotor,
                            @JsonProperty(required = true) double kickerThrottle,
@@ -102,10 +102,10 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void turnFlywheelOn() {
-        shooterMotor.enable();
-        otherShooterMotor.enable();
-        shooterMotor.setVelocity(shooterThrottle);
-        otherShooterMotor.setVelocity(shooterThrottle);
+        this.shooterMotor.enable();
+        this.otherShooterMotor.enable();
+        this.shooterMotor.setVelocity(this.shooterThrottle);
+        this.otherShooterMotor.setVelocity(this.shooterThrottle);
     }
 
     /**
@@ -113,9 +113,8 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void turnFlywheelOff() {
-        shooterMotor.disable();
-        otherShooterMotor.disable();
-        this.setFlywheelState(FlywheelState.OFF);
+        this.shooterMotor.disable();
+        this.otherShooterMotor.disable();
     }
 
     /**
@@ -123,8 +122,8 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void turnFeederOn() {
-        kickerMotor.enable();
-        kickerMotor.setVelocity(kickerThrottle);
+        this.kickerMotor.enable();
+        this.kickerMotor.setVelocity(this.kickerThrottle);
     }
 
     /**
@@ -132,7 +131,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void turnFeederOff() {
-        kickerMotor.disable();
+        this.kickerMotor.disable();
     }
 
     /**
@@ -141,21 +140,21 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     @NotNull
     @Override
     public SubsystemFlywheel.FlywheelState getFlywheelState() {
-        return state;
+        return this.state;
     }
 
     /**
      * @param state The state to switch the multiSubsystem to.
      */
     @Override
-    public void setFlywheelState(@NotNull SubsystemFlywheel.FlywheelState state) {
+    public void setFlywheelState(@NotNull final SubsystemFlywheel.FlywheelState state) {
         this.state = state;
         if (state == FlywheelState.SPINNING_UP) this.lastSpinUpTimeMS = Clock.currentTimeMillis();
     }
 
     @Log
     public String state() {
-        return state.name();
+        return this.state.name();
     }
 
     /**
@@ -164,22 +163,25 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     @Override
     @Log
     public double getSpinUpTimeoutSecs() {
-        return spinUpTimeoutSecs;
+        return this.spinUpTimeoutSecs;
     }
 
+    // TODO: Also account for speed difference between flywheels?
+    // TODO: Split into FlywheelTwoSides like how intake does it?
     @Override
     @Log
     public boolean isAtShootingSpeed() {
         if (this.state == FlywheelState.OFF) return false;
 
-        double timeSinceLastSpinUp = Clock.currentTimeMillis() - this.lastSpinUpTimeMS;
-        boolean timeoutExceeded = timeSinceLastSpinUp > 1000 * this.spinUpTimeoutSecs;
+        final double timeSinceLastSpinUp = Clock.currentTimeMillis() - this.lastSpinUpTimeMS;
+        final boolean timeoutExceeded = timeSinceLastSpinUp > 1000 * this.spinUpTimeoutSecs;
         if (timeoutExceeded) return true;
 
         if (this.minShootingSpeedFPS == null) return false;
 
-        Double actualVelocity = this.shooterMotor.getVelocity();
-        return !Double.isNaN(actualVelocity) && actualVelocity > this.minShootingSpeedFPS;
+        final Double actualVelocity = this.shooterMotor.getVelocity();
+        // TODO: Should we be looking at velocity or speed?
+        return !Double.isNaN(actualVelocity) && Math.abs(actualVelocity) > this.minShootingSpeedFPS;
     }
 
     /**
@@ -196,7 +198,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
     @Override
     @Log
     public boolean isConditionTrueCached() {
-        return conditionMetCached;
+        return this.conditionMetCached;
     }
 
     /**
@@ -204,6 +206,6 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      */
     @Override
     public void update() {
-        conditionMetCached = isConditionTrue();
+        this.conditionMetCached = this.isConditionTrue();
     }
 }

@@ -4,7 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.PerpetualCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
@@ -27,15 +31,15 @@ public class ShootWhenFlywheelAtSpeed<T extends Subsystem & SubsystemFlywheel> e
      * @param pollingInterval The duration, in seconds, to wait between iterations of this command.
      */
     @JsonCreator
-    public ShootWhenFlywheelAtSpeed(@NotNull @JsonProperty(required = true) T flywheel,
-                                    @Nullable SubsystemIntake feeder,
-                                    @Nullable Double pollingInterval) {
+    public ShootWhenFlywheelAtSpeed(@NotNull @JsonProperty(required = true) final T flywheel,
+                                    @Nullable final SubsystemIntake feeder,
+                                    @Nullable final Double pollingInterval) {
         super(new SequentialCommandGroup(
-                new WaitCommand(Objects.requireNonNullElse(pollingInterval, 1.0)),
                 new ConditionalCommand(
                         new TurnAllOn(flywheel),
                         new SpinUpFlywheel(flywheel, feeder),
-                        flywheel::isAtShootingSpeed)));
+                        flywheel::isAtShootingSpeed),
+                new WaitCommand(Objects.requireNonNullElse(pollingInterval, 1.0))));
         this.addRequirements(flywheel);
     }
 }
