@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
-import org.usfirst.frc.team449.robot.generalInterfaces.UPSSmartMotor;
+import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 
 import java.util.HashMap;
@@ -26,7 +26,7 @@ import java.util.Map;
  * in this class takes arguments in post-gearing FPS.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class UPSTalon implements UPSSmartMotor {
+public class MappedTalon implements SmartMotor {
 
     Faults faults = new Faults();
 
@@ -142,33 +142,33 @@ public class UPSTalon implements UPSSmartMotor {
      * @param slaveSparks             The Spark/Neo combinations slaved to this Talon.
      */
     @JsonCreator
-    public UPSTalon(@JsonProperty(required = true) int port,
-                    @Nullable String name,
-                    boolean reverseOutput,
-                    @JsonProperty(required = true) boolean enableBrakeMode,
-                    @Nullable RunningLinRegComponent voltagePerCurrentLinReg,
-                    @Nullable PDP PDP,
-                    @Nullable Boolean fwdLimitSwitchNormallyOpen,
-                    @Nullable Boolean revLimitSwitchNormallyOpen,
-                    @Nullable Integer remoteLimitSwitchID,
-                    @Nullable Double fwdSoftLimit,
-                    @Nullable Double revSoftLimit,
-                    @Nullable Double postEncoderGearing,
-                    @Nullable Double unitPerRotation,
-                    @Nullable Integer currentLimit,
-                    boolean enableVoltageComp,
-                    @Nullable Integer voltageCompSamples,
-                    @Nullable FeedbackDevice feedbackDevice,
-                    @Nullable Integer encoderCPR,
-                    boolean reverseSensor,
-                    @Nullable List<PerGearSettings> perGearSettings,
-                    @Nullable Shiftable.gear startingGear,
-                    @Nullable Integer startingGearNum,
-                    @Nullable Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
-                    @Nullable Map<ControlFrame, Integer> controlFrameRatesMillis,
-                    @Nullable List<SlaveTalon> slaveTalons,
-                    @Nullable List<SlaveVictor> slaveVictors,
-                    @Nullable List<SlaveSparkMax> slaveSparks) {
+    public MappedTalon(@JsonProperty(required = true) int port,
+                       @Nullable String name,
+                       boolean reverseOutput,
+                       @JsonProperty(required = true) boolean enableBrakeMode,
+                       @Nullable RunningLinRegComponent voltagePerCurrentLinReg,
+                       @Nullable PDP PDP,
+                       @Nullable Boolean fwdLimitSwitchNormallyOpen,
+                       @Nullable Boolean revLimitSwitchNormallyOpen,
+                       @Nullable Integer remoteLimitSwitchID,
+                       @Nullable Double fwdSoftLimit,
+                       @Nullable Double revSoftLimit,
+                       @Nullable Double postEncoderGearing,
+                       @Nullable Double unitPerRotation,
+                       @Nullable Integer currentLimit,
+                       boolean enableVoltageComp,
+                       @Nullable Integer voltageCompSamples,
+                       @Nullable FeedbackDevice feedbackDevice,
+                       @Nullable Integer encoderCPR,
+                       boolean reverseSensor,
+                       @Nullable List<PerGearSettings> perGearSettings,
+                       @Nullable Shiftable.gear startingGear,
+                       @Nullable Integer startingGearNum,
+                       @Nullable Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
+                       @Nullable Map<ControlFrame, Integer> controlFrameRatesMillis,
+                       @Nullable List<SlaveTalon> slaveTalons,
+                       @Nullable List<SlaveVictor> slaveVictors,
+                       @Nullable List<SlaveSparkMax> slaveSparks) {
         //Instantiate the base CANTalon this is a wrapper on.
         canTalon = new TalonSRX(port);
         //Set the name to the given one or to talon_portnum

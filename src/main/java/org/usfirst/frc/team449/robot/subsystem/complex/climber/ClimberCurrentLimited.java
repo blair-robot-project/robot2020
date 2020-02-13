@@ -10,7 +10,7 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
-import org.usfirst.frc.team449.robot.jacksonWrappers.UPSTalon;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.SubsystemBinaryMotor;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
@@ -25,7 +25,7 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
      * The CANTalon controlling one of the climber motors.
      */
     @NotNull
-    private final UPSTalon canTalonSRX;
+    private final MappedTalon canTalonSRX;
 
     /**
      * The other climber motor.
@@ -64,7 +64,7 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
      * @param powerLimitTimer The buffer timer for the power-limited shutoff.
      */
     @JsonCreator
-    public ClimberCurrentLimited(@NotNull @JsonProperty(required = true) UPSTalon talonSRX,
+    public ClimberCurrentLimited(@NotNull @JsonProperty(required = true) MappedTalon talonSRX,
                                  @JsonProperty(required = true) double maxPower,
                                  @Nullable SimpleMotor simpleMotor,
                                  @NotNull @JsonProperty(required = true) BufferTimer powerLimitTimer) {

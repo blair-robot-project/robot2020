@@ -161,7 +161,7 @@ subsystems:
 #  - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
 #      '@id': feeder
 #      motor:
-#        org.usfirst.frc.team449.robot.jacksonWrappers.UPSTalon: #TODO TODO
+#        org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon: #TODO TODO
 #          '@id': feederMotor
 #          port: 8 #TODO
 #          name: feederMotor

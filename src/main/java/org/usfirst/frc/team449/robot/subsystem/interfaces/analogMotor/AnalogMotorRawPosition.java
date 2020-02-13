@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.jacksonWrappers.UPSTalon;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon;
 
 /**
  * An analogMotor that uses position instead of velocity.
@@ -18,7 +18,7 @@ public class AnalogMotorRawPosition extends SubsystemBase implements SubsystemAn
      * The motor this subsystem controls.
      */
     @NotNull
-    private final UPSTalon motor;
+    private final MappedTalon motor;
 
     /**
      * Default constructor.
@@ -26,7 +26,7 @@ public class AnalogMotorRawPosition extends SubsystemBase implements SubsystemAn
      * @param motor  The motor this subsystem controls.
      */
     @JsonCreator
-    public AnalogMotorRawPosition(@NotNull @JsonProperty(required = true) UPSTalon motor) {
+    public AnalogMotorRawPosition(@NotNull @JsonProperty(required = true) MappedTalon motor) {
         this.motor = motor;
     }
 

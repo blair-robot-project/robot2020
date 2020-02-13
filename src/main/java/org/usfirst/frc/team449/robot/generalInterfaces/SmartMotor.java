@@ -2,7 +2,6 @@ package org.usfirst.frc.team449.robot.generalInterfaces;
 
 import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -14,9 +13,7 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
@@ -32,7 +29,7 @@ import java.util.*;
  * Also features built in FPS conversions.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
+public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
 
     /**
      * Creates a new <b>SPARK MAX</b> or <b>FPS TALON</b> motor controller.
@@ -85,37 +82,37 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      * @param slaveSparks                The Spark/Neo combinations slaved to this Talon.
      */
     @JsonCreator
-    static FPSSmartMotor create(@JsonProperty(required = true) Type type,
-                                @JsonProperty(required = true) int port,
-                                @Nullable String name,
-                                boolean reverseOutput,
-                                @JsonProperty(required = true) boolean enableBrakeMode,
-                                @Nullable PDP PDP,
-                                @Nullable Boolean fwdLimitSwitchNormallyOpen,
-                                @Nullable Boolean revLimitSwitchNormallyOpen,
-                                @Nullable Integer remoteLimitSwitchID,
-                                @Nullable Double fwdSoftLimit,
-                                @Nullable Double revSoftLimit,
-                                @Nullable Double postEncoderGearing,
-                                @Nullable Double feetPerRotation,
-                                @Nullable Integer currentLimit,
-                                boolean enableVoltageComp,
-                                @Nullable List<PerGearSettings> perGearSettings,
-                                @Nullable Shiftable.gear startingGear,
-                                @Nullable Integer startingGearNum,
-                                // Talon-specific
-                                @Nullable final Map<?, Integer> statusFrameRatesMillis,
-                                @Nullable final Integer controlFrameRateMillis,
-                                @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
-                                @Nullable RunningLinRegComponent voltagePerCurrentLinReg,
-                                @Nullable Integer voltageCompSamples,
-                                @Nullable FeedbackDevice feedbackDevice,
-                                @Nullable Integer encoderCPR,
-                                @Nullable Boolean reverseSensor,
-                                @Nullable Double updaterProcessPeriodSecs,
-                                @Nullable List<SlaveTalon> slaveTalons,
-                                @Nullable List<SlaveVictor> slaveVictors,
-                                @Nullable List<SlaveSparkMax> slaveSparks
+    static SmartMotor create(@JsonProperty(required = true) Type type,
+                             @JsonProperty(required = true) int port,
+                             @Nullable String name,
+                             boolean reverseOutput,
+                             @JsonProperty(required = true) boolean enableBrakeMode,
+                             @Nullable PDP PDP,
+                             @Nullable Boolean fwdLimitSwitchNormallyOpen,
+                             @Nullable Boolean revLimitSwitchNormallyOpen,
+                             @Nullable Integer remoteLimitSwitchID,
+                             @Nullable Double fwdSoftLimit,
+                             @Nullable Double revSoftLimit,
+                             @Nullable Double postEncoderGearing,
+                             @Nullable Double feetPerRotation,
+                             @Nullable Integer currentLimit,
+                             boolean enableVoltageComp,
+                             @Nullable List<PerGearSettings> perGearSettings,
+                             @Nullable Shiftable.gear startingGear,
+                             @Nullable Integer startingGearNum,
+                             // Talon-specific
+                             @Nullable final Map<?, Integer> statusFrameRatesMillis,
+                             @Nullable final Integer controlFrameRateMillis,
+                             @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
+                             @Nullable RunningLinRegComponent voltagePerCurrentLinReg,
+                             @Nullable Integer voltageCompSamples,
+                             @Nullable FeedbackDevice feedbackDevice,
+                             @Nullable Integer encoderCPR,
+                             @Nullable Boolean reverseSensor,
+                             @Nullable Double updaterProcessPeriodSecs,
+                             @Nullable List<SlaveTalon> slaveTalons,
+                             @Nullable List<SlaveVictor> slaveVictors,
+                             @Nullable List<SlaveSparkMax> slaveSparks
     ) {
         // The status frames map must be dealt with manually.
         var sparkStatusFramesMap = new HashMap<CANSparkMaxLowLevel.PeriodicFrame, Integer>();
@@ -139,7 +136,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
 
                 } else if (frame instanceof CANSparkMaxLowLevel.PeriodicFrame) {
                     if (type == Type.TALON)
-                        throw new IllegalArgumentException("statusFrameRatesMillis contains key of type CANSparkMaxLowLevel.PeriodicFrame that will not work for FPSTalon");
+                        throw new IllegalArgumentException("statusFrameRatesMillis contains key of type CANSparkMaxLowLevel.PeriodicFrame that will not work for MappedTalon");
                     sparkStatusFramesMap.put((CANSparkMaxLowLevel.PeriodicFrame) frame, statusFrameRatesMillis.get(frame));
 
                 } else if (frame instanceof StatusFrameEnhanced) {
@@ -156,31 +153,31 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
         switch (type) {
             case SPARKMAX:
                 if (slaveTalons != null)
-                    System.out.println("WARNING: Property slaveTalons is not supported for FPSSparkMax");
+                    System.out.println("WARNING: Property slaveTalons is not supported for MappedSparkMax");
                 if (slaveVictors != null)
-                    System.out.println("WARNING: Property slaveTalons is not supported for FPSSparkMax");
+                    System.out.println("WARNING: Property slaveTalons is not supported for MappedSparkMax");
                 if (voltagePerCurrentLinReg != null)
-                    System.out.println("WARNING: Property voltagePerCurrentLinReg is not supported for FPSSparkMax");
+                    System.out.println("WARNING: Property voltagePerCurrentLinReg is not supported for MappedSparkMax");
                 if (encoderCPR != null)
-                    System.out.println("WARNING: Property encoderCPR is not supported for FPSSparkMax");
+                    System.out.println("WARNING: Property encoderCPR is not supported for MappedSparkMax");
                 if (reverseSensor != null)
-                    System.out.println("WARNING: Property reverseSensor is not supported for FPSSparkMax");
+                    System.out.println("WARNING: Property reverseSensor is not supported for MappedSparkMax");
                 if (voltageCompSamples != null)
-                    System.out.println("WARNING: Property voltageCompSamples is not supported for FPSSparkMax");
+                    System.out.println("WARNING: Property voltageCompSamples is not supported for MappedSparkMax");
                 if (updaterProcessPeriodSecs != null)
-                    System.out.println("WARNING: Property updaterProcessPeriodSecs is not supported for FPSSparkMax");
+                    System.out.println("WARNING: Property updaterProcessPeriodSecs is not supported for MappedSparkMax");
                 if (controlFrameRateMillis != null)
-                    System.out.println("WARNING: Property controlFrameRateMillis (RATE--singular) is not supported for FPSSparkMax");
+                    System.out.println("WARNING: Property controlFrameRateMillis (RATE--singular) is not supported for MappedSparkMax");
 
-                return new FPSSparkMax(port, name, reverseOutput, enableBrakeMode, PDP, fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen, remoteLimitSwitchID, fwdSoftLimit, revSoftLimit, postEncoderGearing, feetPerRotation, currentLimit, enableVoltageComp, perGearSettings, startingGear, startingGearNum, sparkStatusFramesMap, controlFrameRateMillis, slaveSparks);
+                return new MappedSparkMax(port, name, reverseOutput, enableBrakeMode, PDP, fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen, remoteLimitSwitchID, fwdSoftLimit, revSoftLimit, postEncoderGearing, feetPerRotation, currentLimit, enableVoltageComp, perGearSettings, startingGear, startingGearNum, sparkStatusFramesMap, controlFrameRateMillis, slaveSparks);
 
             case TALON:
                 if (reverseSensor == null)
-                    throw new IllegalArgumentException("Property reverseSensor cannot be null for FPSTalon");
+                    throw new IllegalArgumentException("Property reverseSensor cannot be null for MappedTalon");
                 if (controlFrameRatesMillis != null)
-                    System.out.println("WARNING: Property controlFrameRatesMillis (RATESSSS--plural) is not supported for FPSTalon");
+                    System.out.println("WARNING: Property controlFrameRatesMillis (RATESSSS--plural) is not supported for MappedTalon");
 
-                return new FPSTalon(port, name, reverseOutput, enableBrakeMode, voltagePerCurrentLinReg, PDP, fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen, remoteLimitSwitchID, fwdSoftLimit, revSoftLimit, postEncoderGearing, feetPerRotation, currentLimit, enableVoltageComp, voltageCompSamples, feedbackDevice, encoderCPR, reverseSensor, perGearSettings, startingGear, startingGearNum, updaterProcessPeriodSecs, talonStatusFramesMap, controlFrameRatesMillis, slaveTalons, slaveVictors, slaveSparks);
+                return new MappedTalon(port, name, reverseOutput, enableBrakeMode, voltagePerCurrentLinReg, PDP, fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen, remoteLimitSwitchID, fwdSoftLimit, revSoftLimit, postEncoderGearing, feetPerRotation, currentLimit, enableVoltageComp, voltageCompSamples, feedbackDevice, encoderCPR, reverseSensor, perGearSettings, startingGear, startingGearNum, talonStatusFramesMap, controlFrameRatesMillis, slaveTalons, slaveVictors, slaveSparks);
 
             default:
                 throw new IllegalArgumentException("Bad motor type: " + type);
@@ -200,7 +197,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      * @param nativeUnits A distance native units as measured by the encoder.
      * @return That distance in feet, or null if no encoder CPR was given.
      */
-    double encoderToFeet(double nativeUnits);
+    double encoderToUnit(double nativeUnits);
 
     /**
      * Convert a distance from feet to encoder reading in native units. Note this DOES account for post-encoder
@@ -209,7 +206,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      * @param feet A distance in feet.
      * @return That distance in native units as measured by the encoder, or null if no encoder CPR was given.
      */
-    double feetToEncoder(double feet);
+    double unitToEncoder(double feet);
 
     /**
      * Converts the velocity read by the controllers's getVelocity() method to the FPS of the output shaft. Note this DOES
@@ -219,7 +216,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if no encoder CPR
      * was given.
      */
-    double encoderToFPS(double encoderReading);
+    double encoderToUPS(double encoderReading);
 
     /**
      * Converts from the velocity of the output shaft to what the controllers's getVelocity() method would read at that
@@ -228,7 +225,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      * @param FPS The velocity of the output shaft, in FPS.
      * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was given.
      */
-    double FPSToEncoder(double FPS);
+    double UPSToEncoder(double FPS);
 
     /**
      * Convert from native velocity units to output rotations per second. Note this DOES NOT account for
@@ -282,7 +279,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      *
      * @param velocity velocity setpoint in FPS.
      */
-    void setVelocityFPS(double velocity);
+    void setVelocityUPS(double velocity);
 
     /**
      * Get the current closed-loop velocity error in FPS. WARNING: will give garbage if not in velocity mode.
@@ -351,7 +348,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
     /**
      * @return the position of the talon in feet, or null of inches per rotation wasn't given.
      */
-    Double getPositionFeet();
+    Double getPositionUnits();
 
     /**
      * Resets the position of the Talon to 0.

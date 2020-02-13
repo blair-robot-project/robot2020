@@ -14,10 +14,8 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
-import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
+import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
 
@@ -33,13 +31,13 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * Right master Talon
      */
     @NotNull
-    protected final FPSSmartMotor rightMaster;
+    protected final SmartMotor rightMaster;
 
     /**
      * Left master Talon
      */
     @NotNull
-    protected final FPSSmartMotor leftMaster;
+    protected final SmartMotor leftMaster;
 
     /**
      * The NavX gyro
@@ -77,8 +75,8 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * @param trackWidthMeters The width between the left and right wheels in meters
      */
     @JsonCreator
-    public DriveUnidirectionalWithGyro(@NotNull @JsonProperty(required = true) FPSSmartMotor leftMaster,
-                                       @NotNull @JsonProperty(required = true) FPSSmartMotor rightMaster,
+    public DriveUnidirectionalWithGyro(@NotNull @JsonProperty(required = true) SmartMotor leftMaster,
+                                       @NotNull @JsonProperty(required = true) SmartMotor rightMaster,
                                        @NotNull @JsonProperty(required = true) MappedAHRS ahrs,
                                        @JsonProperty(required = true) double trackWidthMeters) {
         super();
@@ -145,7 +143,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Nullable
     @Override
     public Double getLeftPos() {
-        return leftMaster.getPositionFeet();
+        return leftMaster.getPositionUnits();
     }
 
     /**
@@ -156,7 +154,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
     @Nullable
     @Override
     public Double getRightPos() {
-        return rightMaster.getPositionFeet();
+        return rightMaster.getPositionUnits();
     }
 
     /**
