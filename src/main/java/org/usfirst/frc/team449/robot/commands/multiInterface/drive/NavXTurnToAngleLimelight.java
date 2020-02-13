@@ -10,13 +10,10 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.limelight.Limelight;
-import org.usfirst.frc.team449.robot.components.limelight.LimelightComponent;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
-
-import java.util.function.DoubleSupplier;
 
 /**
  * Turn a certain number of degrees from the current heading, based on input from the limelight
@@ -40,7 +37,7 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
      * @param kP                Proportional gain. Defaults to zero.
      * @param kI                Integral gain. Defaults to zero.
      * @param kD                Derivative gain. Defaults to zero.
-     * @param subsystem         The drive subsystem to execute this command on.
+     * @param drive             The drive subsystem to execute this command on.
      * @param timeout           How long this command is allowed to run for, in seconds. Needed because sometimes
      *                          floating-point errors prevent termination.
      */
@@ -55,10 +52,10 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
                                     int kP,
                                     int kI,
                                     int kD,
-                                    @NotNull @JsonProperty(required = true) T subsystem,
+                                    @NotNull @JsonProperty(required = true) T drive,
                                     @JsonProperty(required = true) double timeout) {
         super(absoluteTolerance, onTargetBuffer, minimumOutput, maximumOutput, loopTimeMillis, deadband, inverted, kP
-                , kI, kD, Limelight.getXOffset(), subsystem, timeout);
+                , kI, kD, Limelight.getXOffset(), drive, timeout);
     }
 
     /**
@@ -78,8 +75,7 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
     public void execute(){
         super.execute();
         System.out.println(getSetpoint());
-        System.out.println("this is black magic");
-        System.out.println(pidController.calculate(((SubsystemAHRS) subsystem).getHeadingCached()));
+        System.out.println(pidController.calculate(((SubsystemAHRS) subsystem).getHeadingCached(), pidController.getSetpoint()));
         System.out.println("system output: " + getOutput());
     }
 

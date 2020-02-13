@@ -267,7 +267,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
 
     @Log
     public double getRawOutput(){
-        return rawOutput;
+        return super.getRawOutput();
     }
 
     @Log

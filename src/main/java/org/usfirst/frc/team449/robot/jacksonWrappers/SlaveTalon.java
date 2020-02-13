@@ -157,7 +157,7 @@ public class SlaveTalon implements Loggable {
 //    }
 
     @Log
-    public double getOutPutCurrent (){
+    public double getOutputCurrent(){
         return  talonSRX.getOutputCurrent();
     }
 

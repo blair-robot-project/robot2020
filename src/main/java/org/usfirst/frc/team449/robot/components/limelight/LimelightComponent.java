@@ -18,11 +18,12 @@ public class LimelightComponent implements DoubleSupplier {
      * The NetworkTableEntry that supplies the desired value
      * Determined by the ReturnValue value
      */
-    @NotNull NetworkTableEntry entry;
+    @NotNull
+    NetworkTableEntry entry;
     /**
      * Whether the limelight has a valid target in sight. Will return 0 for no, 1 for yes
      */
-    private final NetworkTableEntry tv;
+    private static final NetworkTableEntry tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv");;
     /**
      * Which value to ask from the limelight
      * Can be:
@@ -104,7 +105,15 @@ public class LimelightComponent implements DoubleSupplier {
             default:
                 entry = table.getEntry("camtran");
         }
-        tv = table.getEntry("tv");
+    }
+
+    /**
+     * Sets the pipeline of the limelight
+     * @param index the index to set the pipeline to
+     */
+    public static void setPipeline(int index){
+        LimelightComponent pipeline = new LimelightComponent(LimelightComponent.ReturnValue.pipeIndex, 0);
+        pipeline.entry.setNumber(index);
     }
 
     /**
@@ -132,5 +141,9 @@ public class LimelightComponent implements DoubleSupplier {
             default:
                 return entry.getDouble(0.0) + offset;
         }
+    }
+
+    public static boolean hasTarget(){
+        return tv.getBoolean(false);
     }
 }
