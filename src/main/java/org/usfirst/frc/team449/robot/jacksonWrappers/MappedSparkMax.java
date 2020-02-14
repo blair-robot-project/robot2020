@@ -4,12 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.revrobotics.CANDigitalInput;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANPIDController;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
-import com.revrobotics.ControlType;
+import com.revrobotics.*;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -17,7 +12,7 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
+import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 
 import java.util.HashMap;
@@ -25,21 +20,21 @@ import java.util.List;
 import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class FPSSparkMax implements FPSSmartMotor {
+public class MappedSparkMax implements SmartMotor {
     /**
      * REV brushless controller object
      */
-    private final CANSparkMax spark;
+    private CANSparkMax spark;
 
     /**
      * REV provided encoder object
      */
-    private final CANEncoder canEncoder;
+    private CANEncoder canEncoder;
 
     /**
      * REV provided PID Controller
      */
-    private final CANPIDController pidController;
+    private CANPIDController pidController;
 
     /**
      * The control mode of the motor
@@ -153,26 +148,26 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @param controlFrameRateMillis     The update rate, in milliseconds, for each control frame.
      */
     @JsonCreator
-    public FPSSparkMax(@JsonProperty(required = true) final int port,
-                       @Nullable final String name,
-                       final boolean reverseOutput,
-                       @JsonProperty(required = true) final boolean enableBrakeMode,
-                       @Nullable final PDP PDP,
-                       @Nullable final Boolean fwdLimitSwitchNormallyOpen,
-                       @Nullable final Boolean revLimitSwitchNormallyOpen,
-                       @Nullable final Integer remoteLimitSwitchID,
-                       @Nullable final Double fwdSoftLimit,
-                       @Nullable final Double revSoftLimit,
-                       @Nullable final Double postEncoderGearing,
-                       @Nullable final Double feetPerRotation,
-                       @Nullable final Integer currentLimit,
-                       final boolean enableVoltageComp,
-                       @Nullable final List<PerGearSettings> perGearSettings,
-                       @Nullable final Shiftable.gear startingGear,
-                       @Nullable final Integer startingGearNum,
-                       @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
-                       @Nullable final Integer controlFrameRateMillis,
-                       @Nullable final List<SlaveSparkMax> slaveSparks) {
+    public MappedSparkMax(@JsonProperty(required = true) final int port,
+                          @Nullable final String name,
+                          final boolean reverseOutput,
+                          @JsonProperty(required = true) final boolean enableBrakeMode,
+                          @Nullable final PDP PDP,
+                          @Nullable final Boolean fwdLimitSwitchNormallyOpen,
+                          @Nullable final Boolean revLimitSwitchNormallyOpen,
+                          @Nullable final Integer remoteLimitSwitchID,
+                          @Nullable final Double fwdSoftLimit,
+                          @Nullable final Double revSoftLimit,
+                          @Nullable final Double postEncoderGearing,
+                          @Nullable final Double feetPerRotation,
+                          @Nullable final Integer currentLimit,
+                          final boolean enableVoltageComp,
+                          @Nullable final List<PerGearSettings> perGearSettings,
+                          @Nullable final Shiftable.gear startingGear,
+                          @Nullable final Integer startingGearNum,
+                          @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
+                          @Nullable final Integer controlFrameRateMillis,
+                          @Nullable final List<SlaveSparkMax> slaveSparks) {
         this.spark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
         this.spark.restoreFactoryDefaults();
         this.canEncoder = this.spark.getEncoder();
@@ -353,8 +348,8 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @return That distance in feet, or null if no encoder CPR was given.
      */
     @Override
-    public double encoderToFeet(final double revs) {
-        return revs * this.feetPerRotation * this.postEncoderGearing;
+    public double encoderToUnit(double revs) {
+        return revs * feetPerRotation * postEncoderGearing;
     }
 
     /**
@@ -365,8 +360,8 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @return That distance in native units as measured by the encoder, or null if no encoder CPR was given.
      */
     @Override
-    public double feetToEncoder(final double feet) {
-        return feet / this.feetPerRotation / this.postEncoderGearing;
+    public double unitToEncoder(double feet) {
+        return feet / feetPerRotation / postEncoderGearing;
     }
 
     /**
@@ -378,9 +373,9 @@ public class FPSSparkMax implements FPSSmartMotor {
      * was given.
      */
     @Override
-    public double encoderToFPS(final double encoderReading) {
-        this.RPS = this.nativeToRPS(encoderReading);
-        return this.RPS * this.postEncoderGearing * this.feetPerRotation;
+    public double encoderToUPS(double encoderReading) {
+        RPS = nativeToRPS(encoderReading);
+        return RPS * postEncoderGearing * feetPerRotation;
     }
 
     /**
@@ -391,8 +386,8 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was given.
      */
     @Override
-    public double FPSToEncoder(final double FPS) {
-        return this.RPSToNative((FPS / this.postEncoderGearing) / this.feetPerRotation);
+    public double UPSToEncoder(double FPS) {
+        return RPSToNative((FPS / postEncoderGearing) / feetPerRotation);
     }
 
     /**
@@ -437,7 +432,7 @@ public class FPSSparkMax implements FPSSmartMotor {
     @Override
     public void setPositionSetpoint(final double feet) {
         this.setpoint = feet;
-        this.nativeSetpoint = this.feetToEncoder(feet);
+        this.nativeSetpoint = this.unitToEncoder(feet);
         this.pidController.setFF(this.currentGearSettings.feedForwardCalculator.ks / 12.);
         this.pidController.setReference(this.nativeSetpoint,
                 ControlType.kPosition,
@@ -463,7 +458,7 @@ public class FPSSparkMax implements FPSSmartMotor {
     @Override
     @Log
     public Double getVelocity() {
-        return this.encoderToFPS(this.canEncoder.getVelocity());
+        return this.encoderToUPS(canEncoder.getVelocity());
     }
 
     /**
@@ -472,9 +467,9 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @param velocity the desired velocity, on [-1, 1].
      */
     @Override
-    public void setVelocity(final double velocity) {
-        if (this.currentGearSettings.maxSpeed != null) {
-            this.setVelocityFPS(velocity * this.currentGearSettings.maxSpeed);
+    public void setVelocity(double velocity) {
+        if (currentGearSettings.maxSpeed != null) {
+            setVelocityUPS(velocity * currentGearSettings.maxSpeed);
         } else {
             this.setPercentVoltage(velocity);
         }
@@ -486,12 +481,12 @@ public class FPSSparkMax implements FPSSmartMotor {
      * @param velocity velocity setpoint in FPS.
      */
     @Override
-    public void setVelocityFPS(final double velocity) {
+    public void setVelocityUPS(double velocity) {
         this.currentControlMode = ControlType.kVelocity;
-        this.nativeSetpoint = this.FPSToEncoder(velocity);
+        this.nativeSetpoint = UPSToEncoder(velocity);
         this.setpoint = velocity;
         this.pidController.setFF(0);
-        this.pidController.setReference(this.nativeSetpoint,
+        this.pidController.setReference(nativeSetpoint,
                 ControlType.kVelocity,
                 0,
                 this.currentGearSettings.feedForwardCalculator.calculate(velocity),
@@ -535,9 +530,9 @@ public class FPSSparkMax implements FPSSmartMotor {
     }
 
     @Override
-    public void setGearScaledVelocity(final double velocity, final int gear) {
-        if (this.currentGearSettings.maxSpeed != null) {
-            this.setVelocityFPS(this.currentGearSettings.maxSpeed * velocity);
+    public void setGearScaledVelocity(double velocity, int gear) {
+        if (currentGearSettings.maxSpeed != null) {
+            setVelocityUPS(currentGearSettings.maxSpeed * velocity);
         } else {
             this.setPercentVoltage(velocity);
         }
@@ -554,8 +549,8 @@ public class FPSSparkMax implements FPSSmartMotor {
     }
 
     @Override
-    public Double getPositionFeet() {
-        return this.encoderToFeet(this.canEncoder.getPosition());
+    public Double getPositionUnits() {
+        return encoderToUnit(canEncoder.getPosition());
     }
 
     @Override

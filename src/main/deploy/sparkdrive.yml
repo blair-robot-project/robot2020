@@ -27,8 +27,8 @@ subsystems:
             org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
           inverted: true
           enableBrakeMode: true
-          #          postEncoderGearing: 0.13333333333 this needs to be added in per gear settings
-          unitPerRotation: 0.4787787204 #meters per rotation
+#          postEncoderGearing: 0.13333333333 this needs to be added in per gear settings
+          unitPerRotation: .5 #meters per rotation
           currentLimit: 35
           enableVoltageComp: true
           startingGear: LOW
@@ -104,8 +104,80 @@ subsystems:
             forward: 1
             reverse: 0
           startingGear: LOW
+#  # SHOOTER
+#  - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
+#      '@id': shooterFlywheel
+#      shooterMotor:
+#        org.usfirst.frc.team449.robot.jacksonWrappers.UPSSparkMax:
+#          '@id': shooterMotor
+#          port: 7 #TODO
+#          name: rightMotor
+#          inverted: true
+#          enableBrakeMode: true
+#          PDP: PDP
+#          enableVoltageComp: true #TODO
+#          perGearSettings:
+#          - gearNum: 0
+#            feedForwardCalculator:
+#              org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
+#                kS: 0
+#                kV: 0.126
+#                kA: 0
+#            maxSpeed: 90 #rps
+#            kP: 0 #5e-5 #0.0001
+#            kI: 0.
+#            kD: 0
+#          startingGearNum: 0 #TODO
+#      otherShooterMotor:
+#        org.usfirst.frc.team449.robot.jacksonWrappers.UPSSparkMax:
+#          '@id': shooterMotor2
+#          port: 8 #TODO
+#          name: leftMotor
+#          inverted: false
+#          enableBrakeMode: true
+#          PDP: PDP
+#          enableVoltageComp: true #TODO
+#          perGearSettings:
+#            - gearNum: 0
+#              feedForwardCalculator:
+#                org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
+#                  kS: 0
+#                  kV: 0.126
+#                  kA: 0
+#              maxSpeed: 90 #rps
+#              kP: 0 #0.0001
+#              kI: 0
+#              kD: 0
+#          startingGearNum: 0 #TODO
+#      shooterThrottle: 1 #.55 #percent
+#      kickerMotor:
+#        org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.MappedVictorSPX: #TODO TODO
+#          '@id': kickerVictor
+#          port: 7
+#          inverted: false
+#          brakeMode: false
+#      kickerThrottle: 1 #percent
+#  # FEEDER
+#  - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+#      '@id': feeder
+#      motor:
+#        org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon: #TODO TODO
+#          '@id': feederMotor
+#          port: 8 #TODO
+#          name: feederMotor
+#          reverseOutput: false
+#          enableBrakeMode: false
+#          PDP: PDP
+#          currentLimit: 10 #TODO
+#          reverseSensor: false #TODO
+#          startingGearNum: 0 #TODO
+#      inSlowVel: 0
+#      inFastVel: 0.15
+#      outSlowVel: -0.1
+#      outFastVel: -0.2
 
-  # COMMANDS
+
+
 # COMMANDS
 commands:
   defaultCommands:
@@ -116,9 +188,9 @@ commands:
       command:
         org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
           '@id': defaultDriveCommand
-          kP: 0.0
+          kP: 0.003
           kI: 0.0
-          kD: 0.0
+          kD: 0.05
           maximumOutput: 1
           absoluteTolerance: 0
           deadband: 2
@@ -206,44 +278,103 @@ commands:
               '@id': upshiftDebouncer
               bufferTimeSeconds: 0.06
             upshiftFwdThresh: 0.4
-  autoStartupCommand:
-    - org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerUnidirectionalDrive:
-        '@id': testDriveCommand
-        drivetrain:
-          org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
-        P: 0
-        D: 0
-        trajectoryGenerator: #142 x 96in or #3.6068 x 2.4384m
-          org.usfirst.frc.team449.robot.components.TrajectoryGenerationCubicComponent:
-            drivetrain:
-              org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
-            maxSpeedMeters: 2.134
-            maxAccelMeters: 0.5
-            waypoints:
-              startingPose:
-                xPosition: 0
-                yPosition: 0
-                angle: 0
-              translations:
-                - xPosition: 1.5
-                  yPosition: 0
-              endingPose:
-                xPosition: 3
-                yPosition: 0
-                angle: 0
-#              startingPose:
-#                xPosition: 0
-#                yPosition: 0
-#                angle: 0
-#              translations:
-#                - xPosition: 1.5
-#                  yPosition: 0
-#                - xPosition: 2
-#                  yPosition: -1
-#              endingPose:
-#                xPosition: 3
-#                yPosition: 0
-#                angle: 0
+  #BUTTONS
+  buttons:
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': shiftdown
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              '@id': mechanismsJoystick
+#              port: 1
+#          buttonNumber: 6 #shoulder right
+#      command:
+#        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+#          '@id': overrideAndShift
+#          commandList:
+#            - org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
+#                '@id': overrideAutoshift
+#                drive:
+#                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#                    drive
+#                override: true
+#            - org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToLowGear:
+#                '@id': downshift
+#                subsystem:
+#                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#                    drive
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': shiftUp
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              '@id': mechanismsJoystick
+#              port: 1
+#          buttonNumber: 5 #shoulder left
+#      command:
+#        org.usfirst.frc.team449.robot.commands.general.CommandSequence:
+#          '@id': overrideAndShift
+#          commandList:
+#            - org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
+#                '@id': overrideAutoshift
+#                drive:
+#                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#                    drive
+#                override: true
+#            - org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToHighGear:
+#                '@id': downshift
+#                subsystem:
+#                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#                    drive
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': shooterStartButton
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              '@id': mechanismsJoystick
+#              port: 0
+#          buttonNumber: 1 #A
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpThenShoot:
+#          '@id': shootCommand
+#          flywheel:
+#            org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
+#              shooterFlywheel
+#          feeder:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+#              feeder
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': shooterStopButton
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              mechanismsJoystick
+#          buttonNumber: 2 #B
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOff:
+#          '@id': shooterStopCommand
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
+#              shooterFlywheel
+#      action: WHEN_PRESSED
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': feederStopButton
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              mechanismsJoystick
+#          buttonNumber: 3 #X
+#      command:
+#        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
+#          '@id': feederStopCommand
+#          subsystem:
+#            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+#              feeder
+#          mode: IN_SLOW
+#      action: WHEN_PRESSED
 
 
 # UPDATER

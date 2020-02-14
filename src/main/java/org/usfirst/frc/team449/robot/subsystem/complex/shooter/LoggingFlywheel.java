@@ -5,30 +5,29 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
+import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.SubsystemFlywheel;
 
 /**
- * A flywheel multiSubsystem with a single flywheel and a single-motor feeder system. Does not manage its own state.
+ * A flywheel multiSubsystem with a single flywheel and a single-motor feeder system.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel, SubsystemConditional, Loggable {
+public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel, SubsystemConditional, io.github.oblarg.oblog.Loggable {
 
     /**
      * The flywheel's Talon
      */
     @NotNull
-    private final FPSSmartMotor shooterMotor;
+    private final SmartMotor shooterMotor;
 
     @NotNull
-    private final FPSSmartMotor otherShooterMotor;
+    private final SmartMotor otherShooterMotor;
 
     /**
      * The feeder's motor
@@ -80,13 +79,13 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      *                            Defaults to {@literal null}, meaning that there is no speed requirement.
      */
     @JsonCreator
-    public LoggingFlywheel(@NotNull @JsonProperty(required = true) final FPSSmartMotor shooterMotor,
-                           @NotNull @JsonProperty(required = true) final FPSSmartMotor otherShooterMotor,
-                           @JsonProperty(required = true) final double shooterThrottle,
-                           @NotNull @JsonProperty(required = true) final SimpleMotor kickerMotor,
-                           @JsonProperty(required = true) final double kickerThrottle,
-                           @JsonProperty(required = true) final double spinUpTimeoutSecs,
-                           @Nullable final Double minShootingSpeedFPS) {
+    public LoggingFlywheel(@NotNull @JsonProperty(required = true) SmartMotor shooterMotor,
+                           @NotNull @JsonProperty(required = true) SmartMotor otherShooterMotor,
+                           @JsonProperty(required = true) double shooterThrottle,
+                           @NotNull @JsonProperty(required = true) SimpleMotor kickerMotor,
+                           @JsonProperty(required = true) double kickerThrottle,
+                           @JsonProperty(required = true) double spinUpTimeoutSecs,
+                           @Nullable Double minShootingSpeedFPS) {
         this.shooterMotor = shooterMotor;
         this.otherShooterMotor = otherShooterMotor;
         this.shooterThrottle = shooterThrottle;

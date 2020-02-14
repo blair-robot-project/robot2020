@@ -8,7 +8,7 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.components.ShiftComponent;
 import org.usfirst.frc.team449.robot.drive.shifting.DriveShiftable;
-import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
+import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
 
 
@@ -40,8 +40,8 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
      * @param startingOverrideAutoshift Whether to start with autoshift disabled. Defaults to false.
      */
     @JsonCreator
-    public DriveUnidirectionalWithGyroShiftable(@NotNull @JsonProperty(required = true) final FPSSmartMotor leftMaster,
-                                                @NotNull @JsonProperty(required = true) final FPSSmartMotor rightMaster,
+    public DriveUnidirectionalWithGyroShiftable(@NotNull @JsonProperty(required = true) final SmartMotor leftMaster,
+                                                @NotNull @JsonProperty(required = true) final SmartMotor rightMaster,
                                                 @NotNull @JsonProperty(required = true) final MappedAHRS ahrs,
                                                 @JsonProperty(required = true) final double trackWidthMeters,
                                                 @NotNull @JsonProperty(required = true) final ShiftComponent shiftComponent,

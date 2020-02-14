@@ -1,21 +1,11 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers;
 
-import com.ctre.phoenix.motorcontrol.ControlFrame;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.Faults;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.RemoteLimitSwitchSource;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -24,7 +14,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
-import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
+import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 
 import java.util.HashMap;
@@ -36,7 +26,7 @@ import java.util.Map;
  * in this class takes arguments in post-gearing FPS.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class FPSTalon implements FPSSmartMotor {
+public class MappedTalon implements SmartMotor {
 
     Faults faults = new Faults();
 
@@ -61,15 +51,11 @@ public class FPSTalon implements FPSSmartMotor {
      * The coefficient the output changes by after being measured by the encoder, e.g. this would be 1/70 if there was a
      * 70:1 gearing between the encoder and the final output.
      */
-    private final double postEncoderGearing;
+    private double postEncoderGearing;
     /**
      * The number of feet travelled per rotation of the motor this is attached to, or null if there is no encoder.
      */
     private final double feetPerRotation;
-    /**
-     * The period for bottomBufferLoader, in seconds.
-     */
-    private final double updaterProcessPeriodSecs;
     /**
      * A list of all the gears this robot has and their settings.
      */
@@ -131,7 +117,7 @@ public class FPSTalon implements FPSSmartMotor {
      * @param postEncoderGearing         The coefficient the output changes by after being measured by the encoder, e.g.
      *                                   this would be 1/70 if there was a 70:1 gearing between the encoder and the
      *                                   final output. Defaults to 1.
-     * @param feetPerRotation            The number of feet travelled per rotation of the motor this is attached to.
+     * @param unitPerRotation            The number of feet travelled per rotation of the motor this is attached to.
      *                                   Defaults to 1.
      * @param currentLimit               The max amps this device can draw. If this is null, no current limit is used.
      * @param enableVoltageComp          Whether or not to use voltage compensation. Defaults to false.
@@ -148,8 +134,6 @@ public class FPSTalon implements FPSSmartMotor {
      * @param startingGear               The gear to start in. Can be null to use startingGearNum instead.
      * @param startingGearNum            The number of the gear to start in. Ignored if startingGear isn't null.
      *                                   Defaults to the lowest gear.
-     * @param updaterProcessPeriodSecs   The period for the {@link Notifier} that moves points between the MP buffers, in
-     *                                   seconds. Defaults to 0.005.
      * @param statusFrameRatesMillis     The update rates, in millis, for each of the Talon status frames.
      * @param controlFrameRatesMillis    The update rate, in milliseconds, for each of the control frame.
      * @param slaveTalons                The other {@link TalonSRX}s that are slaved to this one.
@@ -158,34 +142,33 @@ public class FPSTalon implements FPSSmartMotor {
      * @param slaveSparks             The Spark/Neo combinations slaved to this Talon.
      */
     @JsonCreator
-    public FPSTalon(@JsonProperty(required = true) final int port,
-                    @Nullable final String name,
-                    final boolean reverseOutput,
-                    @JsonProperty(required = true) final boolean enableBrakeMode,
-                    @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
-                    @Nullable final PDP PDP,
-                    @Nullable final Boolean fwdLimitSwitchNormallyOpen,
-                    @Nullable final Boolean revLimitSwitchNormallyOpen,
-                    @Nullable final Integer remoteLimitSwitchID,
-                    @Nullable final Double fwdSoftLimit,
-                    @Nullable final Double revSoftLimit,
-                    @Nullable final Double postEncoderGearing,
-                    @Nullable final Double feetPerRotation,
-                    @Nullable final Integer currentLimit,
-                    final boolean enableVoltageComp,
-                    @Nullable final Integer voltageCompSamples,
-                    @Nullable final FeedbackDevice feedbackDevice,
-                    @Nullable final Integer encoderCPR,
-                    final boolean reverseSensor,
-                    @Nullable final List<PerGearSettings> perGearSettings,
-                    @Nullable final Shiftable.gear startingGear,
-                    @Nullable final Integer startingGearNum,
-                    @Nullable final Double updaterProcessPeriodSecs,
-                    @Nullable final Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
-                    @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
-                    @Nullable final List<SlaveTalon> slaveTalons,
-                    @Nullable final List<SlaveVictor> slaveVictors,
-                    @Nullable final List<SlaveSparkMax> slaveSparks) {
+    public MappedTalon(@JsonProperty(required = true) int port,
+                       @Nullable String name,
+                       boolean reverseOutput,
+                       @JsonProperty(required = true) boolean enableBrakeMode,
+                       @Nullable RunningLinRegComponent voltagePerCurrentLinReg,
+                       @Nullable PDP PDP,
+                       @Nullable Boolean fwdLimitSwitchNormallyOpen,
+                       @Nullable Boolean revLimitSwitchNormallyOpen,
+                       @Nullable Integer remoteLimitSwitchID,
+                       @Nullable Double fwdSoftLimit,
+                       @Nullable Double revSoftLimit,
+                       @Nullable Double postEncoderGearing,
+                       @Nullable Double unitPerRotation,
+                       @Nullable Integer currentLimit,
+                       boolean enableVoltageComp,
+                       @Nullable Integer voltageCompSamples,
+                       @Nullable FeedbackDevice feedbackDevice,
+                       @Nullable Integer encoderCPR,
+                       boolean reverseSensor,
+                       @Nullable List<PerGearSettings> perGearSettings,
+                       @Nullable Shiftable.gear startingGear,
+                       @Nullable Integer startingGearNum,
+                       @Nullable Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
+                       @Nullable Map<ControlFrame, Integer> controlFrameRatesMillis,
+                       @Nullable List<SlaveTalon> slaveTalons,
+                       @Nullable List<SlaveVictor> slaveVictors,
+                       @Nullable List<SlaveSparkMax> slaveSparks) {
         //Instantiate the base CANTalon this is a wrapper on.
         this.canTalon = new TalonSRX(port);
         //Set the name to the given one or to talon_portnum
@@ -213,8 +196,7 @@ public class FPSTalon implements FPSSmartMotor {
         }
 
         //Set fields
-        this.feetPerRotation = feetPerRotation != null ? feetPerRotation : 1;
-        this.updaterProcessPeriodSecs = updaterProcessPeriodSecs != null ? updaterProcessPeriodSecs : 0.005;
+        this.feetPerRotation = unitPerRotation != null ? unitPerRotation : 1;
 
         //Initialize
         this.perGearSettings = new HashMap<>();
@@ -296,13 +278,13 @@ public class FPSTalon implements FPSSmartMotor {
             //Only enable the software limits if they were given a value and there's an encoder.
             if (fwdSoftLimit != null) {
                 this.canTalon.configForwardSoftLimitEnable(true, 0);
-                this.canTalon.configForwardSoftLimitThreshold((int) this.feetToEncoder(fwdSoftLimit), 0);
+                this.canTalon.configForwardSoftLimitThreshold((int) this.unitToEncoder(fwdSoftLimit), 0);
             } else {
                 this.canTalon.configForwardSoftLimitEnable(false, 0);
             }
             if (revSoftLimit != null) {
                 this.canTalon.configReverseSoftLimitEnable(true, 0);
-                this.canTalon.configReverseSoftLimitThreshold((int) this.feetToEncoder(revSoftLimit), 0);
+                this.canTalon.configReverseSoftLimitThreshold((int) this.unitToEncoder(revSoftLimit), 0);
             } else {
                 this.canTalon.configReverseSoftLimitEnable(false, 0);
             }
@@ -374,7 +356,6 @@ public class FPSTalon implements FPSSmartMotor {
      *
      * @param percentVoltage percent of total voltage from [-1, 1]
      */
-    @Override
     public void setPercentVoltage(double percentVoltage) {
         //Warn the user if they're setting Vbus to a number that's outside the range of values.
         if (Math.abs(percentVoltage) > 1.0) {
@@ -407,6 +388,10 @@ public class FPSTalon implements FPSSmartMotor {
         //Set the current gear
         this.currentGearSettings = this.perGearSettings.get(gear);
 
+        if(currentGearSettings.postEncoderGearing != null){
+            this.postEncoderGearing = currentGearSettings.postEncoderGearing;
+        }
+
         //Set max voltage
         this.canTalon.configPeakOutputForward(this.currentGearSettings.fwdPeakOutputVoltage / 12., 0);
         this.canTalon.configPeakOutputReverse(this.currentGearSettings.revPeakOutputVoltage / 12., 0);
@@ -438,8 +423,8 @@ public class FPSTalon implements FPSSmartMotor {
      * @return That distance in feet, or null if no encoder CPR was given.
      */
     @Override
-    public double encoderToFeet(final double nativeUnits) {
-        if (this.encoderCPR == null) {
+    public double encoderToUnit(double nativeUnits) {
+        if (encoderCPR == null) {
             return Double.NaN;
         }
         return nativeUnits / (this.encoderCPR * 4) * this.postEncoderGearing * this.feetPerRotation;
@@ -453,8 +438,8 @@ public class FPSTalon implements FPSSmartMotor {
      * @return That distance in native units as measured by the encoder, or null if no encoder CPR was given.
      */
     @Override
-    public double feetToEncoder(final double feet) {
-        if (this.encoderCPR == null) {
+    public double unitToEncoder(double feet) {
+        if (encoderCPR == null) {
             return Double.NaN;
         }
         return feet / this.feetPerRotation * (this.encoderCPR * 4) / this.postEncoderGearing;
@@ -469,9 +454,9 @@ public class FPSTalon implements FPSSmartMotor {
      * was given.
      */
     @Override
-    public double encoderToFPS(final double encoderReading) {
-        this.RPS = this.nativeToRPS(encoderReading);
-        if (this.RPS == null) {
+    public double encoderToUPS(double encoderReading) {
+        RPS = nativeToRPS(encoderReading);
+        if (RPS == null) {
             return Double.NaN;
         }
         return this.RPS * this.postEncoderGearing * this.feetPerRotation;
@@ -481,12 +466,12 @@ public class FPSTalon implements FPSSmartMotor {
      * Converts from the velocity of the output shaft to what the talon's getVelocity() method would read at that
      * velocity. Note this DOES account for post-encoder gearing.
      *
-     * @param FPS The velocity of the output shaft, in FPS.
+     * @param UPS The velocity of the output shaft, in FPS.
      * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was given.
      */
     @Override
-    public double FPSToEncoder(final double FPS) {
-        return this.RPSToNative((FPS / this.postEncoderGearing) / this.feetPerRotation);
+    public double UPSToEncoder(double UPS) {
+        return RPSToNative((UPS / postEncoderGearing) / feetPerRotation);
     }
 
     /**
@@ -538,7 +523,7 @@ public class FPSTalon implements FPSSmartMotor {
     @Override
     public void setPositionSetpoint(final double feet) {
         this.setpoint = feet;
-        this.nativeSetpoint = this.feetToEncoder(feet);
+        this.nativeSetpoint = this.unitToEncoder(feet);
         this.canTalon.config_kF(0, 0);
         this.canTalon.set(ControlMode.Position, this.nativeSetpoint, DemandType.ArbitraryFeedForward,
                 this.currentGearSettings.feedForwardCalculator.ks / 12.);
@@ -560,7 +545,7 @@ public class FPSTalon implements FPSSmartMotor {
     @NotNull
     @Override
     public Double getVelocity() {
-        return this.encoderToFPS(this.canTalon.getSelectedSensorVelocity(0));
+        return encoderToUPS(canTalon.getSelectedSensorVelocity(0));
     }
 
     /**
@@ -569,11 +554,11 @@ public class FPSTalon implements FPSSmartMotor {
      * @param velocity the desired velocity, on [-1, 1].
      */
     @Override
-    public void setVelocity(final double velocity) {
-        if (this.currentGearSettings.maxSpeed != null) {
-            this.setVelocityFPS(velocity * this.currentGearSettings.maxSpeed);
+    public void setVelocity(double velocity) {
+        if (currentGearSettings.maxSpeed != null) {
+            setVelocityUPS(velocity * currentGearSettings.maxSpeed);
         } else {
-            this.setPercentVoltage(velocity);
+            setPercentVoltage(velocity);
         }
     }
 
@@ -583,12 +568,12 @@ public class FPSTalon implements FPSSmartMotor {
      * @param velocity velocity setpoint in FPS.
      */
     @Override
-    public void setVelocityFPS(final double velocity) {
-        this.nativeSetpoint = this.FPSToEncoder(velocity);
-        this.setpoint = velocity;
-        this.canTalon.config_kF(0, 0, 0);
-        this.canTalon.set(ControlMode.Velocity, this.nativeSetpoint, DemandType.ArbitraryFeedForward,
-                this.currentGearSettings.feedForwardCalculator.calculate(velocity) / 12. );
+    public void setVelocityUPS(double velocity) {
+        nativeSetpoint = UPSToEncoder(velocity);
+        setpoint = velocity;
+        canTalon.config_kF(0, 0, 0);
+        canTalon.set(ControlMode.Velocity, nativeSetpoint, DemandType.ArbitraryFeedForward,
+                currentGearSettings.feedForwardCalculator.calculate(velocity) / 12. );
     }
 
     /**
@@ -599,10 +584,10 @@ public class FPSTalon implements FPSSmartMotor {
     @Log
     @Override
     public double getError() {
-        if (this.canTalon.getControlMode().equals(ControlMode.Velocity)) {
-            return this.encoderToFPS(this.canTalon.getClosedLoopError(0));
+        if (canTalon.getControlMode().equals(ControlMode.Velocity)) {
+            return this.encoderToUPS(canTalon.getClosedLoopError(0));
         } else {
-            return this.encoderToFeet(this.canTalon.getClosedLoopError(0));
+            return this.encoderToUnit(canTalon.getClosedLoopError(0));
         }
     }
 
@@ -615,7 +600,7 @@ public class FPSTalon implements FPSSmartMotor {
     @Log
     @Override
     public Double getSetpoint() {
-        return this.setpoint;
+        return setpoint;
     }
 
     /**
@@ -626,7 +611,7 @@ public class FPSTalon implements FPSSmartMotor {
     @Log
     @Override
     public double getOutputVoltage() {
-        return this.canTalon.getMotorOutputVoltage();
+        return canTalon.getMotorOutputVoltage();
     }
 
     /**
@@ -637,7 +622,7 @@ public class FPSTalon implements FPSSmartMotor {
     @Log
     @Override
     public double getBatteryVoltage() {
-        return this.canTalon.getBusVoltage();
+        return canTalon.getBusVoltage();
     }
 
     /**
@@ -648,7 +633,7 @@ public class FPSTalon implements FPSSmartMotor {
     @Log
     @Override
     public double getOutputCurrent() {
-        return this.canTalon.getSupplyCurrent();
+        return canTalon.getSupplyCurrent();
     }
 
     /**
@@ -670,7 +655,7 @@ public class FPSTalon implements FPSSmartMotor {
     @Override
     public void setGearScaledVelocity(final double velocity, final int gear) {
         if (this.currentGearSettings.maxSpeed != null) {
-            this.setVelocityFPS(this.currentGearSettings.maxSpeed * velocity);
+            this.setVelocityUPS(this.currentGearSettings.maxSpeed * velocity);
         } else {
             this.setPercentVoltage(velocity);
         }
@@ -700,8 +685,9 @@ public class FPSTalon implements FPSSmartMotor {
      * @return the position of the talon in feet, or null of inches per rotation wasn't given.
      */
     @Override
-    public Double getPositionFeet() {
-        return this.encoderToFeet(this.canTalon.getSelectedSensorPosition(0));
+    @Log
+    public Double getPositionUnits() {
+        return encoderToUnit(canTalon.getSelectedSensorPosition(0));
     }
 
     /**
@@ -709,7 +695,7 @@ public class FPSTalon implements FPSSmartMotor {
      */
     @Override
     public void resetPosition() {
-        this.canTalon.setSelectedSensorPosition(0, 0, 0);
+        canTalon.setSelectedSensorPosition(0, 0, 0);
     }
 
     /**
@@ -719,7 +705,7 @@ public class FPSTalon implements FPSSmartMotor {
      */
     @Override
     public boolean getFwdLimitSwitch() {
-        return this.fwdLimitSwitchNormallyOpen == this.canTalon.getSensorCollection().isFwdLimitSwitchClosed();
+        return fwdLimitSwitchNormallyOpen == canTalon.getSensorCollection().isFwdLimitSwitchClosed();
     }
 
     /**

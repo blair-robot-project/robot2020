@@ -3,12 +3,12 @@ package org.usfirst.frc.team449.robot.components;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon;
 
 import java.util.function.DoubleSupplier;
 
 public class TalonDataComponent implements DoubleSupplier {
-    @NotNull private final FPSTalon talon;
+    @NotNull private final MappedTalon talon;
     @NotNull private final ReturnValue value;
 
     enum ReturnValue {
@@ -21,7 +21,7 @@ public class TalonDataComponent implements DoubleSupplier {
      * @param value whether to get the position, velocity, current, or voltage
      */
     @JsonCreator
-    public TalonDataComponent(@NotNull @JsonProperty(required = true) FPSTalon talon,
+    public TalonDataComponent(@NotNull @JsonProperty(required = true) MappedTalon talon,
                               @NotNull @JsonProperty(required = true) ReturnValue value) {
         this.talon = talon;
         this.value = value;
@@ -34,7 +34,7 @@ public class TalonDataComponent implements DoubleSupplier {
     public double getAsDouble() {
         switch(value) {
             case position:
-                return talon.getPositionFeet();
+                return talon.getPositionUnits();
             case velocity:
                 return talon.getVelocity();
             case current:

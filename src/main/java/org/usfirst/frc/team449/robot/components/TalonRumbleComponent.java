@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.usfirst.frc.team449.robot.generalInterfaces.rumbleable.Rumbleable;
-import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon;
 
 import javax.annotation.Nullable;
 
@@ -13,16 +13,16 @@ import javax.annotation.Nullable;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class TalonRumbleComponent implements Runnable {
 
-    FPSTalon talon;
+    MappedTalon talon;
     Rumbleable joystick;
     boolean inverted;
     Double rumbleAmount;
 
     @JsonCreator
-    public TalonRumbleComponent(@JsonProperty(required = true) final FPSTalon talon,
-                                @JsonProperty(required = true) final Rumbleable joystick,
-                                @Nullable final Double rumbleAmount,
-                                final boolean inverted) {
+    public TalonRumbleComponent(@JsonProperty(required = true) MappedTalon talon,
+                                @JsonProperty(required = true) Rumbleable joystick,
+                                @Nullable Double rumbleAmount,
+                                boolean inverted) {
         this.talon = talon;
         this.joystick = joystick;
         this.inverted = inverted;
