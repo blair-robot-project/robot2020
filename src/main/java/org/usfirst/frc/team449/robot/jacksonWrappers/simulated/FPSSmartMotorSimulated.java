@@ -378,6 +378,11 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
         return this.motor.getVelocity();
     }
 
+    @Override
+    public void setVoltage(double volts) {
+        //uh
+    }
+
     /**
      * Get the velocity of the controller in FPS.
      *

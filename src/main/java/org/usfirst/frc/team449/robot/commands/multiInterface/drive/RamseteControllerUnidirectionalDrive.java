@@ -7,21 +7,15 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
 import io.github.oblarg.oblog.Loggable;
 
 import org.usfirst.frc.team449.robot.components.TrajectoryGenerationComponent;
-import org.usfirst.frc.team449.robot.components.TrajectoryGenerationCubicComponent;
-import org.usfirst.frc.team449.robot.components.TrajectoryGenerationQuinticComponent;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class RamseteControllerUnidirectionalDrive extends RamseteCommand implements Loggable {

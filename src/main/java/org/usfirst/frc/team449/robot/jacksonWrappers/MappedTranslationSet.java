@@ -25,17 +25,12 @@ public class MappedTranslationSet {
     List<Translation2d> translations;
 
     @JsonCreator
-    public MappedTranslationSet(@JsonProperty(required = true) final MappedPose2d startingPose,
-                                @JsonProperty final List<MappedTranslation2d> translations,
-                                @JsonProperty(required = true) final MappedPose2d endingPose){
-        this.startingPose = startingPose.pose;
-        this.endingPose = endingPose.pose;
-        this.translations = new ArrayList<>();
-        if (translations != null) {
-            for (final var entry : translations) {
-                this.translations.add(entry.translation);
-            }
-        }
+    public MappedTranslationSet(@JsonProperty(required = true) final Pose2d startingPose,
+                                @JsonProperty final List<Translation2d> translations,
+                                @JsonProperty(required = true) final Pose2d endingPose){
+        this.startingPose = startingPose;
+        this.endingPose = endingPose;
+        this.translations = translations;
     }
 
     public Pose2d getStartingPose(){

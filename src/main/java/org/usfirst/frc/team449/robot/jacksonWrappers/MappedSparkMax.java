@@ -424,6 +424,11 @@ public class MappedSparkMax implements SmartMotor {
         return this.canEncoder.getPosition();
     }
 
+    @Override
+    public void setVoltage(double volts) {
+        spark.setVoltage(volts);
+    }
+
     /**
      * Set a position setpoint for the Spark.
      *

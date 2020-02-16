@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.trajectory.constraint.TrajectoryConstraint;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,8 @@ public class TrajectoryGenerationQuinticComponent implements TrajectoryGeneratio
     public TrajectoryGenerationQuinticComponent(@JsonProperty(required = true) final DriveUnidirectionalWithGyro drivetrain,
                                                 @JsonProperty(required = true) final double maxSpeedMeters,
                                                 @JsonProperty(required = true) final double maxAccelMeters,
-                                                @JsonProperty(required = true) final List<MappedPose2d> waypoints){
+                                                @JsonProperty(required = true) final List<Pose2d> waypoints,
+                                                boolean reversed){
         this.constraint = new DifferentialDriveVoltageConstraint(
                 drivetrain.getLeftFeedforwardCalculator(),
                 drivetrain.getDriveKinematics(),
@@ -39,11 +39,10 @@ public class TrajectoryGenerationQuinticComponent implements TrajectoryGeneratio
         // Create config for trajectory
         this.configuration = new TrajectoryConfig(maxSpeedMeters, maxAccelMeters)
                 .setKinematics(drivetrain.getDriveKinematics())
-                .addConstraint(this.constraint);
+                .addConstraint(this.constraint)
+                .setReversed(reversed);
 
-        for(final var entry : waypoints){
-            this.waypoints.add(entry.pose);
-        }
+        this.waypoints.addAll(waypoints);
     }
 
     @Override

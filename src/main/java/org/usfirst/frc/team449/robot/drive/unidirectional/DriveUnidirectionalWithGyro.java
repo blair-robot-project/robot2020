@@ -116,8 +116,8 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * @param right The voltage output for the right side of the drive from [-12, 12]
      */
     public void setVoltage(final double left, final double right) {
-        this.leftMaster.setPercentVoltage(left / 12);
-        this.rightMaster.setPercentVoltage(right / 12);
+        leftMaster.setVoltage(left);
+        rightMaster.setVoltage(right);
     }
 
     /**

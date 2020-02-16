@@ -16,6 +16,10 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTranslationSet;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT, property = "@class")
 public class TrajectoryGenerationCubicComponent implements TrajectoryGenerationComponent {
 
+    DriveUnidirectionalWithGyro drivetrain;
+    double maxSpeedMeters;
+    double maxAccelMeters;
+    double maxCentripitalAcceleration;
     Trajectory trajectory;
 
     @JsonCreator
@@ -23,7 +27,12 @@ public class TrajectoryGenerationCubicComponent implements TrajectoryGenerationC
                                               @JsonProperty(required = true) final double maxSpeedMeters,
                                               @JsonProperty(required = true) final double maxAccelMeters,
                                               @JsonProperty(required = true) final MappedTranslationSet waypoints,
-                                              @Nullable Double maxCentripetalAcceleration) {
+                                              @Nullable Double maxCentripetalAcceleration,
+                                              boolean reversed) {
+
+        this.drivetrain = drivetrain;
+        this.maxAccelMeters = maxAccelMeters;
+        this.maxSpeedMeters = maxSpeedMeters;
 
         TrajectoryConstraint voltageConstraint = new DifferentialDriveVoltageConstraint(
                 drivetrain.getLeftFeedforwardCalculator(),
@@ -34,10 +43,12 @@ public class TrajectoryGenerationCubicComponent implements TrajectoryGenerationC
         // Create config for trajectory
         TrajectoryConfig configuration = new TrajectoryConfig(maxSpeedMeters, maxAccelMeters)
                 .setKinematics(drivetrain.getDriveKinematics())
-                .addConstraint(voltageConstraint);
+                .addConstraint(voltageConstraint)
+                .setReversed(reversed);
 
         if (maxCentripetalAcceleration != null) {
             configuration.addConstraint(new CentripetalAccelerationConstraint(maxCentripetalAcceleration));
+            this.maxCentripitalAcceleration = maxCentripetalAcceleration;
         }
 
         trajectory = TrajectoryGenerator.generateTrajectory(waypoints.getStartingPose(),

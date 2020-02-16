@@ -257,50 +257,94 @@ useCameraServer: false
 
   *AUTO_COMMANDS:
     - *TRAJ_TEST_COMMAND
-    - org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerUnidirectionalDrive:
-        '@id': testDriveCommand
-        drivetrain:
-          org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-            drive
-        leftPidController:
-          org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-            Kp: 5
-            name: "left"
-        rightPidController:
-          org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-            Kp: 5
-            name: "right"
-        robotRelative: true
-        trajectoryGenerator: #142 x 96in or #3.6068 x 2.4384m
-          org.usfirst.frc.team449.robot.components.TrajectoryGenerationCubicComponent:
-            drivetrain:
-              org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-                drive
-            maxSpeedMeters: 1.5
-            maxAccelMeters: 1
-            maxCentripetalAcceleration: 1
-            waypoints:
-#              startingPose:
-#                xPosition: 0
-#                yPosition: 0
-#                angle: 0
-#              endingPose:
-#                xPosition: 1.5
-#                yPosition: 0
-#                angle: 0
-              startingPose:
-                xPosition: 0
-                yPosition: 0
-                angle: 0
-#              translations:
-#                - xPosition: 1.5
-#                  yPosition: .5
-#                - xPosition: 2
-#                  yPosition: -.5
+    - edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
+        '@id': trajTestCommandGroup
+        requiredSubsystems:
+          - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+              drive
+        commands:
+          - org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerGoToPosition:
+              &driveconfig
+              '@id': testDriveCommand
+              drivetrain:
+                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                  drive
+              leftPidController:
+                org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+                  Kp: 5
+                  name: "left"
+              rightPidController:
+                org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+                  Kp: 5
+                  name: "right"
+              maxSpeedMeters: 1.5
+              maxAccelMeters: 1
+              maxCentripetalAcceleration: 1
               endingPose:
-                xPosition: 2
-                yPosition: -1
-                angle: 0
+                translation:
+                  x: 2
+                  y: -1
+                rotation:
+                  radians: -1.571
+              reversed: false
+          - org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerGoToPosition:
+              <<: *driveconfig
+              '@id': testDriveCommand2
+              endingPose:
+                translation:
+                  x: 2.5
+                  y: -0.5
+                rotation:
+                  radians: -3.14
+              reversed: true
+          - org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerGoToPosition:
+              <<: *driveconfig
+              '@id': testDriveCommand3
+              endingPose:
+                translation:
+                  x: 0
+                  y: -1
+                rotation:
+                  radians: -3.14
+              reversed: false
+#    - org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerUnidirectionalDrive:
+#        '@id': testDriveCommand
+#        drivetrain:
+#          org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#            drive
+#        leftPidController:
+#          org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+#            Kp: 5
+#            name: "left"
+#        rightPidController:
+#          org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+#            Kp: 5
+#            name: "right"
+#        robotRelative: true
+#        trajectoryGenerator: #142 x 96in or #3.6068 x 2.4384m
+#          org.usfirst.frc.team449.robot.components.TrajectoryGenerationCubicComponent:
+#            drivetrain:
+#              org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#                drive
+#            maxSpeedMeters: 1.5
+#            maxAccelMeters: 1
+#            maxCentripetalAcceleration: 1
+#            waypoints:
+#              startingPose:
+#                translation:
+#                  x: 0
+#                  y: 0
+#                rotation:
+#                  radians: 0
+##              translations:
+##                - x: 1.5
+##                  y: .5
+#              endingPose:
+#                translation:
+#                  x: 2
+#                  y: -1
+#                rotation:
+#                  radians: 0
 
 ########################################################################################################################
 *UPDATER:

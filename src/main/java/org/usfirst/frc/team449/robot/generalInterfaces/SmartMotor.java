@@ -423,6 +423,11 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
     double encoderVelocity();
 
     /**
+     * Sets the output in volts.
+     */
+    void setVoltage(double volts);
+
+    /**
      * Get the velocity of the controller in FPS.
      *
      * @return The controller's velocity in FPS, or null if no encoder CPR was given.

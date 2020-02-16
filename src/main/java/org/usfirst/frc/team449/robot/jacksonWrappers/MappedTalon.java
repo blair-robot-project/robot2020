@@ -94,6 +94,8 @@ public class MappedTalon implements SmartMotor {
      */
     private double nativeSetpoint;
 
+    private boolean voltageCompEnabled;
+
     /**
      * Default constructor.
      *
@@ -311,10 +313,14 @@ public class MappedTalon implements SmartMotor {
         }
 
         //Enable or disable voltage comp
-        this.canTalon.enableVoltageCompensation(enableVoltageComp);
-        this.canTalon.configVoltageCompSaturation(12, 0);
+        if (enableVoltageComp) {
+            canTalon.enableVoltageCompensation(true);
+            canTalon.configVoltageCompSaturation(12, 0);
+            voltageCompEnabled = true;
+        }
+
         final int notNullVoltageCompSamples = voltageCompSamples != null ? voltageCompSamples : 32;
-        this.canTalon.configVoltageMeasurementFilter(notNullVoltageCompSamples, 0);
+        canTalon.configVoltageMeasurementFilter(notNullVoltageCompSamples, 0);
 
         //Use slot 0
         this.canTalon.selectProfileSlot(0, 0);
@@ -516,6 +522,15 @@ public class MappedTalon implements SmartMotor {
     @Override
     public double encoderPosition() {
         return this.canTalon.getSelectedSensorPosition();
+    }
+
+    @Override
+    public void setVoltage(double volts) {
+        if (voltageCompEnabled) {
+            setPercentVoltage(volts / 12.);
+        } else {
+            setPercentVoltage(volts / getBatteryVoltage());
+        }
     }
 
     /**
