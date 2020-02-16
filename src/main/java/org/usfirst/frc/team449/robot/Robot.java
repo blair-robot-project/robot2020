@@ -52,7 +52,7 @@ public class Robot extends TimedRobot {
      * The name of the map to read from. Should be overriden by a subclass to change the name.
      */
     @NotNull
-    public static final String mapName = "map.yml";
+    public static final String mapName = "trajtest.yml";
     /**
      * The filepath to the resources folder containing the config files.
      */
@@ -160,9 +160,14 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
+        Shuffleboard.startRecording();
         //Run the auto startup command
-        if (this.robotMap.getAutoStartupCommands() != null && !DriverStation.getInstance().getGameSpecificMessage().isEmpty()) {
-            this.robotMap.getAutoStartupCommands().forEachRemaining(Command::schedule);
+        if (this.robotMap.getAutoStartupCommands() != null) {
+            this.robotMap.getAutoStartupCommands().forEachRemaining(c -> {
+                if(c != null) {
+                    c.schedule();
+                }
+            });
         }
     }
 
@@ -175,6 +180,11 @@ public class Robot extends TimedRobot {
         if (this.robotMap.getTestStartupCommands() != null) {
             this.robotMap.getTestStartupCommands().forEachRemaining(Command::schedule);
         }
+    }
+
+    @Override
+    public void disabledInit() {
+        Shuffleboard.stopRecording();
     }
 
     /**

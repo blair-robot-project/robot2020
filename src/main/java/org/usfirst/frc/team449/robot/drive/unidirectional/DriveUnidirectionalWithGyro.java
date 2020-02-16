@@ -91,6 +91,11 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
         this.driveOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(this.getHeading()));
     }
 
+    @Override
+    public void periodic() {
+        updateOdometry();
+    }
+
     /**
      * Set the output of each side of the drive.
      *
@@ -347,8 +352,9 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Log
     public void resetOdometry(final Pose2d pose) {
-        this.resetPosition();
-        this.driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(this.getHeading()));
+        resetPosition();
+        ahrs.setHeading(pose.getRotation().getDegrees());
+        driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(this.getHeading()));
     }
 
     /**
@@ -356,12 +362,13 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     public void updateOdometry() {
         //need to convert to meters
-        this.driveOdometry.update(Rotation2d.fromDegrees(this.getHeading()), Units.feetToMeters(this.getLeftPos()), Units.feetToMeters(this.getRightPos()));
+        this.driveOdometry.update(Rotation2d.fromDegrees(this.getHeading()), this.getLeftPos(), this.getRightPos());
     }
 
     /**
      * @return Current estimated pose based on odometry tracker data
      */
+    @Log.ToString
     public Pose2d getCurrentPose() {
         return this.driveOdometry.getPoseMeters() != null ? this.driveOdometry.getPoseMeters() : new Pose2d(new Translation2d(0, 0), new Rotation2d(0));
     }
@@ -371,7 +378,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
         //need to convert to meters
-        return new DifferentialDriveWheelSpeeds(Units.feetToMeters(this.getLeftVel()), Units.feetToMeters(this.getRightVel()));
+        return new DifferentialDriveWheelSpeeds(this.getLeftVel(), this.getRightVel());
     }
 //
 //    /**
@@ -447,7 +454,6 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      */
     @Override
     public void update() {
-        this.updateOdometry();
         this.cachedLeftVel = this.getLeftVel();
         this.cachedLeftPos = this.getLeftPos();
         this.cachedRightVel = this.getRightVel();

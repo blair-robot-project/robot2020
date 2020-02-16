@@ -532,7 +532,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
      */
     @Override
     public SimpleMotorFeedforward getCurrentGearFeedForward() {
-        return null;
+        return currentGearSettings.feedForwardCalculator;
     }
 
     /**

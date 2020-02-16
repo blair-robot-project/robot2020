@@ -340,6 +340,9 @@ public class MappedTalon implements SmartMotor {
                 slave.setMasterPhoenix(port, enableBrakeMode);
             }
         }
+
+        canTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms);
+        canTalon.configVelocityMeasurementWindow(10);
     }
 
     /**

@@ -31,11 +31,6 @@ public class MappedAHRS implements Updatable, Loggable {
     protected final int invertYaw;
 
     /**
-     * The angle, in degrees, to offset the output of getHeading by.
-     */
-    protected double offsetAngle;
-
-    /**
      * The 9-axis heading value to return. Field to avoid garbage collection.
      */
     private double toRet;
@@ -59,13 +54,12 @@ public class MappedAHRS implements Updatable, Loggable {
         } else {
             this.ahrs = new AHRS(port, kProcessedData, (byte) 100);
         }
-        ahrs.reset();
+        setHeading(0);
         if (invertYaw == null || invertYaw) {
             this.invertYaw = -1;
         } else {
             this.invertYaw = 1;
         }
-        setHeading(0);
     }
 
     /**
@@ -85,13 +79,8 @@ public class MappedAHRS implements Updatable, Loggable {
      * @return The heading, in degrees from [-180, 180]
      */
     public double getHeading() {
-        toRet = invertYaw * ahrs.getFusedHeading() - offsetAngle;
-        while (toRet > 180) {
-            toRet -= 360;
-        }
-        while (toRet < -180) {
-            toRet += 360;
-        }
+        toRet = invertYaw * ahrs.getYaw();
+//        toRet = Math.IEEEremainder(toRet, 360);
         return toRet;
     }
 
@@ -101,8 +90,7 @@ public class MappedAHRS implements Updatable, Loggable {
      * @param headingDegrees An angle in degrees, from [-180, 180], to set the heading to.
      */
     public void setHeading(double headingDegrees) {
-        this.offsetAngle = getHeading() - headingDegrees;
-        cachedHeading = headingDegrees;
+        ahrs.setAngleAdjustment(headingDegrees);
     }
 
     /**
