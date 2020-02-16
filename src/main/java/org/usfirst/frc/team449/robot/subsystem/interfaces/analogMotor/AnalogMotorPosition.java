@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon;
 
 /**
  * An analogMotor that uses position instead of velocity.
@@ -19,7 +19,7 @@ public class AnalogMotorPosition extends SubsystemBase implements SubsystemAnalo
      * The motor this subsystem controls.
      */
     @NotNull
-    private final FPSTalon motor;
+    private final MappedTalon motor;
 
     /**
      * The constants that are added to and multiplied by a [-1, 1] setpoint to turn it into the desired range of
@@ -35,7 +35,7 @@ public class AnalogMotorPosition extends SubsystemBase implements SubsystemAnalo
      * @param maxPos The greatest position, in feet, this subsystem should go to.
      */
     @JsonCreator
-    public AnalogMotorPosition(@NotNull @JsonProperty(required = true) FPSTalon motor,
+    public AnalogMotorPosition(@NotNull @JsonProperty(required = true) MappedTalon motor,
                                double minPos,
                                @JsonProperty(required = true) double maxPos) {
         this.motor = motor;

@@ -1,114 +1,72 @@
 package org.usfirst.frc.team449.robot.commands.multiInterface.drive;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj.trajectory.constraint.TrajectoryConstraint;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
-import org.usfirst.frc.team449.robot.other.Heartbeat;
+import edu.wpi.first.wpilibj.util.Units;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
-import java.util.List;
+import io.github.oblarg.oblog.Loggable;
+
+import org.usfirst.frc.team449.robot.components.TrajectoryGenerationComponent;
+import org.usfirst.frc.team449.robot.components.TrajectoryGenerationCubicComponent;
+import org.usfirst.frc.team449.robot.components.TrajectoryGenerationQuinticComponent;
+import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class RamseteControllerUnidirectionalDrive extends CommandBase {
+public class RamseteControllerUnidirectionalDrive extends RamseteCommand implements Loggable {
 
-    DriveUnidirectionalWithGyro drivetrain;
-    Trajectory trajectory;
-    Heartbeat timer;
-    RamseteController ramseteFeedback;
-    PIDController leftController, rightController;
-    DifferentialDriveWheelSpeeds previousSpeeds;
-
+    private DriveUnidirectionalWithGyro driveTrain;
+    private NetworkTable falconDashboard;
+    @JsonCreator
     public RamseteControllerUnidirectionalDrive(@JsonProperty(required = true) DriveUnidirectionalWithGyro drivetrain,
                                                 @JsonProperty(required = true) double P,
-                                                @JsonProperty(required = true) double D){
-        this.drivetrain = drivetrain;
-        timer = new Heartbeat();
-        ramseteFeedback = new RamseteController();
-        leftController = new PIDController(P, 0, D);
-        rightController = new PIDController(P, 0, D);
-
-        // Create a voltage constraint to ensure we don't accelerate too fast
-        TrajectoryConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
+                                                @JsonProperty(required = true) double D,
+                                                @JsonProperty(required = true) TrajectoryGenerationComponent trajectoryGenerator){
+        super(trajectoryGenerator.getTrajectory(),
+                drivetrain::getCurrentPose,
+                new RamseteController(),
                 drivetrain.getLeftFeedforwardCalculator(),
                 drivetrain.getDriveKinematics(),
-                12);
+                drivetrain::getWheelSpeeds,
+                new PIDController(P, 0, D),
+                new PIDController(P, 0, D),
+                drivetrain::setVoltage);
 
-        // Create config for trajectory
-        TrajectoryConfig config = new TrajectoryConfig(1.32948238154, 0.1131952403)
-                .setKinematics(drivetrain.getDriveKinematics())
-                .addConstraint(autoVoltageConstraint);
+        this.driveTrain = drivetrain;
+        addRequirements(driveTrain);
 
-        // An example trajectory to follow.  All units in meters.
-        trajectory = TrajectoryGenerator.generateTrajectory(
-                new Pose2d(0, 0, new Rotation2d(0)),
-                List.of(
-                        new Translation2d(1, 1),
-                        new Translation2d(2, -1)
-                ),
-                new Pose2d(3, 0, new Rotation2d(0)),
-                config
-        );
-    }
+        driveTrain.resetOdometry(trajectoryGenerator.getTrajectory().getInitialPose());
 
-    @Override
-    public void initialize(){
-        timer.start();
-        Trajectory.State initialState = trajectory.sample(timer.getAbsolute());
-        previousSpeeds = drivetrain.getDriveKinematics().toWheelSpeeds(new ChassisSpeeds(initialState.velocityMetersPerSecond,
-                0,
-                (initialState.curvatureRadPerMeter * initialState.velocityMetersPerSecond)));
-        leftController.reset();
-        rightController.reset();
+        falconDashboard = NetworkTableInstance.getDefault().getTable("Live_Dashboard");
+        //todo hook into timer to get expected pose at each
+        falconDashboard.getEntry("isFollowingPath").setBoolean(true);
+//        falconDashboard.getEntry("pathX").setDouble(trajectoryGenerator.getTrajectory().sample(0).poseMeters.getTranslation().getX());
     }
 
     @Override
     public void execute(){
-        DifferentialDriveWheelSpeeds targetWheelSpeeds = drivetrain.getDriveKinematics().toWheelSpeeds(
-                ramseteFeedback.calculate(drivetrain.getCurrentPose(), trajectory.sample(timer.getAbsolute())));
-        DifferentialDriveWheelSpeeds currentWheelSpeeds = drivetrain.getWheelSpeeds();
+        super.execute();
 
-        double leftTarget = targetWheelSpeeds.leftMetersPerSecond;
-        double rightTarget = targetWheelSpeeds.rightMetersPerSecond;
-        double leftCurrent = currentWheelSpeeds.leftMetersPerSecond;
-        double rightCurrent = currentWheelSpeeds.leftMetersPerSecond;
-
-        double leftFeedforward = drivetrain.getLeftFeedforwardCalculator().calculate(leftTarget,
-                (leftTarget - previousSpeeds.leftMetersPerSecond) / timer.getDifference());
-        double rightFeedforward = drivetrain.getRightFeedforwardCalculator().calculate(leftTarget,
-                (leftTarget - previousSpeeds.leftMetersPerSecond) / timer.getDifference());
-
-        double leftOutput = leftFeedforward + leftController.calculate(leftCurrent, leftTarget);
-        double rightOutput = rightFeedforward + rightController.calculate(rightCurrent, rightTarget);
-
-        drivetrain.setOutput(leftOutput, rightOutput);
+        //update falcondashboard
+        falconDashboard.getEntry("robotX").setDouble(Units.metersToFeet(driveTrain.getCurrentPose().getTranslation().getX()));
+        falconDashboard.getEntry("robotY").setDouble(Units.metersToFeet(driveTrain.getCurrentPose().getTranslation().getY()));
+        falconDashboard.getEntry("robotHeading").setDouble(driveTrain.getCurrentPose().getRotation().getRadians());
+        System.out.println(falconDashboard.getEntry("robotHeading").getDouble(0));
     }
 
     @Override
-    public boolean isFinished() {
-        return timer.getAbsolute() >= trajectory.getTotalTimeSeconds();
-    }
-
-    @Override
-    public void end(boolean interrupted){
-        if(interrupted){
-            Shuffleboard.addEventMarker("Ramsete controller interrupted! Stopping the robot.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        }
-        drivetrain.fullStop();
-        Shuffleboard.addEventMarker("Ramsete controller end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+    public void end(boolean interrupted) {
+        super.end(interrupted);
+        falconDashboard.getEntry("isFollowingPath").setBoolean(false);
+        driveTrain.fullStop();
     }
 }

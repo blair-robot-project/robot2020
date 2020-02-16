@@ -8,7 +8,7 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.components.ShiftComponent;
 import org.usfirst.frc.team449.robot.drive.shifting.DriveShiftable;
-import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
+import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
 
 
@@ -40,34 +40,33 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
      * @param startingOverrideAutoshift Whether to start with autoshift disabled. Defaults to false.
      */
     @JsonCreator
-    public DriveUnidirectionalWithGyroShiftable(@NotNull @JsonProperty(required = true) FPSTalon leftMaster,
-                                                @NotNull @JsonProperty(required = true) FPSTalon rightMaster,
-                                                @NotNull @JsonProperty(required = true) MappedAHRS ahrs,
-                                                @NotNull @JsonProperty(required = true) double trackWidthMeters,
-                                                @NotNull @JsonProperty(required = true) ShiftComponent shiftComponent,
-                                                boolean startingOverrideAutoshift) {
+    public DriveUnidirectionalWithGyroShiftable(@NotNull @JsonProperty(required = true) final SmartMotor leftMaster,
+                                                @NotNull @JsonProperty(required = true) final SmartMotor rightMaster,
+                                                @NotNull @JsonProperty(required = true) final MappedAHRS ahrs,
+                                                @JsonProperty(required = true) final double trackWidthMeters,
+                                                @NotNull @JsonProperty(required = true) final ShiftComponent shiftComponent,
+                                                final boolean startingOverrideAutoshift) {
         super(leftMaster, rightMaster, ahrs, trackWidthMeters);
         //Initialize stuff
         this.shiftComponent = shiftComponent;
 
         // Initialize shifting constants, assuming robot is stationary.
-        overrideAutoshift = startingOverrideAutoshift;
+        this.overrideAutoshift = startingOverrideAutoshift;
     }
 
     /**
      * @return true if currently overriding autoshifting, false otherwise.
      */
     @Override
-    @Log
     public boolean getOverrideAutoshift() {
-        return overrideAutoshift;
+        return this.overrideAutoshift;
     }
 
     /**
      * @param override Whether or not to override autoshifting.
      */
     @Override
-    public void setOverrideAutoshift(boolean override) {
+    public void setOverrideAutoshift(final boolean override) {
         this.overrideAutoshift = override;
     }
 
@@ -78,16 +77,16 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
      * @param right the output for the right side of the drive, from [-1, 1]
      */
     @Override
-    public void setOutput(double left, double right) {
+    public void setOutput(final double left, final double right) {
         //If we're not shifting or using PID, or we're just turning in place, scale by the max speed in the current
         // gear
-        if (overrideAutoshift) {
+        if (this.overrideAutoshift) {
             super.setOutput(left, right);
         }
         //If we are shifting, scale by the high gear max speed to make acceleration smoother and faster.
         else {
-            leftMaster.setGearScaledVelocity(left, gear.HIGH);
-            rightMaster.setGearScaledVelocity(right, gear.HIGH);
+            this.leftMaster.setGearScaledVelocity(left, gear.HIGH);
+            this.rightMaster.setGearScaledVelocity(right, gear.HIGH);
         }
     }
 
@@ -97,7 +96,7 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
     @Override
     @Log
     public int getGear() {
-        return shiftComponent.getCurrentGear();
+        return this.shiftComponent.getCurrentGear();
     }
 
     /**
@@ -106,8 +105,8 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
      * @param gear Which gear to shift to.
      */
     @Override
-    public void setGear(int gear) {
-        shiftComponent.shiftToGear(gear);
+    public void setGear(final int gear) {
+        this.shiftComponent.shiftToGear(gear);
     }
 
 //    /**

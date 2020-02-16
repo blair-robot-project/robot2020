@@ -58,12 +58,12 @@ public class IntakeTwoSidesSimple extends SubsystemBase implements SubsystemInta
      *                   null to indicate that this intake doesn't have/use OUT_FAST.
      */
     @JsonCreator
-    public IntakeTwoSidesSimple(@JsonProperty(required = true) @NotNull SimpleMotor leftMotor,
-                                @JsonProperty(required = true) @NotNull SimpleMotor rightMotor,
-                                @Nullable Double inSlowVel,
-                                @Nullable Double inFastVel,
-                                @Nullable Double outSlowVel,
-                                @Nullable Double outFastVel) {
+    public IntakeTwoSidesSimple(@JsonProperty(required = true) @NotNull final SimpleMotor leftMotor,
+                                @JsonProperty(required = true) @NotNull final SimpleMotor rightMotor,
+                                @Nullable final Double inSlowVel,
+                                @Nullable final Double inFastVel,
+                                @Nullable final Double outSlowVel,
+                                @Nullable final Double outFastVel) {
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
         this.inSlowVel = inSlowVel;
@@ -78,32 +78,32 @@ public class IntakeTwoSidesSimple extends SubsystemBase implements SubsystemInta
      */
     @NotNull
     @Override
-    @Log
+    @Log.ToString
     public SubsystemIntake.IntakeMode getMode() {
-        return mode;
+        return this.mode;
     }
 
     /**
      * @param mode The mode to switch the left side of the intake to.
      */
     @Override
-    public void setLeftMode(@NotNull SubsystemIntake.IntakeMode mode) {
-        setMode(mode, leftMotor);
+    public void setLeftMode(@NotNull final SubsystemIntake.IntakeMode mode) {
+        this.setMode(mode, this.leftMotor);
     }
 
     /**
      * @param mode The mode to switch the right side of the intake to.
      */
     @Override
-    public void setRightMode(@NotNull SubsystemIntake.IntakeMode mode) {
-        setMode(mode, rightMotor);
+    public void setRightMode(@NotNull final SubsystemIntake.IntakeMode mode) {
+        this.setMode(mode, this.rightMotor);
     }
 
     /**
      * @param mode
      * @param motor
      */
-    private void setMode(@NotNull IntakeMode mode, @NotNull SimpleMotor motor) {
+    private void setMode(@NotNull final IntakeMode mode, @NotNull final SimpleMotor motor) {
         switch (mode) {
             case OFF:
                 motor.setVelocity(0);
@@ -111,30 +111,30 @@ public class IntakeTwoSidesSimple extends SubsystemBase implements SubsystemInta
                 this.mode = IntakeMode.OFF;
                 break;
             case IN_FAST:
-                if (inFastVel != null) {
+                if (this.inFastVel != null) {
                     motor.enable();
-                    motor.setVelocity(inFastVel);
+                    motor.setVelocity(this.inFastVel);
                     this.mode = IntakeMode.IN_FAST;
                 }
                 break;
             case IN_SLOW:
-                if (inSlowVel != null) {
+                if (this.inSlowVel != null) {
                     motor.enable();
-                    motor.setVelocity(inSlowVel);
+                    motor.setVelocity(this.inSlowVel);
                     this.mode = IntakeMode.IN_SLOW;
                 }
                 break;
             case OUT_FAST:
-                if (outFastVel != null) {
+                if (this.outFastVel != null) {
                     motor.enable();
-                    motor.setVelocity(outFastVel);
+                    motor.setVelocity(this.outFastVel);
                     this.mode = IntakeMode.OUT_FAST;
                 }
                 break;
             case OUT_SLOW:
-                if (outSlowVel != null) {
+                if (this.outSlowVel != null) {
                     motor.enable();
-                    motor.setVelocity(outSlowVel);
+                    motor.setVelocity(this.outSlowVel);
                     this.mode = IntakeMode.OUT_SLOW;
                 }
                 break;

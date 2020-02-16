@@ -8,11 +8,13 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
+import java.util.function.BooleanSupplier;
+
 /**
  * A roboRIO digital input pin.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MappedDigitalInput extends DigitalInput implements Loggable {
+public class MappedDigitalInput extends DigitalInput implements Loggable, BooleanSupplier {
 
     /**
      * Create an instance of a Digital Input class. Creates a digital input given a channel.
@@ -33,6 +35,16 @@ public class MappedDigitalInput extends DigitalInput implements Loggable {
     @Log
     public boolean get() {
         return !super.get(); //true is off by default in WPILib, and that's dumb
+    }
+
+    /**
+     * Returns the result of {@link MappedDigitalInput#get()}.
+     *
+     * @return the return value of {@link MappedDigitalInput#get()}
+     */
+    @Override
+    public boolean getAsBoolean() {
+        return this.get();
     }
 
 //    /**

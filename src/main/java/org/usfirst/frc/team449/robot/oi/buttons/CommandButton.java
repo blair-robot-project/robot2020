@@ -3,9 +3,9 @@ package org.usfirst.frc.team449.robot.oi.buttons;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Button;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedButton;
 
 /**
  * A button mapped to a command.
@@ -25,9 +25,9 @@ public class CommandButton implements Loggable {
      * @param action  The action to do to the command.
      */
     @JsonCreator
-    public CommandButton(@NotNull @JsonProperty(required = true) MappedButton button,
-                         @NotNull @JsonProperty(required = true) Command command,
-                         @NotNull @JsonProperty(required = true) Action action) {
+    public CommandButton(@NotNull @JsonProperty(required = true) final Button button,
+                         @NotNull @JsonProperty(required = true) final Command command,
+                         @NotNull @JsonProperty(required = true) final Action action) {
 
         this.command = command;
         switch (action) {

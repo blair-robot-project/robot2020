@@ -1,9 +1,13 @@
 package org.usfirst.frc.team449.robot.commands.multiInterface.drive;
 
-import com.fasterxml.jackson.annotation.*;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
@@ -72,18 +76,18 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
      * @param snapPoints        The points to snap the PID controller input to.
      */
     @JsonCreator
-    public FieldOrientedUnidirectionalDriveCommand(@JsonProperty(required = true) double absoluteTolerance,
-                                                   @Nullable BufferTimer onTargetBuffer,
-                                                   double minimumOutput, @Nullable Double maximumOutput,
-                                                   @Nullable Integer loopTimeMillis,
-                                                   double deadband,
-                                                   boolean inverted,
-                                                   double kP,
-                                                   double kI,
-                                                   double kD,
-                                                   @NotNull @JsonProperty(required = true) T subsystem,
-                                                   @NotNull @JsonProperty(required = true) OIFieldOriented oi,
-                                                   @Nullable List<AngularSnapPoint> snapPoints) {
+    public FieldOrientedUnidirectionalDriveCommand(@JsonProperty(required = true) final double absoluteTolerance,
+                                                   @Nullable final BufferTimer onTargetBuffer,
+                                                   final double minimumOutput, @Nullable final Double maximumOutput,
+                                                   @Nullable final Integer loopTimeMillis,
+                                                   final double deadband,
+                                                   final boolean inverted,
+                                                   final double kP,
+                                                   final double kI,
+                                                   final double kD,
+                                                   @NotNull @JsonProperty(required = true) final T subsystem,
+                                                   @NotNull @JsonProperty(required = true) final OIFieldOriented oi,
+                                                   @Nullable final List<AngularSnapPoint> snapPoints) {
         //Assign stuff
         super(absoluteTolerance, onTargetBuffer, minimumOutput, maximumOutput, loopTimeMillis, deadband, inverted,
                 subsystem, kP, kI, kD);
@@ -92,7 +96,7 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
         this.snapPoints = snapPoints != null ? snapPoints : new ArrayList<>();
 
         //Needs a requires because it's a default command.
-        addRequirements(this.subsystem);
+        this.addRequirements(this.subsystem);
 
         //Logging, but in Spanish.
         Shuffleboard.addEventMarker("Drive Robot bueno", this.getClass().getSimpleName(), EventImportance.kNormal);
@@ -115,25 +119,25 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
      */
     @Override
     public void execute() {
-        theta = oi.getThetaCached();
+        this.theta = this.oi.getThetaCached();
 
-        if (theta != null) {
-            for (AngularSnapPoint snapPoint : snapPoints) {
+        if (this.theta != null) {
+            for (final AngularSnapPoint snapPoint : this.snapPoints) {
                 //See if we should snap
-                if (snapPoint.getLowerBound() < theta && theta < snapPoint.getUpperBound()) {
-                    theta = snapPoint.getSnapTo();
+                if (snapPoint.getLowerBound() < this.theta && this.theta < snapPoint.getUpperBound()) {
+                    this.theta = snapPoint.getSnapTo();
                     //Break to shorten runtime, we'll never snap twice.
                     break;
                 }
             }
-            this.setSetpoint(theta);
+            this.setSetpoint(this.theta);
         }
 
         //Process or zero the input depending on whether the NavX is being overriden.
-        output = subsystem.getOverrideGyro() ? 0 : this.getOutput();
+        this.output = this.subsystem.getOverrideGyro() ? 0 : this.getOutput();
 
         //Adjust the heading according to the PID output, it'll be positive if we want to go right.
-        subsystem.setOutput(oi.getVelCached() - output, oi.getVelCached() + output);
+        this.subsystem.setOutput(this.oi.getVelCached() - this.output, this.oi.getVelCached() + this.output);
     }
 
     /**
@@ -150,7 +154,7 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
      * Log when this command ends
      */
     @Override
-    public void end(boolean interrupted) {
+    public void end(final boolean interrupted) {
         if(interrupted){
             Shuffleboard.addEventMarker("FieldOrientedUnidirectionalDriveCommand Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
         }
@@ -188,9 +192,9 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
          *                   degrees.
          */
         @JsonCreator
-        public AngularSnapPoint(@JsonProperty(required = true) double snapTo,
-                                @JsonProperty(required = true) double upperBound,
-                                @JsonProperty(required = true) double lowerBound) {
+        public AngularSnapPoint(@JsonProperty(required = true) final double snapTo,
+                                @JsonProperty(required = true) final double upperBound,
+                                @JsonProperty(required = true) final double lowerBound) {
             this.snapTo = snapTo;
             this.upperBound = upperBound;
             this.lowerBound = lowerBound;
@@ -200,21 +204,21 @@ public class FieldOrientedUnidirectionalDriveCommand<T extends Subsystem & Drive
          * @return The angle to snap the setpoint to, in degrees.
          */
         public double getSnapTo() {
-            return snapTo;
+            return this.snapTo;
         }
 
         /**
          * @return The upper bound, below which all angles above snapTo are changed to snapTo. Measured in degrees.
          */
         public double getUpperBound() {
-            return upperBound;
+            return this.upperBound;
         }
 
         /**
          * @return The lower bound, above which all angles below snapTo are changed to snapTo. Measured in degrees.
          */
         public double getLowerBound() {
-            return lowerBound;
+            return this.lowerBound;
         }
     }
 }

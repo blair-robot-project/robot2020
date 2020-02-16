@@ -2,7 +2,7 @@ plugins {
     id 'org.hidetake.ssh' version "2.9.0"
     id 'java'
     id 'idea'
-    id "edu.wpi.first.GradleRIO" version "2020.1.1"
+    id "edu.wpi.first.GradleRIO" version "2020.2.2"
     id "com.google.protobuf" version "0.8.8"
 }
 
@@ -10,6 +10,7 @@ def ROBOT_MAIN_CLASS = "org.usfirst.frc.team449.robot.Main"
 
 repositories {
     mavenCentral()
+    maven { url 'http://www.revrobotics.com/content/sw/max/sdk/maven/' }
     maven { url "https://plugins.gradle.org/m2/" }
     maven { url 'https://jitpack.io' }
 }
@@ -62,8 +63,9 @@ dependencies {
     compile 'io.grpc:grpc-protobuf:1.0.0-pre2'
     // https://mvnrepository.com/artifact/org.zeromq/jeromq
     compile group: 'org.zeromq', name: 'jeromq', version: '0.4.3'
-    compile 'com.github.Oblarg:Oblog:3.0.1'
+    compile 'com.github.Oblarg:Oblog:3.1.0'
 
+    compile 'com.revrobotics.frc:SparkMax-java:1.4.1'
 
     implementation wpi.deps.wpilib()
     nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)

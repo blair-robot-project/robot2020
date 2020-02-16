@@ -30,7 +30,7 @@ public class RackShooter<T extends Subsystem & SubsystemIntake & SubsystemSoleno
     public RackShooter(@Nullable SubsystemFlywheel subsystemFlywheel,
                        @Nullable T subsystemIntake) {
         if (subsystemFlywheel != null) {
-            addCommands(new SpinUpFlywheel(subsystemFlywheel));
+            addCommands(new SpinUpFlywheel(subsystemFlywheel, subsystemIntake));
         }
         if (subsystemIntake != null) {
             addCommands(
