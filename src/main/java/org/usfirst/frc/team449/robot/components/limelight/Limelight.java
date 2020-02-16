@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot.components;
+package org.usfirst.frc.team449.robot.components.limelight;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -6,16 +6,15 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 /**
  * Has all of the methods for getting any desired value from the limelight.
  * Poorly documented, reference docs.limelightvision.io/en/latest/networktables_api.html for full documentation
- * Also THIS IS OBSOLETE, should be using the LimelightComponent class for the capacity to tailor offsets
  */
 public class Limelight {
 
     /**
      * The network table to get the values from
      */
-    private NetworkTable netTable;
+    private static NetworkTable netTable;
 
-    public Limelight(){
+    static {
         netTable = NetworkTableInstance.getDefault().getTable("limelight");
     }
 
@@ -25,63 +24,63 @@ public class Limelight {
      * @param param the value to ask for from the limelight
      * @return the value asked for
      */
-    private double tableGet(String param){
+    private static double tableGet(String param){
         return netTable.getEntry(param).getDouble(0);
     }
 
     /**
      * @return whether the limelight can see valid targets (0 or 1)
      */
-    public double validTargets(){
+    public static double validTargets(){
         return tableGet("tv");
     }
 
     /**
      * @return horizontal offset of target (as an angle)
      */
-    public double getXOffset(){
+    public static double getXOffset(){
         return tableGet("tx");
     }
 
     /**
      * @return vertical offset from crosshair to target (as an angle)
      */
-    public double getYOffset(){
+    public static double getYOffset(){
         return tableGet("ty");
     }
 
     /**
      * @return area of target (as a percent of the image onscreen)
      */
-    public double getTargetArea(){
+    public static double getTargetArea(){
         return tableGet("ta");
     }
 
     /**
      * @return skew or rotation (-90 to 0, in degrees)
      */
-    public double getSkew(){
+    public static double getSkew(){
         return tableGet("ts");
     }
-    public double getLatency(){
+    public static double getLatency(){
         return tableGet("tl");
     }
-    public double getShortest(){
+    public static double getShortest(){
         return tableGet("tshort");
     }
-    public double getLongest(){
+    public static double getLongest(){
         return tableGet("tlong");
     }
-    public double getHorizontalSideLen(){
+    public static double getHorizontalSideLen(){
         return tableGet("thor");
     }
-    public double getVerticalSideLen(){
+    public static double getVerticalSideLen(){
         return tableGet("tvert");
     }
-    public double getPipelineIndex(){
+    public static double getPipelineIndex(){
         return tableGet("getpipe");
     }
-    public double getCamTran(){
+    public static double getCamTran(){
         return tableGet("camtran");
     }
 

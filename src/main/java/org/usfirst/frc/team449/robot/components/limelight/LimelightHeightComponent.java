@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot.components;
+package org.usfirst.frc.team449.robot.components.limelight;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,7 +26,7 @@ public class LimelightHeightComponent implements DoubleSupplier {
     /**
      * Default constructor
      * @param angularInput The DoubleSupplier determining the angle theta of the vision target.
-     * @param distanceToTarget The LimeLightComponent finding the distance to the vision target.
+     * @param distanceToTarget The LimelightComponent finding the distance to the vision target.
      */
     @JsonCreator
     public LimelightHeightComponent(@JsonProperty(required = true) DoubleSupplier angularInput,
