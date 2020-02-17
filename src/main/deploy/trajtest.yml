@@ -13,6 +13,7 @@ NAVIGATION:
   - &COMMANDS commands:
       - &DEFAULT_COMMANDS defaultCommands:
           - &DRIVE_DEFAULT_COMMAND
+      - &BUTTONS buttons:
       - &AUTO_COMMANDS autoStartupCommand:
           - &TRAJ_TEST_COMMAND
   - &UPDATER updater
@@ -154,7 +155,7 @@ useCameraServer: false
   #***********************************************************************************************************************
 
 *COMMANDS:
-  ########################################################################################################################
+    ########################################################################################################################
   *DEFAULT_COMMANDS:
     #***********************************************************************************************************************
     - *DRIVE_DEFAULT_COMMAND
@@ -255,6 +256,37 @@ useCameraServer: false
               bufferTimeSeconds: 0.06
             upshiftFwdThresh: 0.4
 
+  *BUTTONS:
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': turnToAngleButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              '@id': mechanismsJoystick
+              port: *mechanismsJoystickPort
+          buttonNumber: 1 #shoulder right
+      command:
+        org.usfirst.frc.team449.robot.commands.multiInterface.limelight.ScanThenTurn:
+          '@id': scanThenTurnCommand
+          scannerPipe: 1
+          turnCommand:
+            org.usfirst.frc.team449.robot.commands.multiInterface.drive.NavXTurnToAngleLimelight:
+              '@id': turnToAngleCommand
+              absoluteTolerance: 5
+              kP: 1
+              drive:
+                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                  drive
+              timeout: 100
+              limelight:
+                org.usfirst.frc.team449.robot.subsystem.singleImplementation.limelight.Limelight:
+                  driverPipeline: 0
+          driverPipe: 1
+          limelight:
+            org.usfirst.frc.team449.robot.subsystem.singleImplementation.limelight.Limelight:
+              driverPipeline: 0
+      action: WHILE_HELD
+
   *AUTO_COMMANDS:
     - *TRAJ_TEST_COMMAND
     - edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
@@ -307,44 +339,6 @@ useCameraServer: false
                 rotation:
                   radians: -3.14
               reversed: false
-#    - org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerUnidirectionalDrive:
-#        '@id': testDriveCommand
-#        drivetrain:
-#          org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-#            drive
-#        leftPidController:
-#          org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-#            Kp: 5
-#            name: "left"
-#        rightPidController:
-#          org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-#            Kp: 5
-#            name: "right"
-#        robotRelative: true
-#        trajectoryGenerator: #142 x 96in or #3.6068 x 2.4384m
-#          org.usfirst.frc.team449.robot.components.TrajectoryGenerationCubicComponent:
-#            drivetrain:
-#              org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-#                drive
-#            maxSpeedMeters: 1.5
-#            maxAccelMeters: 1
-#            maxCentripetalAcceleration: 1
-#            waypoints:
-#              startingPose:
-#                translation:
-#                  x: 0
-#                  y: 0
-#                rotation:
-#                  radians: 0
-##              translations:
-##                - x: 1.5
-##                  y: .5
-#              endingPose:
-#                translation:
-#                  x: 2
-#                  y: -1
-#                rotation:
-#                  radians: 0
 
 ########################################################################################################################
 *UPDATER:

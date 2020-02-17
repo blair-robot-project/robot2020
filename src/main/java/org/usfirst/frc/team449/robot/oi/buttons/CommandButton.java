@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A button mapped to a command.
  */
-public class CommandButton implements Loggable {
+public class  CommandButton implements Loggable {
 
     /**
      * The command mapped to the button.  Field to allow logging.

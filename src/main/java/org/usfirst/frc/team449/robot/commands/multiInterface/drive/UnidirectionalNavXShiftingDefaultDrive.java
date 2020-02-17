@@ -87,8 +87,13 @@ public class UnidirectionalNavXShiftingDefaultDrive<T extends Subsystem & DriveU
      */
     @JsonCreator
     public UnidirectionalNavXShiftingDefaultDrive(@JsonProperty(required = true) final double absoluteTolerance,
+                                                  @NotNull @JsonProperty(required = true) final BufferTimer driveStraightLoopEntryTimer,
+                                                  @NotNull @JsonProperty(required = true) final T subsystem,
+                                                  @NotNull @JsonProperty(required = true) final OIUnidirectional oi,
+                                                  @NotNull @JsonProperty(required = true) final AutoshiftComponent autoshiftComponent,
                                                   @Nullable final BufferTimer onTargetBuffer,
-                                                  final double minimumOutput, @Nullable final Double maximumOutput,
+                                                  final double minimumOutput,
+                                                  @Nullable final Double maximumOutput,
                                                   @Nullable final Integer loopTimeMillis,
                                                   final double deadband,
                                                   @Nullable final Double maxAngularVelToEnterLoop,
@@ -96,11 +101,7 @@ public class UnidirectionalNavXShiftingDefaultDrive<T extends Subsystem & DriveU
                                                   final double kP,
                                                   final double kI,
                                                   final double kD,
-                                                  @NotNull @JsonProperty(required = true) final BufferTimer driveStraightLoopEntryTimer,
-                                                  @NotNull @JsonProperty(required = true) final T subsystem,
-                                                  @NotNull @JsonProperty(required = true) final OIUnidirectional oi,
-                                                  @Nullable final RampComponent rampComponent,
-                                                  @NotNull @JsonProperty(required = true) final AutoshiftComponent autoshiftComponent,
+                                                      @Nullable final RampComponent rampComponent,
                                                   @Nullable final Double highGearAngularCoefficient) {
         super(absoluteTolerance, onTargetBuffer, minimumOutput, maximumOutput, loopTimeMillis, deadband,
                 maxAngularVelToEnterLoop,

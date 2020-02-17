@@ -9,11 +9,11 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.components.limelight.Limelight;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
+import org.usfirst.frc.team449.robot.subsystem.singleImplementation.limelight.Limelight;
 
 /**
  * Turn a certain number of degrees from the current heading, based on input from the limelight
@@ -52,10 +52,11 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
                                     int kP,
                                     int kI,
                                     int kD,
+                                    @NotNull @JsonProperty(required = true) Limelight limelight,
                                     @NotNull @JsonProperty(required = true) T drive,
                                     @JsonProperty(required = true) double timeout) {
         super(absoluteTolerance, onTargetBuffer, minimumOutput, maximumOutput, loopTimeMillis, deadband, inverted, kP
-                , kI, kD, Limelight.getXOffset(), drive, timeout);
+                , kI, kD, limelight.getX(), drive, timeout);
     }
 
     /**

@@ -2,8 +2,8 @@ package org.usfirst.frc.team449.robot.components.limelight;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import org.usfirst.frc.team449.robot.components.limelight.LimelightComponent;
+import org.jetbrains.annotations.NotNull;
+import org.usfirst.frc.team449.robot.subsystem.singleImplementation.limelight.Limelight;
 
 import java.util.function.DoubleSupplier;
 
@@ -12,6 +12,10 @@ import java.util.function.DoubleSupplier;
  */
 public class LimelightDistanceComponentTilted implements DoubleSupplier {
 
+    /**
+     * The limelight being used
+     */
+    private final Limelight limelight;
     /**
      * The height of the Limelight above the ground
      */
@@ -33,9 +37,11 @@ public class LimelightDistanceComponentTilted implements DoubleSupplier {
      * @param targetHeight the height of the expected vision target, probably provided by the game manual
      */
     @JsonCreator
-    public LimelightDistanceComponentTilted(@JsonProperty(required = true) double limelightHeight,
-                                      @JsonProperty(required = true) double limelightAngleDown,
-                                      @JsonProperty(required = true) double targetHeight) {
+    public LimelightDistanceComponentTilted(@NotNull @JsonProperty(required = true) Limelight limelight,
+                                            @JsonProperty(required = true) double limelightHeight,
+                                            @JsonProperty(required = true) double limelightAngleDown,
+                                            @JsonProperty(required = true) double targetHeight) {
+        this.limelight = limelight;
         this.limelightHeight = limelightHeight;
         this.limelightAngle = limelightAngleDown;
         this.targetHeight = targetHeight;
@@ -46,7 +52,6 @@ public class LimelightDistanceComponentTilted implements DoubleSupplier {
      */
     @Override
     public double getAsDouble() {
-        DoubleSupplier robotToTargAngle = new LimelightComponent(LimelightComponent.ReturnValue.y, 0);
-        return (targetHeight - limelightHeight) / Math.sin(Math.toRadians(limelightAngle + robotToTargAngle.getAsDouble()));
+        return (targetHeight - limelightHeight) / Math.sin(Math.toRadians(limelightAngle + limelight.getY()));
     }
 }

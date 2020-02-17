@@ -1,9 +1,10 @@
 package org.usfirst.frc.team449.robot.commands.limelight;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import org.usfirst.frc.team449.robot.components.limelight.LimelightComponent;
+import org.jetbrains.annotations.NotNull;
+import org.usfirst.frc.team449.robot.subsystem.singleImplementation.limelight.Limelight;
 
 /**
  * Sets the limelight pipeline to the index provided
@@ -27,7 +28,8 @@ public class SetPipeline extends InstantCommand {
      * @param index the index to set the pipeline to when this command is run
      */
     @JsonCreator
-    public SetPipeline(int index){
-        super(() -> LimelightComponent.setPipeline(index), null);
+    public SetPipeline(@NotNull @JsonProperty(required = true) Limelight limelight,
+                       int index){
+        super(() -> limelight.setPipeline(index));
     }
 }
