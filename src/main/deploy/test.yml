@@ -82,7 +82,6 @@ subsystems:
           #              posKI: 0.0
           #              posKD: 0.05
           startingGearNum: 0 #TODO
-          #updaterProcessPeriodSecs: 0.005 #TODO
       feederThrottle: 0.1 #TODO
       spinUpTimeoutSecs: 2
       minShootingSpeedFPS: 1
@@ -121,7 +120,6 @@ subsystems:
           #              posKI: 0.0
           #              posKD: 0.05
           startingGearNum: 0 #TODO
-          #updaterProcessPeriodSecs: 0.005 #TODO
       inSlowVel: 0.1
       inFastVel: 0.2
       outSlowVel: -0.1
@@ -161,7 +159,6 @@ subsystems:
           #              posKI: 0.0
           #              posKD: 0.05
           startingGearNum: 0 #TODO
-          #updaterProcessPeriodSecs: 0.005 #TODO
       inSlowVel: 0.1
       inFastVel: 0.2
       outSlowVel: -0.1

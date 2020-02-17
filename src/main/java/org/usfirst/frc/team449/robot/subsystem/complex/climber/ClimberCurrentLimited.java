@@ -53,7 +53,7 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
      * Whether the condition was met last time caching was done.
      */
     private boolean conditionMetCached;
-    private double percentVoltage;
+    private final double percentVoltage;
 
     /**
      * Default constructor
@@ -65,11 +65,11 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
      * @param percentVoltage  The voltage setpoint to run the motors at.
      */
     @JsonCreator
-    public ClimberCurrentLimited(@NotNull @JsonProperty(required = true) SmartMotor smartMotor,
-                                 @NotNull @JsonProperty(required = true) BufferTimer powerLimitTimer,
-                                 @JsonProperty(required = true) double maxPower,
-                                 @Nullable SimpleMotor simpleMotor,
-                                 @Nullable Double percentVoltage
+    public ClimberCurrentLimited(@NotNull @JsonProperty(required = true) final SmartMotor smartMotor,
+                                 @NotNull @JsonProperty(required = true) final BufferTimer powerLimitTimer,
+                                 @JsonProperty(required = true) final double maxPower,
+                                 @Nullable final SimpleMotor simpleMotor,
+                                 @Nullable final Double percentVoltage
     ) {
         //Instantiate things
         this.smartMotor = smartMotor;
@@ -85,7 +85,7 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
      *
      * @param percentVbus The voltage to give the motor, from -1 to 1.
      */
-    private void setPercentVbus(double percentVbus) {
+    private void setPercentVbus(final double percentVbus) {
         smartMotor.setPercentVoltage(percentVbus);
         if (simpleMotor != null) {
             simpleMotor.setVelocity(percentVbus);
@@ -142,7 +142,7 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
      * Updates all cached values with current ones.
      */
     @Override
-    public void update() {
+    public void periodic() {
         conditionMetCached = isConditionTrue();
     }
 }

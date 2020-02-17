@@ -58,7 +58,6 @@ subsystems:
                   kS: 1.40187
                   kV: 0.59688
                   kA: 0.15676
-          updaterProcessPeriodSecs: 0.005
           statusFrameRatesMillis: !!map
             Status_4_AinTempVbat: 15
 #          slaveVictors:

@@ -5,16 +5,15 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 
 /**
  * A Jackson-friendly wrapper on WPILib's {@link AnalogInput}.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MappedAnalogInput extends AnalogInput implements Updatable, Loggable {
+public class MappedAnalogInput extends AnalogInput implements Subsystem, Loggable {
 
     /**
      * The value of analog input, as a percent.
@@ -30,10 +29,12 @@ public class MappedAnalogInput extends AnalogInput implements Updatable, Loggabl
      * @param averageBits    The sensor output will be the average of 2^averageBits readings. Defaults to 0.
      */
     @JsonCreator
-    public MappedAnalogInput(@JsonProperty(required = true) int port,
-                             int oversampleBits,
-                             int averageBits) {
+    public MappedAnalogInput(@JsonProperty(required = true) final int port,
+                             final int oversampleBits,
+                             final int averageBits) {
         super(port);
+        this.register();
+
         setOversampleBits(oversampleBits);
         setAverageBits(averageBits);
     }
@@ -55,7 +56,7 @@ public class MappedAnalogInput extends AnalogInput implements Updatable, Loggabl
     }
 
     @Override
-    public void update() {
+    public void periodic() {
         percentValueCached = getPercentValue();
     }
 

@@ -48,4 +48,9 @@ public interface OIUnidirectional extends OI {
      * @return True if the driver is trying to drive straight, false otherwise.
      */
     boolean commandingStraight();
+
+    /**
+     * Updates all cached values with current ones.
+     */
+    void periodic();
 }

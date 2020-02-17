@@ -1,8 +1,8 @@
 package org.usfirst.frc.team449.robot.oi.fieldoriented;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.annotations.Log;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.oi.OI;
 
@@ -10,7 +10,7 @@ import org.usfirst.frc.team449.robot.oi.OI;
  * An OI that gives an absolute heading, relative to the field, and a velocity.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT, property = "@class")
-public abstract class OIFieldOriented implements OI {
+public abstract class OIFieldOriented implements OI, Subsystem {
 
     /**
      * The cached linear velocity.
@@ -22,6 +22,10 @@ public abstract class OIFieldOriented implements OI {
      */
     @Nullable
     private Double cachedTheta;
+
+    public OIFieldOriented() {
+        this.register();
+    }
 
     /**
      * Get the absolute angle for the robot to move towards.
@@ -65,7 +69,7 @@ public abstract class OIFieldOriented implements OI {
      * Updates all cached values with current ones.
      */
     @Override
-    public void update() {
+    public void periodic() {
         cachedVel = getVel();
         cachedTheta = getTheta();
     }

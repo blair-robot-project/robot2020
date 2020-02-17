@@ -19,7 +19,7 @@ public class SimulatedMotor implements Loggable {
     /**
      * (Kg * m^2) Moment of moving parts.
      */
-    private static final double MOMENT = 20;
+    private static final double MOMENT = 10;
     /**
      * (Ohms) Used to calculate output current.
      */

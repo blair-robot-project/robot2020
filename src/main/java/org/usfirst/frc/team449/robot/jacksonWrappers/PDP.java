@@ -4,18 +4,18 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
-import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 
 /**
  * An object representing the {@link PowerDistributionPanel} that logs power, current, and resistance.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class PDP implements Loggable, Updatable {
+public class PDP implements Subsystem, Loggable {
 
     /**
      * The WPILib PDP this is a wrapper on.
@@ -40,8 +40,10 @@ public class PDP implements Loggable, Updatable {
      * @param canID CAN ID of the PDP. Defaults to 0.
      */
     @JsonCreator
-    public PDP(int canID,
-               @Nullable RunningLinRegComponent voltagePerCurrentLinReg) {
+    public PDP(final int canID,
+               @Nullable final RunningLinRegComponent voltagePerCurrentLinReg) {
+        this.register();
+
         this.PDP = new PowerDistributionPanel(canID);
         this.voltagePerCurrentLinReg = voltagePerCurrentLinReg;
         this.voltage = 0;
@@ -152,7 +154,7 @@ public class PDP implements Loggable, Updatable {
      * Updates all cached values with current ones.
      */
     @Override
-    public void update() {
+    public void periodic() {
         this.totalCurrent = PDP.getTotalCurrent();
         this.voltage = PDP.getVoltage();
         this.temperature = PDP.getTemperature();

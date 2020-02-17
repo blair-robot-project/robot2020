@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revrobotics.CANError;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -23,9 +22,13 @@ import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
-import org.usfirst.frc.team449.robot.jacksonWrappers.*;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMax;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon;
+import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
+import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
+import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
+import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.FPSSmartMotorSimulated;
-import org.usfirst.frc.team449.robot.other.Updater;
 
 import java.util.HashMap;
 import java.util.List;
@@ -91,8 +94,6 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
      * @param startingGear               The gear to start in. Can be null to use startingGearNum instead.
      * @param startingGearNum            The number of the gear to start in. Ignored if startingGear isn't null.
      *                                   Defaults to the lowest gear.
-     * @param updaterProcessPeriodSecs   TALON-SPECIFIC. The period for the {@link Notifier} that moves points between the MP buffers, in
-     *                                   seconds. Defaults to 0.005.
      * @param controlFrameRateMillis     SPARK-SPECIFIC. The update rate, in milliseconds, each control frame.
      * @param controlFrameRatesMillis    TALON-SPECIFIC. The update rate, in milliseconds, for each of the control frame.
      * @param slaveTalons                TALON-SPECIFIC. The {@link TalonSRX}s that are slaved to this controller.
@@ -130,7 +131,6 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
                                 @Nullable final FeedbackDevice feedbackDevice,
                                 @Nullable final Integer encoderCPR,
                                 @Nullable final Boolean reverseSensor,
-                                @Nullable final Double updaterProcessPeriodSecs,
                                 @Nullable final List<SlaveTalon> slaveTalons,
                                 @Nullable final List<SlaveVictor> slaveVictors,
                                 @Nullable final List<SlaveSparkMax> slaveSparks,
@@ -236,8 +236,6 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
                     unsupportedHelper.log("reverseSensor");
                 if (voltageCompSamples != null)
                     unsupportedHelper.log("voltageCompSamples");
-                if (updaterProcessPeriodSecs != null)
-                    unsupportedHelper.log("updaterProcessPeriodSecs");
                 if (controlFrameRatesMillis != null)
                     unsupportedHelper.log("controlFrameRatesMillis (RATESSSS--plural)");
 
@@ -328,11 +326,9 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
                         feedbackDevice,
                         encoderCPR,
                         reverseSensor,
-                        updaterProcessPeriodSecs,
                         slaveTalons,
                         slaveVictors,
                         slaveSparks);
-                Updater.subscribe(simulated);
                 result = simulated;
                 break;
 
@@ -434,6 +430,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
      *
      * @param velocity the desired velocity, on [-1, 1].
      */
+    @Override
     void setVelocity(double velocity);
 
     /**

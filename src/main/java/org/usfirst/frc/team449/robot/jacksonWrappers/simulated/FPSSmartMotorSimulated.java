@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
-import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
@@ -40,7 +40,7 @@ import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
  * The current implementation relies on fictional physics and does not involve
  * </p>
  */
-public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
+public class FPSSmartMotorSimulated implements SmartMotor, Subsystem {
     /**
      * Maximum PID integral for anti-windup.
      */
@@ -104,10 +104,11 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
                                   @Nullable final FeedbackDevice feedbackDevice,
                                   @Nullable final Integer encoderCPR,
                                   @Nullable final Boolean reverseSensor,
-                                  @Nullable final Double updaterProcessPeriodSecs,
                                   @Nullable final List<SlaveTalon> slaveTalons,
                                   @Nullable final List<SlaveVictor> slaveVictors,
                                   @Nullable final List<SlaveSparkMax> slaveSparks) {
+        this.register();
+
         this.controllerType = type;
         this.port = port;
         this.reverseOutput = reverseOutput;
@@ -616,11 +617,8 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
         return true;
     }
 
-    /**
-     * Updates all cached values with current ones.
-     */
     @Override
-    public void update() {
+    public void periodic() {
         this.updateSimulation();
     }
 }

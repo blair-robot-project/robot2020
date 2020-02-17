@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.SubsystemBinaryMotor;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.climber.SubsystemClimberWithArm;
@@ -25,7 +24,7 @@ import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SafeWinchingClimber extends SubsystemBase
-        implements SubsystemClimberWithArm, SubsystemBinaryMotor, SubsystemSolenoid, Updatable, Loggable {
+        implements SubsystemClimberWithArm, SubsystemBinaryMotor, SubsystemSolenoid, Loggable {
     private final ClimberCurrentLimited motorSubsystem;
     private final SubsystemSolenoid solenoidSubsystem;
 
@@ -140,33 +139,9 @@ public class SafeWinchingClimber extends SubsystemBase
     }
 
     @Override
-    public void update() {
+    public void periodic() {
         if (this.motorSubsystem.isConditionTrueCached()) {
             this.motorSubsystem.turnMotorOff();
         }
     }
-
-//    /**
-//     * @return true if the condition is met, false otherwise
-//     */
-//    @Override
-//    public boolean isConditionTrue() {
-//        return this.motorSubsystem.isConditionTrue();
-//    }
-//
-//    /**
-//     * @return true if the condition was met when cached, false otherwise
-//     */
-//    @Override
-//    public boolean isConditionTrueCached() {
-//        return this.motorSubsystem.isConditionTrueCached();
-//    }
-//
-//    /**
-//     * Updates all cached values with current ones.
-//     */
-//    @Override
-//    public void update() {
-//        this.motorSubsystem.update();
-//    }
 }

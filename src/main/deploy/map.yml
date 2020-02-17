@@ -23,7 +23,6 @@ NAVIGATION:
       - &DEFAULT_COMMANDS defaultCommands:
           - &DRIVE_DEFAULT_COMMAND
           - &FEEDER_DEFAULT_COMMAND
-  - &UPDATER updater
 
 # Anchors for transclusion into the rest of the map.
 # Ignored by Jackson (so is NAVIGATION); can contain any valid YAML suitable for organizational purposes.
@@ -125,7 +124,6 @@ useCameraServer: false
                   kS: 1.11
                   kV: 2.04
                   kA: 0.637
-          updaterProcessPeriodSecs: 0.005
           statusFrameRatesMillis: !!map
             Status_4_AinTempVbat: 15
           slaveVictors:
@@ -781,17 +779,3 @@ useCameraServer: false
                       org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
                         <<: *Feeder_Stop_Command
                         '@id': feederStopCommand_irsensor
-
-
-########################################################################################################################
-*UPDATER:
-  org.usfirst.frc.team449.robot.other.Updater:
-    '@id': updater
-    updatables:
-      - org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
-      - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
-      - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
-      - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS: navX
-      - org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberCurrentLimited: climberCurrentLimitSystem
-      - org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber: climber
-      - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel: shooterFlywheel

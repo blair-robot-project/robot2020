@@ -36,8 +36,8 @@ public class DriveUnidirectionalSimple extends SubsystemBase implements DriveUni
      * @param rightMotor The motor for the right side of the drive.
      */
     @JsonCreator
-    public DriveUnidirectionalSimple(@NotNull @JsonProperty(required = true) SimpleMotor leftMotor,
-                                     @NotNull @JsonProperty(required = true) SimpleMotor rightMotor) {
+    public DriveUnidirectionalSimple(@NotNull @JsonProperty(required = true) final SimpleMotor leftMotor,
+                                     @NotNull @JsonProperty(required = true) final SimpleMotor rightMotor) {
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
     }
@@ -49,7 +49,7 @@ public class DriveUnidirectionalSimple extends SubsystemBase implements DriveUni
      * @param right the output for the right side of the drive, from [-1, 1]
      */
     @Override
-    public void setOutput(double left, double right) {
+    public void setOutput(final double left, final double right) {
         leftMotor.setVelocity(left);
         rightMotor.setVelocity(right);
     }
@@ -180,7 +180,7 @@ public class DriveUnidirectionalSimple extends SubsystemBase implements DriveUni
      * Updates all cached values with current ones.
      */
     @Override
-    public void update() {
+    public void periodic() {
         //Do nothing
     }
 }

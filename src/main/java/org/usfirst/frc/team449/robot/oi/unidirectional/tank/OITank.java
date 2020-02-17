@@ -1,15 +1,15 @@
 package org.usfirst.frc.team449.robot.oi.unidirectional.tank;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.annotations.Log;
-import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.oi.unidirectional.OIUnidirectional;
 
 /**
  * A tank-style dual joystick OI.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT, property = "@class")
-public abstract class OITank implements OIUnidirectional {
+public abstract class OITank implements OIUnidirectional, Subsystem {
 
     /**
      * Cached left and right output.
@@ -20,6 +20,10 @@ public abstract class OITank implements OIUnidirectional {
      * Cached forwards and rotational output.
      */
     private double[] fwdRotOutputCached;
+
+    public OITank() {
+        this.register();
+    }
 
     /**
      * Get the throttle for the left side of the drive.
@@ -90,7 +94,7 @@ public abstract class OITank implements OIUnidirectional {
      * Updates all cached values with current ones.
      */
     @Override
-    public void update() {
+    public void periodic() {
         leftRightOutputCached = getLeftRightOutput();
         fwdRotOutputCached = getFwdRotOutput();
     }

@@ -32,12 +32,6 @@ public class RobotMap {
 //    @NotNull
 //    private final Logger logger;
 
-    /**
-     * A runnable that updates cached variables.
-     */
-    @NotNull
-    private final java.lang.Runnable updater;
-
     @NotNull
     private final CommandContainer commands;
 
@@ -54,20 +48,17 @@ public class RobotMap {
      *
      * @param subsystems      The robot's subsystems.
      * @param pdp             The PDP
-     * @param updater         A runnable that updates cached variables.
      * @param commands        A container to hold all of the robot's commands.
      * @param useCameraServer Whether the camera server should be run. Defaults to false.
      */
     @JsonCreator
     public RobotMap(@NotNull @JsonProperty(required = true) @JsonInclude(content = JsonInclude.Include.NON_NULL) final List<Subsystem> subsystems,
                     @NotNull @JsonProperty(required = true) final PDP pdp,
-                    @NotNull @JsonProperty(required = true) final Runnable updater,
                     @NotNull @JsonProperty(required = true) final CommandContainer commands,
 //                    @Nullable @JsonAlias("integerConstants") final double[] intConstants,
 //                    @Nullable final double[] doubleConstants,
 //                    @Nullable final double[] booleanConstants,
                     final boolean useCameraServer) {
-        this.updater = updater;
         this.pdp = pdp;
         this.useCameraServer = useCameraServer;
         this.subsystems = subsystems;
@@ -121,14 +112,6 @@ public class RobotMap {
             return null;
         }
         return this.commands.getRobotStartupCommand().iterator();
-    }
-
-    /**
-     * @return A runnable that updates cached variables.
-     */
-    @NotNull
-    public java.lang.Runnable getUpdater() {
-        return this.updater;
     }
 
     /**

@@ -24,7 +24,7 @@ public class IntakeSensored extends IntakeSimple implements SubsystemIntake, Sub
     private final DigitalInput sensor;
 
     /**
-     * The state of the condition when {@link IntakeSensored#update()} was called.
+     * The state of the condition when {@link IntakeSensored#periodic()} was called.
      */
     private boolean cachedCondition;
 
@@ -37,10 +37,10 @@ public class IntakeSensored extends IntakeSimple implements SubsystemIntake, Sub
      * @param slowSpeed The speed to run the motor at going slow.
      */
     @JsonCreator
-    public IntakeSensored(@NotNull @JsonProperty(required = true) MappedDigitalInput sensor,
-                          @NotNull @JsonProperty(required = true) SimpleMotor motor,
-                          @JsonProperty(required = true) double fastSpeed,
-                          @JsonProperty(required = true) double slowSpeed) {
+    public IntakeSensored(@NotNull @JsonProperty(required = true) final MappedDigitalInput sensor,
+                          @NotNull @JsonProperty(required = true) final SimpleMotor motor,
+                          @JsonProperty(required = true) final double fastSpeed,
+                          @JsonProperty(required = true) final double slowSpeed) {
         super(motor, slowSpeed, fastSpeed, -slowSpeed, -fastSpeed);
         this.sensor = sensor;
     }
@@ -65,7 +65,7 @@ public class IntakeSensored extends IntakeSimple implements SubsystemIntake, Sub
      * Updates all cached values with current ones.
      */
     @Override
-    public void update() {
+    public void periodic() {
         cachedCondition = isConditionTrue();
     }
 }

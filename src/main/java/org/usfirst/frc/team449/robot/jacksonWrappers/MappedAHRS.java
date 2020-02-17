@@ -7,10 +7,10 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
-import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 
 import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
 
@@ -18,7 +18,7 @@ import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
  * A Jackson-compatible, invertible wrapper for the NavX.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MappedAHRS implements Updatable, Loggable {
+public class MappedAHRS implements Subsystem, Loggable {
 
     /**
      * The AHRS this class is a wrapper on.
@@ -52,8 +52,10 @@ public class MappedAHRS implements Updatable, Loggable {
      * @param invertYaw Whether or not to invert the yaw axis. Defaults to true.
      */
     @JsonCreator
-    public MappedAHRS(@JsonProperty(required = true) SerialPort.Port port,
-                      Boolean invertYaw) {
+    public MappedAHRS(@JsonProperty(required = true) final SerialPort.Port port,
+                      final Boolean invertYaw) {
+        this.register();
+
         if (port.equals(SerialPort.Port.kMXP)) {
             this.ahrs = new AHRS(SPI.Port.kMXP);
         } else {
@@ -75,7 +77,7 @@ public class MappedAHRS implements Updatable, Loggable {
      * @return That acceleration in feet/(sec^2)
      */
     @Contract(pure = true)
-    protected static double gsToFeetPerSecondSquared(double accelGs) {
+    protected static double gsToFeetPerSecondSquared(final double accelGs) {
         return accelGs * 32.17; //Wolfram alpha said so
     }
 
@@ -100,7 +102,7 @@ public class MappedAHRS implements Updatable, Loggable {
      *
      * @param headingDegrees An angle in degrees, from [-180, 180], to set the heading to.
      */
-    public void setHeading(double headingDegrees) {
+    public void setHeading(final double headingDegrees) {
         this.offsetAngle = getHeading() - headingDegrees;
         cachedHeading = headingDegrees;
     }
@@ -261,7 +263,7 @@ public class MappedAHRS implements Updatable, Loggable {
      * Updates all cached values with current ones.
      */
     @Override
-    public void update() {
+    public void periodic() {
         cachedHeading = getHeading();
         cachedAngularDisplacement = getAngularDisplacement();
         cachedAngularVel = getAngularVelocity();

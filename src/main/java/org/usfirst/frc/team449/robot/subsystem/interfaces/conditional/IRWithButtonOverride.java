@@ -38,8 +38,10 @@ public class IRWithButtonOverride implements SubsystemConditional {
 	 * @param button         Manual override button this subsystem uses.
 	 */
 	@JsonCreator
-	public IRWithButtonOverride(@JsonProperty(required = true) @NotNull MappedDigitalInput infraredSensor,
-	                            @JsonProperty(required = true) @NotNull SimpleButton button) {
+	public IRWithButtonOverride(@JsonProperty(required = true) @NotNull final MappedDigitalInput infraredSensor,
+								@JsonProperty(required = true) @NotNull final SimpleButton button) {
+		this.register();
+
 		this.infraredSensor = infraredSensor;
 		this.button = button;
 	}
@@ -64,7 +66,7 @@ public class IRWithButtonOverride implements SubsystemConditional {
 	 * Updates all cached values with current ones.
 	 */
 	@Override
-	public void update() {
+	public void periodic() {
 		isConditionTrueCached = isConditionTrue();
 	}
 }

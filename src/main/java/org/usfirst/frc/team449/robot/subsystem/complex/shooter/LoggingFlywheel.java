@@ -79,13 +79,13 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      *                            Defaults to {@literal null}, meaning that there is no speed requirement.
      */
     @JsonCreator
-    public LoggingFlywheel(@NotNull @JsonProperty(required = true) SmartMotor shooterMotor,
-                           @NotNull @JsonProperty(required = true) SmartMotor otherShooterMotor,
-                           @JsonProperty(required = true) double shooterThrottle,
-                           @NotNull @JsonProperty(required = true) SimpleMotor kickerMotor,
-                           @JsonProperty(required = true) double kickerThrottle,
-                           @JsonProperty(required = true) double spinUpTimeoutSecs,
-                           @Nullable Double minShootingSpeedFPS) {
+    public LoggingFlywheel(@NotNull @JsonProperty(required = true) final SmartMotor shooterMotor,
+                           @NotNull @JsonProperty(required = true) final SmartMotor otherShooterMotor,
+                           @JsonProperty(required = true) final double shooterThrottle,
+                           @NotNull @JsonProperty(required = true) final SimpleMotor kickerMotor,
+                           @JsonProperty(required = true) final double kickerThrottle,
+                           @JsonProperty(required = true) final double spinUpTimeoutSecs,
+                           @Nullable final Double minShootingSpeedFPS) {
         this.shooterMotor = shooterMotor;
         this.otherShooterMotor = otherShooterMotor;
         this.shooterThrottle = shooterThrottle;
@@ -205,7 +205,7 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      * Updates all cached values with current ones.
      */
     @Override
-    public void update() {
+    public void periodic() {
         this.conditionMetCached = this.isConditionTrue();
     }
 }

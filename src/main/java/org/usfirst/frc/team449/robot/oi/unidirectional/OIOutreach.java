@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +13,7 @@ import java.util.Arrays;
 
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class OIOutreach implements OIUnidirectional {
+public class OIOutreach implements OIUnidirectional, Subsystem {
 
     /**
      * The OI with higher priority that overrides if it has any input.
@@ -51,6 +52,8 @@ public class OIOutreach implements OIUnidirectional {
     public OIOutreach(@NotNull @JsonProperty(required = true) final OIUnidirectional overridingOI,
                       @NotNull @JsonProperty(required = true) final OIUnidirectional overridenOI,
                       @NotNull @JsonProperty(required = true) final Button button) {
+        this.register();
+
         this.overridingOI = overridingOI;
         this.overridenOI = overridenOI;
         this.button = button;
@@ -125,9 +128,9 @@ public class OIOutreach implements OIUnidirectional {
      * Updates all cached values with current ones.
      */
     @Override
-    public void update() {
-        this.overridenOI.update();
-        this.overridingOI.update();
+    public void periodic() {
+        this.overridenOI.periodic();
+        this.overridingOI.periodic();
         this.cachedLeftRightOutput = this.getLeftRightOutput();
         this.cachedFwdRotOutput = this.getFwdRotOutput();
     }

@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.components.limelight.Limelight;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.yaml.snakeyaml.Yaml;
@@ -115,9 +114,6 @@ public class Robot extends TimedRobot {
             CameraServer.getInstance().startAutomaticCapture();
         }
 
-        //Read sensors
-        this.robotMap.getUpdater().run();
-
         Logger.configureLoggingAndConfig(this.robotMap, false);
         Shuffleboard.setRecordingFileNameFormat("log-${time}");
         Shuffleboard.startRecording();
@@ -132,8 +128,6 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         //save current time
         Clock.updateTime();
-        //Read sensors
-        this.robotMap.getUpdater().run();
         //update shuffleboard
         Logger.updateEntries();
         //Run all commands. This is a WPILib thing you don't really have to worry about.

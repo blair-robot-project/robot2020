@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
@@ -13,7 +14,7 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
  * A class representing a single axis on a joystick.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class ThrottleBasic implements Throttle {
+public class ThrottleBasic implements Throttle, Subsystem {
 
     /**
      * The stick we're using
@@ -44,9 +45,11 @@ public class ThrottleBasic implements Throttle {
      * @param inverted Whether or not to invert the joystick input. Defaults to false.
      */
     @JsonCreator
-    public ThrottleBasic(@NotNull @JsonProperty(required = true) MappedJoystick stick,
-                         @JsonProperty(required = true) int axis,
-                         boolean inverted) {
+    public ThrottleBasic(@NotNull @JsonProperty(required = true) final MappedJoystick stick,
+                         @JsonProperty(required = true) final int axis,
+                         final boolean inverted) {
+        this.register();
+
         this.stick = stick;
         this.axis = axis;
         this.inverted = inverted;
@@ -57,6 +60,7 @@ public class ThrottleBasic implements Throttle {
      *
      * @return The raw joystick output, on [-1, 1].
      */
+    @Override
     @Log
     public double getValue() {
         return (inverted ? -1 : 1) * stick.getRawAxis(axis);
@@ -77,7 +81,7 @@ public class ThrottleBasic implements Throttle {
      * Updates all cached values with current ones.
      */
     @Override
-    public void update() {
+    public void periodic() {
         cachedOutput = getValue();
     }
 

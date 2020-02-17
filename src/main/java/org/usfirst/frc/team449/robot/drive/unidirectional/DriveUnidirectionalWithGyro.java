@@ -77,10 +77,10 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * @param trackWidthMeters The width between the left and right wheels in meters
      */
     @JsonCreator
-    public DriveUnidirectionalWithGyro(@NotNull @JsonProperty(required = true) SmartMotor leftMaster,
-                                       @NotNull @JsonProperty(required = true) SmartMotor rightMaster,
-                                       @NotNull @JsonProperty(required = true) MappedAHRS ahrs,
-                                       @JsonProperty(required = true) double trackWidthMeters) {
+    public DriveUnidirectionalWithGyro(@NotNull @JsonProperty(required = true) final SmartMotor leftMaster,
+                                       @NotNull @JsonProperty(required = true) final SmartMotor rightMaster,
+                                       @NotNull @JsonProperty(required = true) final MappedAHRS ahrs,
+                                       @JsonProperty(required = true) final double trackWidthMeters) {
         super();
         //Initialize stuff
         this.rightMaster = rightMaster;
@@ -446,7 +446,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase implements Subsys
      * Updates all cached values with current ones.
      */
     @Override
-    public void update() {
+    public void periodic() {
         this.updateOdometry();
         this.cachedLeftVel = this.getLeftVel();
         this.cachedLeftPos = this.getLeftPos();

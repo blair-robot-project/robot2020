@@ -35,7 +35,7 @@ public class ThrottleSum implements Throttle {
      * @param throttles The throttles to sum.
      */
     @JsonCreator
-    public ThrottleSum(@NotNull @JsonProperty(required = true) Throttle[] throttles) {
+    public ThrottleSum(@NotNull @JsonProperty(required = true) final Throttle[] throttles) {
         this.throttles = throttles;
     }
 
@@ -44,11 +44,12 @@ public class ThrottleSum implements Throttle {
      *
      * @return The summed outputs, clipped to [-1, 1].
      */
+    @Override
     @Log
     public double getValue() {
         //sum throttles
         sum = 0;
-        for (Throttle throttle : throttles) {
+        for (final Throttle throttle : throttles) {
             sum += throttle.getValue();
         }
 
@@ -77,7 +78,7 @@ public class ThrottleSum implements Throttle {
      * Updates all cached values with current ones.
      */
     @Override
-    public void update() {
+    public void periodic() {
         cachedValue = getValue();
     }
 

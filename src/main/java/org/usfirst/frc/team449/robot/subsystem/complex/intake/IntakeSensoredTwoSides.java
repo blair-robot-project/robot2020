@@ -19,7 +19,7 @@ public class IntakeSensoredTwoSides extends IntakeTwoSidesSimple implements Subs
     private final DigitalInput sensor;
 
     /**
-     * The state of the condition when {@link IntakeSensored#update()} was called.
+     * The state of the condition when {@link IntakeSensored#periodic()} was called.
      */
     private boolean cachedCondition;
 
@@ -33,11 +33,11 @@ public class IntakeSensoredTwoSides extends IntakeTwoSidesSimple implements Subs
      * @param slowSpeed  The speed to run the motor at going slow.
      */
     @JsonCreator
-    public IntakeSensoredTwoSides(@NotNull @JsonProperty(required = true) MappedDigitalInput sensor,
-                                  @NotNull @JsonProperty(required = true) SimpleMotor leftMotor,
-                                  @NotNull @JsonProperty(required = true) SimpleMotor rightMotor,
-                                  @JsonProperty(required = true) double fastSpeed,
-                                  @JsonProperty(required = true) double slowSpeed) {
+    public IntakeSensoredTwoSides(@NotNull @JsonProperty(required = true) final MappedDigitalInput sensor,
+                                  @NotNull @JsonProperty(required = true) final SimpleMotor leftMotor,
+                                  @NotNull @JsonProperty(required = true) final SimpleMotor rightMotor,
+                                  @JsonProperty(required = true) final double fastSpeed,
+                                  @JsonProperty(required = true) final double slowSpeed) {
         super(leftMotor, rightMotor, slowSpeed, fastSpeed, -slowSpeed, -fastSpeed);
         this.sensor = sensor;
     }
@@ -62,7 +62,7 @@ public class IntakeSensoredTwoSides extends IntakeTwoSidesSimple implements Subs
      * Updates all cached values with current ones.
      */
     @Override
-    public void update() {
+    public void periodic() {
         cachedCondition = isConditionTrue();
     }
 }
