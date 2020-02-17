@@ -9,7 +9,7 @@ NAVIGATION:
   # This works magically because the anchor refers to the key of the mapping only, which is the string "subsystems".
   - &SUBSYSTEMS subsystems:
       # Other anchors, like these, become null list items and are explicitly ignored using @JsonInclude
-      - &ROBOT_DRIVE_SUBSYSTEM
+      - &DRIVE_SUBSYSTEM
       - &INTAKE_SUBSYSTEM
       - &FEEDER_SUBSYSTEM
       - &SHOOTER_SUBSYSTEM
@@ -38,14 +38,21 @@ CONSTANTS:
       - &rightMasterSlave1Port 4
       - &rightMasterSlave2Port 6
       # Digestive system
-      - &intakeMotorPort 7
-      - &feederMotorPort 8
+      - &intakeBrushMotorPort 7
+      - &intakeBigWheelMotorPort 13
+      - &feederMotor1Port 8
       - &shooterLeftMotorPort 9
       - &shooterRightMotorPort 10
       - &kickerMotorPort 11
       # Weapons
       - &climberMotorPort 12
+  - SolenoidPorts:
+      - &intakeSolenoidForward 4
+      - &intakeSolenoidReverse 5
+      - &climberSolenoidForward 2
+      - &climberSolenoidReverse 3
   - JoystickPorts:
+      - &driveJoystickPort 1
       - &mechanismsJoystickPort 0
   - ButtonNumbers:
       - &intakeStartButtonNumber 1
@@ -73,12 +80,12 @@ useCameraServer: false
 ########################################################################################################################
 *SUBSYSTEMS:
   #***********************************************************************************************************************
-  - *ROBOT_DRIVE_SUBSYSTEM
+  - *DRIVE_SUBSYSTEM
   - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
       '@id': drive
       #Wheelbase: 2.14
       leftMaster:
-        org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
+        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
           &Left_Master
           '@id': leftMaster
           type: SPARK
@@ -127,7 +134,7 @@ useCameraServer: false
             - port: *leftMasterSlave2Port
               invertType: FollowMaster
       rightMaster:
-        org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
+        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
           <<: *Left_Master
           '@id': rightMaster
           name: right
@@ -163,9 +170,9 @@ useCameraServer: false
         org.usfirst.frc.team449.robot.components.ShiftComponent:
           '@id': driveShiftComponent
           otherShiftables:
-            - org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
+            - org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
                 leftMaster
-            - org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
+            - org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
                 rightMaster
           piston:
             '@id': driveShifter
@@ -176,16 +183,29 @@ useCameraServer: false
 
   #***********************************************************************************************************************
   - *INTAKE_SUBSYSTEM
-  - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+  - org.usfirst.frc.team449.robot.subsystem.complex.intake.IntakeActuatedTwoSides:
       '@id': intake
-      motor:
-        org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
-          '@id': intakeMotor
-          name: intakeMotor
+      leftMotor:
+        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+          '@id': intakeBrushMotor
+          name: intakeBrushMotor
           type: SPARK
-          port: *intakeMotorPort
+          port: *intakeBrushMotorPort
           enableBrakeMode: true
           PDP: PDP
+      rightMotor:
+        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+          '@id': intakeBigWheelMotor
+          name: intakeBigWheelMotor
+          type: SPARK
+          port: *intakeBigWheelMotorPort
+          enableBrakeMode: true
+          PDP: PDP
+      piston:
+        '@id': intakeSolenoid
+        module: 0
+        forward: *intakeSolenoidForward
+        reverse: *intakeSolenoidReverse
       inSlowVel: 0.01
       inFastVel: 0.02
       outSlowVel: -0.01
@@ -196,16 +216,16 @@ useCameraServer: false
   - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
       '@id': feeder
       motor:
-        org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor: #TODO TODO
+        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
           '@id': feederMotor
           type: SPARK
-          port: *feederMotorPort
+          port: *feederMotor1Port
           name: feederMotor
           reverseOutput: false
           enableBrakeMode: false
           PDP: PDP
           currentLimit: 10 #TODO
-          reverseSensor: false #TODO
+          reverseSensor: false
           perGearSettings:
             - gearNum: 0
               #              maxSpeed: 1000
@@ -226,7 +246,7 @@ useCameraServer: false
       spinUpTimeoutSecs: 10
       minShootingSpeedFPS: 150
       shooterMotor:
-        org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
+        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
           &Shooter_Right_Motor
           '@id': shooterRightMotor
           type: SPARK
@@ -256,7 +276,7 @@ useCameraServer: false
       #            kI: 0.
       #            kD: 0
       otherShooterMotor:
-        org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
+        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
           <<: *Shooter_Right_Motor
           '@id': shooterLeftMotor
           port: *shooterLeftMotorPort
@@ -264,7 +284,7 @@ useCameraServer: false
           reverseSensor: false
           reverseOutput: false
       kickerMotor:
-        org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
+        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
           '@id': kickerMotor
           type: TALON
           reverseSensor: false
@@ -274,7 +294,7 @@ useCameraServer: false
           enableBrakeMode: true
           PDP: PDP
           enableVoltageComp: false #TODO
-  #        org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.MappedVictorSPX: #TODO TODO
+  #        org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.MappedVictorSPX:
   #          '@id': kickerVictor
   #          port: 7
   #          inverted: false
@@ -288,7 +308,7 @@ useCameraServer: false
         org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberCurrentLimited:
           '@id': climberCurrentLimitSystem
           smartMotor:
-            org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor:
+            org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
               '@id': climberMotor
               name: climberMotor
               type: SPARK
@@ -304,8 +324,8 @@ useCameraServer: false
           piston:
             '@id': climberSolenoid
             module: 0
-            forward: 3
-            reverse: 2
+            forward: *climberSolenoidForward
+            reverse: *climberSolenoidReverse
 
 
 *COMMANDS:
@@ -343,8 +363,9 @@ useCameraServer: false
           '@id': shiftUp
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              driveJoystick
-          buttonNumber: 5 #shoulder left
+              '@id': driveJoystick
+              port: *driveJoystickPort
+          buttonNumber: 2 #TODO
       command:
         edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
           '@id': overrideAndShiftUp
@@ -379,7 +400,6 @@ useCameraServer: false
               intake
           mode: IN_FAST
       action: WHEN_PRESSED
-
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': intakeStopButton
@@ -564,36 +584,6 @@ useCameraServer: false
     - *CLIMBER_COMMANDS
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': climberOffButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: *climberOffButtonNumber
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberWithArmState:
-          '@id': climberOffCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber:
-              climber
-          state: "OFF"
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': climberLowerButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: *climberLowerButtonNumber
-      command:
-        org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberWithArmState:
-          '@id': climberLowerCommand
-          subsystem:
-            org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber:
-              climber
-          state: "LOWER"
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': climberRaiseButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
@@ -620,6 +610,36 @@ useCameraServer: false
           subsystem:
             org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber:
               climber
+      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': climberLowerButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *climberLowerButtonNumber
+      command:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberWithArmState:
+          '@id': climberLowerCommand
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber:
+              climber
+          state: "LOWER"
+      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': climberOffButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *climberOffButtonNumber
+      command:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.climber.commands.SetClimberWithArmState:
+          '@id': climberOffCommand
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber:
+              climber
+          state: "OFF"
       action: WHEN_PRESSED
 
   ########################################################################################################################
@@ -656,13 +676,12 @@ useCameraServer: false
               '@id': oi
               gamepad:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                  '@id': driverGamepad
-                  port: 1
+                  driveJoystick
               rotThrottle:
                 org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
                   &rotThrottle
                   '@id': rotThrottle
-                  stick: driverGamepad
+                  stick: driveJoystick
                   axis: 0
                   smoothingTimeSecs: 0.04
                   deadband: 0.08
@@ -769,9 +788,10 @@ useCameraServer: false
   org.usfirst.frc.team449.robot.other.Updater:
     '@id': updater
     updatables:
-      #      - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
-      #      - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
-      #      - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS: navX
-      - org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberCurrentLimited: climberCurrentLimitSystem
-      - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel: shooterFlywheel
       - org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
+      - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
+      - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
+      - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS: navX
+      - org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberCurrentLimited: climberCurrentLimitSystem
+      - org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber: climber
+      - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel: shooterFlywheel

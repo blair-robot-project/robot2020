@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class FPSSparkMax extends FPSSmartMotorBase {
+public class MappedSparkMax extends FPSSmartMotorBase {
     /**
      * REV brushless controller object
      */
@@ -153,26 +153,26 @@ public class FPSSparkMax extends FPSSmartMotorBase {
      * @param controlFrameRateMillis     The update rate, in milliseconds, for each control frame.
      */
     @JsonCreator
-    public FPSSparkMax(@JsonProperty(required = true) final int port,
-                       @Nullable final String name,
-                       final boolean reverseOutput,
-                       @JsonProperty(required = true) final boolean enableBrakeMode,
-                       @Nullable final PDP PDP,
-                       @Nullable final Boolean fwdLimitSwitchNormallyOpen,
-                       @Nullable final Boolean revLimitSwitchNormallyOpen,
-                       @Nullable final Integer remoteLimitSwitchID,
-                       @Nullable final Double fwdSoftLimit,
-                       @Nullable final Double revSoftLimit,
-                       @Nullable final Double postEncoderGearing,
-                       @Nullable final Double feetPerRotation,
-                       @Nullable final Integer currentLimit,
-                       final boolean enableVoltageComp,
-                       @Nullable final List<PerGearSettings> perGearSettings,
-                       @Nullable final Shiftable.gear startingGear,
-                       @Nullable final Integer startingGearNum,
-                       @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
-                       @Nullable final Integer controlFrameRateMillis,
-                       @Nullable final List<SlaveSparkMax> slaveSparks) {
+    public MappedSparkMax(@JsonProperty(required = true) final int port,
+                          @Nullable final String name,
+                          final boolean reverseOutput,
+                          @JsonProperty(required = true) final boolean enableBrakeMode,
+                          @Nullable final PDP PDP,
+                          @Nullable final Boolean fwdLimitSwitchNormallyOpen,
+                          @Nullable final Boolean revLimitSwitchNormallyOpen,
+                          @Nullable final Integer remoteLimitSwitchID,
+                          @Nullable final Double fwdSoftLimit,
+                          @Nullable final Double revSoftLimit,
+                          @Nullable final Double postEncoderGearing,
+                          @Nullable final Double feetPerRotation,
+                          @Nullable final Integer currentLimit,
+                          final boolean enableVoltageComp,
+                          @Nullable final List<PerGearSettings> perGearSettings,
+                          @Nullable final Shiftable.gear startingGear,
+                          @Nullable final Integer startingGearNum,
+                          @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
+                          @Nullable final Integer controlFrameRateMillis,
+                          @Nullable final List<SlaveSparkMax> slaveSparks) {
         this.spark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
         this.spark.restoreFactoryDefaults();
         this.canEncoder = this.spark.getEncoder();
@@ -353,8 +353,8 @@ public class FPSSparkMax extends FPSSmartMotorBase {
      * @return That distance in feet, or null if no encoder CPR was given.
      */
     @Override
-    public double encoderToFeet(final double revs) {
-        return revs * this.feetPerRotation * this.postEncoderGearing;
+    public double encoderToUnit(final double revs) {
+        return revs * feetPerRotation * postEncoderGearing;
     }
 
     /**
@@ -365,8 +365,8 @@ public class FPSSparkMax extends FPSSmartMotorBase {
      * @return That distance in native units as measured by the encoder, or null if no encoder CPR was given.
      */
     @Override
-    public double feetToEncoder(final double feet) {
-        return feet / this.feetPerRotation / this.postEncoderGearing;
+    public double unitToEncoder(final double feet) {
+        return feet / feetPerRotation / postEncoderGearing;
     }
 
     /**
@@ -378,9 +378,9 @@ public class FPSSparkMax extends FPSSmartMotorBase {
      * was given.
      */
     @Override
-    public double encoderToFPS(final double encoderReading) {
-        this.RPS = this.nativeToRPS(encoderReading);
-        return this.RPS * this.postEncoderGearing * this.feetPerRotation;
+    public double encoderToUPS(final double encoderReading) {
+        RPS = nativeToRPS(encoderReading);
+        return RPS * postEncoderGearing * feetPerRotation;
     }
 
     /**
@@ -391,8 +391,8 @@ public class FPSSparkMax extends FPSSmartMotorBase {
      * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was given.
      */
     @Override
-    public double FPSToEncoder(final double FPS) {
-        return this.RPSToNative((FPS / this.postEncoderGearing) / this.feetPerRotation);
+    public double UPSToEncoder(final double FPS) {
+        return RPSToNative((FPS / postEncoderGearing) / feetPerRotation);
     }
 
     /**
@@ -437,7 +437,7 @@ public class FPSSparkMax extends FPSSmartMotorBase {
     @Override
     public void setPositionSetpoint(final double feet) {
         this.setpoint = feet;
-        this.nativeSetpoint = this.feetToEncoder(feet);
+        this.nativeSetpoint = this.unitToEncoder(feet);
         this.pidController.setFF(this.currentGearSettings.feedForwardCalculator.ks / 12.);
         this.pidController.setReference(this.nativeSetpoint,
                 ControlType.kPosition,
@@ -463,7 +463,7 @@ public class FPSSparkMax extends FPSSmartMotorBase {
     @Override
     @Log
     public Double getVelocity() {
-        return this.encoderToFPS(this.canEncoder.getVelocity());
+        return this.encoderToUPS(canEncoder.getVelocity());
     }
 
     /**
@@ -473,8 +473,8 @@ public class FPSSparkMax extends FPSSmartMotorBase {
      */
     @Override
     public void setVelocity(final double velocity) {
-        if (this.currentGearSettings.maxSpeed != null) {
-            this.setVelocityFPS(velocity * this.currentGearSettings.maxSpeed);
+        if (currentGearSettings.maxSpeed != null) {
+            setVelocityUPS(velocity * currentGearSettings.maxSpeed);
         } else {
             this.setPercentVoltage(velocity);
         }
@@ -486,12 +486,12 @@ public class FPSSparkMax extends FPSSmartMotorBase {
      * @param velocity velocity setpoint in FPS.
      */
     @Override
-    public void setVelocityFPS(final double velocity) {
+    public void setVelocityUPS(final double velocity) {
         this.currentControlMode = ControlType.kVelocity;
-        this.nativeSetpoint = this.FPSToEncoder(velocity);
+        this.nativeSetpoint = UPSToEncoder(velocity);
         this.setpoint = velocity;
         this.pidController.setFF(0);
-        this.pidController.setReference(this.nativeSetpoint,
+        this.pidController.setReference(nativeSetpoint,
                 ControlType.kVelocity,
                 0,
                 this.currentGearSettings.feedForwardCalculator.calculate(velocity),
@@ -534,8 +534,8 @@ public class FPSSparkMax extends FPSSmartMotorBase {
 
     @Override
     public void setGearScaledVelocity(final double velocity, final int gear) {
-        if (this.currentGearSettings.maxSpeed != null) {
-            this.setVelocityFPS(this.currentGearSettings.maxSpeed * velocity);
+        if (currentGearSettings.maxSpeed != null) {
+            setVelocityUPS(currentGearSettings.maxSpeed * velocity);
         } else {
             this.setPercentVoltage(velocity);
         }
@@ -552,8 +552,8 @@ public class FPSSparkMax extends FPSSmartMotorBase {
     }
 
     @Override
-    public Double getPositionFeet() {
-        return this.encoderToFeet(this.canEncoder.getPosition());
+    public Double getPositionUnits() {
+        return encoderToUnit(canEncoder.getPosition());
     }
 
     @Override

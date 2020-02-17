@@ -73,6 +73,14 @@ public interface Shiftable {
         public final Double maxSpeed;
 
         /**
+         * The coefficient the output changes by after being measured by the encoder, e.g.
+         * this would be 1/70 if there was a 70:1 gearing between the encoder and the
+         * final output.
+         */
+        @Nullable
+        public final Double postEncoderGearing;
+
+        /**
          * The PID constants for the motor in this gear. Ignored if maxSpeed is null.
          */
         public final double kP, kI, kD;
@@ -133,6 +141,7 @@ public interface Shiftable {
                                @Nullable MappedFeedForwardCalculator feedForwardCalculator,
                                @Nullable Double rampRate,
                                @Nullable Double maxSpeed,
+                               @Nullable Double postEncoderGearing,
                                double kP,
                                double kI,
                                double kD,
@@ -149,6 +158,7 @@ public interface Shiftable {
             this.feedForwardCalculator = feedForwardCalculator != null ? feedForwardCalculator :
                     new SimpleMotorFeedforward(0,0);
             this.rampRate = rampRate;
+            this.postEncoderGearing = postEncoderGearing;
             this.kP = kP;
             this.kI = kI;
             this.kD = kD;
@@ -162,7 +172,7 @@ public interface Shiftable {
          * Empty constructor that uses all default options.
          */
         public PerGearSettings() {
-            this(0, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0 ,0);
+            this(0, null, null, null, null, null, null, null, null, null, 0, 0, 0, 0, 0 ,0);
         }
     }
 

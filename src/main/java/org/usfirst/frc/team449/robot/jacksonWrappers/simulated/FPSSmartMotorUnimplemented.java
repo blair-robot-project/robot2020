@@ -10,7 +10,7 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
-import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
+import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
@@ -23,14 +23,14 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Class that implements {@link FPSSmartMotor} without relying on the existence of actual hardware.
+ * Class that implements {@link SmartMotor} without relying on the existence of actual hardware.
  * This class performs no simulation; all of its methods return zero values.
  * <p>
  * This class is automatically instantiated by the FPSSmartMotor factory method when the robot is running in a
  * simulation and should not be otherwise referenced in code.
  * </p>
  */
-public class FPSSmartMotorUnimplemented implements FPSSmartMotor, Loggable {
+public class FPSSmartMotorUnimplemented implements SmartMotor, Loggable {
     @NotNull
     @Log
     private final String name;
@@ -98,8 +98,8 @@ public class FPSSmartMotorUnimplemented implements FPSSmartMotor, Loggable {
      * @return That distance in feet, or null if no encoder CPR was given.
      */
     @Override
-    public double encoderToFeet(final double nativeUnits) {
-        return 0;
+    public double encoderToUnit(final double nativeUnits) {
+        return nativeUnits;
     }
 
     /**
@@ -110,8 +110,8 @@ public class FPSSmartMotorUnimplemented implements FPSSmartMotor, Loggable {
      * @return That distance in native units as measured by the encoder, or null if no encoder CPR was given.
      */
     @Override
-    public double feetToEncoder(final double feet) {
-        return 0;
+    public double unitToEncoder(final double feet) {
+        return feet;
     }
 
     /**
@@ -123,8 +123,8 @@ public class FPSSmartMotorUnimplemented implements FPSSmartMotor, Loggable {
      * was given.
      */
     @Override
-    public double encoderToFPS(final double encoderReading) {
-        return 0;
+    public double encoderToUPS(final double encoderReading) {
+        return encoderReading;
     }
 
     /**
@@ -135,8 +135,8 @@ public class FPSSmartMotorUnimplemented implements FPSSmartMotor, Loggable {
      * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was given.
      */
     @Override
-    public double FPSToEncoder(final double FPS) {
-        return 0;
+    public double UPSToEncoder(final double FPS) {
+        return FPS;
     }
 
     /**
@@ -160,7 +160,7 @@ public class FPSSmartMotorUnimplemented implements FPSSmartMotor, Loggable {
      */
     @Override
     public double RPSToNative(final double RPS) {
-        return 0;
+        return RPS;
     }
 
     /**
@@ -208,6 +208,16 @@ public class FPSSmartMotorUnimplemented implements FPSSmartMotor, Loggable {
     }
 
     /**
+     * Give a velocity closed loop setpoint in FPS.
+     *
+     * @param velocity velocity setpoint in FPS.
+     */
+    @Override
+    public void setVelocityUPS(final double velocity) {
+
+    }
+
+    /**
      * Enables the motor, if applicable.
      */
     @Override
@@ -219,15 +229,6 @@ public class FPSSmartMotorUnimplemented implements FPSSmartMotor, Loggable {
      */
     @Override
     public void disable() {
-    }
-
-    /**
-     * Give a velocity closed loop setpoint in FPS.
-     *
-     * @param velocity velocity setpoint in FPS.
-     */
-    @Override
-    public void setVelocityFPS(final double velocity) {
     }
 
     /**
@@ -327,8 +328,8 @@ public class FPSSmartMotorUnimplemented implements FPSSmartMotor, Loggable {
      * @return the position of the talon in feet, or null of inches per rotation wasn't given.
      */
     @Override
-    public Double getPositionFeet() {
-        return this.encoderToFeet(this.encoderPosition());
+    public Double getPositionUnits() {
+        return null;
     }
 
     /**

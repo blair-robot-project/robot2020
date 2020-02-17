@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon;
 
 /**
  * A binary motor subsystem that uses PID to go to a given position when turned on.
@@ -20,7 +20,7 @@ public class BinaryMotorGoToPos extends SubsystemBase implements SubsystemBinary
      * The talon to move to the given position.
      */
     @NotNull
-    private final FPSTalon talon;
+    private final MappedTalon talon;
 
     /**
      * The position, in feet, for the talon to go to.
@@ -39,7 +39,7 @@ public class BinaryMotorGoToPos extends SubsystemBase implements SubsystemBinary
      * @param positionFeet The position, in feet, for the talon to go to. Defaults to 0.
      */
     @JsonCreator
-    public BinaryMotorGoToPos(@JsonProperty(required = true) @NotNull FPSTalon talon,
+    public BinaryMotorGoToPos(@JsonProperty(required = true) @NotNull MappedTalon talon,
                               double positionFeet) {
         this.talon = talon;
         this.positionFeet = positionFeet;

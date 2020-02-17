@@ -24,8 +24,8 @@ import org.usfirst.frc.team449.robot.SimulationConfig;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
-import org.usfirst.frc.team449.robot.jacksonWrappers.FPSSparkMax;
-import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMax;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
@@ -45,21 +45,16 @@ import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
  * Also features built in FPS conversions.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
-//    /**
-//     * Whether to construct instances of {@link FPSSmartMotorSimulated} instead of the specified controllers when the
-//     * robot is running in a simulation.
-//     */
-//    boolean SIMULATE = true;
-//    /**
-//     * Whether to simulate sparks if they cause a HAL error when constructed.
-//     */
-//    boolean SIMULATE_SPARKS_IF_ERR = true;
-//    /**
-//     * Whether the simulation controllers constructed do any actual simulation calculations.
-//     * Turn off if their impact on loop time is a concern.
-//     */
-//    boolean ACTUAL_SIMULATION = true;
+public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
+    /**
+     * Whether to construct instances of {@link FPSSmartMotorSimulated} instead of the specified controllers when the
+     * robot is running in a simulation.
+     */
+    boolean SIMULATE = true;
+    /**
+     * Whether to simulate sparks if they cause a HAL error when constructed.
+     */
+    boolean SIMULATE_SPARKS_IF_ERR = true;
 
     /**
      * Creates a new <b>SPARK</b> or <b>Talon</b> motor controller.
@@ -115,7 +110,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      *                                   Each key can be an instance of {@link String}, {@link CANSparkMaxLowLevel.PeriodicFrame}, or {@link StatusFrameEnhanced}.
      */
     @JsonCreator
-    static FPSSmartMotor create(@JsonProperty(required = true) final Type type,
+    static SmartMotor create(@JsonProperty(required = true) final Type type,
                                 @JsonProperty(required = true) final int port,
                                 @JsonProperty(required = true) final boolean enableBrakeMode,
                                 @Nullable final String name,
@@ -162,7 +157,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
             }
 
             public void direct(final String message) {
-                System.out.print(getLogPrefix(FPSSmartMotor.class));
+                System.out.print(getLogPrefix(SmartMotor.class));
                 System.out.println(message);
             }
         };
@@ -217,7 +212,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
                     }
 
                 } else if (frame instanceof CANSparkMaxLowLevel.PeriodicFrame) {
-                    if (actualType == Type.TALON)
+                    if (type == Type.TALON)
                         throw new IllegalArgumentException("statusFrameRatesMillis contains key of type CANSparkMaxLowLevel.PeriodicFrame that will not work for FPSTalon");
                     sparkStatusFramesMap.put((CANSparkMaxLowLevel.PeriodicFrame) frame, statusFrameRatesMillis.get(frame));
 
@@ -232,7 +227,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
             }
         }
 
-        final FPSSmartMotor result;
+        final SmartMotor result;
 
         switch (actualType) {
             case SPARK:
@@ -253,7 +248,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
                 if (controlFrameRatesMillis != null)
                     unsupportedHelper.log("controlFrameRatesMillis (RATESSSS--plural)");
 
-                result = new FPSSparkMax(
+                result = new MappedSparkMax(
                         port,
                         name,
                         reverseOutput,
@@ -280,7 +275,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
                 if (controlFrameRateMillis != null)
                     unsupportedHelper.log("controlFrameRatesMillis (RATE--singular)");
 
-                result = new FPSTalon(
+                result = new MappedTalon(
                         port,
                         name,
                         reverseOutput,
@@ -303,7 +298,6 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
                         perGearSettings,
                         startingGear,
                         startingGearNum,
-                        updaterProcessPeriodSecs,
                         talonStatusFramesMap,
                         controlFrameRatesMillis,
                         slaveTalons,
@@ -313,7 +307,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
 
             case SIMULATED:
                 logHelper.log("SIM:  " + motorLogName);
-                final FPSSmartMotor simulated;
+                final SmartMotor simulated;
 
                 if (SimulationConfig.get().motors().replaceSimulationWithUnimplemented()) {
                     final var actualSimulated = new FPSSmartMotorSimulated(
@@ -410,7 +404,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      * @param nativeUnits A distance native units as measured by the encoder.
      * @return That distance in feet, or null if no encoder CPR was given.
      */
-    double encoderToFeet(double nativeUnits);
+    double encoderToUnit(double nativeUnits);
 
     /**
      * Convert a distance from feet to encoder reading in native units. Note this DOES account for post-encoder
@@ -419,7 +413,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      * @param feet A distance in feet.
      * @return That distance in native units as measured by the encoder, or null if no encoder CPR was given.
      */
-    double feetToEncoder(double feet);
+    double unitToEncoder(double feet);
 
     /**
      * Converts the velocity read by the controllers's getVelocity() method to the FPS of the output shaft. Note this DOES
@@ -429,7 +423,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if no encoder CPR
      * was given.
      */
-    double encoderToFPS(double encoderReading);
+    double encoderToUPS(double encoderReading);
 
     /**
      * Converts from the velocity of the output shaft to what the controllers's getVelocity() method would read at that
@@ -438,7 +432,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      * @param FPS The velocity of the output shaft, in FPS.
      * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was given.
      */
-    double FPSToEncoder(double FPS);
+    double UPSToEncoder(double FPS);
 
     /**
      * Convert from native velocity units to output rotations per second. Note this DOES NOT account for
@@ -493,7 +487,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      *
      * @param velocity velocity setpoint in FPS.
      */
-    void setVelocityFPS(double velocity);
+    void setVelocityUPS(double velocity);
 
     /**
      * Get the current closed-loop velocity error in FPS. WARNING: will give garbage if not in velocity mode.
@@ -536,7 +530,6 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
      *
      * @return Control mode as a string.
      */
-    @Log
     String getControlMode();
 
     /**
@@ -563,7 +556,7 @@ public interface FPSSmartMotor extends SimpleMotor, Shiftable, Loggable {
     /**
      * @return the position of the talon in feet, or null of inches per rotation wasn't given.
      */
-    Double getPositionFeet();
+    Double getPositionUnits();
 
     /**
      * Resets the position of the Talon to 0.

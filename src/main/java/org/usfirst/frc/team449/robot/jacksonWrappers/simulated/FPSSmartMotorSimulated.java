@@ -11,8 +11,8 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
-import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotorBase;
+import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
@@ -30,8 +30,8 @@ import static org.usfirst.frc.team449.robot.other.Util.clamp;
 import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /**
- * Class that implements {@link FPSSmartMotor} without relying on the existence of actual hardware.
- * This class simulates a smart motor controller. Motor physics are simulated by {@link SimulatedMotorSimple}.
+ * Class that implements {@link SmartMotor} without relying on the existence of actual hardware.
+ * This class simulates a smart motor controller. Motor physics are simulated by {@link SimulatedMotor}.
  * <p>
  * This class is automatically instantiated by the FPSSmartMotor factory method when the robot is running in a
  * simulation and should not be otherwise referenced in code.
@@ -299,7 +299,7 @@ public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatab
      * @return That distance in feet, or null if no encoder CPR was given.
      */
     @Override
-    public double encoderToFeet(final double nativeUnits) {
+    public double encoderToUnit(final double nativeUnits) {
         return nativeUnits * this.feetPerRotation;
     }
 
@@ -311,7 +311,7 @@ public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatab
      * @return That distance in native units as measured by the encoder, or null if no encoder CPR was given.
      */
     @Override
-    public double feetToEncoder(final double feet) {
+    public double unitToEncoder(final double feet) {
         return feet / this.feetPerRotation;
     }
 
@@ -324,7 +324,7 @@ public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatab
      * was given.
      */
     @Override
-    public double encoderToFPS(final double encoderReading) {
+    public double encoderToUPS(final double encoderReading) {
         return encoderReading * this.feetPerRotation;
     }
 
@@ -336,7 +336,7 @@ public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatab
      * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was given.
      */
     @Override
-    public double FPSToEncoder(final double FPS) {
+    public double UPSToEncoder(final double FPS) {
         return FPS / this.feetPerRotation;
     }
 
@@ -378,7 +378,7 @@ public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatab
      */
     @Override
     public void setPositionSetpoint(final double feet) {
-        this.setControlModeAndSetpoint(ControlMode.Position, this.feetToEncoder(feet));
+        this.setControlModeAndSetpoint(ControlMode.Position, this.unitToEncoder(feet));
     }
 
     /**
@@ -397,7 +397,7 @@ public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatab
      */
     @Override
     public Double getVelocity() {
-        return this.encoderToFPS(this.encoderVelocity());
+        return this.encoderToUPS(this.encoderVelocity());
     }
 
     /**
@@ -408,7 +408,7 @@ public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatab
     @Override
     public void setVelocity(final double velocity) {
         if (this.currentGearSettings.maxSpeed != null) {
-            this.setVelocityFPS(velocity * this.currentGearSettings.maxSpeed);
+            this.setVelocityUPS(velocity * this.currentGearSettings.maxSpeed);
         } else {
             this.setPercentVoltage(velocity);
         }
@@ -437,8 +437,8 @@ public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatab
      * @param velocity velocity setpoint in FPS.
      */
     @Override
-    public void setVelocityFPS(final double velocity) {
-        this.setControlModeAndSetpoint(ControlMode.Velocity, this.FPSToEncoder(velocity));
+    public void setVelocityUPS(final double velocity) {
+        this.setControlModeAndSetpoint(ControlMode.Velocity, this.UPSToEncoder(velocity));
     }
 
     /**
@@ -448,7 +448,7 @@ public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatab
      */
     @Override
     public double getError() {
-        return this.encoderToFPS(this.setpoint - this.motor.getVelocity());
+        return this.encoderToUPS(this.setpoint - this.motor.getVelocity());
     }
 
     /**
@@ -461,9 +461,9 @@ public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatab
     public Double getSetpoint() {
         switch (this.controlMode) {
             case Velocity:
-                return this.encoderToFPS(this.setpoint);
+                return this.encoderToUPS(this.setpoint);
             case Position:
-                return this.encoderToFeet(this.setpoint);
+                return this.encoderToUnit(this.setpoint);
             default:
                 return null;
         }
@@ -521,7 +521,7 @@ public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatab
     @Override
     public void setGearScaledVelocity(final double velocity, final int gear) {
         if (this.currentGearSettings.maxSpeed != null) {
-            this.setVelocityFPS(this.currentGearSettings.maxSpeed * velocity);
+            this.setVelocityUPS(this.currentGearSettings.maxSpeed * velocity);
         } else {
             this.setPercentVoltage(velocity);
         }
@@ -550,8 +550,8 @@ public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatab
      * @return the position of the talon in feet, or null of inches per rotation wasn't given.
      */
     @Override
-    public Double getPositionFeet() {
-        return this.encoderToFeet(this.encoderPosition());
+    public Double getPositionUnits() {
+        return this.encoderToUnit(this.encoderPosition());
     }
 
     /**

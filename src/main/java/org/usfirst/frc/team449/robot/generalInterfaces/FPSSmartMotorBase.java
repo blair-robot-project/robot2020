@@ -4,9 +4,9 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Abstract base class for {@link FPSSmartMotor} to add {@link Log} to certain methods.
+ * Abstract base class for {@link SmartMotor} to add {@link Log} to certain methods.
  */
-public abstract class FPSSmartMotorBase implements FPSSmartMotor {
+public abstract class FPSSmartMotorBase implements SmartMotor {
     @Log
     @Override
     public abstract String getControlMode();

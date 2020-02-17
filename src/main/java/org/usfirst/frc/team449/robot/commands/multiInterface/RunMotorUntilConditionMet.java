@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.SubsystemBinaryMotor;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
@@ -37,9 +37,9 @@ public class RunMotorUntilConditionMet<T extends Subsystem & SubsystemBinaryMoto
      * @param subsystemConditional The conditional subsystem this command uses.
      */
     @JsonCreator
-    public RunMotorUntilConditionMet(@NotNull @JsonProperty(required = true) T subsystem,
-                                     @NotNull @JsonProperty(required = true) SubsystemConditional subsystemConditional) {
-        addRequirements(subsystem);
+    public RunMotorUntilConditionMet(@NotNull @JsonProperty(required = true) final T subsystem,
+                                     @NotNull @JsonProperty(required = true) final SubsystemConditional subsystemConditional) {
+        this.addRequirements(subsystem);
         this.subsystem = subsystem;
         this.subsystemConditional = subsystemConditional;
     }
@@ -50,15 +50,8 @@ public class RunMotorUntilConditionMet<T extends Subsystem & SubsystemBinaryMoto
     @Override
     public void initialize() {
         Shuffleboard.addEventMarker("RunMotorUntilConditionMet init", this.getClass().getSimpleName(), EventImportance.kNormal);
+        this.subsystem.turnMotorOn();
         //Logger.addEvent("RunMotorUntilConditionMet init", this.getClass());
-    }
-
-    /**
-     * Run the motor
-     */
-    @Override
-    public void execute() {
-        subsystem.turnMotorOn();
     }
 
     /**
@@ -68,19 +61,19 @@ public class RunMotorUntilConditionMet<T extends Subsystem & SubsystemBinaryMoto
      */
     @Override
     public boolean isFinished() {
-        return subsystemConditional.isConditionTrueCached();
+        return this.subsystemConditional.isConditionTrueCached();
     }
 
     /**
      * Stop the motor and log that the command has ended.
      */
     @Override
-    public void end(boolean interrupted) {
+    public void end(final boolean interrupted) {
         //Stop the motor when we meet the condition.
         if(interrupted){
             Shuffleboard.addEventMarker("RunMotorUntilConditionMet interrupted, stopping climb.", this.getClass().getSimpleName(), EventImportance.kNormal);
         }
-        subsystem.turnMotorOff();
+        this.subsystem.turnMotorOff();
         Shuffleboard.addEventMarker("RunMotorUntilConditionMet end", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 

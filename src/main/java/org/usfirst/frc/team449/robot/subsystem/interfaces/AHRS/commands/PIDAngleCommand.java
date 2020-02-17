@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Config;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -73,16 +72,16 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
      * @param subsystem         The subsystem to execute this command on.
      */
     @JsonCreator
-    public PIDAngleCommand(@JsonProperty(required = true) double absoluteTolerance,
-                           @Nullable BufferTimer onTargetBuffer,
-                           double minimumOutput, @Nullable Double maximumOutput,
-                           @Nullable Integer loopTimeMillis,
-                           double deadband,
-                           boolean inverted,
-                           @NotNull @JsonProperty(required = true) SubsystemAHRS subsystem,
-                           double kP,
-                           double kI,
-                           double kD) {
+    public PIDAngleCommand(@JsonProperty(required = true) final double absoluteTolerance,
+                           @Nullable final BufferTimer onTargetBuffer,
+                           final double minimumOutput, @Nullable final Double maximumOutput,
+                           @Nullable final Integer loopTimeMillis,
+                           final double deadband,
+                           final boolean inverted,
+                           @NotNull @JsonProperty(required = true) final SubsystemAHRS subsystem,
+                           final double kP,
+                           final double kI,
+                           final double kD) {
 
         //Set P, I and D. I and D will normally be 0 if you're using cascading control, like you should be.
         this.pidController = new PIDController(kP, kI, kD, loopTimeMillis != null ? loopTimeMillis / 1000. : 20. / 1000.);
@@ -116,7 +115,7 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
      * @return The equivalent of that number, clipped to be between -180 and 180.
      */
     @Contract(pure = true)
-    protected static double clipTo180(double theta) {
+    protected static double clipTo180(final double theta) {
         return (theta + 180) % 360 - 180;
     }
 
@@ -124,8 +123,13 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
      * Set setpoint for PID loop to use
      *
      */
-    protected void setSetpoint(double setpoint){
+    protected void setSetpoint(final double setpoint) {
         pidController.setSetpoint(setpoint);
+    }
+
+    @Log
+    protected double getSetpoint(){
+        return pidController.getSetpoint();
     }
 
     /**
@@ -137,6 +141,7 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
     protected double getRawOutput() {
         return pidController.calculate(subsystem.getHeadingCached());
     }
+
 
     @Log
     public double getError() {
@@ -165,13 +170,28 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
         return controllerOutput;
     }
 
+    protected double getOutputHardcoded(final double setpoint) {
+        double controllerOutput = pidController.calculate(subsystem.getHeadingCached(), setpoint);
+        //Set the output to the minimum if it's too small.
+        if (controllerOutput > 0 && controllerOutput < minimumOutput) {
+            controllerOutput = minimumOutput;
+        } else if (controllerOutput < 0 && controllerOutput > -minimumOutput) {
+            controllerOutput = -minimumOutput;
+        }
+        if (inverted) {
+            controllerOutput *= -1;
+        }
+
+        return controllerOutput;
+    }
+
     /**
      * Deadband the output of the PID loop.
      *
      * @param output The output from the WPILib angular PID loop.
      * @return That output after being deadbanded with the map-given deadband.
      */
-    protected double deadbandOutput(double output) {
+    protected double deadbandOutput(final double output) {
         return Math.abs(pidController.getPositionError()) > deadband ? output : 0;
     }
 

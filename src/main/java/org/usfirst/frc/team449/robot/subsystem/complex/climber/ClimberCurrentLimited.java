@@ -9,9 +9,8 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotor;
+import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
-import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
 import org.usfirst.frc.team449.robot.other.BufferTimer;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.SubsystemBinaryMotor;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
@@ -26,7 +25,7 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
      * The controller for one of the climber motors.
      */
     @NotNull
-    private final FPSSmartMotor smartMotor;
+    private final SmartMotor smartMotor;
 
     /**
      * The other climber motor.
@@ -66,7 +65,7 @@ public class ClimberCurrentLimited extends SubsystemBase implements SubsystemBin
      * @param percentVoltage  The voltage setpoint to run the motors at.
      */
     @JsonCreator
-    public ClimberCurrentLimited(@NotNull @JsonProperty(required = true) FPSSmartMotor smartMotor,
+    public ClimberCurrentLimited(@NotNull @JsonProperty(required = true) SmartMotor smartMotor,
                                  @NotNull @JsonProperty(required = true) BufferTimer powerLimitTimer,
                                  @JsonProperty(required = true) double maxPower,
                                  @Nullable SimpleMotor simpleMotor,

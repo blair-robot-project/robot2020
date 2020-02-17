@@ -7,10 +7,10 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.jacksonWrappers.FPSTalon;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon;
 
 /**
- * A simple SubsystemPosition that uses a {@link FPSTalon}.
+ * A simple SubsystemPosition that uses a {@link MappedTalon}.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SubsystemPositionSimple extends SubsystemBase implements SubsystemPosition, Loggable {
@@ -19,7 +19,7 @@ public class SubsystemPositionSimple extends SubsystemBase implements SubsystemP
      * Motor that controls the subsystem
      */
     @NotNull
-    private final FPSTalon motor;
+    private final MappedTalon motor;
 
     /**
      * How close the motor has to be to the setpoint to be considered on target, in feet.
@@ -33,7 +33,7 @@ public class SubsystemPositionSimple extends SubsystemBase implements SubsystemP
      * @param onTargetTolerance How close the motor has to be to the setpoint to be considered on target, in feet.
      */
     @JsonCreator
-    public SubsystemPositionSimple(@NotNull @JsonProperty(required = true) FPSTalon talon,
+    public SubsystemPositionSimple(@NotNull @JsonProperty(required = true) MappedTalon talon,
                                    @JsonProperty(required = true) double onTargetTolerance) {
         this.motor = talon;
         this.onTargetTolerance = onTargetTolerance;

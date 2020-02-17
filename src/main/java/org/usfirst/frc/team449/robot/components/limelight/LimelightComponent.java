@@ -1,9 +1,6 @@
-package org.usfirst.frc.team449.robot.components;
+package org.usfirst.frc.team449.robot.components.limelight;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -13,6 +10,7 @@ import java.util.function.DoubleSupplier;
 /**
  * The component that supplies distances from the limelight to a vision target
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT, property = "@class")
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class LimelightComponent implements DoubleSupplier {
 
@@ -20,16 +18,17 @@ public class LimelightComponent implements DoubleSupplier {
      * The NetworkTableEntry that supplies the desired value
      * Determined by the ReturnValue value
      */
-    @NotNull NetworkTableEntry entry;
+    @NotNull
+    NetworkTableEntry entry;
     /**
      * Whether the limelight has a valid target in sight. Will return 0 for no, 1 for yes
      */
-    private final NetworkTableEntry tv;
+    private static final NetworkTableEntry tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv");;
     /**
      * Which value to ask from the limelight
      * Can be:
-     *  x: x distance from target
-     *  y: y distance from target
+     *  x: lateral offset from target, in degrees
+     *  y: vertical offset from target, in degrees
      *  area: area of the target (0% to 100% of the camera screen)
      *  skew: rotation (-90 to 0, in degrees) of the target (as the limelight sees it)
      *  latency: the pipeline's latency contribution, in ms
@@ -51,7 +50,7 @@ public class LimelightComponent implements DoubleSupplier {
      */
     private final double offset;
 
-    enum ReturnValue {
+    public enum ReturnValue {
         x, y, area, skew, latency, shortest, longest, width, height, pipeIndex, poseX, poseY, poseZ, pitch, yaw, roll
     }
 
@@ -80,23 +79,41 @@ public class LimelightComponent implements DoubleSupplier {
                 break;
             case latency:
                 entry = table.getEntry("tl");
+                //Offset should be 0
+                offset = 0;
                 break;
             case shortest:
                 entry = table.getEntry("tshort");
+                //Offset should be 0
+                offset = 0;
                 break;
             case width:
                 entry = table.getEntry("thor");
+                //Offset should be 0
+                offset = 0;
                 break;
             case height:
                 entry = table.getEntry("tvert");
+                //Offset should be 0
+                offset = 0;
                 break;
             case pipeIndex:
                 entry = table.getEntry("getpipe");
+                //Offset should be 0
+                offset = 0;
                 break;
             default:
                 entry = table.getEntry("camtran");
         }
-        tv = table.getEntry("tv");
+    }
+
+    /**
+     * Sets the pipeline of the limelight
+     * @param index the index to set the pipeline to
+     */
+    public static void setPipeline(int index){
+        LimelightComponent pipeline = new LimelightComponent(LimelightComponent.ReturnValue.pipeIndex, 0);
+        pipeline.entry.setNumber(index);
     }
 
     /**
@@ -124,5 +141,9 @@ public class LimelightComponent implements DoubleSupplier {
             default:
                 return entry.getDouble(0.0) + offset;
         }
+    }
+
+    public static boolean hasTarget(){
+        return tv.getBoolean(false);
     }
 }
