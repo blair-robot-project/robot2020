@@ -269,7 +269,7 @@ public class UnidirectionalNavXDefaultDrive<T extends Subsystem & DriveUnidirect
         return this.drivingStraight;
     }
 
-    @Log
+    @Override
     public double getRawOutput(){
         return super.getRawOutput();
     }
