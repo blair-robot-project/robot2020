@@ -12,55 +12,47 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.intakeTwoSides.
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.intakeTwoSides.SubsystemIntakeTwoSides;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
 
-/**
- * An intake that goes up and down with a piston.
- */
+/** An intake that goes up and down with a piston. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class IntakeActuatedTwoSides extends IntakeTwoSidesSimple implements SubsystemSolenoid, SubsystemIntakeTwoSides {
+public class IntakeActuatedTwoSides extends IntakeTwoSidesSimple
+    implements SubsystemSolenoid, SubsystemIntakeTwoSides {
 
-    /**
-     * The piston for actuating the intake.
-     */
-    private final DoubleSolenoid piston;
-    /**
-     * The current position of the piston
-     */
-    private DoubleSolenoid.Value currentPistonPos;
+  /** The piston for actuating the intake. */
+  private final DoubleSolenoid piston;
+  /** The current position of the piston */
+  private DoubleSolenoid.Value currentPistonPos;
 
-    /**
-     * Default constructor.
-     *
-     * @param piston     The piston for actuating the intake.
-     * @param leftMotor  The left motor that this subsystem controls.
-     * @param rightMotor The left motor that this subsystem controls.
-     * @param fastSpeed  The speed to run the motor at going fast.
-     * @param slowSpeed  The speed to run the motor at going slow.
-     */
-    @JsonCreator
-    public IntakeActuatedTwoSides(@NotNull @JsonProperty(required = true) MappedDoubleSolenoid piston,
-                                  @NotNull @JsonProperty(required = true) SimpleMotor leftMotor,
-                                  @NotNull @JsonProperty(required = true) SimpleMotor rightMotor,
-                                  @JsonProperty(required = true) double fastSpeed,
-                                  @JsonProperty(required = true) double slowSpeed) {
-        super(leftMotor, rightMotor, slowSpeed, fastSpeed, -slowSpeed, -fastSpeed);
-        this.piston = piston;
-    }
+  /**
+   * Default constructor.
+   *
+   * @param piston The piston for actuating the intake.
+   * @param leftMotor The left motor that this subsystem controls.
+   * @param rightMotor The left motor that this subsystem controls.
+   * @param fastSpeed The speed to run the motor at going fast.
+   * @param slowSpeed The speed to run the motor at going slow.
+   */
+  @JsonCreator
+  public IntakeActuatedTwoSides(
+      @NotNull @JsonProperty(required = true) MappedDoubleSolenoid piston,
+      @NotNull @JsonProperty(required = true) SimpleMotor leftMotor,
+      @NotNull @JsonProperty(required = true) SimpleMotor rightMotor,
+      @JsonProperty(required = true) double fastSpeed,
+      @JsonProperty(required = true) double slowSpeed) {
+    super(leftMotor, rightMotor, slowSpeed, fastSpeed, -slowSpeed, -fastSpeed);
+    this.piston = piston;
+  }
 
-    /**
-     * @param value The position to set the solenoid to.
-     */
-    @Override
-    public void setSolenoid(@NotNull DoubleSolenoid.Value value) {
-        currentPistonPos = value;
-        piston.set(value);
-    }
+  /** @param value The position to set the solenoid to. */
+  @Override
+  public void setSolenoid(@NotNull DoubleSolenoid.Value value) {
+    currentPistonPos = value;
+    piston.set(value);
+  }
 
-    /**
-     * @return the current position of the solenoid.
-     */
-    @Override
-    @NotNull
-    public DoubleSolenoid.Value getSolenoidPosition() {
-        return currentPistonPos;
-    }
+  /** @return the current position of the solenoid. */
+  @Override
+  @NotNull
+  public DoubleSolenoid.Value getSolenoidPosition() {
+    return currentPistonPos;
+  }
 }
