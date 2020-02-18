@@ -1,0 +1,108 @@
+---
+
+# IntelliJ supports Ctrl+clicking anchors to find usages and declarations... so, hyperlinks! Yooooooooo!
+# Basically a table of contents; Ctrl+click on a heading in UPPER_SNAKE_CASE to jump back and forth between the
+# table of contents and actual location in the map.
+NAVIGATION:
+  # The anchors that replace map key values must have the values of the keys that they replace.
+  - &PDP pdp
+  # This works magically because the anchor refers to the key of the mapping only, which is the string "subsystems".
+  - &SUBSYSTEMS subsystems:
+      - &SPINNER_SUBSYSTEM
+  - &COMMANDS commands:
+      - &BUTTONS buttons:
+          - &SPINNER_COMMANDS
+  - &UPDATER updater
+
+# Anchors for transclusion into the rest of the map.
+# Ignored by Jackson (so is NAVIGATION); can contain any valid YAML suitable for organizational purposes.
+# Make sure there aren't any colons after the anchors; Jackson gives "Null key for a Map not allowed in JSON"
+CONSTANTS:
+  - MotorPorts:
+      - &spinnerPort 0
+  - SolenoidPorts:
+      - &spinnerSolenoidForward 4
+      - &spinnerSolenoidReverse 5
+  - JoystickPorts:
+      - &mechanismsJoystickPort 0
+  - ButtonNumbers:
+      - &intakeStartButtonNumber 1
+      - &intakeStopButtonNumber 2
+      - &shooterStartButtonNumber 3
+      - &shooterStopButtonNumber 4
+      - &climberOffButtonNumber 5
+      - &climberLowerButtonNumber 6
+      - &climberRaiseButtonNumber 7
+      - &climberWinchButtonNumber 8
+      - &intakePistonToggleButtonNumber 9
+
+# WHETHER TO USE THE CAMERA SERVER
+useCameraServer: false
+
+########################################################################################################################
+*PDP:
+  org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
+    '@id': PDP
+    canID: 0
+    voltagePerCurrentLinReg:
+      bufferSize: 250
+      rSquaredThreshhold: 0.75
+
+*SUBSYSTEMS:
+  - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+      '@id': spinnerSolenoidSubsystem
+      piston:
+          '@id': spinnerSolenoid
+          forward: *spinnerSolenoidForward
+          reverse: *spinnerSolenoidReverse
+
+*COMMANDS:
+  ########################################################################################################################
+  *BUTTONS:
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': extendSpinnerButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              '@id': mechanismsJoystick
+              port: *mechanismsJoystickPort
+          buttonNumber: 5
+      command:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.ToggleSolenoid:
+          '@id': toggleCommand
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+              spinnerSolenoidSubsystem
+      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': spinSpinnerButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: 6 #shoulder right
+      command:
+        org.usfirst.frc.team449.robot._2020.spinner.commands.SpinSpinnerOnce:
+          '@id': spinCommand
+          motor:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMax:
+              '@id': sparkMotor
+              port: *spinnerPort
+              reverseOutput: false
+              enableBrakeMode: false
+              enableVoltageComp: true
+          inches: 5
+      action: WHEN_PRESSED
+
+########################################################################################################################
+*UPDATER:
+  org.usfirst.frc.team449.robot.other.Updater:
+    '@id': updater
+    updatables:
+      - org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
+#      - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
+#      - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
+#      - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS: navX
+#      - org.usfirst.frc.team449.robot.subsystem.complex.climber.ClimberCurrentLimited: climberCurrentLimitSystem
+#      - org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber: climber
+#      - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel: shooterFlywheel

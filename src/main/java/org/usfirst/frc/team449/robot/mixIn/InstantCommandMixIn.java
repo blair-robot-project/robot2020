@@ -6,15 +6,15 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /**
- * A mix-in for {@link edu.wpi.first.wpilibj2.command.InstantCommand} that annotates its constructor for use with Jackson.
- * Don't make subclasses of this.
+ * A mix-in for {@link edu.wpi.first.wpilibj2.command.InstantCommand} that annotates its constructor
+ * for use with Jackson. Don't make subclasses of this.
  */
 public abstract class InstantCommandMixIn {
-    /**
-     * @see InstantCommand#InstantCommand(java.lang.Runnable, edu.wpi.first.wpilibj2.command.Subsystem...)
-     */
-    @JsonCreator()
-    public InstantCommandMixIn(@JsonProperty(required = true) final Runnable toRun,
-                               final Subsystem... requirements) {
-    }
+  /**
+   * @see InstantCommand#InstantCommand(java.lang.Runnable,
+   *     edu.wpi.first.wpilibj2.command.Subsystem...)
+   */
+  @JsonCreator()
+  public InstantCommandMixIn(
+      @JsonProperty(required = true) final Runnable toRun, final Subsystem... requirements) {}
 }
