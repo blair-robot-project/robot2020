@@ -13,29 +13,26 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetInt
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.SolenoidReverse;
 
-/**
- * Command group to reset everything. Turns everything off, raises intake
- */
+/** Command group to reset everything. Turns everything off, raises intake */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class ResetShooter<T extends Subsystem & SubsystemIntake & SubsystemSolenoid> extends ParallelCommandGroup {
+public class ResetShooter<T extends Subsystem & SubsystemIntake & SubsystemSolenoid>
+    extends ParallelCommandGroup {
 
-    /**
-     * Constructs a ResetShooter command group
-     *
-     * @param subsystemFlywheel flywheel subsystem. Can be null.
-     * @param subsystemIntake   intake subsystem. Can be null.
-     */
-    @JsonCreator
-    public ResetShooter(@Nullable SubsystemFlywheel subsystemFlywheel,
-                        @Nullable T subsystemIntake) {
-        if (subsystemFlywheel != null) {
-            addCommands(new TurnAllOff(subsystemFlywheel));
-        }
-        if (subsystemIntake != null) {
-            addCommands(
-                    new SolenoidReverse(subsystemIntake),
-                    new SetIntakeMode(subsystemIntake, SubsystemIntake.IntakeMode.OFF)
-            );
-        }
+  /**
+   * Constructs a ResetShooter command group
+   *
+   * @param subsystemFlywheel flywheel subsystem. Can be null.
+   * @param subsystemIntake intake subsystem. Can be null.
+   */
+  @JsonCreator
+  public ResetShooter(@Nullable SubsystemFlywheel subsystemFlywheel, @Nullable T subsystemIntake) {
+    if (subsystemFlywheel != null) {
+      addCommands(new TurnAllOff(subsystemFlywheel));
     }
+    if (subsystemIntake != null) {
+      addCommands(
+          new SolenoidReverse(subsystemIntake),
+          new SetIntakeMode(subsystemIntake, SubsystemIntake.IntakeMode.OFF));
+    }
+  }
 }
