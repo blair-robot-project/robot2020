@@ -38,7 +38,7 @@ public class MappedSparkMax implements SmartMotor {
    * The number of feet travelled per rotation of the motor this is attached to, or null if there is
    * no encoder.
    */
-  private final double feetPerRotation;
+  private final double unitPerRotation;
   /** A list of all the gears this robot has and their settings. */
   @NotNull private final Map<Integer, PerGearSettings> perGearSettings;
   /** Forward limit switch object */
@@ -89,7 +89,7 @@ public class MappedSparkMax implements SmartMotor {
    * @param postEncoderGearing The coefficient the output changes by after being measured by the
    *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
    *     final output. Defaults to 1.
-   * @param feetPerRotation The number of feet travelled per rotation of the motor this is attached
+   * @param unitPerRotation The number of feet travelled per rotation of the motor this is attached
    *     to. Defaults to 1.
    * @param currentLimit The max amps this device can draw. If this is null, no current limit is
    *     used.
@@ -115,7 +115,7 @@ public class MappedSparkMax implements SmartMotor {
       @Nullable final Double fwdSoftLimit,
       @Nullable final Double revSoftLimit,
       @Nullable final Double postEncoderGearing,
-      @Nullable final Double feetPerRotation,
+      @Nullable final Double unitPerRotation,
       @Nullable final Integer currentLimit,
       final boolean enableVoltageComp,
       @Nullable final List<PerGearSettings> perGearSettings,
@@ -153,7 +153,7 @@ public class MappedSparkMax implements SmartMotor {
 
     this.PDP = PDP;
 
-    this.feetPerRotation = feetPerRotation != null ? feetPerRotation : 1;
+    this.unitPerRotation = unitPerRotation != null ? unitPerRotation : 1;
 
     // Initialize
     this.perGearSettings = new HashMap<>();
@@ -315,7 +315,7 @@ public class MappedSparkMax implements SmartMotor {
    */
   @Override
   public double encoderToUnit(double revs) {
-    return revs * feetPerRotation * postEncoderGearing;
+    return revs * unitPerRotation * postEncoderGearing;
   }
 
   /**
@@ -328,7 +328,7 @@ public class MappedSparkMax implements SmartMotor {
    */
   @Override
   public double unitToEncoder(double feet) {
-    return feet / feetPerRotation / postEncoderGearing;
+    return feet / unitPerRotation / postEncoderGearing;
   }
 
   /**
@@ -342,7 +342,7 @@ public class MappedSparkMax implements SmartMotor {
   @Override
   public double encoderToUPS(double encoderReading) {
     RPS = nativeToRPS(encoderReading);
-    return RPS * postEncoderGearing * feetPerRotation;
+    return RPS * postEncoderGearing * unitPerRotation;
   }
 
   /**
@@ -355,7 +355,7 @@ public class MappedSparkMax implements SmartMotor {
    */
   @Override
   public double UPSToEncoder(double FPS) {
-    return RPSToNative((FPS / postEncoderGearing) / feetPerRotation);
+    return RPSToNative((FPS / postEncoderGearing) / unitPerRotation);
   }
 
   /**

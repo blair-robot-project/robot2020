@@ -33,7 +33,7 @@ subsystems:
           reverseSensor: false
           enableBrakeMode: true
           postEncoderGearing: 0.13333333333
-          feetPerRotation: 1.556344647
+          unitPerRotation: 1.556344647
           currentLimit: 35
           enableVoltageComp: true
           feedbackDevice: QuadEncoder

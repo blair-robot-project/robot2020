@@ -47,7 +47,7 @@ public class MappedTalon implements SmartMotor {
    * The number of feet travelled per rotation of the motor this is attached to, or null if there is
    * no encoder.
    */
-  private final double feetPerRotation;
+  private final double unitPerRotation;
   /** A list of all the gears this robot has and their settings. */
   @NotNull private final Map<Integer, PerGearSettings> perGearSettings;
   /** The talon's name, used for logging purposes. */
@@ -180,7 +180,7 @@ public class MappedTalon implements SmartMotor {
     }
 
     // Set fields
-    this.feetPerRotation = unitPerRotation != null ? unitPerRotation : 1;
+    this.unitPerRotation = unitPerRotation != null ? unitPerRotation : 1;
 
     // Initialize
     this.perGearSettings = new HashMap<>();
@@ -442,7 +442,7 @@ public class MappedTalon implements SmartMotor {
     if (encoderCPR == null) {
       return Double.NaN;
     }
-    return nativeUnits / (this.encoderCPR * 4) * this.postEncoderGearing * this.feetPerRotation;
+    return nativeUnits / (this.encoderCPR * 4) * this.postEncoderGearing * this.unitPerRotation;
   }
 
   /**
@@ -458,7 +458,7 @@ public class MappedTalon implements SmartMotor {
     if (encoderCPR == null) {
       return Double.NaN;
     }
-    return feet / this.feetPerRotation * (this.encoderCPR * 4) / this.postEncoderGearing;
+    return feet / this.unitPerRotation * (this.encoderCPR * 4) / this.postEncoderGearing;
   }
 
   /**
@@ -475,7 +475,7 @@ public class MappedTalon implements SmartMotor {
     if (RPS == null) {
       return Double.NaN;
     }
-    return this.RPS * this.postEncoderGearing * this.feetPerRotation;
+    return this.RPS * this.postEncoderGearing * this.unitPerRotation;
   }
 
   /**
@@ -488,7 +488,7 @@ public class MappedTalon implements SmartMotor {
    */
   @Override
   public double UPSToEncoder(double UPS) {
-    return RPSToNative((UPS / postEncoderGearing) / feetPerRotation);
+    return RPSToNative((UPS / postEncoderGearing) / unitPerRotation);
   }
 
   /**

@@ -46,7 +46,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
   private final Type controllerType;
   private final int port;
   private final boolean reverseOutput;
-  private final double feetPerRotation;
+  private final double unitPerRotation;
   @NotNull private final Map<Integer, PerGearSettings> perGearSettings;
   /** (V) */
   private final double busVoltage = SimulatedMotor.NOMINAL_VOLTAGE;
@@ -78,7 +78,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
       @Nullable final Double fwdSoftLimit,
       @Nullable final Double revSoftLimit,
       @Nullable final Double postEncoderGearing,
-      @Nullable final Double feetPerRotation,
+      @Nullable final Double unitPerRotation,
       @Nullable final Integer currentLimit,
       final boolean enableVoltageComp,
       @Nullable final List<PerGearSettings> perGearSettings,
@@ -102,7 +102,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
     this.controllerType = type;
     this.port = port;
     this.reverseOutput = reverseOutput;
-    this.feetPerRotation = Objects.requireNonNullElse(feetPerRotation, 1.0);
+    this.unitPerRotation = Objects.requireNonNullElse(unitPerRotation, 1.0);
     this.name =
         name != null
             ? name
@@ -256,7 +256,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    */
   @Override
   public double encoderToUnit(final double nativeUnits) {
-    return nativeUnits * this.feetPerRotation;
+    return nativeUnits * this.unitPerRotation;
   }
 
   /**
@@ -269,7 +269,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    */
   @Override
   public double unitToEncoder(final double feet) {
-    return feet / this.feetPerRotation;
+    return feet / this.unitPerRotation;
   }
 
   /**
@@ -282,7 +282,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    */
   @Override
   public double encoderToUPS(final double encoderReading) {
-    return encoderReading * this.feetPerRotation;
+    return encoderReading * this.unitPerRotation;
   }
 
   /**
@@ -295,7 +295,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    */
   @Override
   public double UPSToEncoder(final double FPS) {
-    return FPS / this.feetPerRotation;
+    return FPS / this.unitPerRotation;
   }
 
   /**

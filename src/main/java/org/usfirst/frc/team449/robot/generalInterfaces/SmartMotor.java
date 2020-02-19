@@ -78,7 +78,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * @param postEncoderGearing The coefficient the output changes by after being measured by the
    *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
    *     final output. Defaults to 1.
-   * @param feetPerRotation The number of feet travelled per rotation of the motor this is attached
+   * @param unitPerRotation The number of feet travelled per rotation of the motor this is attached
    *     to. Defaults to 1.
    * @param currentLimit The max amps this device can draw. If this is null, no current limit is
    *     used.
@@ -124,7 +124,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
       @Nullable final Double fwdSoftLimit,
       @Nullable final Double revSoftLimit,
       @Nullable final Double postEncoderGearing,
-      @Nullable final Double feetPerRotation,
+      @Nullable final Double unitPerRotation,
       @Nullable final Integer currentLimit,
       final boolean enableVoltageComp,
       @Nullable final List<PerGearSettings> perGearSettings,
@@ -272,7 +272,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
                 fwdSoftLimit,
                 revSoftLimit,
                 postEncoderGearing,
-                feetPerRotation,
+                unitPerRotation,
                 currentLimit,
                 enableVoltageComp,
                 perGearSettings,
@@ -301,7 +301,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
                 fwdSoftLimit,
                 revSoftLimit,
                 postEncoderGearing,
-                feetPerRotation,
+                unitPerRotation,
                 currentLimit,
                 enableVoltageComp,
                 voltageCompSamples,
@@ -334,7 +334,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
                 fwdSoftLimit,
                 revSoftLimit,
                 postEncoderGearing,
-                feetPerRotation,
+                unitPerRotation,
                 currentLimit,
                 enableVoltageComp,
                 perGearSettings,

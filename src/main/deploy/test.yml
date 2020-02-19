@@ -31,7 +31,7 @@ subsystems:
           #fwdSoftLimit: 0 #TODO
           #revSoftLimit: 0 # TODO
           #          postEncoderGearing: 1 #TODO
-          feetPerRotation: 0 #TODO
+          unitPerRotation: 0 #TODO
           currentLimit: 5 #TODO
           enableVoltageComp: true #TODO
           #          voltageCompSamples: 100 #TODO
@@ -65,7 +65,7 @@ subsystems:
           #fwdSoftLimit: 0 #TODO
           #revSoftLimit: 0 # TODO
           #          postEncoderGearing: 0 #TODO
-          #feetPerRotation: 0 #TODO
+          #unitPerRotation: 0 #TODO
           currentLimit: 10 #TODO
           #enableVoltageComp: true #TODO
           #          voltageCompSamples: 100 #TODO
@@ -104,7 +104,7 @@ subsystems:
           #fwdSoftLimit: 0 #TODO
           #revSoftLimit: 0 # TODO
           #          postEncoderGearing: 0 #TODO
-          #feetPerRotation: 0 #TODO
+          #unitPerRotation: 0 #TODO
           currentLimit: 10 #TODO
           #enableVoltageComp: true #TODO
           #          voltageCompSamples: 100 #TODO
@@ -144,7 +144,7 @@ subsystems:
           #fwdSoftLimit: 0 #TODO
           #revSoftLimit: 0 # TODO
           #          postEncoderGearing: 0 #TODO
-          #feetPerRotation: 0 #TODO
+          #unitPerRotation: 0 #TODO
           currentLimit: 10 #TODO
           #enableVoltageComp: true #TODO
           #          voltageCompSamples: 100 #TODO

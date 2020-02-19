@@ -70,7 +70,7 @@ useCameraServer: false
           reverseSensor: false
           enableBrakeMode: true
           postEncoderGearing: 0.13333333333
-          feetPerRotation: 0.4787787 #meters per rotation
+          unitPerRotation: 0.4787787 #meters per rotation
           currentLimit: 35
           enableVoltageComp: true
           feedbackDevice: QuadEncoder
