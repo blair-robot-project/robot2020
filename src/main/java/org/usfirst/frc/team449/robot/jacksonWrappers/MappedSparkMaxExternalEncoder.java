@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.revrobotics.*;
+import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
@@ -130,11 +131,10 @@ public class MappedSparkMaxExternalEncoder implements SmartMotor {
     this.spark.restoreFactoryDefaults();
 
     if(encoderDIO1 != null && encoderDIO2 != null){
-      encoder = new Encoder(encoderDIO1, encoderDIO2);
+      encoder = new Encoder(encoderDIO1, encoderDIO2, reverseSensor, CounterBase.EncodingType.k4X);
     } else {
       encoder = new Encoder(0, 1);
     }
-    encoder.setReverseDirection(reverseSensor);
     pidController = new PIDController(0, 0, 0);
 
 
@@ -201,7 +201,8 @@ public class MappedSparkMaxExternalEncoder implements SmartMotor {
 
     this.encoderCPR = encoderCPR != null ? encoderCPR : 1;
 
-    encoder.setDistancePerPulse(1024 * encoderCPR);
+    encoder.setDistancePerPulse(encoderCPR / postEncoderGearing
+    );
 
     // Only enable the limit switches if it was specified if they're normally open or closed.
     if (fwdLimitSwitchNormallyOpen != null) {
@@ -218,6 +219,7 @@ public class MappedSparkMaxExternalEncoder implements SmartMotor {
     } else {
       this.forwardLimitSwitch =
           this.spark.getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
+
       this.forwardLimitSwitch.enableLimitSwitch(false);
       this.fwdLimitSwitchNormallyOpen = true;
     }

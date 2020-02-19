@@ -9,18 +9,20 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
+import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 import org.usfirst.frc.team449.robot.other.Clock;
 
 import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /**
- * Climber with safety features (stuff needs to be enabled to move)
+ * Like {@link ClimberWinchingWithArm} with safety
+ * features (stuff needs to be enabled to move)
  *
  * @author Nathan
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SafeWinchingClimber extends SubsystemBase
-        implements SubsystemClimberWithArm, SubsystemBinaryMotor, SubsystemSolenoid, Loggable {
+        implements SubsystemClimberWithArm, SubsystemBinaryMotor, SubsystemSolenoid, Updatable, Loggable {
     private final ClimberCurrentLimited motorSubsystem;
     private final SubsystemSolenoid solenoidSubsystem;
 
@@ -35,10 +37,9 @@ public class SafeWinchingClimber extends SubsystemBase
     private boolean reallySure = false;
 
     @JsonCreator
-    public SafeWinchingClimber(
-            @NotNull @JsonProperty(required = true) final ClimberCurrentLimited motorSubsystem,
-            @NotNull @JsonProperty(required = true) final SubsystemSolenoid solenoidSubsystem,
-            final long extensionTimeMillis) {
+    public SafeWinchingClimber(@NotNull @JsonProperty(required = true) final ClimberCurrentLimited motorSubsystem,
+                               @NotNull @JsonProperty(required = true) final SubsystemSolenoid solenoidSubsystem,
+                               final long extensionTimeMillis) {
         this.motorSubsystem = motorSubsystem;
         this.solenoidSubsystem = solenoidSubsystem;
         this.extensionTimeMillis = extensionTimeMillis;
@@ -51,9 +52,9 @@ public class SafeWinchingClimber extends SubsystemBase
     public void raise() {
         System.out.println(getLogPrefix(this) + "raise");
 
-        if (enableArm) {
+        if (this.enableArm) {
             this.setSolenoid(DoubleSolenoid.Value.kForward);
-            extensionStartTime = Clock.currentTimeMillis();
+            this.extensionStartTime = Clock.currentTimeMillis();
         }
     }
 
@@ -64,8 +65,8 @@ public class SafeWinchingClimber extends SubsystemBase
     public void lower() {
         System.out.println(getLogPrefix(this) + "lower");
 
-        if (enableArm) {
-            setSolenoid(DoubleSolenoid.Value.kReverse);
+        if (this.enableArm) {
+            this.setSolenoid(DoubleSolenoid.Value.kReverse);
         }
     }
 
@@ -73,50 +74,51 @@ public class SafeWinchingClimber extends SubsystemBase
     public void off() {
         System.out.println(getLogPrefix(this) + "off");
 
-        setSolenoid(DoubleSolenoid.Value.kOff);
-        turnMotorOff();
+        this.setSolenoid(DoubleSolenoid.Value.kOff);
+        this.turnMotorOff();
     }
 
     @Override
     public void setSolenoid(@NotNull final DoubleSolenoid.Value value) {
-        solenoidSubsystem.setSolenoid(value);
+        this.solenoidSubsystem.setSolenoid(value);
         if (value == DoubleSolenoid.Value.kForward) {
-            armIsExtending = true;
+            this.armIsExtending = true;
         } else if (value == DoubleSolenoid.Value.kReverse) {
-            armIsExtending = false;
+            this.armIsExtending = false;
         }
 
-        reallySure = false;
+        this.reallySure = false;
     }
 
     @Override
     public @NotNull DoubleSolenoid.Value getSolenoidPosition() {
-        return solenoidSubsystem.getSolenoidPosition();
+        return this.solenoidSubsystem.getSolenoidPosition();
     }
 
     /**
-     * Move the winch if the arm is up. Has to be called twice (double button press) for it to work (I
-     * think?)
+     * Move the winch if the arm is up.
+     * Has to be called twice (double button
+     * press) for it to work (I think?)
      */
     @Override
     public void turnMotorOn() {
-        if (armIsUp()) {
-            if (!reallySure) {
-                reallySure = true;
+        if (this.armIsUp()) {
+            if (!this.reallySure) {
+                this.reallySure = true;
             } else {
-                setSolenoid(DoubleSolenoid.Value.kReverse);
-                motorSubsystem.turnMotorOn();
-                enableArm = false;
+                this.setSolenoid(DoubleSolenoid.Value.kReverse);
+                this.motorSubsystem.turnMotorOn();
+                this.enableArm = false;
             }
         }
     }
 
     @Log
     private boolean armIsUp() {
-        if (!armIsExtending) {
+        if (!this.armIsExtending) {
             return false;
         }
-        return Clock.currentTimeMillis() >= extensionStartTime + extensionTimeMillis;
+        return Clock.currentTimeMillis() >= this.extensionStartTime + this.extensionTimeMillis;
     }
 
     /**
@@ -124,13 +126,44 @@ public class SafeWinchingClimber extends SubsystemBase
      */
     @Override
     public void turnMotorOff() {
-        motorSubsystem.turnMotorOff();
-        reallySure = false;
+        this.motorSubsystem.turnMotorOff();
+        this.reallySure = false;
     }
 
     @Override
     @Log
     public boolean isMotorOn() {
-        return motorSubsystem.isMotorOn();
+        return this.motorSubsystem.isMotorOn();
     }
+
+    @Override
+    public void update() {
+        if (this.motorSubsystem.isConditionTrueCached()) {
+            this.motorSubsystem.turnMotorOff();
+        }
+    }
+
+//    /**
+//     * @return true if the condition is met, false otherwise
+//     */
+//    @Override
+//    public boolean isConditionTrue() {
+//        return this.motorSubsystem.isConditionTrue();
+//    }
+//
+//    /**
+//     * @return true if the condition was met when cached, false otherwise
+//     */
+//    @Override
+//    public boolean isConditionTrueCached() {
+//        return this.motorSubsystem.isConditionTrueCached();
+//    }
+//
+//    /**
+//     * Updates all cached values with current ones.
+//     */
+//    @Override
+//    public void update() {
+//        this.motorSubsystem.update();
+//    }
 }
