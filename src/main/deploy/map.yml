@@ -79,10 +79,10 @@ useCameraServer: false
       '@id': drive
       #Wheelbase: 2.14
       leftMaster:
-        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+        org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
           &Left_Master
           '@id': leftMaster
-          type: SPARK
+          #type: SPARK
           name: left
           port: *leftMasterPort
           PDP:
@@ -122,13 +122,13 @@ useCameraServer: false
           updaterProcessPeriodSecs: 0.005
           statusFrameRatesMillis: !!map
             Status_4_AinTempVbat: 15
-          slaveVictors:
+          slaveSparks:
             - port: *leftMasterSlave1Port
-              invertType: FollowMaster
+              inverted: true
             - port: *leftMasterSlave2Port
-              invertType: FollowMaster
+              inverted: true
       rightMaster:
-        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+        org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
           <<: *Left_Master
           '@id': rightMaster
           name: right
@@ -148,10 +148,12 @@ useCameraServer: false
                   kS: 1.15
                   kV: 2.05
                   kA: 0.788
-          slaveVictors:
+          slaveSparks:
             - port: *rightMasterSlave1Port
+              PDP: PDP
               #inverted: false
             - port: *rightMasterSlave2Port
+              PDP: PDP
               #inverted: false
       startingOverrideAutoshift: false
       ahrs:
@@ -164,9 +166,9 @@ useCameraServer: false
         org.usfirst.frc.team449.robot.components.ShiftComponent:
           '@id': driveShiftComponent
           otherShiftables:
-            - org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+            - org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
                 leftMaster
-            - org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+            - org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
                 rightMaster
           piston:
             '@id': driveShifter
@@ -180,10 +182,10 @@ useCameraServer: false
   - org.usfirst.frc.team449.robot._2020.intake.IntakeSimple:
       '@id': intake
       motor:
-        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+        org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
           '@id': intakeMotor
           name: intakeMotor
-          type: SPARK
+          #type: SPARK
           port: *intakeMotorPort
           enableBrakeMode: true
           PDP: PDP
@@ -197,9 +199,9 @@ useCameraServer: false
   - org.usfirst.frc.team449.robot._2020.feeder.IntakeSimple:
       '@id': feeder
       motor:
-        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+        org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
           '@id': feederMotor
-          type: SPARK
+          #type: SPARK
           port: *feederMotorPort
           name: feederMotor
           reverseOutput: false
@@ -227,10 +229,10 @@ useCameraServer: false
       spinUpTimeoutSecs: 10
       minShootingSpeedFPS: 150
       shooterMotor:
-        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+        org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
           &Shooter_Right_Motor
           '@id': shooterRightMotor
-          type: SPARK
+          #type: SPARK
           reverseSensor: false
           port: *shooterRightMotorPort
           name: shooterRightMotor
@@ -257,7 +259,7 @@ useCameraServer: false
       #            kI: 0.
       #            kD: 0
       otherShooterMotor:
-        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+        org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
           <<: *Shooter_Right_Motor
           '@id': shooterLeftMotor
           port: *shooterLeftMotorPort
@@ -265,9 +267,9 @@ useCameraServer: false
           reverseSensor: false
           reverseOutput: false
       kickerMotor:
-        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+        org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
           '@id': kickerMotor
-          type: TALON
+          #type: SPARK
           reverseSensor: false
           port: *kickerMotorPort
           name: kickerMotor
@@ -275,11 +277,6 @@ useCameraServer: false
           enableBrakeMode: true
           PDP: PDP
           enableVoltageComp: false #TODO
-  #        org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.MappedVictorSPX:
-  #          '@id': kickerVictor
-  #          port: 7
-  #          inverted: false
-  #          brakeMode: false
 
   #***********************************************************************************************************************
   - *CLIMBER_SUBSYSTEM
@@ -289,10 +286,10 @@ useCameraServer: false
         org.usfirst.frc.team449.robot._2020.climber.ClimberCurrentLimited:
           '@id': climberCurrentLimitSystem
           smartMotor:
-            org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
               '@id': climberMotor
               name: climberMotor
-              type: SPARK
+              #type: SPARK
               port: *climberMotorPort
               enableBrakeMode: false
           maxPower: 0.1

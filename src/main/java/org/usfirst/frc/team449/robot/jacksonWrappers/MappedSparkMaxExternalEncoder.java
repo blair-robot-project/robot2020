@@ -4,28 +4,25 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.revrobotics.CANDigitalInput;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANPIDController;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
-import com.revrobotics.ControlType;
+import com.revrobotics.*;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MappedSparkMax implements SmartMotor {
+public class MappedSparkMaxExternalEncoder implements SmartMotor {
   /** The PDP this Spark is connected to. */
   @Nullable @Log.Exclude protected final PDP PDP;
   /** The counts per rotation of the encoder being used, or null if there is no encoder. */
@@ -54,10 +51,10 @@ public class MappedSparkMax implements SmartMotor {
   @NotNull protected PerGearSettings currentGearSettings;
   /** REV brushless controller object */
   private CANSparkMax spark;
-  /** REV provided encoder object */
-  private CANEncoder canEncoder;
-  /** REV provided PID Controller */
-  private CANPIDController pidController;
+  /** WPI provided encoder object */
+  private Encoder encoder;
+  /** WPI provided PID Controller */
+  private PIDController pidController;
   /** The control mode of the motor */
   private ControlType currentControlMode;
   /** The most recently set setpoint. */
@@ -104,7 +101,7 @@ public class MappedSparkMax implements SmartMotor {
    * @param controlFrameRateMillis The update rate, in milliseconds, for each control frame.
    */
   @JsonCreator
-  public MappedSparkMax(
+  public MappedSparkMaxExternalEncoder(
       @JsonProperty(required = true) final int port,
       @Nullable final String name,
       final boolean reverseOutput,
@@ -115,8 +112,12 @@ public class MappedSparkMax implements SmartMotor {
       @Nullable final Integer remoteLimitSwitchID,
       @Nullable final Double fwdSoftLimit,
       @Nullable final Double revSoftLimit,
+      @Nullable MappedDigitalInput encoderDIO1,
+      @Nullable MappedDigitalInput encoderDIO2,
       @Nullable final Double postEncoderGearing,
       @Nullable final Double unitPerRotation,
+      @Nullable final Integer encoderCPR,
+      boolean reverseSensor,
       @Nullable final Integer currentLimit,
       final boolean enableVoltageComp,
       @Nullable final List<PerGearSettings> perGearSettings,
@@ -127,8 +128,15 @@ public class MappedSparkMax implements SmartMotor {
       @Nullable final List<SlaveSparkMax> slaveSparks) {
     this.spark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
     this.spark.restoreFactoryDefaults();
-    this.canEncoder = this.spark.getEncoder();
-    this.pidController = this.spark.getPIDController();
+
+    if(encoderDIO1 != null && encoderDIO2 != null){
+      encoder = new Encoder(encoderDIO1, encoderDIO2);
+    } else {
+      encoder = new Encoder(0, 1);
+    }
+    encoder.setReverseDirection(reverseSensor);
+    pidController = new PIDController(0, 0, 0);
+
 
     // Set the name to the given one or to spark_<portnum>
     this.name = name != null ? name : ("spark_" + port);
@@ -191,7 +199,9 @@ public class MappedSparkMax implements SmartMotor {
     // postEncoderGearing defaults to 1
     this.postEncoderGearing = postEncoderGearing != null ? postEncoderGearing : 1.;
 
-    this.encoderCPR = this.canEncoder.getCountsPerRevolution();
+    this.encoderCPR = encoderCPR != null ? encoderCPR : 1;
+
+    encoder.setDistancePerPulse(1024 * encoderCPR);
 
     // Only enable the limit switches if it was specified if they're normally open or closed.
     if (fwdLimitSwitchNormallyOpen != null) {
@@ -302,9 +312,9 @@ public class MappedSparkMax implements SmartMotor {
       this.spark.setOpenLoopRampRate(0);
     }
 
-    this.pidController.setP(this.currentGearSettings.kP, 0);
-    this.pidController.setI(this.currentGearSettings.kI, 0);
-    this.pidController.setD(this.currentGearSettings.kD, 0);
+    this.pidController.setP(this.currentGearSettings.kP);
+    this.pidController.setI(this.currentGearSettings.kI);
+    this.pidController.setD(this.currentGearSettings.kD);
   }
 
   /**
@@ -388,7 +398,7 @@ public class MappedSparkMax implements SmartMotor {
   /** @return Total revolutions for debug purposes */
   @Override
   public double encoderPosition() {
-    return this.canEncoder.getPosition();
+    return encoder.getDistance();
   }
 
   @Override
@@ -405,20 +415,14 @@ public class MappedSparkMax implements SmartMotor {
   public void setPositionSetpoint(final double feet) {
     this.setpoint = feet;
     this.nativeSetpoint = this.unitToEncoder(feet);
-    this.pidController.setFF(this.currentGearSettings.feedForwardCalculator.ks / 12.);
-    this.pidController.setReference(
-        this.nativeSetpoint,
-        ControlType.kPosition,
-        0,
-        this.currentGearSettings.feedForwardCalculator.ks,
-        CANPIDController.ArbFFUnits.kVoltage);
+    setVoltage(currentGearSettings.feedForwardCalculator.ks + pidController.calculate(encoderPosition(), nativeSetpoint));
   }
 
   /** @return Current RPM for debug purposes */
   @Override
   @Log
   public double encoderVelocity() {
-    return this.canEncoder.getVelocity();
+    return encoder.getRate();
   }
 
   /**
@@ -429,7 +433,7 @@ public class MappedSparkMax implements SmartMotor {
   @Override
   @Log
   public Double getVelocity() {
-    return this.encoderToUPS(canEncoder.getVelocity());
+    return this.encoderToUPS(encoder.getRate());
   }
 
   /**
@@ -456,13 +460,7 @@ public class MappedSparkMax implements SmartMotor {
     this.currentControlMode = ControlType.kVelocity;
     this.nativeSetpoint = UPSToEncoder(velocity);
     this.setpoint = velocity;
-    this.pidController.setFF(0);
-    this.pidController.setReference(
-        nativeSetpoint,
-        ControlType.kVelocity,
-        0,
-        this.currentGearSettings.feedForwardCalculator.calculate(velocity),
-        CANPIDController.ArbFFUnits.kVoltage);
+    setVoltage(currentGearSettings.feedForwardCalculator.calculate(velocity) + pidController.calculate(encoderVelocity(), nativeSetpoint));
   }
 
   @Override
@@ -511,7 +509,7 @@ public class MappedSparkMax implements SmartMotor {
   }
 
   @Override
-  public void setGearScaledVelocity(final double velocity, final Shiftable.gear gear) {
+  public void setGearScaledVelocity(final double velocity, final gear gear) {
     this.setGearScaledVelocity(velocity, gear.getNumVal());
   }
 
@@ -522,12 +520,12 @@ public class MappedSparkMax implements SmartMotor {
 
   @Override
   public Double getPositionUnits() {
-    return encoderToUnit(canEncoder.getPosition());
+    return encoderToUnit(encoder.getDistance());
   }
 
   @Override
   public void resetPosition() {
-    this.canEncoder.setPosition(0);
+    encoder.reset();
   }
 
   @Override
