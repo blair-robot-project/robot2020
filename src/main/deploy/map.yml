@@ -31,21 +31,21 @@ NAVIGATION:
 CONSTANTS:
   - MotorPorts:
       # Spinnyboiz
-      - &leftMasterPort 1
-      - &leftMasterSlave1Port 3
-      - &leftMasterSlave2Port 5
-      - &rightMasterPort 2
-      - &rightMasterSlave1Port 4
+      - &leftMasterPort 1 #47
+      - &leftMasterSlave1Port 3 #44
+      - &leftMasterSlave2Port 5 #43
+      - &rightMasterPort 2 #2
+      - &rightMasterSlave1Port 4 #46
       - &rightMasterSlave2Port 6
       # Digestive system
-      - &intakeBrushMotorPort 7
-      - &intakeBigWheelMotorPort 13
-      - &feederMotor1Port 8
-      - &shooterLeftMotorPort 9
-      - &shooterRightMotorPort 10
-      - &kickerMotorPort 11
+      - &intakeBrushMotorPort 7 #45
+      - &intakeBigWheelMotorPort 8 #50
+      - &feederMotor1Port 9 #41
+      - &shooterLeftMotorPort 10 #49
+      - &shooterRightMotorPort 11 #42
+      - &kickerMotorPort 12
       # Weapons
-      - &climberMotorPort 12
+      - &climberMotorPort 13
   - SolenoidPorts:
       - &intakeSolenoidForward 4
       - &intakeSolenoidReverse 5
