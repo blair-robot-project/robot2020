@@ -21,7 +21,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.*;foo
+import java.util.*;
 
 /** The main class of the robot, constructs all the subsystems and initializes default commands. */
 public class Robot extends TimedRobot {
@@ -94,7 +94,8 @@ public class Robot extends TimedRobot {
    * Whether robot code is being unit tested. Note that this is NOT the same as test mode.
    *
    * <p>The return value will never change observably. {@link Robot#notifyTesting()} will thus
-   * throw an exception if it is called after the first time that this method is called.
+   * throw
+   * an exception if it is called after the first time that this method is called.
    *
    * @return whether the current run is a unit test
    */
