@@ -74,18 +74,18 @@ public class LoggingFlywheel extends SubsystemBase implements SubsystemFlywheel,
      * @param kickerMotor         The motor controlling the feeder.
      * @param kickerThrottle      The throttle, from [-1, 1], at which to run the feeder.
      * @param spinUpTimeoutSecs   The amount of time, in seconds, it takes for the multiSubsystem to get up to speed.
-     *                            Defaults to {@literal 0}.
+     *                            Defaults to {@code 0}.
      * @param minShootingSpeedFPS The speed, in feet per second, at which the flywheel nominally shoots.
-     *                            Defaults to {@literal null}, meaning that there is no speed requirement.
+     *                            Defaults to {@code null}, meaning that there is no speed requirement.
      */
     @JsonCreator
-    public LoggingFlywheel(@NotNull @JsonProperty(required = true) SmartMotor shooterMotor,
-                           @NotNull @JsonProperty(required = true) SmartMotor otherShooterMotor,
-                           @JsonProperty(required = true) double shooterThrottle,
-                           @NotNull @JsonProperty(required = true) SimpleMotor kickerMotor,
-                           @JsonProperty(required = true) double kickerThrottle,
-                           @JsonProperty(required = true) double spinUpTimeoutSecs,
-                           @Nullable Double minShootingSpeedFPS) {
+    public LoggingFlywheel(@NotNull @JsonProperty(required = true) final SmartMotor shooterMotor,
+                           @NotNull @JsonProperty(required = true) final SmartMotor otherShooterMotor,
+                           @JsonProperty(required = true) final double shooterThrottle,
+                           @NotNull @JsonProperty(required = true) final SimpleMotor kickerMotor,
+                           @JsonProperty(required = true) final double kickerThrottle,
+                           @JsonProperty(required = true) final double spinUpTimeoutSecs,
+                           @Nullable final Double minShootingSpeedFPS) {
         this.shooterMotor = shooterMotor;
         this.otherShooterMotor = otherShooterMotor;
         this.shooterThrottle = shooterThrottle;

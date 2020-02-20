@@ -58,8 +58,8 @@ public class IntakeTwoSidesSimple extends SubsystemBase implements SubsystemInta
      *                   null to indicate that this intake doesn't have/use OUT_FAST.
      */
     @JsonCreator
-    public IntakeTwoSidesSimple(@JsonProperty(required = true) @NotNull final SimpleMotor leftMotor,
-                                @JsonProperty(required = true) @NotNull final SimpleMotor rightMotor,
+    public IntakeTwoSidesSimple(@NotNull @JsonProperty(required = true) final SimpleMotor leftMotor,
+                                @NotNull @JsonProperty(required = true) final SimpleMotor rightMotor,
                                 @Nullable final Double inSlowVel,
                                 @Nullable final Double inFastVel,
                                 @Nullable final Double outSlowVel,

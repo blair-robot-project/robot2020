@@ -57,7 +57,7 @@ public class IntakeSimple extends SubsystemBase implements SubsystemIntake, Logg
      *                   [-1, 1]. Can be null to indicate that this intake doesn't have/use OUT_FAST.
      */
     @JsonCreator
-    public IntakeSimple(@JsonProperty(required = true) @NotNull final SimpleMotor motor,
+    public IntakeSimple(@NotNull @JsonProperty(required = true) final SimpleMotor motor,
                         @Nullable final Double inSlowVel,
                         @Nullable final Double inFastVel,
                         @Nullable final Double outSlowVel,

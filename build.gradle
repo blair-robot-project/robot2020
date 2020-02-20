@@ -11,6 +11,7 @@ def ROBOT_MAIN_CLASS = "org.usfirst.frc.team449.robot.Main"
 repositories {
     mavenCentral()
     maven { url 'http://www.revrobotics.com/content/sw/max/sdk/maven/' }
+    maven { url 'http://revrobotics.com/content/sw/color-sensor-v3/sdk/maven/' }
     maven { url "https://plugins.gradle.org/m2/" }
     maven { url 'https://jitpack.io' }
 }
@@ -66,6 +67,7 @@ dependencies {
     compile 'com.github.Oblarg:Oblog:3.1.0'
 
     compile 'com.revrobotics.frc:SparkMax-java:1.4.1'
+    compile 'com.revrobotics.frc:ColorSensorV3-java:1.2.0'
 
     implementation wpi.deps.wpilib()
     nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)

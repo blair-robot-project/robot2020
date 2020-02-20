@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /**
  * A mix-in for {@link edu.wpi.first.wpilibj2.command.Subsystem} that adds JsonTypeInfo and then ignores getters/setters.
- * Don't make sublasses of this.
+ * Don't make subclasses of this.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT, property = "@class")
 public abstract class SubsystemMixIn {

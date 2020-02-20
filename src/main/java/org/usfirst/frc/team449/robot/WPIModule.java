@@ -1,6 +1,8 @@
 package org.usfirst.frc.team449.robot;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.revrobotics.ColorSensorV3;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -10,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import org.usfirst.frc.team449.robot.mixIn.ColorMixIn;
+import org.usfirst.frc.team449.robot.mixIn.ColorSensorV3MixIn;
 import org.usfirst.frc.team449.robot.mixIn.CommandGroupMixIn;
 import org.usfirst.frc.team449.robot.mixIn.ConditionalCommandMixIn;
 import org.usfirst.frc.team449.robot.mixIn.PrintCommandMixIn;
@@ -39,6 +43,8 @@ public class WPIModule extends SimpleModule {
     public void setupModule(final SetupContext context) {
         super.setupModule(context);
 
+        context.setMixInAnnotations(Color.class, ColorMixIn.class);
+
         context.setMixInAnnotations(Subsystem.class, SubsystemMixIn.class);
 
         context.setMixInAnnotations(Command.class, UseCLASSIncludeWRAPPER_OBJECTMixIn.class);
@@ -53,5 +59,7 @@ public class WPIModule extends SimpleModule {
         context.setMixInAnnotations(ParallelCommandGroup.class, CommandGroupMixIn.class);
 
         context.setMixInAnnotations(Button.class, UseCLASSIncludeWRAPPER_OBJECTMixIn.class);
+
+        context.setMixInAnnotations(ColorSensorV3.class, ColorSensorV3MixIn.class);
     }
 }

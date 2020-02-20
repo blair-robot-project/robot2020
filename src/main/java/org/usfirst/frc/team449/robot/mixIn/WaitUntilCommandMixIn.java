@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A mix-in for {@link edu.wpi.first.wpilibj2.command.WaitUntilCommand} that annotates its constructor for use with Jackson.
- * Don't make sublasses of this.
+ * Don't make subclasses of this.
  */
 public abstract class WaitUntilCommandMixIn {
     /**

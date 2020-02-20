@@ -39,8 +39,8 @@ public class BinaryMotorGoToPos extends SubsystemBase implements SubsystemBinary
      * @param positionFeet The position, in feet, for the talon to go to. Defaults to 0.
      */
     @JsonCreator
-    public BinaryMotorGoToPos(@JsonProperty(required = true) @NotNull MappedTalon talon,
-                              double positionFeet) {
+    public BinaryMotorGoToPos(@NotNull @JsonProperty(required = true) final MappedTalon talon,
+                              final double positionFeet) {
         this.talon = talon;
         this.positionFeet = positionFeet;
         motorOn = false;

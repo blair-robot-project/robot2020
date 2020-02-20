@@ -10,11 +10,10 @@ import java.util.Set;
  * A command that does nothing when run. Used if a command is required somewhere but no side effects are desired.
  *
  * <p>
- * For a command that prints something to the console every time that it is run, use {@link edu.wpi.first.wpilibj2.command.PrintCommand}
+ * For a command that prints something to the console whenever it is initialized, use {@link edu.wpi.first.wpilibj2.command.PrintCommand}
  * </p>
  */
 public class PlaceholderCommand implements Command {
-    @JsonCreator
     private PlaceholderCommand() {
     }
 
@@ -49,7 +48,7 @@ public class PlaceholderCommand implements Command {
      * Gets around WPILib's no-more-than-one-group-per-command rule by never being equal to any other object.
      *
      * @param obj the reference object with which to compare
-     * @return {@literal false}
+     * @return {@code false}
      */
     @Override
     public boolean equals(final Object obj) {
@@ -62,9 +61,9 @@ public class PlaceholderCommand implements Command {
     private static final PlaceholderCommand instance = new PlaceholderCommand();
 
     /**
-     * Returns a default instance that does nothing when executed.
+     * Returns the singleton instance.
      *
-     * @return a default instance
+     * @return the singleton instance
      */
     @JsonCreator
     public static PlaceholderCommand getInstance() {

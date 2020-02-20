@@ -23,7 +23,12 @@ import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
-import org.usfirst.frc.team449.robot.jacksonWrappers.*;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMax;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon;
+import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
+import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
+import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
+import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.FPSSmartMotorSimulated;
 import org.usfirst.frc.team449.robot.other.Updater;
 
@@ -104,38 +109,38 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
      */
     @JsonCreator
     static SmartMotor create(@JsonProperty(required = true) final Type type,
-                                @JsonProperty(required = true) final int port,
-                                @JsonProperty(required = true) final boolean enableBrakeMode,
-                                @Nullable final String name,
-                                final boolean reverseOutput,
-                                @Nullable final PDP PDP,
-                                @Nullable final Boolean fwdLimitSwitchNormallyOpen,
-                                @Nullable final Boolean revLimitSwitchNormallyOpen,
-                                @Nullable final Integer remoteLimitSwitchID,
-                                @Nullable final Double fwdSoftLimit,
-                                @Nullable final Double revSoftLimit,
-                                @Nullable final Double postEncoderGearing,
-                                @Nullable final Double feetPerRotation,
-                                @Nullable final Integer currentLimit,
-                                final boolean enableVoltageComp,
-                                @Nullable final List<PerGearSettings> perGearSettings,
-                                @Nullable final Shiftable.gear startingGear,
-                                @Nullable final Integer startingGearNum,
-                                // Spark-specific
-                                @Nullable final Integer controlFrameRateMillis,
-                                // Talon-specific
-                                @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
-                                @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
-                                @Nullable final Integer voltageCompSamples,
-                                @Nullable final FeedbackDevice feedbackDevice,
-                                @Nullable final Integer encoderCPR,
-                                @Nullable final Boolean reverseSensor,
-                                @Nullable final Double updaterProcessPeriodSecs,
-                                @Nullable final List<SlaveTalon> slaveTalons,
-                                @Nullable final List<SlaveVictor> slaveVictors,
-                                @Nullable final List<SlaveSparkMax> slaveSparks,
-                                // Handled specially.
-                                @Nullable final Map<?, Integer> statusFrameRatesMillis) {
+                             @JsonProperty(required = true) final int port,
+                             @JsonProperty(required = true) final boolean enableBrakeMode,
+                             @Nullable final String name,
+                             final boolean reverseOutput,
+                             @Nullable final PDP PDP,
+                             @Nullable final Boolean fwdLimitSwitchNormallyOpen,
+                             @Nullable final Boolean revLimitSwitchNormallyOpen,
+                             @Nullable final Integer remoteLimitSwitchID,
+                             @Nullable final Double fwdSoftLimit,
+                             @Nullable final Double revSoftLimit,
+                             @Nullable final Double postEncoderGearing,
+                             @Nullable final Double feetPerRotation,
+                             @Nullable final Integer currentLimit,
+                             final boolean enableVoltageComp,
+                             @Nullable final List<PerGearSettings> perGearSettings,
+                             @Nullable final Shiftable.gear startingGear,
+                             @Nullable final Integer startingGearNum,
+                             // Spark-specific
+                             @Nullable final Integer controlFrameRateMillis,
+                             // Talon-specific
+                             @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
+                             @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
+                             @Nullable final Integer voltageCompSamples,
+                             @Nullable final FeedbackDevice feedbackDevice,
+                             @Nullable final Integer encoderCPR,
+                             @Nullable final Boolean reverseSensor,
+                             @Nullable final Double updaterProcessPeriodSecs,
+                             @Nullable final List<SlaveTalon> slaveTalons,
+                             @Nullable final List<SlaveVictor> slaveVictors,
+                             @Nullable final List<SlaveSparkMax> slaveSparks,
+                             // Handled specially.
+                             @Nullable final Map<?, Integer> statusFrameRatesMillis) {
         final var logHelper = new Object() {
             public void warning(final String message) {
                 this.log("Warning: " + message);
@@ -434,6 +439,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
      *
      * @param velocity the desired velocity, on [-1, 1].
      */
+    @Override
     void setVelocity(double velocity);
 
     /**

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /**
@@ -20,6 +21,9 @@ public abstract class CommandGroupMixIn {
     public CommandGroupMixIn(@JsonProperty("commands") final Command... commands) {
     }
 
+    /**
+     * @see CommandGroupBase#addRequirements(Subsystem...)
+     */
     @JsonSetter(value = "requiredSubsystems", nulls = Nulls.SKIP, contentNulls = Nulls.FAIL)
     @JsonAlias("requirements")
     abstract void addRequirements(Subsystem... requirements);

@@ -38,8 +38,8 @@ public class IRWithButtonOverride implements SubsystemConditional {
 	 * @param button         Manual override button this subsystem uses.
 	 */
 	@JsonCreator
-	public IRWithButtonOverride(@JsonProperty(required = true) @NotNull MappedDigitalInput infraredSensor,
-	                            @JsonProperty(required = true) @NotNull SimpleButton button) {
+	public IRWithButtonOverride(@NotNull @JsonProperty(required = true) final MappedDigitalInput infraredSensor,
+								@NotNull @JsonProperty(required = true) final SimpleButton button) {
 		this.infraredSensor = infraredSensor;
 		this.button = button;
 	}

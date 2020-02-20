@@ -1,0 +1,161 @@
+---
+
+# IntelliJ supports Ctrl+clicking anchors to find usages and declarations... so, hyperlinks! Yooooooooo!
+# Basically a table of contents; Ctrl+click on a heading in UPPER_SNAKE_CASE to jump back and forth between the
+# table of contents and actual location in the map.
+NAVIGATION:
+  # The anchors that replace map key values must have the values of the keys that they replace.
+  - &PDP pdp
+  # This works magically because the anchor refers to the key of the mapping only, which is the string "subsystems".
+  - &SUBSYSTEMS subsystems:
+      # Other anchors, like these, become null list items and are explicitly ignored using @JsonInclude
+      - &DRIVE_SUBSYSTEM
+      - &INTAKE_SUBSYSTEM
+      - &FEEDER_SUBSYSTEM
+      - &SHOOTER_SUBSYSTEM
+      - &CLIMBER_SUBSYSTEM
+      - &SPINNER_SUBSYSTEM
+  - &COMMANDS commands:
+      - &BUTTONS buttons:
+          - &DRIVE_COMMANDS
+          - &INTAKE_COMMANDS
+          - &SHOOTER_COMMANDS
+          - &CLIMBER_COMMANDS
+          - &SPINNER_COMMANDS
+      - &DEFAULT_COMMANDS defaultCommands:
+          - &DRIVE_DEFAULT_COMMAND
+          - &FEEDER_DEFAULT_COMMAND
+  - &UPDATER updater
+
+# Anchors for transclusion into the rest of the map.
+# Ignored by Jackson (so is NAVIGATION); can contain any valid YAML suitable for organizational purposes.
+# Make sure there aren't any colons after the anchors; Jackson gives "Null key for a Map not allowed in JSON"
+CONSTANTS:
+  - MotorPorts:
+      # Spinnyboiz
+      - &leftMasterPort 1
+      - &leftMasterSlave1Port 3
+      - &leftMasterSlave2Port 5
+      - &rightMasterPort 2
+      - &rightMasterSlave1Port 4
+      - &rightMasterSlave2Port 6
+      # Digestive system
+      - &intakeBrushMotorPort 7
+      - &intakeBigWheelMotorPort 13
+      - &feederMotor1Port 8
+      - &shooterLeftMotorPort 9
+      - &shooterRightMotorPort 10
+      - &kickerMotorPort 11
+      # Weapons
+      - &climberMotorPort 12
+  - SolenoidPorts:
+      - &intakeSolenoidForward 4
+      - &intakeSolenoidReverse 5
+      - &climberSolenoidForward 2
+      - &climberSolenoidReverse 3
+  - JoystickPorts:
+      - &driveJoystickPort 1
+      - &mechanismsJoystickPort 0
+  - ButtonNumbers:
+      - &intakeStartButtonNumber 1
+      - &intakeStopButtonNumber 2
+      - &shooterStartButtonNumber 3
+      - &shooterStopButtonNumber 4
+      - &climberOffButtonNumber 5
+      - &climberLowerButtonNumber 6
+      - &climberRaiseButtonNumber 7
+      - &climberWinchButtonNumber 8
+      - &testButtonNumber 9
+
+# WHETHER TO USE THE CAMERA SERVER
+useCameraServer: false
+
+########################################################################################################################
+*PDP:
+  org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
+    '@id': PDP
+    canID: 0
+    voltagePerCurrentLinReg:
+      bufferSize: 250
+      rSquaredThreshhold: 0.75
+
+
+########################################################################################################################
+*SUBSYSTEMS:
+  #***********************************************************************************************************************
+  - *SPINNER_SUBSYSTEM
+  - org.usfirst.frc.team449.robot.subsystem.singleImplementation.colorSpinner._2020ControlPanelSpinner:
+      '@id': spinner
+      motor:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.AnalogMotorSimple:
+          '@id': spinnerMotorSubsystem
+          motor:
+            org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+              '@id': spinnerMotor
+              type: SPARK
+              port: 42
+              enableBrakeMode: false
+      sensor:
+        org.usfirst.frc.team449.robot.components.colorSensor.commands.ColorSensorWithColorMatch:
+          sensor:
+            org.usfirst.frc.team449.robot.components.colorSensor.commands.ColorSensorRevV3:
+              sensor:
+                kOnboard
+          matcher:
+            colors:
+              # Blue is actually cyan.
+              - &Blue_Color
+                r: 0
+                g: 1
+                b: 1
+              - &Green_Color
+                r: 0
+                g: 1
+                b: 0
+              - &Red_Color
+                r: 1
+                g: 0
+                b: 0
+              - &Yellow_Color
+                r: 1
+                g: 1
+                b: 0
+      red: *Red_Color
+      green: *Green_Color
+      blue: *Blue_Color
+      yellow: *Yellow_Color
+
+*COMMANDS:
+  ########################################################################################################################
+  *BUTTONS:
+    #***********************************************************************************************************************
+    - *SPINNER_COMMANDS
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': colorMatchesButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              '@id': mechanismsJoystick
+              port: 0
+          buttonNumber: *testButtonNumber
+      command:
+        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
+          '@id': colorMatchCommandSequence
+          commands:
+            - org.usfirst.frc.team449.robot.subsystem.singleImplementation.colorSpinner.commands._2020SpinControlPanelUntilSatisfied:
+                '@id': spinnerPositionControlCommand
+                spinner:
+                  org.usfirst.frc.team449.robot.subsystem.singleImplementation.colorSpinner._2020ControlPanelSpinner:
+                    spinner
+                speed: 1
+            - edu.wpi.first.wpilibj2.command.PrintCommand:
+                "MATCHED"
+      action: WHEN_PRESSED
+
+
+########################################################################################################################
+*UPDATER:
+  org.usfirst.frc.team449.robot.other.Updater:
+    '@id': updater
+    updatables:
+      - org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP

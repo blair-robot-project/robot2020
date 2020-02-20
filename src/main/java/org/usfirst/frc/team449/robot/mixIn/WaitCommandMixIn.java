@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /**
  * A mix-in for {@link edu.wpi.first.wpilibj2.command.WaitCommand} that annotates its constructor for use with Jackson.
- * Don't make sublasses of this.
+ * Don't make subclasses of this.
  */
 public abstract class WaitCommandMixIn {
     /**

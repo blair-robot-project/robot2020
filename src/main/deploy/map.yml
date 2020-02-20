@@ -180,7 +180,7 @@ useCameraServer: false
             forward: 1
             reverse: 0
           startingGear: LOW
-
+  
   #***********************************************************************************************************************
   - *INTAKE_SUBSYSTEM
   - org.usfirst.frc.team449.robot.subsystem.complex.intake.IntakeActuatedTwoSides:
@@ -210,7 +210,7 @@ useCameraServer: false
       inFastVel: 0.02
       outSlowVel: -0.01
       outFastVel: -0.02
-
+  
   #***********************************************************************************************************************
   - *FEEDER_SUBSYSTEM
   - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
@@ -236,7 +236,7 @@ useCameraServer: false
       inFastVel: 0.02
       outSlowVel: -0.01
       outFastVel: -0.02
-
+  
   #***********************************************************************************************************************
   - *SHOOTER_SUBSYSTEM
   - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
@@ -299,7 +299,7 @@ useCameraServer: false
   #          port: 7
   #          inverted: false
   #          brakeMode: false
-
+  
   #***********************************************************************************************************************
   - *CLIMBER_SUBSYSTEM
   - org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber:
@@ -331,7 +331,7 @@ useCameraServer: false
 *COMMANDS:
   ########################################################################################################################
   *BUTTONS:
-
+  
     #***********************************************************************************************************************
     - *DRIVE_COMMANDS
     - button:
@@ -382,7 +382,7 @@ useCameraServer: false
                   org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
                     drive
       action: WHEN_PRESSED
-
+  
     #***********************************************************************************************************************
     - *INTAKE_COMMANDS
     - button:
@@ -415,7 +415,7 @@ useCameraServer: false
               intake
           mode: "OFF"
       action: WHEN_PRESSED
-
+  
     #***********************************************************************************************************************
     # FEEDER COMMANDS (UNUSED)
     #    - button:
@@ -433,7 +433,7 @@ useCameraServer: false
     #              feeder
     #          mode: IN_FAST
     #      action: WHEN_PRESSED
-
+  
     #***********************************************************************************************************************
     - *SHOOTER_COMMANDS
     - button:
@@ -496,7 +496,7 @@ useCameraServer: false
         #                      org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheel:
         #                        <<: *Spin_Up_Flywheel_Command
         #                        '@id': spinUpFlywheelCommand_followup
-
+    
         org.usfirst.frc.team449.robot.commands.general.PerpetualCommandReinitializing:
           '@id': startShootingOrSpinUpFlywheelCommmandPerpetual
           requiredSubsystems:
@@ -543,7 +543,7 @@ useCameraServer: false
                         useCached: true
                 - edu.wpi.first.wpilibj2.command.WaitCommand:
                     seconds: 1
-
+  
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -569,7 +569,7 @@ useCameraServer: false
                     feeder
                 mode: "OFF"
       action: WHEN_PRESSED
-
+  
     # Currently unused.
     #        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpThenShoot:
     #          '@id': shootCommand
@@ -579,7 +579,7 @@ useCameraServer: false
     #          feeder:
     #            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
     #              feeder
-
+  
     #***********************************************************************************************************************
     - *CLIMBER_COMMANDS
     - button:
@@ -641,7 +641,7 @@ useCameraServer: false
               climber
           state: "OFF"
       action: WHEN_PRESSED
-
+  
   ########################################################################################################################
   *DEFAULT_COMMANDS:
     #***********************************************************************************************************************
@@ -741,7 +741,7 @@ useCameraServer: false
               '@id': upshiftDebouncer
               bufferTimeSeconds: 0.06
             upshiftFwdThresh: 0.4
-
+  
     #***********************************************************************************************************************
     - *FEEDER_DEFAULT_COMMAND
     - subsystem:
