@@ -53,6 +53,8 @@ CONSTANTS:
       - &intakeSolenoidReverse 5
       - &climberSolenoidForward 2
       - &climberSolenoidReverse 3
+      - &spinnerSolenoidForward 6
+      - &spinnerSolenoidReverse 7
   - JoystickPorts:
       - &driveJoystickPort 1
       - &mechanismsJoystickPort 0
@@ -65,7 +67,8 @@ CONSTANTS:
       - &climberLowerButtonNumber 6
       - &climberRaiseButtonNumber 7
       - &climberWinchButtonNumber 8
-      - &testButtonNumber 9
+      - &spinUntilColorMatchesButtonNumber 9
+      - &toggleSpinnerButtonNumber 8
 
 # WHETHER TO USE THE CAMERA SERVER
 useCameraServer: false
@@ -94,7 +97,7 @@ useCameraServer: false
               '@id': spinnerMotor
               type: SPARK
               port: 42
-              enableBrakeMode: false
+              enableBrakeMode: true
       sensor:
         org.usfirst.frc.team449.robot.components.colorSensor.commands.ColorSensorWithColorMatch:
           sensor:
@@ -103,11 +106,29 @@ useCameraServer: false
                 kOnboard
           matcher:
             colors:
+              ## These are "raw" colors that include luminosity data, but rev's sensor can supply COLOR only where r+g+b=1
+              #              # Blue is actually cyan.
+              #              - &Blue_Color
+              #                r: 0
+              #                g: 1
+              #                b: 1
+              #              - &Green_Color
+              #                r: 0
+              #                g: 1
+              #                b: 0
+              #              - &Red_Color
+              #                r: 1
+              #                g: 0
+              #                b: 0
+              #              - &Yellow_Color
+              #                r: 1
+              #                g: 1
+              #                b: 0
               # Blue is actually cyan.
               - &Blue_Color
                 r: 0
-                g: 1
-                b: 1
+                g: 0.5
+                b: 0.5
               - &Green_Color
                 r: 0
                 g: 1
@@ -117,13 +138,19 @@ useCameraServer: false
                 g: 0
                 b: 0
               - &Yellow_Color
-                r: 1
-                g: 1
+                r: 0.5
+                g: 0.5
                 b: 0
       red: *Red_Color
       green: *Green_Color
       blue: *Blue_Color
       yellow: *Yellow_Color
+  - org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+      '@id': spinnerSolenoidSubsystem
+      piston:
+        '@id': spinnerSolenoid
+        forward: *spinnerSolenoidForward
+        reverse: *spinnerSolenoidReverse
 
 *COMMANDS:
   ########################################################################################################################
@@ -132,24 +159,44 @@ useCameraServer: false
     - *SPINNER_COMMANDS
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': colorMatchesButton
+          '@id': spinUntilColorMatchesButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               '@id': mechanismsJoystick
-              port: 0
-          buttonNumber: *testButtonNumber
+              port: *mechanismsJoystickPort
+          buttonNumber: *spinUntilColorMatchesButtonNumber
       command:
         edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
-          '@id': colorMatchCommandSequence
+          '@id': spinUntilColorMatchesCommandSequence
           commands:
+            - org.usfirst.frc.team449.robot.subsystem.singleImplementation.colorSpinner.commands._2020SetControlPanelPositionControlColor:
+                '@id': setSpinnerTargetColorCommand
+                spinner:
+                  org.usfirst.frc.team449.robot.subsystem.singleImplementation.colorSpinner._2020ControlPanelSpinner:
+                    spinner
+                color: RED
             - org.usfirst.frc.team449.robot.subsystem.singleImplementation.colorSpinner.commands._2020SpinControlPanelUntilSatisfied:
-                '@id': spinnerPositionControlCommand
+                '@id': spinUntilColorMatchesCommand
                 spinner:
                   org.usfirst.frc.team449.robot.subsystem.singleImplementation.colorSpinner._2020ControlPanelSpinner:
                     spinner
                 speed: 1
             - edu.wpi.first.wpilibj2.command.PrintCommand:
                 "MATCHED"
+      action: WHEN_HELD
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': toggleSpinnerButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *toggleSpinnerButtonNumber
+      command:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.ToggleSolenoid:
+          '@id': toggleCommand
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SolenoidSimple:
+              spinnerSolenoidSubsystem
       action: WHEN_PRESSED
 
 

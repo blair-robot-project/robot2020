@@ -6,22 +6,19 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BooleanSupplier;
 
-/**
- * Intended to be used as a base class.
- */
+/** Intended to be used as a base class. */
 public class BooleanSupplierBooleanSupplierBased implements BooleanSupplier {
-    private final BooleanSupplier source;
+  private final BooleanSupplier source;
 
-    /**
-     * Default constructor.
-     */
-    @JsonCreator
-    public BooleanSupplierBooleanSupplierBased(@NotNull @JsonProperty(required = true) final BooleanSupplier supplier) {
-        this.source = supplier;
-    }
+  /** Default constructor. */
+  @JsonCreator
+  public BooleanSupplierBooleanSupplierBased(
+      @NotNull @JsonProperty(required = true) final BooleanSupplier supplier) {
+    this.source = supplier;
+  }
 
-    @Override
-    public final boolean getAsBoolean() {
-        return this.source.getAsBoolean();
-    }
+  @Override
+  public final boolean getAsBoolean() {
+    return this.source.getAsBoolean();
+  }
 }

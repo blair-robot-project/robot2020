@@ -7,66 +7,65 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Set;
 
 /**
- * A command that does nothing when run. Used if a command is required somewhere but no side effects are desired.
+ * A command that does nothing when run. Used if a command is required somewhere but no side effects
+ * are desired.
  *
- * <p>
- * For a command that prints something to the console whenever it is initialized, use {@link edu.wpi.first.wpilibj2.command.PrintCommand}
- * </p>
+ * <p>For a command that prints something to the console whenever it is initialized, use {@link
+ * edu.wpi.first.wpilibj2.command.PrintCommand}
  */
 public class PlaceholderCommand implements Command {
-    private PlaceholderCommand() {
-    }
+  /** The singleton instance. */
+  private static final PlaceholderCommand instance = new PlaceholderCommand();
 
-    /**
-     * Whether the command has finished.  Once a command finishes, the scheduler will call its
-     * end() method and un-schedule it.
-     *
-     * @return whether the command has finished.
-     */
-    @Override
-    public boolean isFinished() {
-        return true;
-    }
+  @JsonCreator
+  private PlaceholderCommand() {}
 
-    /**
-     * Specifies the set of subsystems used by this command.  Two commands cannot use the same
-     * subsystem at the same time.  If the command is scheduled as interruptible and another
-     * command is scheduled that shares a requirement, the command will be interrupted.  Else,
-     * the command will not be scheduled.  If no subsystems are required, return an empty set.
-     *
-     * <p>Note: it is recommended that user implementations contain the requirements as a field,
-     * and return that field here, rather than allocating a new set every time this is called.
-     *
-     * @return the set of subsystems that are required
-     */
-    @Override
-    public Set<Subsystem> getRequirements() {
-        return Set.of();
-    }
+  /**
+   * Returns the singleton instance.
+   *
+   * @return the singleton instance
+   */
+  @JsonCreator
+  public static PlaceholderCommand getInstance() {
+    return instance;
+  }
 
-    /**
-     * Gets around WPILib's no-more-than-one-group-per-command rule by never being equal to any other object.
-     *
-     * @param obj the reference object with which to compare
-     * @return {@code false}
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        return false;
-    }
+  /**
+   * Whether the command has finished. Once a command finishes, the scheduler will call its end()
+   * method and un-schedule it.
+   *
+   * @return whether the command has finished.
+   */
+  @Override
+  public boolean isFinished() {
+    return true;
+  }
 
-    /**
-     * The singleton instance.
-     */
-    private static final PlaceholderCommand instance = new PlaceholderCommand();
+  /**
+   * Specifies the set of subsystems used by this command. Two commands cannot use the same
+   * subsystem at the same time. If the command is scheduled as interruptible and another command is
+   * scheduled that shares a requirement, the command will be interrupted. Else, the command will
+   * not be scheduled. If no subsystems are required, return an empty set.
+   *
+   * <p>Note: it is recommended that user implementations contain the requirements as a field, and
+   * return that field here, rather than allocating a new set every time this is called.
+   *
+   * @return the set of subsystems that are required
+   */
+  @Override
+  public Set<Subsystem> getRequirements() {
+    return Set.of();
+  }
 
-    /**
-     * Returns the singleton instance.
-     *
-     * @return the singleton instance
-     */
-    @JsonCreator
-    public static PlaceholderCommand getInstance() {
-        return instance;
-    }
+  /**
+   * Gets around WPILib's no-more-than-one-group-per-command rule by never being equal to any other
+   * object.
+   *
+   * @param obj the reference object with which to compare
+   * @return {@literal false}
+   */
+  @Override
+  public boolean equals(final Object obj) {
+    return false;
+  }
 }

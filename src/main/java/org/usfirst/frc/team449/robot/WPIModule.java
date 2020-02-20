@@ -27,21 +27,19 @@ import org.usfirst.frc.team449.robot.mixIn.WaitUntilCommandMixIn;
  */
 public class WPIModule extends SimpleModule {
 
-    /**
-     * Default constructor
-     */
-    public WPIModule() {
-        super("WPIModule");
-    }
+  /** Default constructor */
+  public WPIModule() {
+    super("WPIModule");
+  }
 
-    /**
-     * Mixes in some mix-ins to the given context.
-     *
-     * @param context the context to set up
-     */
-    @Override
-    public void setupModule(final SetupContext context) {
-        super.setupModule(context);
+  /**
+   * Mixes in some mix-ins to the given context.
+   *
+   * @param context the context to set up
+   */
+  @Override
+  public void setupModule(final SetupContext context) {
+    super.setupModule(context);
 
         context.setMixInAnnotations(Color.class, ColorMixIn.class);
 

@@ -13,54 +13,56 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.climber.SubsystemClimb
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SetClimberWithArmState extends InstantCommand {
 
-    private final SubsystemClimberWithArm subsystem;
-    private final ClimberState state;
+  private final SubsystemClimberWithArm subsystem;
+  private final ClimberState state;
 
-    @JsonCreator
-    public SetClimberWithArmState(@NotNull @JsonProperty(required = true) SubsystemClimberWithArm subsystem,
-                                  @NotNull @JsonProperty(required = true) ClimberState state) {
-        this.subsystem = subsystem;
-        this.state = state;
-    }
+  @JsonCreator
+  public SetClimberWithArmState(
+      @NotNull @JsonProperty(required = true) SubsystemClimberWithArm subsystem,
+      @NotNull @JsonProperty(required = true) ClimberState state) {
+    this.subsystem = subsystem;
+    this.state = state;
+  }
 
-    /**
-     * Log when this command is initialized
-     */
-    @Override
-    public void initialize() {
-        Shuffleboard.addEventMarker("SetClimberWithArmState init.", this.getClass().getSimpleName(), EventImportance.kNormal);
-    }
+  /** Log when this command is initialized */
+  @Override
+  public void initialize() {
+    Shuffleboard.addEventMarker(
+        "SetClimberWithArmState init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+  }
 
-    /**
-     * Set the climber to the given mode.
-     */
-    @Override
-    public void execute() {
-        switch (this.state) {
-            case OFF:
-                this.subsystem.off();
-                break;
-            case RAISE:
-                this.subsystem.raise();
-                break;
-            case LOWER:
-                this.subsystem.lower();
-                break;
-        }
+  /** Set the climber to the given mode. */
+  @Override
+  public void execute() {
+    switch (this.state) {
+      case OFF:
+        this.subsystem.off();
+        break;
+      case RAISE:
+        this.subsystem.raise();
+        break;
+      case LOWER:
+        this.subsystem.lower();
+        break;
     }
+  }
 
-    /**
-     * Log when this command ends
-     */
-    @Override
-    public void end(boolean interrupted) {
-        if (interrupted) {
-            Shuffleboard.addEventMarker("SetClimberWithArmState Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        }
-        Shuffleboard.addEventMarker("SetClimberWithArmState end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+  /** Log when this command ends */
+  @Override
+  public void end(boolean interrupted) {
+    if (interrupted) {
+      Shuffleboard.addEventMarker(
+          "SetClimberWithArmState Interrupted!",
+          this.getClass().getSimpleName(),
+          EventImportance.kNormal);
     }
+    Shuffleboard.addEventMarker(
+        "SetClimberWithArmState end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+  }
 
-    public enum ClimberState {
-        OFF, RAISE, LOWER
-    }
+  public enum ClimberState {
+    OFF,
+    RAISE,
+    LOWER
+  }
 }
