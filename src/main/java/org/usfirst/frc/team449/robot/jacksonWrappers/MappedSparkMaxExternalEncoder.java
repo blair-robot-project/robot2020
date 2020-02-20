@@ -201,8 +201,7 @@ public class MappedSparkMaxExternalEncoder implements SmartMotor {
 
     this.encoderCPR = encoderCPR != null ? encoderCPR : 1;
 
-    encoder.setDistancePerPulse(encoderCPR / postEncoderGearing
-    );
+    encoder.setDistancePerPulse(1. / encoderCPR);
 
     // Only enable the limit switches if it was specified if they're normally open or closed.
     if (fwdLimitSwitchNormallyOpen != null) {

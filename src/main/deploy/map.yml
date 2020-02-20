@@ -209,7 +209,7 @@ useCameraServer: false
 
   #***********************************************************************************************************************
   - *INTAKE_SUBSYSTEM
-  - org.usfirst.frc.team449.robot.subsystem.complex.intake.IntakeActuatedTwoSides:
+  - org.usfirst.frc.team449.robot._2020.intake.IntakeActuatedTwoSides:
       '@id': intake
       leftMotor:
         org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
@@ -417,7 +417,7 @@ useCameraServer: false
         org.usfirst.frc.team449.robot._2020.intake.commands.SetIntakeMode:
           '@id': intakeStartCommand
           subsystem:
-            org.usfirst.frc.team449.robot.subsystem.complex.intake.IntakeActuatedTwoSides:
+            org.usfirst.frc.team449.robot._2020.intake.IntakeActuatedTwoSides:
               intake
           mode: IN_FAST
       action: WHEN_PRESSED
@@ -432,7 +432,7 @@ useCameraServer: false
         org.usfirst.frc.team449.robot._2020.intake.commands.SetIntakeMode:
           '@id': intakeStopCommand
           subsystem:
-            org.usfirst.frc.team449.robot.subsystem.complex.intake.IntakeActuatedTwoSides:
+            org.usfirst.frc.team449.robot._2020.intake.IntakeActuatedTwoSides:
               intake
           mode: "OFF"
       action: WHEN_PRESSED
@@ -447,7 +447,7 @@ useCameraServer: false
         org.usfirst.frc.team449.robot._2020.climber.commands.ToggleSolenoid:
           '@id': intakePistonToggleCommand
           subsystem:
-            org.usfirst.frc.team449.robot.subsystem.complex.intake.IntakeActuatedTwoSides:
+            org.usfirst.frc.team449.robot._2020.intake.IntakeActuatedTwoSides:
               intake
       action: WHEN_PRESSED
 

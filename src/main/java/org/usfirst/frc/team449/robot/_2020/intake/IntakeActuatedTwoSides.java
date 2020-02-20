@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot.subsystem.complex.intake;
+package org.usfirst.frc.team449.robot._2020.intake;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot._2020.climber.SubsystemSolenoid;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDoubleSolenoid;
-import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.intakeTwoSides.IntakeTwoSidesSimple;
 
 /**
  * An intake that goes up and down with a piston.
