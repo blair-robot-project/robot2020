@@ -183,33 +183,51 @@ useCameraServer: false
 
   #***********************************************************************************************************************
   - *INTAKE_SUBSYSTEM
-  - org.usfirst.frc.team449.robot.subsystem.complex.intake.IntakeActuatedTwoSides:
+  - org.usfirst.frc.team449.robot.subsystem.complex.intake.IntakeActuated:
       '@id': intake
-      leftMotor:
-        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
-          '@id': intakeBrushMotor
-          name: intakeBrushMotor
-          type: SPARK
-          port: *intakeBrushMotorPort
-          enableBrakeMode: true
-          PDP: PDP
-      rightMotor:
-        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
-          '@id': intakeBigWheelMotor
-          name: intakeBigWheelMotor
-          type: SPARK
-          port: *intakeBigWheelMotorPort
-          enableBrakeMode: true
-          PDP: PDP
       piston:
         '@id': intakeSolenoid
         module: 0
         forward: *intakeSolenoidForward
         reverse: *intakeSolenoidReverse
-      inSlowVel: 0.01
-      inFastVel: 0.02
-      outSlowVel: -0.01
-      outFastVel: -0.02
+      implementation:
+        org.usfirst.frc.team449.robot.subsystem.complex.intake.IntakeCluster:
+          - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+              '@id': intakeBrush
+              inSlowVel: 1
+              inFastVel: 10
+              outSlowVel: -1
+              outFastVel: -1
+              motor:
+                org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+                  '@id': intakeBrushMotor
+                  name: intakeBrushMotor
+                  type: SPARK
+                  port: *intakeBrushMotorPort
+                  enableBrakeMode: true
+                  PDP: PDP
+                  perGearSettings:
+                    - gearNum: 0
+                      maxSpeed: 100
+                      rampRate: 10
+                      kP: 0.05
+                      kI: 0.1
+                      kD: 0
+          - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
+              '@id': intakeBigWheel
+              inSlowVel: 0.01
+              inFastVel: 0.02
+              outSlowVel: -0.01
+              outFastVel: -0.02
+              motor:
+                org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+                  '@id': intakeBigWheelMotor
+                  name: intakeBigWheelMotor
+                  type: SPARK
+                  port: *intakeBigWheelMotorPort
+                  enableBrakeMode: true
+                  PDP: PDP
+
 
   #***********************************************************************************************************************
   - *FEEDER_SUBSYSTEM

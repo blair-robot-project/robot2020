@@ -57,6 +57,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
     @Log
     private double setpoint;
     @NotNull
+    @Log.ToString
     private ControlMode controlMode = ControlMode.Disabled;
     @NotNull
     private final FPSSmartMotorSimulated.PID pid = new PID(MAX_INTEGRAL, () -> this.setpoint, 0, 0, 0);
@@ -372,8 +373,8 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
     /**
      * @return Raw velocity units for debugging purposes
      */
-    @Override
     @Log
+    @Override
     public double encoderVelocity() {
         return this.motor.getVelocity();
     }
@@ -383,6 +384,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
      *
      * @return The controller's velocity in FPS, or null if no encoder CPR was given.
      */
+    @Log
     @Override
     public Double getVelocity() {
         return this.encoderToUPS(this.encoderVelocity());

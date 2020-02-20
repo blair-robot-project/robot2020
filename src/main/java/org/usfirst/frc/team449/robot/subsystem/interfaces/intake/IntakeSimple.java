@@ -9,14 +9,15 @@ import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.analogMotor.SubsystemAnalogMotor;
 
 import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /**
- * A simple intake subsystem.
+ * A simple intake subsystem that relies on a single motor to rotate some part of it.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class IntakeSimple extends SubsystemBase implements SubsystemIntake, Loggable {
+public class IntakeSimple extends SubsystemBase implements SubsystemIntake, SubsystemAnalogMotor, Loggable {
 
     /**
      * The motor this subsystem controls.
@@ -70,7 +71,7 @@ public class IntakeSimple extends SubsystemBase implements SubsystemIntake, Logg
         this.mode = IntakeMode.OFF;
 
         if (inSlowVel == null && inFastVel == null && outSlowVel == null && outFastVel == null) {
-            System.err.println(getLogPrefix(this) + "Warning: without any defined velocities; motor will never spin.");
+          System.err.println(getLogPrefix(this) + "Warning: No defined velocities; motor will never spin.");
         }
     }
 
@@ -124,4 +125,22 @@ public class IntakeSimple extends SubsystemBase implements SubsystemIntake, Logg
                 break;
         }
     }
+
+  /**
+   * Set output to a given input.
+   *
+   * @param input The input to give to the motor.
+   */
+  @Override
+  public void set(final double input) {
+    this.motor.setVelocity(input);
+  }
+
+  /**
+   * Disable the motor.
+   */
+  @Override
+  public void disable() {
+    this.motor.disable();
+  }
 }

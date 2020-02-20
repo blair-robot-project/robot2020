@@ -23,7 +23,12 @@ import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
-import org.usfirst.frc.team449.robot.jacksonWrappers.*;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMax;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon;
+import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
+import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
+import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
+import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.FPSSmartMotorSimulated;
 import org.usfirst.frc.team449.robot.other.Updater;
 
@@ -434,6 +439,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
      *
      * @param velocity the desired velocity, on [-1, 1].
      */
+    @Override
     void setVelocity(double velocity);
 
     /**
@@ -555,8 +561,6 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
     @Override
     String configureLogName();
 
-    int LOG_WIDTH = 4, LOG_HEIGHT = 3;
-
     /**
      * Gets the default width and height of the layout of this instance of the class in Shuffleboard.
      * f
@@ -568,10 +572,10 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
         return new int[] {4, 3};
     }
 
-//    @Override
-//    default int[] configureLayoutPosition() {
-//        return new int[] {3, 4};
-//    }
+  @Override
+  default int[] configureLayoutPosition() {
+    return new int[] {3, 3};
+  }
 
     /**
      * Gets whether the motor is a simulated motor.

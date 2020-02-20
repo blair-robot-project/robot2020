@@ -5,19 +5,20 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemConditional;
-import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
 
 /**
- * An intake with a digital input.
+ * A decorator to make an intake with a digital input.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class IntakeSensored extends IntakeSimple implements SubsystemIntake, SubsystemConditional {
+public class IntakeSensored implements Subsystem, SubsystemIntake, SubsystemConditional, Loggable {
 
+  private final SubsystemIntake implementation;
     /**
      * The sensor for detecting if there's something in the intake.
      */
@@ -31,17 +32,13 @@ public class IntakeSensored extends IntakeSimple implements SubsystemIntake, Sub
     /**
      * Default constructor.
      *
-     * @param sensor    The sensor for detecting if there's something in the intake.
-     * @param motor     The motor for the intake.
-     * @param fastSpeed The speed to run the motor at going fast.
-     * @param slowSpeed The speed to run the motor at going slow.
+     * @param implementation The intake instance to wrap.
+     * @param sensor         The sensor for detecting if there's something in the intake.
      */
     @JsonCreator
-    public IntakeSensored(@NotNull @JsonProperty(required = true) MappedDigitalInput sensor,
-                          @NotNull @JsonProperty(required = true) SimpleMotor motor,
-                          @JsonProperty(required = true) double fastSpeed,
-                          @JsonProperty(required = true) double slowSpeed) {
-        super(motor, slowSpeed, fastSpeed, -slowSpeed, -fastSpeed);
+    public IntakeSensored(final SubsystemIntake implementation,
+                          @NotNull @JsonProperty(required = true) final MappedDigitalInput sensor) {
+      this.implementation = implementation;
         this.sensor = sensor;
     }
 
@@ -68,4 +65,20 @@ public class IntakeSensored extends IntakeSimple implements SubsystemIntake, Sub
     public void update() {
         cachedCondition = isConditionTrue();
     }
+
+  /**
+   * @return the current mode of the intake.
+   */
+  @Override
+  public @NotNull IntakeMode getMode() {
+    return this.implementation.getMode();
+  }
+
+  /**
+   * @param mode The mode to switch the intake to.
+   */
+  @Override
+  public void setMode(@NotNull final IntakeMode mode) {
+    this.implementation.setMode(mode);
+  }
 }

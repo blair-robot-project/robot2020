@@ -5,19 +5,20 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDoubleSolenoid;
-import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.intake.SubsystemIntake;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
 
 /**
- * An intake that goes up and down with a piston.
+ * A decorator to make an intake that goes up and down with a piston.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class IntakeActuated extends IntakeSimple implements SubsystemSolenoid, SubsystemIntake {
+public class IntakeActuated implements Subsystem, SubsystemIntake, SubsystemSolenoid, Loggable {
 
+    private final SubsystemIntake implementation;
     /**
      * The piston for actuating the intake.
      */
@@ -30,17 +31,13 @@ public class IntakeActuated extends IntakeSimple implements SubsystemSolenoid, S
     /**
      * Default constructor.
      *
-     * @param piston    The piston for actuating the intake.
-     * @param motor     The motor for the intake.
-     * @param fastSpeed The speed to run the motor at going fast.
-     * @param slowSpeed The speed to run the motor at going slow.
+     * @param implementation The intake instance to wrap.
+     * @param piston         The piston for actuating the intake.
      */
     @JsonCreator
-    public IntakeActuated(@NotNull @JsonProperty(required = true) MappedDoubleSolenoid piston,
-                          @NotNull @JsonProperty(required = true) SimpleMotor motor,
-                          @JsonProperty(required = true) double fastSpeed,
-                          @JsonProperty(required = true) double slowSpeed) {
-        super(motor, slowSpeed, fastSpeed, -slowSpeed, -fastSpeed);
+    public IntakeActuated(final SubsystemIntake implementation,
+                          @NotNull @JsonProperty(required = true) final MappedDoubleSolenoid piston) {
+        this.implementation = implementation;
         this.piston = piston;
     }
 
@@ -48,7 +45,7 @@ public class IntakeActuated extends IntakeSimple implements SubsystemSolenoid, S
      * @param value The position to set the solenoid to.
      */
     @Override
-    public void setSolenoid(@NotNull DoubleSolenoid.Value value) {
+    public void setSolenoid(@NotNull final DoubleSolenoid.Value value) {
         currentPistonPos = value;
         piston.set(value);
     }
@@ -60,5 +57,21 @@ public class IntakeActuated extends IntakeSimple implements SubsystemSolenoid, S
     @NotNull
     public DoubleSolenoid.Value getSolenoidPosition() {
         return currentPistonPos;
+    }
+
+    /**
+     * @return the current mode of the intake.
+     */
+    @Override
+    public @NotNull IntakeMode getMode() {
+        return this.implementation.getMode();
+    }
+
+    /**
+     * @param mode The mode to switch the intake to.
+     */
+    @Override
+    public void setMode(@NotNull final IntakeMode mode) {
+        this.implementation.setMode(mode);
     }
 }
