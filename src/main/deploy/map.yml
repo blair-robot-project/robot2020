@@ -219,6 +219,7 @@ useCameraServer: false
           port: *intakeBrushMotorPort
           enableBrakeMode: true
           PDP: PDP
+          currentLimit: 30
       rightMotor:
         org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
           '@id': intakeBigWheelMotor
@@ -227,6 +228,7 @@ useCameraServer: false
           port: *intakeBigWheelMotorPort
           enableBrakeMode: true
           PDP: PDP
+          currentLimit: 30
       piston:
         '@id': intakeSolenoid
         module: 0
@@ -250,7 +252,7 @@ useCameraServer: false
           reverseOutput: false
           enableBrakeMode: false
           PDP: PDP
-          currentLimit: 10 #TODO
+          currentLimit: 30
           reverseSensor: false
           perGearSettings:
             - gearNum: 0
@@ -319,6 +321,7 @@ useCameraServer: false
           reverseOutput: false
           enableBrakeMode: true
           PDP: PDP
+          currentLimit: 30
           enableVoltageComp: false #TODO
 
   #***********************************************************************************************************************
@@ -673,7 +676,7 @@ useCameraServer: false
         org.usfirst.frc.team449.robot._2020.climber.commands.SetClimberWithArmState:
           '@id': climberOffCommand
           subsystem:
-            org.usfirst.frc.team449.robot.subsystem.complex.climber.SafeWinchingClimber:
+            org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
               climber
           state: "OFF"
       action: WHEN_PRESSED
