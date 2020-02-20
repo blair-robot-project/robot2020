@@ -21,7 +21,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /** The main class of the robot, constructs all the subsystems and initializes default commands. */
 public class Robot extends TimedRobot {
@@ -111,11 +117,16 @@ public class Robot extends TimedRobot {
    * this method is first called
    */
   public static void notifyTesting() throws UnsupportedOperationException, IllegalStateException {
-    if (RobotBase.isReal())
+    if (RobotBase.isReal()) {
       throw new IllegalStateException(
           "Attempt to enable unit testing mode while not running in simulation");
-    if (!isUnitTesting && isTestingHasBeenCalled)
+    }
+
+    if (isUnitTesting) return;
+
+    if (isTestingHasBeenCalled) {
       throw new IllegalStateException("isTesting() has already been called at least once");
+    }
 
     System.out.println("ROBOT UNIT TESTING");
     isUnitTesting = true;

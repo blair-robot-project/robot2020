@@ -36,7 +36,7 @@ public class JoystickSimulated extends MappedJoystick {
     this.logPrefix = "[" + this.logName + "] ";
 
     // The virtual joystick user interface.
-    if (Robot.isUnitTesting()) {
+    if (!Robot.isUnitTesting()) {
       new SimulatedJoystickUI(this.logName).setVisible(true);
     }
   }
