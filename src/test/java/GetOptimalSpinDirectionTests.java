@@ -5,16 +5,13 @@ import org.junit.runners.Parameterized;
 import org.usfirst.frc.team449.robot.subsystem.singleImplementation.colorSpinner._2020ControlPanelSpinner.ControlPanelColor;
 import org.usfirst.frc.team449.robot.subsystem.singleImplementation.colorSpinner.commands._2020SpinControlPanelUntilSatisfied;
 
-import static org.usfirst.frc.team449.robot.subsystem.singleImplementation.colorSpinner._2020ControlPanelSpinner.ControlPanelColor.BLUE;
-import static org.usfirst.frc.team449.robot.subsystem.singleImplementation.colorSpinner._2020ControlPanelSpinner.ControlPanelColor.GREEN;
-import static org.usfirst.frc.team449.robot.subsystem.singleImplementation.colorSpinner._2020ControlPanelSpinner.ControlPanelColor.RED;
-import static org.usfirst.frc.team449.robot.subsystem.singleImplementation.colorSpinner._2020ControlPanelSpinner.ControlPanelColor.YELLOW;
+import static org.usfirst.frc.team449.robot.subsystem.singleImplementation.colorSpinner._2020ControlPanelSpinner.ControlPanelColor.*;
 
 /**
- * Sanity check for {@link _2020SpinControlPanelUntilSatisfied#getOptimalSpinDirection(ControlPanelColor, ControlPanelColor)}.
+ * Sanity checks for {@link _2020SpinControlPanelUntilSatisfied#getOptimalSpinDirection(ControlPanelColor, ControlPanelColor)}.
  */
 @RunWith(Parameterized.class)
-public class GetOptimalSpinDirectionTests {
+public class GetOptimalSpinDirectionTests extends TestHostBase {
     private final ControlPanelColor from;
     private final ControlPanelColor to;
     private final boolean expected;
