@@ -1,7 +1,9 @@
 package org.usfirst.frc.team449.robot.generalInterfaces.limelight;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -12,6 +14,7 @@ import io.github.oblarg.oblog.Loggable;
     use = JsonTypeInfo.Id.CLASS,
     include = JsonTypeInfo.As.WRAPPER_OBJECT,
     property = "@class")
+@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class Limelight extends SubsystemBase implements Loggable {
 
   /** whether the limelight can see a valid target */
@@ -38,8 +41,11 @@ public class Limelight extends SubsystemBase implements Loggable {
   private final NetworkTableEntry pipeTable;
   /** camtran, for getting 3D pos */
   private final NetworkTableEntry camtran;
+
   /** pipeline for driver camera */
   private int driverPipeline;
+
+  //Cached values for the most recent state of the limelight while it was on
   private boolean validTarget;
   private double x;
   private double y;

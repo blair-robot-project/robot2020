@@ -218,6 +218,7 @@ useCameraServer: false
           type: SPARK
           port: *intakeBrushMotorPort
           enableBrakeMode: true
+          currentLimit: 30
           PDP: PDP
       rightMotor:
         org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
@@ -226,6 +227,7 @@ useCameraServer: false
           type: SPARK
           port: *intakeBigWheelMotorPort
           enableBrakeMode: true
+          currentLimit: 30
           PDP: PDP
       piston:
         '@id': intakeSolenoid
@@ -250,7 +252,7 @@ useCameraServer: false
           reverseOutput: false
           enableBrakeMode: false
           PDP: PDP
-          currentLimit: 10 #TODO
+          currentLimit: 30
           reverseSensor: false
           perGearSettings:
             - gearNum: 0
@@ -318,6 +320,7 @@ useCameraServer: false
           name: kickerMotor
           reverseOutput: false
           enableBrakeMode: true
+          currentLimit: 30
           PDP: PDP
           enableVoltageComp: false #TODO
 
@@ -467,7 +470,7 @@ useCameraServer: false
     #            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
     #              feeder
     #          mode: IN_FAST
-    #      action: WHEN_PRESSED
+    #      action:
 
     #***********************************************************************************************************************
     - *SHOOTER_COMMANDS
