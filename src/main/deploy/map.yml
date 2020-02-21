@@ -218,7 +218,6 @@ useCameraServer: false
           type: SPARK
           port: *intakeBrushMotorPort
           enableBrakeMode: true
-          currentLimit: 30
           PDP: PDP
           currentLimit: 30
       rightMotor:
@@ -228,7 +227,6 @@ useCameraServer: false
           type: SPARK
           port: *intakeBigWheelMotorPort
           enableBrakeMode: true
-          currentLimit: 30
           PDP: PDP
           currentLimit: 30
       piston:
@@ -322,7 +320,6 @@ useCameraServer: false
           name: kickerMotor
           reverseOutput: false
           enableBrakeMode: true
-          currentLimit: 30
           PDP: PDP
           currentLimit: 30
           enableVoltageComp: false #TODO
