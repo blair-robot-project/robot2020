@@ -53,8 +53,8 @@ public class Robot extends TimedRobot {
      */
     @NotNull
 //    public static final String mapName = "map.yml";
-    public static final String mapName = "mapSimpleDrive.yml";
-//    public static final String mapName = "trajtest.yml";
+//    public static final String mapName = "mapSimpleDrive.yml";
+    public static final String mapName = "trajtest.yml";
     /**
      * The filepath to the resources folder containing the config files.
      */
@@ -163,7 +163,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         //Run the auto startup command
-        if (this.robotMap.getAutoStartupCommands() != null && !DriverStation.getInstance().getGameSpecificMessage().isEmpty()) {
+        if (this.robotMap.getAutoStartupCommands() != null) {
             this.robotMap.getAutoStartupCommands().forEachRemaining(Command::schedule);
         }
     }

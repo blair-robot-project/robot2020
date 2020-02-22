@@ -288,58 +288,58 @@ useCameraServer: false
               limelight
       action: WHILE_HELD
 
-#  *AUTO_COMMANDS:
-#    - *TRAJ_TEST_COMMAND
-#    - edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
-#        '@id': trajTestCommandGroup
-#        requiredSubsystems:
-#          - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-#              drive
-#        commands:
-#          - org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerGoToPosition: TODO fix outdated packages
-#              &driveconfig
-#              '@id': testDriveCommand
-#              drivetrain:
-#                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-#                  drive
-#              leftPidController:
-#                org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-#                  Kp: 5
-#                  name: "left"
-#              rightPidController:
-#                org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
-#                  Kp: 5
-#                  name: "right"
-#              maxSpeedMeters: 1.5
-#              maxAccelMeters: 1
-#              maxCentripetalAcceleration: 1
-#              endingPose:
-#                translation:
-#                  x: 2
-#                  y: -1
-#                rotation:
-#                  radians: -1.571
-#              reversed: false
-#          - org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerGoToPosition:TODO fix outdated packages
-#              <<: *driveconfig
-#              '@id': testDriveCommand2
-#              endingPose:
-#                translation:
-#                  x: 2.5
-#                  y: -0.5
-#                rotation:
-#                  radians: -3.14
-#              reversed: true
-#          - org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerGoToPosition:TODO fix outdated packages
-#              <<: *driveconfig
-#              '@id': testDriveCommand3
-#              endingPose:
-#                translation:
-#                  x: 0
-#                  y: -1
-#                rotation:
-#                  radians: -3.14
-#              reversed: false
+  *AUTO_COMMANDS:
+    - *TRAJ_TEST_COMMAND
+    - edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
+        '@id': trajTestCommandGroup
+        requiredSubsystems:
+          - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+              drive
+        commands:
+          - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
+              &driveconfig
+              '@id': testDriveCommand
+              drivetrain:
+                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                  drive
+              leftPidController:
+                org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+                  Kp: 5
+                  name: "left"
+              rightPidController:
+                org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+                  Kp: 5
+                  name: "right"
+              maxSpeedMeters: 1.5
+              maxAccelMeters: 1
+              maxCentripetalAcceleration: 1
+              endingPose:
+                translation:
+                  x: 2
+                  y: -1
+                rotation:
+                  radians: -1.571
+              reversed: false
+          - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
+              <<: *driveconfig
+              '@id': testDriveCommand2
+              endingPose:
+                translation:
+                  x: 2.5
+                  y: -0.5
+                rotation:
+                  radians: -3.14
+              reversed: true
+          - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
+              <<: *driveconfig
+              '@id': testDriveCommand3
+              endingPose:
+                translation:
+                  x: 0
+                  y: -1
+                rotation:
+                  radians: -3.14
+              reversed: false
 
 ########################################################################################################################
 *UPDATER:
