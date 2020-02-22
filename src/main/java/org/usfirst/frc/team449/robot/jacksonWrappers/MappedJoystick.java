@@ -18,7 +18,7 @@ public class MappedJoystick extends Joystick implements Rumbleable {
    * Whether to construct instances of {@link JoystickSimulated} instead of {@link MappedJoystick}
    * when the robot is running in a simulation.
    */
-  private static final boolean SIMULATE = false;
+  private static final boolean SIMULATE = true;
 
   /**
    * Default constructor

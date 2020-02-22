@@ -10,7 +10,6 @@ import org.usfirst.frc.team449.robot.oi.buttons.CommandButton;
 import org.usfirst.frc.team449.robot.other.DefaultCommand;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * A container class that holds all the commands on the robot, for cleanliness in the map and so
@@ -51,8 +50,6 @@ public class CommandContainer implements Loggable {
     this.autoStartupCommand = autoStartupCommand;
     this.teleopStartupCommand = teleopStartupCommand;
     this.testStartupCommand = testStartupCommand;
-    System.out.println(autoStartupCommand.stream().anyMatch(Objects::isNull));
-    System.out.println(buttons.stream().anyMatch(Objects::isNull));
   }
 
   public List<Command> getRobotStartupCommand() {
