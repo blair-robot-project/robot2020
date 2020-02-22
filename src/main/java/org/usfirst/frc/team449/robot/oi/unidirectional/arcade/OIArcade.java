@@ -2,7 +2,6 @@ package org.usfirst.frc.team449.robot.oi.unidirectional.arcade;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.oi.unidirectional.OIUnidirectional;
@@ -28,7 +27,7 @@ public abstract class OIArcade implements OIUnidirectional {
    *     1. Defaults to false.
    */
   @JsonCreator
-  public OIArcade(boolean rescaleOutputs) {
+  public OIArcade(final boolean rescaleOutputs) {
     this.rescaleOutputs = rescaleOutputs;
   }
 
@@ -38,8 +37,8 @@ public abstract class OIArcade implements OIUnidirectional {
    * @return True if the driver is trying to drive straight, false otherwise.
    */
   @Override
-  @Log
-  public boolean commandingStraight() {
+  //@Log
+public boolean commandingStraight() {
     return getFwdRotOutputCached()[1] == 0;
   }
 
@@ -49,13 +48,14 @@ public abstract class OIArcade implements OIUnidirectional {
    * @return An array of length 2, where the 1st element is the output for the left and the second
    *     for the right, both from [-1, 1].
    */
+  @Override
   @NotNull
   public double[] getLeftRightOutput() {
     fwdRotOutputCached = getFwdRotOutput();
 
     // Unscaled, unclipped values for left and right output.
-    double tmpLeft = fwdRotOutputCached[0] + fwdRotOutputCached[1];
-    double tmpRight = fwdRotOutputCached[0] - fwdRotOutputCached[1];
+    final double tmpLeft = fwdRotOutputCached[0] + fwdRotOutputCached[1];
+    final double tmpRight = fwdRotOutputCached[0] - fwdRotOutputCached[1];
 
     // If left is too large
     if (Math.abs(tmpLeft) > 1) {
@@ -86,6 +86,7 @@ public abstract class OIArcade implements OIUnidirectional {
    * @return An array of length 2, where the 1st element is the output for the left and the second
    *     for the right, both from [-1, 1].
    */
+  @Override
   @NotNull
   public double[] getLeftRightOutputCached() {
     return leftRightOutputCached != null

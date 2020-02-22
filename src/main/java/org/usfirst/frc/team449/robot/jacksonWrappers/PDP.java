@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
@@ -33,7 +32,7 @@ public class PDP implements Loggable, Updatable {
    * @param canID CAN ID of the PDP. Defaults to 0.
    */
   @JsonCreator
-  public PDP(int canID, @Nullable RunningLinRegComponent voltagePerCurrentLinReg) {
+  public PDP(final int canID, @Nullable final RunningLinRegComponent voltagePerCurrentLinReg) {
     this.PDP = new PowerDistributionPanel(canID);
     this.voltagePerCurrentLinReg = voltagePerCurrentLinReg;
     this.voltage = 0;
@@ -48,8 +47,8 @@ public class PDP implements Loggable, Updatable {
    *
    * @return The voltage of the PDP in volts
    */
-  @Log
-  public double getVoltage() {
+  //@Log
+public double getVoltage() {
     return voltage;
   }
 
@@ -58,8 +57,8 @@ public class PDP implements Loggable, Updatable {
    *
    * @return The current of all the channels in Amperes
    */
-  @Log
-  public double getTotalCurrent() {
+  //@Log
+public double getTotalCurrent() {
     return totalCurrent;
   }
 
@@ -68,8 +67,8 @@ public class PDP implements Loggable, Updatable {
    *
    * @return The temperature of the PDP in degrees Celsius.
    */
-  @Log
-  public double getTemperature() {
+  //@Log
+public double getTemperature() {
     return temperature;
   }
 
@@ -79,8 +78,8 @@ public class PDP implements Loggable, Updatable {
    * @return Resistance in ohms, or null if not calculating resistance.
    */
   @Nullable
-  @Log
-  public Double getResistance() {
+  //@Log
+public Double getResistance() {
     return voltagePerCurrentLinReg == null ? null : resistance;
   }
 
@@ -91,8 +90,8 @@ public class PDP implements Loggable, Updatable {
    *     resistance.
    */
   @Nullable
-  @Log
-  public Double getUnloadedVoltage() {
+  //@Log
+public Double getUnloadedVoltage() {
     return voltagePerCurrentLinReg == null ? null : unloadedVoltage;
   }
 

@@ -6,7 +6,6 @@ import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.SlaveMotor;
 
@@ -20,7 +19,7 @@ public class SlaveSparkMax implements SlaveMotor, Loggable {
 
   @JsonCreator
   public SlaveSparkMax(
-      @JsonProperty(required = true) int port, @Nullable Boolean inverted, @Nullable PDP PDP) {
+      @JsonProperty(required = true) final int port, @Nullable final Boolean inverted, @Nullable final PDP PDP) {
 
     this.slaveSpark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
 
@@ -53,13 +52,13 @@ public class SlaveSparkMax implements SlaveMotor, Loggable {
     this.slaveSpark.setInverted(this.inverted);
   }
 
-  @Log
-  public double getOutputCurrent() {
+  //@Log
+public double getOutputCurrent() {
     return this.slaveSpark.getOutputCurrent();
   }
 
-  @Log
-  public double getMotorOutputVoltage() {
+  //@Log
+public double getMotorOutputVoltage() {
     return this.slaveSpark.getAppliedOutput();
   }
 }

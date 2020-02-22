@@ -10,7 +10,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
@@ -164,18 +163,18 @@ public class SlaveTalon implements SlaveMotor, Loggable {
   //        return "talon_" + talonSRX.getDeviceID();
   //    }
 
-  @Log
-  public double getOutputCurrent() {
+  //@Log
+public double getOutputCurrent() {
     return this.talonSRX.getSupplyCurrent();
   }
 
-  @Log
-  public double getMotorOutputVoltage() {
+  //@Log
+public double getMotorOutputVoltage() {
     return this.talonSRX.getMotorOutputVoltage();
   }
 
-  @Log
-  public Double getResistance() {
+  //@Log
+public Double getResistance() {
     return (this.linRegComponent != null && this.PDP != null)
         ? -this.linRegComponent.getSlope()
         : Double.NaN;

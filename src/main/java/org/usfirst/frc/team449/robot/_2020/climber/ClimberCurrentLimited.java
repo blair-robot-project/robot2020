@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
@@ -53,7 +52,7 @@ public class ClimberCurrentLimited extends SubsystemBase
      */
     private boolean conditionMetCached;
 
-    private double percentVoltage;
+    private final double percentVoltage;
 
     /**
      * Default constructor
@@ -66,11 +65,11 @@ public class ClimberCurrentLimited extends SubsystemBase
      */
     @JsonCreator
     public ClimberCurrentLimited(
-            @NotNull @JsonProperty(required = true) SmartMotor smartMotor,
-            @NotNull @JsonProperty(required = true) Debouncer powerLimitTimer,
-            @JsonProperty(required = true) double maxPower,
-            @Nullable SimpleMotor simpleMotor,
-            @Nullable Double percentVoltage) {
+            @NotNull @JsonProperty(required = true) final SmartMotor smartMotor,
+            @NotNull @JsonProperty(required = true) final Debouncer powerLimitTimer,
+            @JsonProperty(required = true) final double maxPower,
+            @Nullable final SimpleMotor simpleMotor,
+            @Nullable final Double percentVoltage) {
         // Instantiate things
         this.smartMotor = smartMotor;
         this.maxPower = maxPower;
@@ -85,7 +84,7 @@ public class ClimberCurrentLimited extends SubsystemBase
      *
      * @param percentVbus The voltage to give the motor, from -1 to 1.
      */
-    private void setPercentVbus(double percentVbus) {
+    private void setPercentVbus(final double percentVbus) {
         smartMotor.setPercentVoltage(percentVbus);
         if (simpleMotor != null) {
             simpleMotor.setVelocity(percentVbus);
@@ -116,8 +115,8 @@ public class ClimberCurrentLimited extends SubsystemBase
      * @return true if the motor is on, false otherwise.
      */
     @Override
-    @Log
-    public boolean isMotorOn() {
+    //@Log
+public boolean isMotorOn() {
         return motorSpinning;
     }
 
@@ -134,8 +133,8 @@ public class ClimberCurrentLimited extends SubsystemBase
      * @return true if the condition was met when cached, false otherwise
      */
     @Override
-    @Log
-    public boolean isConditionTrueCached() {
+    //@Log
+public boolean isConditionTrueCached() {
         return conditionMetCached;
     }
 

@@ -1,7 +1,6 @@
 package org.usfirst.frc.team449.robot.oi.unidirectional.tank;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.github.oblarg.oblog.annotations.Log;
 import org.usfirst.frc.team449.robot.oi.unidirectional.OIUnidirectional;
 
 /** A tank-style dual joystick OI. */
@@ -22,16 +21,16 @@ public abstract class OITank implements OIUnidirectional {
    *
    * @return percent of max speed for left motor cluster from [-1.0, 1.0]
    */
-  @Log
-  public abstract double getLeftThrottle();
+  //@Log
+public abstract double getLeftThrottle();
 
   /**
    * Get the throttle for the right side of the drive.
    *
    * @return percent of max speed for right motor cluster from [-1.0, 1.0]
    */
-  @Log
-  public abstract double getRightThrottle();
+  //@Log
+public abstract double getRightThrottle();
 
   /**
    * The output to be given to the left and right sides of the drive.
@@ -40,8 +39,8 @@ public abstract class OITank implements OIUnidirectional {
    *     for the right, both from [-1, 1].
    */
   @Override
-  @Log
-  public double[] getLeftRightOutput() {
+  //@Log
+public double[] getLeftRightOutput() {
     return new double[] {getLeftThrottle(), getRightThrottle()};
   }
 
@@ -52,8 +51,8 @@ public abstract class OITank implements OIUnidirectional {
    *     for the right, both from [-1, 1].
    */
   @Override
-  @Log
-  public double[] getLeftRightOutputCached() {
+  //@Log
+public double[] getLeftRightOutputCached() {
     return leftRightOutputCached;
   }
 
@@ -64,8 +63,8 @@ public abstract class OITank implements OIUnidirectional {
    *     the rotational, both from [-1, 1]
    */
   @Override
-  @Log
-  public double[] getFwdRotOutput() {
+  //@Log
+public double[] getFwdRotOutput() {
     return new double[] {
       (getLeftThrottle() + getRightThrottle()) / 2., (getLeftThrottle() - getRightThrottle()) / 2.
     };
@@ -78,8 +77,8 @@ public abstract class OITank implements OIUnidirectional {
    *     the rotational, both from [-1, 1]
    */
   @Override
-  @Log
-  public double[] getFwdRotOutputCached() {
+  //@Log
+public double[] getFwdRotOutputCached() {
     return fwdRotOutputCached;
   }
 

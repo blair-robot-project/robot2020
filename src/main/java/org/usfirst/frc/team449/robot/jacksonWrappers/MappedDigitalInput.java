@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DigitalInput;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
+
 import java.util.function.BooleanSupplier;
 
 /** A roboRIO digital input pin. */
@@ -19,7 +19,7 @@ public class MappedDigitalInput extends DigitalInput implements Loggable, Boolea
    * @param channel the DIO channel for the digital input 0-9 are on-board, 10-25 are on the MXP
    */
   @JsonCreator
-  public MappedDigitalInput(@JsonProperty(required = true) int channel) {
+  public MappedDigitalInput(@JsonProperty(required = true) final int channel) {
     super(channel);
   }
 
@@ -30,8 +30,8 @@ public class MappedDigitalInput extends DigitalInput implements Loggable, Boolea
    * @return the status of the digital input
    */
   @Override
-  @Log
-  public boolean get() {
+  //@Log
+public boolean get() {
     return !super.get(); // true is off by default in WPILib, and that's dumb
   }
 

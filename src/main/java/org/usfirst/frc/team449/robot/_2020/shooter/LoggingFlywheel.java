@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
@@ -79,13 +78,13 @@ public class LoggingFlywheel extends SubsystemBase
      */
     @JsonCreator
     public LoggingFlywheel(
-            @NotNull @JsonProperty(required = true) SmartMotor shooterMotor,
-            @NotNull @JsonProperty(required = true) SmartMotor otherShooterMotor,
-            @JsonProperty(required = true) double shooterThrottle,
-            @NotNull @JsonProperty(required = true) SimpleMotor kickerMotor,
-            @JsonProperty(required = true) double kickerThrottle,
-            @JsonProperty(required = true) double spinUpTimeoutSecs,
-            @Nullable Double minShootingSpeedFPS) {
+            @NotNull @JsonProperty(required = true) final SmartMotor shooterMotor,
+            @NotNull @JsonProperty(required = true) final SmartMotor otherShooterMotor,
+            @JsonProperty(required = true) final double shooterThrottle,
+            @NotNull @JsonProperty(required = true) final SimpleMotor kickerMotor,
+            @JsonProperty(required = true) final double kickerThrottle,
+            @JsonProperty(required = true) final double spinUpTimeoutSecs,
+            @Nullable final Double minShootingSpeedFPS) {
         this.shooterMotor = shooterMotor;
         this.otherShooterMotor = otherShooterMotor;
         this.shooterThrottle = shooterThrottle;
@@ -152,8 +151,8 @@ public class LoggingFlywheel extends SubsystemBase
         if (state == FlywheelState.SPINNING_UP) this.lastSpinUpTimeMS = Clock.currentTimeMillis();
     }
 
-    @Log
-    public String state() {
+    //@Log
+public String state() {
         return this.state.name();
     }
 
@@ -162,16 +161,16 @@ public class LoggingFlywheel extends SubsystemBase
      * seconds.
      */
     @Override
-    @Log
-    public double getSpinUpTimeoutSecs() {
+    //@Log
+public double getSpinUpTimeoutSecs() {
         return this.spinUpTimeoutSecs;
     }
 
     // TODO: Also account for speed difference between flywheels?
     // TODO: Split into FlywheelTwoSides like how intake does it?
     @Override
-    @Log
-    public boolean isAtShootingSpeed() {
+    //@Log
+public boolean isAtShootingSpeed() {
         if (this.state == FlywheelState.OFF) return false;
 
         final double timeSinceLastSpinUp = Clock.currentTimeMillis() - this.lastSpinUpTimeMS;
@@ -197,8 +196,8 @@ public class LoggingFlywheel extends SubsystemBase
      * @return true if the condition was met when cached, false otherwise
      */
     @Override
-    @Log
-    public boolean isConditionTrueCached() {
+    //@Log
+public boolean isConditionTrueCached() {
         return this.conditionMetCached;
     }
 

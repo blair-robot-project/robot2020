@@ -94,10 +94,10 @@ useCameraServer: false
 *SUBSYSTEMS:
   #***********************************************************************************************************************
   - *DRIVE_SUBSYSTEM
-  - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+  - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple:
       '@id': drive
       #Wheelbase: 2.14
-      leftMaster:
+      leftMotor:
         org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
           &Left_Master
           '@id': leftMaster
@@ -114,9 +114,9 @@ useCameraServer: false
               channel: *leftMasterEncoder2Port
           PDP:
             org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
-          #          voltagePerCurrentLinReg:
-          #            bufferSize: 250
-          #            rSquaredThreshhold: 0.75
+#          voltagePerCurrentLinReg:
+#            bufferSize: 250
+#            rSquaredThreshhold: 0.75
           reverseOutput: true
           reverseSensor: false
           enableBrakeMode: true
@@ -124,13 +124,13 @@ useCameraServer: false
           unitPerRotation: .5 #meters per rotation
           currentLimit: 35
           enableVoltageComp: true
-          #          feedbackDevice: QuadEncoder
+#          feedbackDevice: QuadEncoder
           encoderCPR: 256
           startingGear: LOW
           perGearSettings:
             - &Low_Gear
               gear: LOW
-              maxSpeed: 2.2
+#              maxSpeed: 2.2
               kP: 0.2
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
@@ -139,16 +139,16 @@ useCameraServer: false
                   kA: 0.573
             - &High_Gear
               gear: HIGH
-              maxSpeed: 5
+#              maxSpeed: 5
               kP: 0.2
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                   kS: 1.11
                   kV: 2.04
                   kA: 0.637
-          #          updaterProcessPeriodSecs: 0.005
-          #          statusFrameRatesMillis: !!map
-          #            Status_4_AinTempVbat: 15
+#          updaterProcessPeriodSecs: 0.005
+#          statusFrameRatesMillis: !!map
+#            Status_4_AinTempVbat: 15
           slaveSparks:
             - port: *leftMasterSlave1Port
               inverted: true
@@ -190,27 +190,6 @@ useCameraServer: false
             - port: *rightMasterSlave2Port
               PDP: PDP
               #inverted: false
-      startingOverrideAutoshift: false
-      ahrs:
-        org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS:
-          '@id': navX
-          port: kMXP
-          invertYaw: true
-      trackWidthMeters: 0.6
-      shiftComponent:
-        org.usfirst.frc.team449.robot.components.ShiftComponent:
-          '@id': driveShiftComponent
-          otherShiftables:
-            - org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
-                leftMaster
-            - org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
-                rightMaster
-          piston:
-            '@id': driveShifter
-            module: 0
-            forward: 1
-            reverse: 0
-          startingGear: LOW
 
   #***********************************************************************************************************************
   - *INTAKE_SUBSYSTEM
@@ -833,9 +812,9 @@ useCameraServer: false
     '@id': updater
     updatables:
       - org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
-      #      - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
-      #      - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
-      #      - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS: navX
+#      - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
+#      - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
+#      - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS: navX
       - org.usfirst.frc.team449.robot._2020.climber.ClimberCurrentLimited: climberCurrentLimitSystem
       - org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber: climber
       - org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel: shooterFlywheel

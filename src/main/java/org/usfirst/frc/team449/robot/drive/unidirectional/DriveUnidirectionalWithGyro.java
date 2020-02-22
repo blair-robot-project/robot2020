@@ -59,10 +59,10 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    */
   @JsonCreator
   public DriveUnidirectionalWithGyro(
-      @NotNull @JsonProperty(required = true) SmartMotor leftMaster,
-      @NotNull @JsonProperty(required = true) SmartMotor rightMaster,
-      @NotNull @JsonProperty(required = true) MappedAHRS ahrs,
-      @JsonProperty(required = true) double trackWidthMeters) {
+      @NotNull @JsonProperty(required = true) final SmartMotor leftMaster,
+      @NotNull @JsonProperty(required = true) final SmartMotor rightMaster,
+      @NotNull @JsonProperty(required = true) final MappedAHRS ahrs,
+      @JsonProperty(required = true) final double trackWidthMeters) {
     super();
     // Initialize stuff
     this.rightMaster = rightMaster;
@@ -306,8 +306,8 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
 
   /** @return true if the NavX is currently overriden, false otherwise. */
   @Override
-  @Log
-  public boolean getOverrideGyro() {
+  //@Log
+public boolean getOverrideGyro() {
     return this.overrideGyro;
   }
 
@@ -318,8 +318,8 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   }
 
   /** Reset odometry tracker to current robot pose */
-  @Log
-  public void resetOdometry(final Pose2d pose) {
+  //@Log
+public void resetOdometry(final Pose2d pose) {
     resetPosition();
     ahrs.setHeading(pose.getRotation().getDegrees());
     driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(this.getHeading()));

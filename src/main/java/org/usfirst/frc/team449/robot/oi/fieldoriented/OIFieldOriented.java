@@ -1,7 +1,6 @@
 package org.usfirst.frc.team449.robot.oi.fieldoriented;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.oi.OI;
 
@@ -43,8 +42,8 @@ public abstract class OIFieldOriented implements OI {
    *     driver station. Returns null if vel is 0.
    */
   @Nullable
-  @Log
-  public Double getThetaCached() {
+  //@Log
+public Double getThetaCached() {
     return cachedTheta;
   }
 
@@ -53,8 +52,8 @@ public abstract class OIFieldOriented implements OI {
    *
    * @return A velocity from [-1, 1].
    */
-  @Log
-  public double getVelCached() {
+  //@Log
+public double getVelCached() {
     return cachedVel;
   }
 

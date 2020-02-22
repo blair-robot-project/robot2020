@@ -2,10 +2,11 @@ package org.usfirst.frc.team449.robot.jacksonWrappers.simulated;
 
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.Objects;
-import java.util.function.DoubleSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+import java.util.function.DoubleSupplier;
 
 /** Units are in rotations. */
 public class SimulatedMotor implements Loggable {
@@ -68,13 +69,13 @@ public class SimulatedMotor implements Loggable {
     this.position += this.velocity * deltaSecs;
   }
 
-  @Log
-  public double getVelocity() {
+  //@Log
+public double getVelocity() {
     return this.velocity;
   }
 
-  @Log
-  public double getPosition() {
+  //@Log
+public double getPosition() {
     return this.position;
   }
 
@@ -82,8 +83,8 @@ public class SimulatedMotor implements Loggable {
     this.position = 0;
   }
 
-  @Log
-  public double getCurrent() {
+  //@Log
+public double getCurrent() {
     return this.voltageSource.getAsDouble() / RESISTANCE;
   }
 }

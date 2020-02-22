@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.oi.throttles.Throttle;
@@ -42,9 +41,9 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
    */
   @JsonCreator
   public OIFieldOrientedPosCos(
-      @NotNull @JsonProperty(required = true) Throttle xThrottle,
-      @NotNull @JsonProperty(required = true) Throttle yThrottle,
-      double rDeadband) {
+      @NotNull @JsonProperty(required = true) final Throttle xThrottle,
+      @NotNull @JsonProperty(required = true) final Throttle yThrottle,
+      final double rDeadband) {
     this.xThrottle = xThrottle;
     this.yThrottle = yThrottle;
     this.rDeadband = rDeadband;
@@ -85,8 +84,8 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
    */
   @Override
   @Nullable
-  @Log
-  public Double getTheta() {
+  //@Log
+public Double getTheta() {
     calcValues();
     return theta;
   }
@@ -97,8 +96,8 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
    * @return A velocity from [-1, 1].
    */
   @Override
-  @Log
-  public double getVel() {
+  //@Log
+public double getVel() {
     calcValues();
     return vel;
   }

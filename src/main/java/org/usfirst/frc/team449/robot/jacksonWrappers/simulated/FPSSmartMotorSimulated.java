@@ -1,8 +1,5 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers.simulated;
 
-import static org.usfirst.frc.team449.robot.other.Util.clamp;
-import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
-
 import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -11,11 +8,6 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.DoubleSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
@@ -27,6 +19,15 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
 import org.usfirst.frc.team449.robot.other.Clock;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.DoubleSupplier;
+
+import static org.usfirst.frc.team449.robot.other.Util.clamp;
+import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /**
  * Class that implements {@link SmartMotor} without relying on the existence of actual hardware.
@@ -324,8 +325,8 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
 
   /** @return Raw position units for debugging purposes */
   @Override
-  @Log
-  public double encoderPosition() {
+  //@Log
+public double encoderPosition() {
     return this.motor.getPosition();
   }
 
@@ -337,13 +338,13 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
 
   /** @return Raw velocity units for debugging purposes */
   @Override
-  @Log
-  public double encoderVelocity() {
+  //@Log
+public double encoderVelocity() {
     return this.motor.getVelocity();
   }
 
   @Override
-  public void setVoltage(double volts) {
+  public void setVoltage(final double volts) {
     // uh
   }
 
@@ -429,8 +430,8 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    * @return Voltage in volts.
    */
   @Override
-  @Log
-  public double getOutputVoltage() {
+  //@Log
+public double getOutputVoltage() {
     return this.getBatteryVoltage() * this.percentOutput;
   }
 
@@ -440,8 +441,8 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    * @return Voltage in volts.
    */
   @Override
-  @Log
-  public double getBatteryVoltage() {
+  //@Log
+public double getBatteryVoltage() {
     return this.busVoltage;
   }
 
@@ -451,8 +452,8 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    * @return Current in amps.
    */
   @Override
-  @Log
-  public double getOutputCurrent() {
+  //@Log
+public double getOutputCurrent() {
     return this.motor.getCurrent();
   }
 
@@ -610,8 +611,8 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
       this.error = newError;
     }
 
-    @Log
-    public double getOutput() {
+    //@Log
+public double getOutput() {
       return this.kP * this.error + this.kI * this.integral + this.kD * this.derivative;
     }
 

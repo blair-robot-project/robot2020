@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.function.DoubleUnaryOperator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
@@ -19,6 +18,8 @@ import org.usfirst.frc.team449.robot.generalInterfaces.AHRS.commands.PIDAngleCom
 import org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent;
 import org.usfirst.frc.team449.robot.oi.unidirectional.OIUnidirectional;
 import org.usfirst.frc.team449.robot.other.Debouncer;
+
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * Drive with arcade drive setup, and when the driver isn't turning, use a NavX to stabilize the
@@ -212,8 +213,8 @@ public class UnidirectionalNavXDefaultDrive<
    * @return false
    */
   @Override
-  @Log
-  public boolean isFinished() {
+  //@Log
+public boolean isFinished() {
     return false;
   }
 
@@ -281,24 +282,24 @@ public class UnidirectionalNavXDefaultDrive<
   //        return "UnidirectionalNavXDefaultDrive";
   //    }
 
-  @Log
-  public boolean isDrivingStraight() {
+  //@Log
+public boolean isDrivingStraight() {
     return this.drivingStraight;
   }
 
-  //    @Log
-  @Override
+  //    //@Log
+@Override
   public double getRawOutput() {
     return this.rawOutput;
   }
 
-  @Log
-  public double getProcessedOutput() {
+  //@Log
+public double getProcessedOutput() {
     return this.processedOutput;
   }
 
-  @Log
-  public double getFinalOutput() {
+  //@Log
+public double getFinalOutput() {
     return this.finalOutput;
   }
 }

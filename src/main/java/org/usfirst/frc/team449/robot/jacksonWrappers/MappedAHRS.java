@@ -1,7 +1,5 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers;
 
-import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,9 +8,10 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
+
+import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
 
 /** A Jackson-compatible, invertible wrapper for the NavX. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -43,7 +42,7 @@ public class MappedAHRS implements Updatable, Loggable {
    * @param invertYaw Whether or not to invert the yaw axis. Defaults to true.
    */
   @JsonCreator
-  public MappedAHRS(@JsonProperty(required = true) SerialPort.Port port, Boolean invertYaw) {
+  public MappedAHRS(@JsonProperty(required = true) final SerialPort.Port port, final Boolean invertYaw) {
     if (port.equals(SerialPort.Port.kMXP)) {
       this.ahrs = new AHRS(SPI.Port.kMXP);
     } else {
@@ -64,7 +63,7 @@ public class MappedAHRS implements Updatable, Loggable {
    * @return That acceleration in feet/(sec^2)
    */
   @Contract(pure = true)
-  protected static double gsToFeetPerSecondSquared(double accelGs) {
+  protected static double gsToFeetPerSecondSquared(final double accelGs) {
     return accelGs * 32.17; // Wolfram alpha said so
   }
 
@@ -84,7 +83,7 @@ public class MappedAHRS implements Updatable, Loggable {
    *
    * @param headingDegrees An angle in degrees, from [-180, 180], to set the heading to.
    */
-  public void setHeading(double headingDegrees) {
+  public void setHeading(final double headingDegrees) {
     ahrs.setAngleAdjustment(headingDegrees);
   }
 
@@ -139,8 +138,8 @@ public class MappedAHRS implements Updatable, Loggable {
    *
    * @return The heading, in degrees from [-180, 180]
    */
-  @Log
-  public double getCachedHeading() {
+  //@Log
+public double getCachedHeading() {
     return cachedHeading;
   }
 
@@ -150,8 +149,8 @@ public class MappedAHRS implements Updatable, Loggable {
    *
    * @return The angular displacement, in degrees.
    */
-  @Log
-  public double getCachedAngularDisplacement() {
+  //@Log
+public double getCachedAngularDisplacement() {
     return cachedAngularDisplacement;
   }
 
@@ -160,8 +159,8 @@ public class MappedAHRS implements Updatable, Loggable {
    *
    * @return The angular yaw velocity, in degrees/sec.
    */
-  @Log
-  public double getCachedAngularVelocity() {
+  //@Log
+public double getCachedAngularVelocity() {
     return cachedAngularVel;
   }
 
@@ -170,8 +169,8 @@ public class MappedAHRS implements Updatable, Loggable {
    *
    * @return Linear X acceleration, in feet/(sec^2)
    */
-  @Log
-  public double getCachedXAccel() {
+  //@Log
+public double getCachedXAccel() {
     return cachedXAccel;
   }
 
@@ -180,8 +179,8 @@ public class MappedAHRS implements Updatable, Loggable {
    *
    * @return Linear Y acceleration, in feet/(sec^2)
    */
-  @Log
-  public double getCachedYAccel() {
+  //@Log
+public double getCachedYAccel() {
     return cachedYAccel;
   }
 
@@ -190,8 +189,8 @@ public class MappedAHRS implements Updatable, Loggable {
    *
    * @return The pitch, in degrees from [-180, 180]
    */
-  @Log
-  public double getCachedPitch() {
+  //@Log
+public double getCachedPitch() {
     return cachedPitch;
   }
 

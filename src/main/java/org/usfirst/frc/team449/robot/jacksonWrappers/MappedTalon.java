@@ -20,15 +20,16 @@ import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Component wrapper on the CTRE {@link TalonSRX}, with unit conversions to/from FPS built in. Every
@@ -125,33 +126,33 @@ public class MappedTalon implements SmartMotor {
    */
   @JsonCreator
   public MappedTalon(
-      @JsonProperty(required = true) int port,
-      @Nullable String name,
-      boolean reverseOutput,
-      @JsonProperty(required = true) boolean enableBrakeMode,
-      @Nullable RunningLinRegComponent voltagePerCurrentLinReg,
-      @Nullable PDP PDP,
-      @Nullable Boolean fwdLimitSwitchNormallyOpen,
-      @Nullable Boolean revLimitSwitchNormallyOpen,
-      @Nullable Integer remoteLimitSwitchID,
-      @Nullable Double fwdSoftLimit,
-      @Nullable Double revSoftLimit,
-      @Nullable Double postEncoderGearing,
-      @Nullable Double unitPerRotation,
-      @Nullable Integer currentLimit,
-      boolean enableVoltageComp,
-      @Nullable Integer voltageCompSamples,
-      @Nullable FeedbackDevice feedbackDevice,
-      @Nullable Integer encoderCPR,
-      boolean reverseSensor,
-      @Nullable List<PerGearSettings> perGearSettings,
-      @Nullable Shiftable.gear startingGear,
-      @Nullable Integer startingGearNum,
-      @Nullable Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
-      @Nullable Map<ControlFrame, Integer> controlFrameRatesMillis,
-      @Nullable List<SlaveTalon> slaveTalons,
-      @Nullable List<SlaveVictor> slaveVictors,
-      @Nullable List<SlaveSparkMax> slaveSparks) {
+      @JsonProperty(required = true) final int port,
+      @Nullable final String name,
+      final boolean reverseOutput,
+      @JsonProperty(required = true) final boolean enableBrakeMode,
+      @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
+      @Nullable final PDP PDP,
+      @Nullable final Boolean fwdLimitSwitchNormallyOpen,
+      @Nullable final Boolean revLimitSwitchNormallyOpen,
+      @Nullable final Integer remoteLimitSwitchID,
+      @Nullable final Double fwdSoftLimit,
+      @Nullable final Double revSoftLimit,
+      @Nullable final Double postEncoderGearing,
+      @Nullable final Double unitPerRotation,
+      @Nullable final Integer currentLimit,
+      final boolean enableVoltageComp,
+      @Nullable final Integer voltageCompSamples,
+      @Nullable final FeedbackDevice feedbackDevice,
+      @Nullable final Integer encoderCPR,
+      final boolean reverseSensor,
+      @Nullable final List<PerGearSettings> perGearSettings,
+      @Nullable final Shiftable.gear startingGear,
+      @Nullable final Integer startingGearNum,
+      @Nullable final Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
+      @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
+      @Nullable final List<SlaveTalon> slaveTalons,
+      @Nullable final List<SlaveVictor> slaveVictors,
+      @Nullable final List<SlaveSparkMax> slaveSparks) {
     // Instantiate the base CANTalon this is a wrapper on.
     this.canTalon = new TalonSRX(port);
     // Set the name to the given one or to talon_portnum
@@ -366,6 +367,7 @@ public class MappedTalon implements SmartMotor {
    *
    * @param percentVoltage percent of total voltage from [-1, 1]
    */
+  @Override
   public void setPercentVoltage(double percentVoltage) {
     // Warn the user if they're setting Vbus to a number that's outside the range of values.
     if (Math.abs(percentVoltage) > 1.0) {
@@ -385,8 +387,8 @@ public class MappedTalon implements SmartMotor {
 
   /** @return The gear this subsystem is currently in. */
   @Override
-  @Log
-  public int getGear() {
+  //@Log
+public int getGear() {
     return this.currentGearSettings.gear;
   }
 
@@ -438,7 +440,7 @@ public class MappedTalon implements SmartMotor {
    * @return That distance in feet, or null if no encoder CPR was given.
    */
   @Override
-  public double encoderToUnit(double nativeUnits) {
+  public double encoderToUnit(final double nativeUnits) {
     if (encoderCPR == null) {
       return Double.NaN;
     }
@@ -454,7 +456,7 @@ public class MappedTalon implements SmartMotor {
    *     given.
    */
   @Override
-  public double unitToEncoder(double feet) {
+  public double unitToEncoder(final double feet) {
     if (encoderCPR == null) {
       return Double.NaN;
     }
@@ -470,7 +472,7 @@ public class MappedTalon implements SmartMotor {
    *     no encoder CPR was given.
    */
   @Override
-  public double encoderToUPS(double encoderReading) {
+  public double encoderToUPS(final double encoderReading) {
     RPS = nativeToRPS(encoderReading);
     if (RPS == null) {
       return Double.NaN;
@@ -487,7 +489,7 @@ public class MappedTalon implements SmartMotor {
    *     given.
    */
   @Override
-  public double UPSToEncoder(double UPS) {
+  public double UPSToEncoder(final double UPS) {
     return RPSToNative((UPS / postEncoderGearing) / unitPerRotation);
   }
 
@@ -531,7 +533,7 @@ public class MappedTalon implements SmartMotor {
   }
 
   @Override
-  public void setVoltage(double volts) {
+  public void setVoltage(final double volts) {
     if (voltageCompEnabled) {
       setPercentVoltage(volts / 12.);
     } else {
@@ -579,7 +581,7 @@ public class MappedTalon implements SmartMotor {
    * @param velocity the desired velocity, on [-1, 1].
    */
   @Override
-  public void setVelocity(double velocity) {
+  public void setVelocity(final double velocity) {
     if (currentGearSettings.maxSpeed != null) {
       setVelocityUPS(velocity * currentGearSettings.maxSpeed);
     } else {
@@ -593,7 +595,7 @@ public class MappedTalon implements SmartMotor {
    * @param velocity velocity setpoint in FPS.
    */
   @Override
-  public void setVelocityUPS(double velocity) {
+  public void setVelocityUPS(final double velocity) {
     nativeSetpoint = UPSToEncoder(velocity);
     setpoint = velocity;
     canTalon.config_kF(0, 0, 0);
@@ -610,8 +612,8 @@ public class MappedTalon implements SmartMotor {
    *
    * @return The closed-loop error in FPS, or null if no encoder CPR was given.
    */
-  @Log
-  @Override
+  //@Log
+@Override
   public double getError() {
     if (canTalon.getControlMode().equals(ControlMode.Velocity)) {
       return this.encoderToUPS(canTalon.getClosedLoopError(0));
@@ -626,8 +628,8 @@ public class MappedTalon implements SmartMotor {
    * @return The setpoint in sensible units for the current control mode.
    */
   @Nullable
-  @Log
-  @Override
+  //@Log
+@Override
   public Double getSetpoint() {
     return setpoint;
   }
@@ -637,8 +639,8 @@ public class MappedTalon implements SmartMotor {
    *
    * @return Voltage in volts.
    */
-  @Log
-  @Override
+  //@Log
+@Override
   public double getOutputVoltage() {
     return canTalon.getMotorOutputVoltage();
   }
@@ -648,8 +650,8 @@ public class MappedTalon implements SmartMotor {
    *
    * @return Voltage in volts.
    */
-  @Log
-  @Override
+  //@Log
+@Override
   public double getBatteryVoltage() {
     return canTalon.getBusVoltage();
   }
@@ -659,8 +661,8 @@ public class MappedTalon implements SmartMotor {
    *
    * @return Current in amps.
    */
-  @Log
-  @Override
+  //@Log
+@Override
   public double getOutputCurrent() {
     return canTalon.getSupplyCurrent();
   }
@@ -712,8 +714,8 @@ public class MappedTalon implements SmartMotor {
 
   /** @return the position of the talon in feet, or null of inches per rotation wasn't given. */
   @Override
-  @Log
-  public Double getPositionUnits() {
+  //@Log
+public Double getPositionUnits() {
     return encoderToUnit(canTalon.getSelectedSensorPosition(0));
   }
 

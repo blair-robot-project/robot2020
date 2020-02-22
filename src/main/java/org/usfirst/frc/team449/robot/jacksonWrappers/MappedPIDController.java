@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
 
 @JsonTypeInfo(
@@ -19,7 +18,7 @@ public class MappedPIDController extends PIDController implements Loggable {
   private double output;
 
   @JsonCreator
-  public MappedPIDController(double Kp, double Ki, double Kd, @Nullable String name) {
+  public MappedPIDController(final double Kp, final double Ki, final double Kd, @Nullable String name) {
     super(Kp, Ki, Kd);
 
     if (name == null) {
@@ -29,30 +28,30 @@ public class MappedPIDController extends PIDController implements Loggable {
   }
 
   @Override
-  @Log
-  public double getVelocityError() {
+  //@Log
+public double getVelocityError() {
     return super.getVelocityError();
   }
 
   @Override
-  @Log
-  public double getSetpoint() {
+  //@Log
+public double getSetpoint() {
     return super.getSetpoint();
   }
 
   @Override
-  public double calculate(double measurement) {
+  public double calculate(final double measurement) {
     this.measurement = measurement;
     return output = super.calculate(measurement);
   }
 
-  @Log
-  public double getMeasurement() {
+  //@Log
+public double getMeasurement() {
     return measurement;
   }
 
-  @Log
-  public double getOutput() {
+  //@Log
+public double getOutput() {
     return output;
   }
 

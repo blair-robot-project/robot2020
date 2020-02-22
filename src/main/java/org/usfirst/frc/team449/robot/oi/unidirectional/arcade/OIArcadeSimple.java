@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.oi.throttles.Throttle;
 
@@ -28,9 +27,9 @@ public class OIArcadeSimple extends OIArcade {
    */
   @JsonCreator
   public OIArcadeSimple(
-      @NotNull @JsonProperty(required = true) Throttle rotThrottle,
-      @NotNull @JsonProperty(required = true) Throttle velThrottle,
-      boolean rescaleOutputs) {
+      @NotNull @JsonProperty(required = true) final Throttle rotThrottle,
+      @NotNull @JsonProperty(required = true) final Throttle velThrottle,
+      final boolean rescaleOutputs) {
     super(rescaleOutputs);
     this.rotThrottle = rotThrottle;
     this.velThrottle = velThrottle;
@@ -43,8 +42,8 @@ public class OIArcadeSimple extends OIArcade {
    *     the rotational, both from [-1, 1]
    */
   @Override
-  @Log
-  public double[] getFwdRotOutput() {
+  //@Log
+public double[] getFwdRotOutput() {
     return new double[] {velThrottle.getValue(), rotThrottle.getValue()};
   }
 

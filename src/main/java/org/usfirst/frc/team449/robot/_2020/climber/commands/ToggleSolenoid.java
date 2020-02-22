@@ -16,46 +16,46 @@ import org.usfirst.frc.team449.robot._2020.climber.SubsystemSolenoid;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ToggleSolenoid extends InstantCommand {
 
-    /** The subsystem to execute this command on. */
-    @NotNull @Log.Exclude private final SubsystemSolenoid subsystem;
+  /** The subsystem to execute this command on. */
+  @NotNull @Log.Exclude private final SubsystemSolenoid subsystem;
 
-    /**
-     * Default constructor
-     *
-     * @param subsystem The solenoid subsystem to execute this command on.
-     */
-    @JsonCreator
-    public ToggleSolenoid(@NotNull @JsonProperty(required = true) SubsystemSolenoid subsystem) {
-        this.subsystem = subsystem;
-    }
+  /**
+   * Default constructor
+   *
+   * @param subsystem The solenoid subsystem to execute this command on.
+   */
+  @JsonCreator
+  public ToggleSolenoid(@NotNull @JsonProperty(required = true) final SubsystemSolenoid subsystem) {
+    this.subsystem = subsystem;
+  }
 
-    /** Log when this command is initialized */
-    @Override
-    public void initialize() {
-        Shuffleboard.addEventMarker(
-                "ToggleSolenoid init.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        // Logger.addEvent("ToggleSolenoid init.", this.getClass());
-    }
+  /** Log when this command is initialized */
+  @Override
+  public void initialize() {
+    Shuffleboard.addEventMarker(
+        "ToggleSolenoid init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+    // Logger.addEvent("ToggleSolenoid init.", this.getClass());
+  }
 
-    /** Toggle the state of the piston. */
-    @Override
-    public void execute() {
-        if (subsystem.getSolenoidPosition().equals(DoubleSolenoid.Value.kForward)) {
-            subsystem.setSolenoid(DoubleSolenoid.Value.kReverse);
-        } else {
-            subsystem.setSolenoid(DoubleSolenoid.Value.kForward);
-        }
+  /** Toggle the state of the piston. */
+  @Override
+  public void execute() {
+    if (subsystem.getSolenoidPosition().equals(DoubleSolenoid.Value.kForward)) {
+      subsystem.setSolenoid(DoubleSolenoid.Value.kReverse);
+    } else {
+      subsystem.setSolenoid(DoubleSolenoid.Value.kForward);
     }
+  }
 
-    /** Log when this command ends */
-    @Override
-    public void end(boolean interrupted) {
-        if (interrupted) {
-            Shuffleboard.addEventMarker(
-                    "ToggleSolenoid Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        }
-        Shuffleboard.addEventMarker(
-                "ToggleSolenoid end.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        // Logger.addEvent("ToggleSolenoid end.", this.getClass());
+  /** Log when this command ends */
+  @Override
+  public void end(final boolean interrupted) {
+    if (interrupted) {
+      Shuffleboard.addEventMarker(
+          "ToggleSolenoid Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
+    Shuffleboard.addEventMarker(
+        "ToggleSolenoid end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+    // Logger.addEvent("ToggleSolenoid end.", this.getClass());
+  }
 }
