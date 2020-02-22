@@ -98,6 +98,20 @@ useCameraServer: false
       '@id': drive
       #Wheelbase: 2.14
       leftMotor:
+<<<<<<< HEAD
+        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+          &Left_Master
+          '@id': leftMaster
+          type: SPARK
+          name: left
+          port: *leftMasterPort
+          PDP:
+            org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
+          reverseOutput: true
+          enableBrakeMode: true
+          currentLimit: 35
+          enableVoltageComp: true
+=======
         org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
           &Left_Master
           '@id': leftMaster
@@ -149,17 +163,25 @@ useCameraServer: false
 #          updaterProcessPeriodSecs: 0.005
 #          statusFrameRatesMillis: !!map
 #            Status_4_AinTempVbat: 15
+>>>>>>> a9d6495e321f11eaabf608b78515a14a45e6771c
           slaveSparks:
             - port: *leftMasterSlave1Port
               inverted: true
             - port: *leftMasterSlave2Port
               inverted: true
+<<<<<<< HEAD
+      rightMotor:
+        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+=======
       rightMaster:
         org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
+>>>>>>> a9d6495e321f11eaabf608b78515a14a45e6771c
           <<: *Left_Master
           '@id': rightMaster
           name: right
           port: *rightMasterPort
+<<<<<<< HEAD
+=======
           encoderDIO1:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
               '@id': rightMasterEncoder1
@@ -183,6 +205,7 @@ useCameraServer: false
                   kS: 1.15
                   kV: 2.05
                   kA: 0.788
+>>>>>>> a9d6495e321f11eaabf608b78515a14a45e6771c
           slaveSparks:
             - port: *rightMasterSlave1Port
               PDP: PDP
@@ -271,7 +294,11 @@ useCameraServer: false
           enableVoltageComp: true #TODO
           perGearSettings:
             - gearNum: 0
+<<<<<<< HEAD
+              #              maxSpeed: 91
+=======
 #              maxSpeed: 91
+>>>>>>> a9d6495e321f11eaabf608b78515a14a45e6771c
               rampRate: 10
               kP: 0.01
               kI: 0.01
@@ -342,6 +369,56 @@ useCameraServer: false
 
     #***********************************************************************************************************************
     - *DRIVE_COMMANDS
+<<<<<<< HEAD
+    #    - button:
+    #        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+    #          '@id': shiftdown
+    #          joystick:
+    #            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+    #              '@id': mechanismsJoystick
+    #              port: *mechanismsJoystickPort
+    #          buttonNumber: 6 #shoulder right
+    #      command:
+    #        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
+    #          '@id': overrideAndShiftDown
+    #          commands:
+    #            - org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
+    #                '@id': overrideAutoshiftDown
+    #                drive:
+    #                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple:
+    #                    drive
+    #                override: true
+    #            - org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToLowGear:
+    #                '@id': downshift
+    #                subsystem:
+    #                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple:
+    #                    drive
+    #      action: WHEN_PRESSED
+    #    - button:
+    #        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+    #          '@id': shiftUp
+    #          joystick:
+    #            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+    #              '@id': driveJoystick
+    #              port: *driveJoystickPort
+    #          buttonNumber: 2 #TODO
+    #      command:
+    #        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
+    #          '@id': overrideAndShiftUp
+    #          commands:
+    #            - org.usfirst.frc.team449.robot.drive.shifting.commands.OverrideAutoShift:
+    #                '@id': overrideAutoshiftUp
+    #                drive:
+    #                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple:
+    #                    drive
+    #                override: true
+    #            - org.usfirst.frc.team449.robot.generalInterfaces.shiftable.commands.SwitchToHighGear:
+    #                '@id': upshift
+    #                subsystem:
+    #                  org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple:
+    #                    drive
+    #      action: WHEN_PRESSED
+=======
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': shiftdown
@@ -390,6 +467,7 @@ useCameraServer: false
                   org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
                     drive
       action: WHEN_PRESSED
+>>>>>>> a9d6495e321f11eaabf608b78515a14a45e6771c
 
     #***********************************************************************************************************************
     - *INTAKE_COMMANDS
@@ -398,7 +476,12 @@ useCameraServer: false
           '@id': intakeStartButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+<<<<<<< HEAD
+              '@id': mechanismsJoystick
+              port: *mechanismsJoystickPort
+=======
               mechanismsJoystick
+>>>>>>> a9d6495e321f11eaabf608b78515a14a45e6771c
           buttonNumber: *intakeStartButtonNumber
       command:
         org.usfirst.frc.team449.robot._2020.intake.commands.SetIntakeMode:
@@ -670,6 +753,15 @@ useCameraServer: false
     #***********************************************************************************************************************
     - *DRIVE_DEFAULT_COMMAND
     - subsystem:
+<<<<<<< HEAD
+        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple:
+          drive
+      command:
+        org.usfirst.frc.team449.robot.drive.unidirectional.commands.SimpleUnidirectionalDrive:
+          '@id': defaultDriveCommand
+          subsystem:
+            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple:
+=======
         org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
           drive
       command:
@@ -693,13 +785,19 @@ useCameraServer: false
             bufferTimeSeconds: 0.15
           subsystem:
             org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+>>>>>>> a9d6495e321f11eaabf608b78515a14a45e6771c
               drive
           oi:
             org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad:
               '@id': oi
               gamepad:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+<<<<<<< HEAD
+                  '@id': driveJoystick
+                  port: *driveJoystickPort
+=======
                   driveJoystick
+>>>>>>> a9d6495e321f11eaabf608b78515a14a45e6771c
               rotThrottle:
                 org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
                   &rotThrottle
@@ -756,6 +854,8 @@ useCameraServer: false
                     0: 0.2
                     #1 : 0.25
                     #2: 0.25
+<<<<<<< HEAD
+=======
           autoshiftComponent:
             '@id': autoshiftComponent
             upshiftSpeed: 1.5
@@ -764,6 +864,7 @@ useCameraServer: false
               '@id': upshiftDebouncer
               bufferTimeSeconds: 0.06
             upshiftFwdThresh: 0.4
+>>>>>>> a9d6495e321f11eaabf608b78515a14a45e6771c
 
     #***********************************************************************************************************************
     - *FEEDER_DEFAULT_COMMAND
@@ -812,9 +913,14 @@ useCameraServer: false
     '@id': updater
     updatables:
       - org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
+<<<<<<< HEAD
+      - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple: drive
+      - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
+=======
 #      - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
 #      - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
 #      - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS: navX
+>>>>>>> a9d6495e321f11eaabf608b78515a14a45e6771c
       - org.usfirst.frc.team449.robot._2020.climber.ClimberCurrentLimited: climberCurrentLimitSystem
       - org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber: climber
       - org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel: shooterFlywheel
