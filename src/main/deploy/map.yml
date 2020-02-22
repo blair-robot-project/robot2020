@@ -423,13 +423,13 @@ useCameraServer: false
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               mechanismsJoystick
           buttonNumber: *intakePistonToggleButtonNumber
-        command:
-          org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.ToggleSolenoid:
-            '@id': intakePistonToggleCommand
-            subsystem:
-              org.usfirst.frc.team449.robot.subsystem.complex.intake.IntakeActuatedTwoSides:
-                intake
-        action: WHEN_PRESSED
+      command:
+        org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.commands.ToggleSolenoid:
+          '@id': intakePistonToggleCommand
+          subsystem:
+            org.usfirst.frc.team449.robot.subsystem.complex.intake.IntakeActuatedTwoSides:
+              intake
+      action: WHEN_PRESSED
 
     #***********************************************************************************************************************
     # FEEDER COMMANDS (UNUSED)

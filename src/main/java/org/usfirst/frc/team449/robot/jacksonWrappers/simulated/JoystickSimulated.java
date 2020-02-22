@@ -1,17 +1,18 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers.simulated;
 
+import org.jetbrains.annotations.NotNull;
+import org.usfirst.frc.team449.robot.Robot;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.Robot;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 
 /**
  * Class that extends {@link MappedJoystick} that does not rely on the existence of actual hardware.
@@ -35,7 +36,9 @@ public class JoystickSimulated extends MappedJoystick {
     this.logPrefix = "[" + this.logName + "] ";
 
     // The virtual joystick user interface.
-    new SimulatedJoystickUI(this.logName) {};
+    if (!Robot.isUnitTesting()) {
+      new SimulatedJoystickUI(this.logName).setVisible(true);
+    }
   }
 
   /**
@@ -420,7 +423,9 @@ public class JoystickSimulated extends MappedJoystick {
     private final JLabel[][] buttonStateLayout = new JLabel[3][3];
     private final Map<String, JLabel> buttonStateLabels = new HashMap<>();
 
-    {
+    public SimulatedJoystickUI(final String logName) {
+      super(logName);
+
       this.setLayout(new GridLayout(3, 3));
       for (int r = 0; r < 3; r++) {
         for (int c = 0; c < 3; c++) {
@@ -443,12 +448,6 @@ public class JoystickSimulated extends MappedJoystick {
           });
 
       this.doLayout();
-
-      if (!Robot.isUnitTesting()) this.setVisible(true);
-    }
-
-    public SimulatedJoystickUI(final String logName) {
-      super(logName);
     }
 
     @Override
