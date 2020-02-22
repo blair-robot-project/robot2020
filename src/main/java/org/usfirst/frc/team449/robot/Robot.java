@@ -163,7 +163,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         //Run the auto startup command
-        if (this.robotMap.getAutoStartupCommands() != null && !DriverStation.getInstance().getGameSpecificMessage().isEmpty()) {
+        if (this.robotMap.getAutoStartupCommands() != null) {
             this.robotMap.getAutoStartupCommands().forEachRemaining(Command::schedule);
         }
     }
