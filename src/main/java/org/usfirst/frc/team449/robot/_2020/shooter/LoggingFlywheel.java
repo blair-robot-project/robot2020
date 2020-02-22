@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
@@ -151,7 +152,7 @@ public class LoggingFlywheel extends SubsystemBase
         if (state == FlywheelState.SPINNING_UP) this.lastSpinUpTimeMS = Clock.currentTimeMillis();
     }
 
-    //@Log
+    @Log
 public String state() {
         return this.state.name();
     }
@@ -161,7 +162,7 @@ public String state() {
      * seconds.
      */
     @Override
-    //@Log
+    @Log
 public double getSpinUpTimeoutSecs() {
         return this.spinUpTimeoutSecs;
     }
@@ -169,7 +170,7 @@ public double getSpinUpTimeoutSecs() {
     // TODO: Also account for speed difference between flywheels?
     // TODO: Split into FlywheelTwoSides like how intake does it?
     @Override
-    //@Log
+    @Log
 public boolean isAtShootingSpeed() {
         if (this.state == FlywheelState.OFF) return false;
 
@@ -196,7 +197,8 @@ public boolean isAtShootingSpeed() {
      * @return true if the condition was met when cached, false otherwise
      */
     @Override
-    //@Log
+    @
+        Log
 public boolean isConditionTrueCached() {
         return this.conditionMetCached;
     }

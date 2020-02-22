@@ -325,7 +325,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
 
   /** @return Raw position units for debugging purposes */
   @Override
-  //@Log
+  @Log
 public double encoderPosition() {
     return this.motor.getPosition();
   }
@@ -338,7 +338,7 @@ public double encoderPosition() {
 
   /** @return Raw velocity units for debugging purposes */
   @Override
-  //@Log
+  @Log
 public double encoderVelocity() {
     return this.motor.getVelocity();
   }
@@ -430,7 +430,7 @@ public double encoderVelocity() {
    * @return Voltage in volts.
    */
   @Override
-  //@Log
+  @Log
 public double getOutputVoltage() {
     return this.getBatteryVoltage() * this.percentOutput;
   }
@@ -441,7 +441,7 @@ public double getOutputVoltage() {
    * @return Voltage in volts.
    */
   @Override
-  //@Log
+  @Log
 public double getBatteryVoltage() {
     return this.busVoltage;
   }
@@ -452,7 +452,7 @@ public double getBatteryVoltage() {
    * @return Current in amps.
    */
   @Override
-  //@Log
+  @Log
 public double getOutputCurrent() {
     return this.motor.getCurrent();
   }
@@ -611,7 +611,7 @@ public double getOutputCurrent() {
       this.error = newError;
     }
 
-    //@Log
+    @Log
 public double getOutput() {
       return this.kP * this.error + this.kI * this.integral + this.kD * this.derivative;
     }

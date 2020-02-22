@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
@@ -125,12 +126,12 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
   //        return "victor_" + victorSPX.getDeviceID();
   //    }
 
-  //@Log
+  @Log
 public double getBusVolt() {
     return victorSPX.getBusVoltage();
   }
 
-  //@Log
+  @Log
 public double getMotorOutPutVolt() {
     return victorSPX.getMotorOutputVoltage();
   }

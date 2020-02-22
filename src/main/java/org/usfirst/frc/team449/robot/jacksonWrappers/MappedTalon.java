@@ -387,7 +387,7 @@ public class MappedTalon implements SmartMotor {
 
   /** @return The gear this subsystem is currently in. */
   @Override
-  //@Log
+  @Log
 public int getGear() {
     return this.currentGearSettings.gear;
   }
@@ -612,7 +612,7 @@ public int getGear() {
    *
    * @return The closed-loop error in FPS, or null if no encoder CPR was given.
    */
-  //@Log
+  @Log
 @Override
   public double getError() {
     if (canTalon.getControlMode().equals(ControlMode.Velocity)) {
@@ -628,7 +628,7 @@ public int getGear() {
    * @return The setpoint in sensible units for the current control mode.
    */
   @Nullable
-  //@Log
+  @Log
 @Override
   public Double getSetpoint() {
     return setpoint;
@@ -639,7 +639,7 @@ public int getGear() {
    *
    * @return Voltage in volts.
    */
-  //@Log
+  @Log
 @Override
   public double getOutputVoltage() {
     return canTalon.getMotorOutputVoltage();
@@ -650,7 +650,7 @@ public int getGear() {
    *
    * @return Voltage in volts.
    */
-  //@Log
+  @Log
 @Override
   public double getBatteryVoltage() {
     return canTalon.getBusVoltage();
@@ -661,7 +661,7 @@ public int getGear() {
    *
    * @return Current in amps.
    */
-  //@Log
+  @Log
 @Override
   public double getOutputCurrent() {
     return canTalon.getSupplyCurrent();
@@ -714,7 +714,7 @@ public int getGear() {
 
   /** @return the position of the talon in feet, or null of inches per rotation wasn't given. */
   @Override
-  //@Log
+  @Log
 public Double getPositionUnits() {
     return encoderToUnit(canTalon.getSelectedSensorPosition(0));
   }

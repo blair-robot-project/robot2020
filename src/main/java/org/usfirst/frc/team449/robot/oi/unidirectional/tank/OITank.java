@@ -1,6 +1,7 @@
 package org.usfirst.frc.team449.robot.oi.unidirectional.tank;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.github.oblarg.oblog.annotations.Log;
 import org.usfirst.frc.team449.robot.oi.unidirectional.OIUnidirectional;
 
 /** A tank-style dual joystick OI. */
@@ -21,7 +22,7 @@ public abstract class OITank implements OIUnidirectional {
    *
    * @return percent of max speed for left motor cluster from [-1.0, 1.0]
    */
-  //@Log
+  @Log
 public abstract double getLeftThrottle();
 
   /**
@@ -29,7 +30,7 @@ public abstract double getLeftThrottle();
    *
    * @return percent of max speed for right motor cluster from [-1.0, 1.0]
    */
-  //@Log
+  @Log
 public abstract double getRightThrottle();
 
   /**
@@ -39,7 +40,7 @@ public abstract double getRightThrottle();
    *     for the right, both from [-1, 1].
    */
   @Override
-  //@Log
+  @Log
 public double[] getLeftRightOutput() {
     return new double[] {getLeftThrottle(), getRightThrottle()};
   }
@@ -51,7 +52,7 @@ public double[] getLeftRightOutput() {
    *     for the right, both from [-1, 1].
    */
   @Override
-  //@Log
+  @Log
 public double[] getLeftRightOutputCached() {
     return leftRightOutputCached;
   }
@@ -63,7 +64,7 @@ public double[] getLeftRightOutputCached() {
    *     the rotational, both from [-1, 1]
    */
   @Override
-  //@Log
+  @Log
 public double[] getFwdRotOutput() {
     return new double[] {
       (getLeftThrottle() + getRightThrottle()) / 2., (getLeftThrottle() - getRightThrottle()) / 2.
@@ -77,7 +78,7 @@ public double[] getFwdRotOutput() {
    *     the rotational, both from [-1, 1]
    */
   @Override
-  //@Log
+  @Log
 public double[] getFwdRotOutputCached() {
     return fwdRotOutputCached;
   }

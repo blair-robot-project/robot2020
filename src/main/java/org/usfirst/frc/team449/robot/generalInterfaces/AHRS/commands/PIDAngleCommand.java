@@ -116,7 +116,7 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
     return (theta + 180) % 360 - 180;
   }
 
-  //@Log
+  @Log
 protected double getSetpoint() {
     return pidController.getSetpoint();
   }
@@ -131,12 +131,12 @@ protected double getSetpoint() {
    *
    * @return standard output
    */
-  //@Log
+  @Log
 protected double getRawOutput() {
     return pidController.calculate(subsystem.getHeadingCached());
   }
 
-  //@Log
+  @Log
 public double getError() {
     return pidController.getPositionError();
   }
@@ -147,7 +147,7 @@ public double getError() {
    * @return The processed output, ready to be subtracted from the left side of the drive output and
    *     added to the right side.
    */
-  //@Log
+  @Log
 protected double getOutput() {
     double controllerOutput = getRawOutput();
     // Set the output to the minimum if it's too small.
@@ -194,7 +194,7 @@ protected double getOutput() {
    *
    * @return True if on target, false otherwise.
    */
-  //@Log
+  @Log
 protected boolean onTarget() {
     if (onTargetBuffer == null) {
       return pidController.atSetpoint();

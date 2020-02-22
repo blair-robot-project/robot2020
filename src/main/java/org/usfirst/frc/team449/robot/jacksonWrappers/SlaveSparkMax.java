@@ -6,6 +6,7 @@ import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.SlaveMotor;
 
@@ -52,12 +53,12 @@ public class SlaveSparkMax implements SlaveMotor, Loggable {
     this.slaveSpark.setInverted(this.inverted);
   }
 
-  //@Log
+  @Log
 public double getOutputCurrent() {
     return this.slaveSpark.getOutputCurrent();
   }
 
-  //@Log
+  @Log
 public double getMotorOutputVoltage() {
     return this.slaveSpark.getAppliedOutput();
   }

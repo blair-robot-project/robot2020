@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
@@ -115,7 +116,7 @@ public class ClimberCurrentLimited extends SubsystemBase
      * @return true if the motor is on, false otherwise.
      */
     @Override
-    //@Log
+    @Log
 public boolean isMotorOn() {
         return motorSpinning;
     }
@@ -133,7 +134,7 @@ public boolean isMotorOn() {
      * @return true if the condition was met when cached, false otherwise
      */
     @Override
-    //@Log
+    @Log
 public boolean isConditionTrueCached() {
         return conditionMetCached;
     }

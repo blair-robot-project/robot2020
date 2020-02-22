@@ -1,7 +1,5 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers;
 
-import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,6 +9,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 import org.usfirst.frc.team449.robot.generalInterfaces.rumbleable.Rumbleable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.JoystickSimulated;
 
+import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
+
 /** A Jackson-compatible wrapper on a {@link Joystick}. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedJoystick extends Joystick implements Rumbleable {
@@ -18,7 +18,7 @@ public class MappedJoystick extends Joystick implements Rumbleable {
    * Whether to construct instances of {@link JoystickSimulated} instead of {@link MappedJoystick}
    * when the robot is running in a simulation.
    */
-  private static final boolean SIMULATE = true;
+  private static final boolean SIMULATE = false;
 
   /**
    * Default constructor

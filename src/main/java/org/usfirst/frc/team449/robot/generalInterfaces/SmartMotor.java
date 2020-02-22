@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
@@ -587,18 +588,18 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
     return new int[] {4, 3};
   }
 
-  //    @Override
-  //    default int[] configureLayoutPosition() {
-  //        return new int[] {3, 4};
-  //    }
+  @Override
+  default int[] configureLayoutPosition() {
+    return new int[] {3, 4};
+  }
 
   /**
    * Gets whether the motor is a simulated motor.
    *
    * @return whether the motor is a software simulation of a motor
    */
-  //@Log
-default boolean isSimulated() {
+  @Log
+  default boolean isSimulated() {
     return false;
   }
 

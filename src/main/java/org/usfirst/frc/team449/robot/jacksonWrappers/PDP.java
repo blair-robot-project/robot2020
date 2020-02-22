@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
@@ -47,7 +48,7 @@ public class PDP implements Loggable, Updatable {
    *
    * @return The voltage of the PDP in volts
    */
-  //@Log
+  @Log
 public double getVoltage() {
     return voltage;
   }
@@ -57,7 +58,7 @@ public double getVoltage() {
    *
    * @return The current of all the channels in Amperes
    */
-  //@Log
+  @Log
 public double getTotalCurrent() {
     return totalCurrent;
   }
@@ -67,7 +68,7 @@ public double getTotalCurrent() {
    *
    * @return The temperature of the PDP in degrees Celsius.
    */
-  //@Log
+  @Log
 public double getTemperature() {
     return temperature;
   }
@@ -78,7 +79,7 @@ public double getTemperature() {
    * @return Resistance in ohms, or null if not calculating resistance.
    */
   @Nullable
-  //@Log
+  @Log
 public Double getResistance() {
     return voltagePerCurrentLinReg == null ? null : resistance;
   }
@@ -90,7 +91,7 @@ public Double getResistance() {
    *     resistance.
    */
   @Nullable
-  //@Log
+  @Log
 public Double getUnloadedVoltage() {
     return voltagePerCurrentLinReg == null ? null : unloadedVoltage;
   }

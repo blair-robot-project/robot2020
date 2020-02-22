@@ -54,7 +54,6 @@ public class DriveUnidirectionalSimple extends SubsystemBase
    */
   @Nullable
   @Override
-  //@Log
 public Double getLeftVel() {
     return null;
   }
@@ -66,7 +65,6 @@ public Double getLeftVel() {
    */
   @Nullable
   @Override
-  //@Log
 public Double getRightVel() {
     return null;
   }
@@ -78,7 +76,6 @@ public Double getRightVel() {
    */
   @Nullable
   @Override
-  //@Log
 public Double getLeftPos() {
     return null;
   }
@@ -90,7 +87,6 @@ public Double getLeftPos() {
    */
   @Nullable
   @Override
-  //@Log
 public Double getRightPos() {
     return null;
   }
@@ -102,7 +98,6 @@ public Double getRightPos() {
    */
   @Nullable
   @Override
-  //@Log
 public Double getLeftVelCached() {
     return null;
   }
@@ -114,7 +109,6 @@ public Double getLeftVelCached() {
    */
   @Nullable
   @Override
-  //@Log
 public Double getRightVelCached() {
     return null;
   }
@@ -126,7 +120,6 @@ public Double getRightVelCached() {
    */
   @Nullable
   @Override
-  //@Log
 public Double getLeftPosCached() {
     return null;
   }
@@ -138,7 +131,6 @@ public Double getLeftPosCached() {
    */
   @Nullable
   @Override
-  //@Log
 public Double getRightPosCached() {
     return null;
   }

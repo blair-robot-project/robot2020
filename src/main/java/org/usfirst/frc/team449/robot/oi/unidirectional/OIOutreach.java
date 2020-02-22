@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -63,7 +64,7 @@ public class OIOutreach implements OIUnidirectional {
    *     for the right, both from [-1, 1].
    */
   @Override
-  //@Log
+  @Log
 public double[] getLeftRightOutputCached() {
     return this.cachedLeftRightOutput;
   }
@@ -91,7 +92,7 @@ public double[] getLeftRightOutputCached() {
    *     the rotational, both from [-1, 1]
    */
   @Override
-  //@Log
+  @Log
 public double[] getFwdRotOutputCached() {
     return this.cachedFwdRotOutput;
   }
@@ -102,7 +103,7 @@ public double[] getFwdRotOutputCached() {
    * @return True if the driver is trying to drive straight, false otherwise.
    */
   @Override
-  //@Log
+  @Log
 public boolean commandingStraight() {
     return this.getLeftRightOutputCached()[0] == this.getLeftRightOutputCached()[1];
   }

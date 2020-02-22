@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.Joystick;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 
@@ -46,7 +47,7 @@ public class ThrottleBasic implements Throttle {
    *
    * @return The raw joystick output, on [-1, 1].
    */
-  //@Log
+  @Log
 @Override
 public double getValue() {
     return (inverted ? -1 : 1) * stick.getRawAxis(axis);
@@ -58,7 +59,7 @@ public double getValue() {
    * @return The output from [-1, 1].
    */
   @Override
-  //@Log
+  @Log
 public double getValueCached() {
     return cachedOutput;
   }
@@ -74,7 +75,7 @@ public double getValueCached() {
    *
    * @return the result to use in PIDController
    */
-  //@Log
+  @Log
 public double pidGet() {
     return (inverted ? -1 : 1) * stick.getRawAxis(axis);
   }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DigitalInput;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 import java.util.function.BooleanSupplier;
 
@@ -30,7 +31,7 @@ public class MappedDigitalInput extends DigitalInput implements Loggable, Boolea
    * @return the status of the digital input
    */
   @Override
-  //@Log
+  @Log
 public boolean get() {
     return !super.get(); // true is off by default in WPILib, and that's dumb
   }

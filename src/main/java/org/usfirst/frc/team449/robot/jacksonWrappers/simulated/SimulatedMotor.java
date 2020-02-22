@@ -69,12 +69,12 @@ public class SimulatedMotor implements Loggable {
     this.position += this.velocity * deltaSecs;
   }
 
-  //@Log
+  @Log
 public double getVelocity() {
     return this.velocity;
   }
 
-  //@Log
+  @Log
 public double getPosition() {
     return this.position;
   }
@@ -83,7 +83,7 @@ public double getPosition() {
     this.position = 0;
   }
 
-  //@Log
+  @Log
 public double getCurrent() {
     return this.voltageSource.getAsDouble() / RESISTANCE;
   }

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 import org.usfirst.frc.team449.robot.other.Clock;
@@ -26,13 +27,13 @@ public class SafeWinchingClimber extends SubsystemBase
     private final SubsystemSolenoid solenoidSubsystem;
 
     private final long extensionTimeMillis;
-    //@Log
+    @Log
 private boolean armIsExtending = false;
-    //@Log
+    @Log
 private long extensionStartTime = 0L;
-    //@Log
+    @Log
 private boolean enableArm = true;
-    //@Log
+    @Log
 private boolean reallySure = false;
 
     @JsonCreator
@@ -112,7 +113,7 @@ private boolean reallySure = false;
         }
     }
 
-    //@Log
+    @Log
 private boolean armIsUp() {
         if (!this.armIsExtending) {
             return false;
@@ -130,7 +131,7 @@ private boolean armIsUp() {
     }
 
     @Override
-    //@Log
+    @Log
 public boolean isMotorOn() {
         return this.motorSubsystem.isMotorOn();
     }

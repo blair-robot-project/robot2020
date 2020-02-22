@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.AnalogInput;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 
 /** A Jackson-friendly wrapper on WPILib's {@link AnalogInput}. */
@@ -37,13 +38,13 @@ public class MappedAnalogInput extends AnalogInput implements Updatable, Loggabl
    *
    * @return The value of the analog input on [0,1], scaled so that 5 volts is 1 and 0 volts is 0.
    */
-  //@Log
+  @Log
 public double getPercentValue() {
     // Round to 3 decimal places and clip to between 0 and 1.
     return Math.min(Math.max(Math.round((getAverageValue() - 55.) / 64190. * 1000.) / 1000., 0), 1);
   }
 
-  //@Log
+  @Log
 public double getPercentValueCached() {
     return percentValueCached;
   }

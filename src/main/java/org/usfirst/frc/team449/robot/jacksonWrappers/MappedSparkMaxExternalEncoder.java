@@ -296,7 +296,7 @@ public class MappedSparkMaxExternalEncoder implements SmartMotor {
   }
 
   @Override
-  //@Log
+  @Log
 public int getGear() {
     return this.currentGearSettings.gear;
   }
@@ -425,7 +425,7 @@ public int getGear() {
 
   /** @return Current RPM for debug purposes */
   @Override
-  //@Log
+  @Log
 public double encoderVelocity() {
     return encoder.getRate();
   }
@@ -436,7 +436,7 @@ public double encoderVelocity() {
    * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
    */
   @Override
-  //@Log
+  @Log
 public Double getVelocity() {
     return this.encoderToUPS(encoder.getRate());
   }
@@ -469,32 +469,32 @@ public Double getVelocity() {
   }
 
   @Override
-  //@Log
+  @Log
 public double getError() {
     return this.getSetpoint() - this.getVelocity();
   }
 
   @Nullable
   @Override
-  //@Log
+  @Log
 public Double getSetpoint() {
     return this.setpoint;
   }
 
   @Override
-  //@Log
+  @Log
 public double getOutputVoltage() {
     return this.spark.getAppliedOutput() * this.spark.getBusVoltage();
   }
 
   @Override
-  //@Log
+  @Log
 public double getBatteryVoltage() {
     return this.spark.getBusVoltage();
   }
 
   @Override
-  //@Log
+  @Log
 public double getOutputCurrent() {
     return this.spark.getOutputCurrent();
   }

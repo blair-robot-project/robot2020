@@ -2,6 +2,7 @@ package org.usfirst.frc.team449.robot.oi.unidirectional.arcade;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.oi.unidirectional.OIUnidirectional;
@@ -37,7 +38,7 @@ public abstract class OIArcade implements OIUnidirectional {
    * @return True if the driver is trying to drive straight, false otherwise.
    */
   @Override
-  //@Log
+  @Log
 public boolean commandingStraight() {
     return getFwdRotOutputCached()[1] == 0;
   }

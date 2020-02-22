@@ -8,6 +8,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 
@@ -138,7 +139,7 @@ public class MappedAHRS implements Updatable, Loggable {
    *
    * @return The heading, in degrees from [-180, 180]
    */
-  //@Log
+  @Log
 public double getCachedHeading() {
     return cachedHeading;
   }
@@ -149,7 +150,7 @@ public double getCachedHeading() {
    *
    * @return The angular displacement, in degrees.
    */
-  //@Log
+  @Log
 public double getCachedAngularDisplacement() {
     return cachedAngularDisplacement;
   }
@@ -159,7 +160,7 @@ public double getCachedAngularDisplacement() {
    *
    * @return The angular yaw velocity, in degrees/sec.
    */
-  //@Log
+  @Log
 public double getCachedAngularVelocity() {
     return cachedAngularVel;
   }
@@ -169,7 +170,7 @@ public double getCachedAngularVelocity() {
    *
    * @return Linear X acceleration, in feet/(sec^2)
    */
-  //@Log
+  @Log
 public double getCachedXAccel() {
     return cachedXAccel;
   }
@@ -179,7 +180,7 @@ public double getCachedXAccel() {
    *
    * @return Linear Y acceleration, in feet/(sec^2)
    */
-  //@Log
+  @Log
 public double getCachedYAccel() {
     return cachedYAccel;
   }
@@ -189,7 +190,7 @@ public double getCachedYAccel() {
    *
    * @return The pitch, in degrees from [-180, 180]
    */
-  //@Log
+  @Log
 public double getCachedPitch() {
     return cachedPitch;
   }
