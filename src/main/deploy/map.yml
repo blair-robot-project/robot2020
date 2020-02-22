@@ -648,12 +648,11 @@ useCameraServer: false
               mechanismsJoystick
           buttonNumber: *climberWinchButtonNumber
       command:
-        org.usfirst.frc.team449.robot._2020.climber.commands.SetClimberWithArmState:
+        org.usfirst.frc.team449.robot._2020.climber.commands.TurnMotorOn:
           '@id': climberWinchCommand
           subsystem:
             org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
               climber
-          state: "LOWER"
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
