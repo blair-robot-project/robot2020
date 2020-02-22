@@ -1,7 +1,8 @@
 package org.usfirst.frc.team449.robot;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import edu.wpi.first.wpilibj2.command.Command;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.Nullable;
@@ -9,6 +10,7 @@ import org.usfirst.frc.team449.robot.oi.buttons.CommandButton;
 import org.usfirst.frc.team449.robot.other.DefaultCommand;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A container class that holds all the commands on the robot, for cleanliness in the map and so
@@ -30,17 +32,18 @@ public class CommandContainer implements Loggable {
 
   @JsonCreator
   public CommandContainer(
-      @Nullable @JsonInclude(content = JsonInclude.Include.NON_NULL)
+      // TODO Figure out why this doesn't work @JsonInclude(JsonInclude.Include.NON_NULL)
+      @Nullable @JsonSetter(contentNulls = Nulls.SKIP)
           final List<DefaultCommand> defaultCommands,
-      @Nullable @JsonInclude(content = JsonInclude.Include.NON_NULL)
+      @Nullable @JsonSetter(contentNulls = Nulls.SKIP)
           final List<CommandButton> buttons,
-      @Nullable @JsonInclude(content = JsonInclude.Include.NON_NULL)
+      @Nullable @JsonSetter(contentNulls = Nulls.SKIP)
           final List<Command> robotStartupCommand,
-      @Nullable @JsonInclude(content = JsonInclude.Include.NON_NULL)
+      @Nullable @JsonSetter(contentNulls = Nulls.SKIP)
           final List<Command> autoStartupCommand,
-      @Nullable @JsonInclude(content = JsonInclude.Include.NON_NULL)
+      @Nullable @JsonSetter(contentNulls = Nulls.SKIP)
           final List<Command> teleopStartupCommand,
-      @Nullable @JsonInclude(content = JsonInclude.Include.NON_NULL)
+      @Nullable @JsonSetter(contentNulls = Nulls.SKIP)
           final List<Command> testStartupCommand) {
     this.defaultCommands = defaultCommands;
     this.buttons = buttons;
@@ -48,6 +51,8 @@ public class CommandContainer implements Loggable {
     this.autoStartupCommand = autoStartupCommand;
     this.teleopStartupCommand = teleopStartupCommand;
     this.testStartupCommand = testStartupCommand;
+    System.out.println(autoStartupCommand.stream().anyMatch(Objects::isNull));
+    System.out.println(buttons.stream().anyMatch(Objects::isNull));
   }
 
   public List<Command> getRobotStartupCommand() {
