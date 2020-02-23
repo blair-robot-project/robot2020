@@ -4,7 +4,7 @@ import org.usfirst.frc.team449.robot.Robot;
 import org.usfirst.frc.team449.robot.RobotMap;
 import org.usfirst.frc.team449.robot.SimulationConfig;
 
-public final class Tests {
+public final class GeneralTests {
     @org.junit.Before
     public void before() {
         Robot.notifyTesting();
