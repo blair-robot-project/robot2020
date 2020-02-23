@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot._2020.intake.SubsystemIntake;
+import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 
 /**
  * Sets the mode of the intake.

@@ -1,10 +1,9 @@
-package org.usfirst.frc.team449.robot._2020.shooter.commands;
+package org.usfirst.frc.team449.robot._2020.multiSubsystem;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot._2020.shooter.SubsystemConditional;
 
 import java.util.Objects;
 

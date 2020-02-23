@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot._2020.feeder.SubsystemIntake;
+import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 import org.usfirst.frc.team449.robot._2020.shooter.SubsystemFlywheel;
 
 /**
@@ -32,8 +32,8 @@ public class SpinUpFlywheel extends InstantCommand {
    */
   @JsonCreator
   public SpinUpFlywheel(
-      @NotNull @JsonProperty(required = true) SubsystemFlywheel flywheel,
-      @Nullable @JsonProperty(required = true) SubsystemIntake feeder) {
+      @NotNull @JsonProperty(required = true) final SubsystemFlywheel flywheel,
+      @Nullable @JsonProperty(required = true) final SubsystemIntake feeder) {
     this.flywheel = flywheel;
     this.feeder = feeder;
   }
@@ -57,7 +57,7 @@ public class SpinUpFlywheel extends InstantCommand {
 
   /** Log when this command ends */
   @Override
-  public void end(boolean interrupted) {
+  public void end(final boolean interrupted) {
     if (interrupted) {
       Shuffleboard.addEventMarker(
           "SpinUpFlywheel Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
