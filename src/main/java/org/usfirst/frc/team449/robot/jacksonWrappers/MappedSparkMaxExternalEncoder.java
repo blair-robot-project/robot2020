@@ -384,7 +384,7 @@ public int getGear() {
   @Contract(pure = true)
   @Override
   public Double nativeToRPS(final double nat) {
-    return nat / 60.;
+    return nat;
   }
 
   /**
@@ -397,7 +397,7 @@ public int getGear() {
   @Contract(pure = true)
   @Override
   public double RPSToNative(final double RPS) {
-    return RPS * 60.;
+    return RPS;
   }
 
   /** @return Total revolutions for debug purposes */

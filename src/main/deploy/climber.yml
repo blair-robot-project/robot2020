@@ -1,0 +1,153 @@
+---
+
+# IntelliJ supports Ctrl+clicking anchors to find usages and declarations... so, hyperlinks! Yooooooooo!
+# Basically a table of contents; Ctrl+click on a heading in UPPER_SNAKE_CASE to jump back and forth between the
+# table of contents and actual location in the map.
+NAVIGATION:
+  # The anchors that replace map key values must have the values of the keys that they replace.
+  - &PDP pdp
+  # This works magically because the anchor refers to the key of the mapping only, which is the string "subsystems".
+  - &SUBSYSTEMS subsystems:
+      # Other anchors, like these, become null list items and are explicitly ignored using @JsonInclude
+      - &CLIMBER_SUBSYSTEM
+  - &COMMANDS commands:
+      - &BUTTONS buttons:
+          - &CLIMBER_COMMANDS
+  - &UPDATER updater
+
+# Anchors for transclusion into the rest of the map.
+# Ignored by Jackson (so is NAVIGATION); can contain any valid YAML suitable for organizational purposes.
+# Make sure there aren't any colons after the anchors; Jackson gives "Null key for a Map not allowed in JSON"
+CONSTANTS:
+  - MotorPorts:
+      # Weapons
+      - &climberMotorPort 13
+  - JoystickPorts:
+      - &mechanismsJoystickPort 0
+  - SolenoidPorts:
+      - &climberSolenoidForward 4
+      - &climberSolenoidReverse 5
+  - ButtonNumbers:
+      - &climberOffButtonNumber 5
+      - &climberLowerButtonNumber 6
+      - &climberRaiseButtonNumber 7
+      - &climberWinchButtonNumber 8
+
+
+# WHETHER TO USE THE CAMERA SERVER
+useCameraServer: false
+
+########################################################################################################################
+*PDP:
+  org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
+    '@id': PDP
+    canID: 0
+    voltagePerCurrentLinReg:
+      bufferSize: 250
+      rSquaredThreshhold: 0.75
+
+
+########################################################################################################################
+*SUBSYSTEMS:
+  #***********************************************************************************************************************
+  - *CLIMBER_SUBSYSTEM
+  - org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
+      '@id': climber
+      motorSubsystem:
+        org.usfirst.frc.team449.robot._2020.climber.ClimberCurrentLimited:
+          '@id': climberCurrentLimitSystem
+          smartMotor:
+            org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+              '@id': climberMotor
+              name: climberMotor
+              type: SPARK
+              port: *climberMotorPort
+              enableBrakeMode: false
+          maxPower: 0.1
+          powerLimitTimer:
+            '@id': climberPowerLimitTimer
+            bufferTimeSeconds: 1
+      solenoidSubsystem:
+        org.usfirst.frc.team449.robot._2020.climber.SolenoidSimple:
+          '@id': climberSolenoidSystem
+          piston:
+            '@id': climberSolenoid
+            module: 0
+            forward: *climberSolenoidForward
+            reverse: *climberSolenoidReverse
+
+
+*COMMANDS:
+  ########################################################################################################################
+  *BUTTONS:
+    - *CLIMBER_COMMANDS
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': climberRaiseButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              '@id': mechanismsJoystick
+              port: *mechanismsJoystickPort
+          buttonNumber: *climberRaiseButtonNumber
+      command:
+        org.usfirst.frc.team449.robot._2020.climber.commands.SetClimberWithArmState:
+          '@id': climberRaiseCommand
+          subsystem:
+            org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
+              climber
+          state: "RAISE"
+      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': climberWinchButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *climberWinchButtonNumber
+      command:
+        org.usfirst.frc.team449.robot._2020.climber.commands.TurnMotorOn:
+          '@id': climberWinchCommand
+          subsystem:
+            org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
+              climber
+      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': climberLowerButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *climberLowerButtonNumber
+      command:
+        org.usfirst.frc.team449.robot._2020.climber.commands.SetClimberWithArmState:
+          '@id': climberLowerCommand
+          subsystem:
+            org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
+              climber
+          state: "LOWER"
+      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': climberOffButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *climberOffButtonNumber
+      command:
+        org.usfirst.frc.team449.robot._2020.climber.commands.SetClimberWithArmState:
+          '@id': climberOffCommand
+          subsystem:
+            org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
+              climber
+          state: "OFF"
+      action: WHEN_PRESSED
+
+
+########################################################################################################################
+*UPDATER:
+  org.usfirst.frc.team449.robot.other.Updater:
+    '@id': updater
+    updatables:
+      - org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
+      - org.usfirst.frc.team449.robot._2020.climber.ClimberCurrentLimited: climberCurrentLimitSystem
+      - org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber: climber
