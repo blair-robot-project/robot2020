@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.Robot;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
@@ -82,7 +83,7 @@ public class JoystickSimulated extends MappedJoystick {
    */
   @Override
   public double getRawAxis(final int axis) {
-    return 0;
+    return this.keyStates.getOrDefault("0", false) ? 10 : 0;
   }
 
   /**

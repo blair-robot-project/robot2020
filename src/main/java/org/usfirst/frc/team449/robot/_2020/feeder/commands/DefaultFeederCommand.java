@@ -14,23 +14,25 @@ import org.usfirst.frc.team449.robot.other.Clock;
 import java.util.function.BooleanSupplier;
 
 /**
- * Feeder indexing, i.e. turning feeder on and off based on two infrared sensors.
+ * Feeder indexing. Turns the feeder on when incoming balls from the intake are detected by two
+ * sensors.
  */
 public class DefaultFeederCommand extends CommandBase implements Loggable {
   @NotNull private final SubsystemIntake feeder;
   @NotNull private final SubsystemIntake.IntakeMode runMode;
   @NotNull private final ConditionTimingComponentObserver feederIsOn;
-  @Log.Exclude
+  @Log.Exclude  // TODO Figure out why this is necessary to prevent logging duplicate members
   @NotNull private final ConditionTimingComponentDecorator sensor1;
   @Log.Exclude
   @NotNull private final ConditionTimingComponentDecorator sensor2;
   private final double timeout;
 
   /**
-   * @param subsystem
-   * @param sensor1
-   * @param sensor2
-   * @param runMode
+   * @param subsystem the feeder subsystem to operate on
+   * @param sensor1 the first sensor of the transition from intake to feeder
+   * @param sensor2 the second sensor of the transition from intake to feeder
+   * @param runMode the {@link org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake.IntakeMode}
+   * to run the feeder at when
    */
   @JsonCreator
   public DefaultFeederCommand(@NotNull @JsonProperty(required = true) final SubsystemIntake subsystem,
