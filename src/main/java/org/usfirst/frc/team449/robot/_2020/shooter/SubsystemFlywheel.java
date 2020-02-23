@@ -51,7 +51,7 @@ public interface SubsystemFlywheel {
     /**
      * @return Whether the flywheel has attained a speed specified to be sufficient for shooting.
      */
-    default boolean isAtShootingSpeed() {
+    default boolean isReadyToShoot() {
         return true;
     }
 

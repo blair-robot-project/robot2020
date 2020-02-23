@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot._2020.intake;
+package org.usfirst.frc.team449.robot._2020.multiSubsystem;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -6,9 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 
 import java.util.Map;
@@ -16,16 +14,16 @@ import java.util.Map;
 import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /**
- * A simple two-sided intake subsystem.
+ * A simple intake subsystem.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class IntakeTwoSidesSimple extends SubsystemBase implements Loggable, SubsystemIntake {
+public class IntakeSimple extends SubsystemBase implements SubsystemIntake, Loggable {
 
   /**
-   * The motors this subsystem controls.
+   * The motor this subsystem controls.
    */
   @NotNull
-  private final SimpleMotor leftMotor, rightMotor;
+  private final SimpleMotor motor;
 
   /**
    * The velocities for the motor to go at for each of the modes, on [-1, 1]. Can be null to
@@ -38,25 +36,23 @@ public class IntakeTwoSidesSimple extends SubsystemBase implements Loggable, Sub
    * The current mode.
    */
   @NotNull
-  private IntakeMode mode;
+  private SubsystemIntake.IntakeMode mode;
 
   /**
    * Default constructor
    *
-   * @param leftMotor The left motor that this subsystem controls.
-   * @param rightMotor The left motor that this subsystem controls.
+   * @param motor The motor this subsystem controls.
    * @param velocities The velocity for the motor to go at for each {@link IntakeMode}, on the
    * interval [-1, 1]. Modes can be missing to indicate that this intake doesn't have/use them.
    */
   @JsonCreator
-  public IntakeTwoSidesSimple(@JsonProperty(required = true) @NotNull final SimpleMotor leftMotor,
-                              @JsonProperty(required = true) @NotNull final SimpleMotor rightMotor,
-                              @NotNull @JsonProperty(required = true) final Map<IntakeMode, Double> velocities) {
-
-    this.leftMotor = leftMotor;
-    this.rightMotor = rightMotor;
-    this.mode = IntakeMode.OFF;
+  public IntakeSimple(
+      @JsonProperty(required = true) @NotNull final SimpleMotor motor,
+      @NotNull @JsonProperty(required = true) final Map<IntakeMode, Double> velocities) {
+    this.motor = motor;
     this.velocities = velocities;
+
+    this.mode = IntakeMode.OFF;
 
     if (velocities.containsKey(IntakeMode.OFF))
       System.err.println(getLogPrefix(this) + "Warning: velocity for mode " + IntakeMode.OFF + " will be ignored.");
@@ -70,11 +66,9 @@ public class IntakeTwoSidesSimple extends SubsystemBase implements Loggable, Sub
   /**
    * @return the current mode of the intake.
    */
-  @Override
   @NotNull
-
-  @Log.ToString
-  public IntakeMode getMode() {
+  @Override
+  public SubsystemIntake.IntakeMode getMode() {
     return this.mode;
   }
 
@@ -82,38 +76,13 @@ public class IntakeTwoSidesSimple extends SubsystemBase implements Loggable, Sub
    * @param mode The mode to switch the intake to.
    */
   @Override
-  public void setMode(@NotNull final IntakeMode mode) {
-    this.setLeftMode(mode);
-    this.setRightMode(mode);
-  }
-
-  /**
-   * @param mode The mode to switch the left side of the intake to.
-   */
-
-  public void setLeftMode(@NotNull final IntakeMode mode) {
-    this.setMode(mode, this.leftMotor);
-  }
-
-  /**
-   * @param mode The mode to switch the right side of the intake to.
-   */
-
-  public void setRightMode(@NotNull final IntakeMode mode) {
-    this.setMode(mode, this.rightMotor);
-  }
-
-  /**
-   * @param mode
-   * @param motor
-   */
-  public void setMode(@NotNull final IntakeMode mode, @NotNull final SimpleMotor motor) {
+  public void setMode(@NotNull final SubsystemIntake.IntakeMode mode) {
     if (mode == IntakeMode.OFF) {
       motor.setVelocity(0);
       motor.disable();
     } else if (this.velocities.containsKey(mode)) {
-      motor.enable();
-      motor.setVelocity(this.velocities.get(mode));
+      this.motor.enable();
+      this.motor.setVelocity(this.velocities.get(mode));
       this.mode = mode;
     } else {
       System.err.println(getLogPrefix(this) + "Warning: use of undefined mode " + mode);

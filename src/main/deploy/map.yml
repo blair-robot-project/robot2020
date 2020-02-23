@@ -18,6 +18,7 @@ NAVIGATION:
       - &BUTTONS buttons:
           - &DRIVE_COMMANDS
           - &INTAKE_COMMANDS
+          - &FEEDER_COMMANDS
           - &SHOOTER_COMMANDS
           - &CLIMBER_COMMANDS
       - &DEFAULT_COMMANDS defaultCommands:
@@ -38,9 +39,9 @@ CONSTANTS:
       - &rightMasterSlave1Port 4
       - &rightMasterSlave2Port 6
       # Digestive system
-      - &intakeBrushMotorPort 7
-      - &intakeBigWheelMotorPort 8
-      - &feederMotor1Port 9
+      - &intakeBumperMotorPort 7
+      - &intakeTransitionWheelMotorPort 8
+      - &feederMotorPort 9
       - &shooterLeftMotorPort 10
       - &shooterRightMotorPort 11
       - &kickerMotorPort 12
@@ -71,11 +72,19 @@ CONSTANTS:
       - &climberRaiseButtonNumber 7
       - &climberWinchButtonNumber 8
       - &intakePistonToggleButtonNumber 9
+      - &feederCoughButtonNumber 10 #TODO Should coughing be an actual back-and-forth motion?
   - MotorSpeeds:
-      - &intakeVel 0.5
-      - &feederVel 0.5
-      - &kickerThrottle 0.2
-      - &shooterThrottle 1
+      - &intakeIntakingVel 0.5
+      - &feederIntakingVel 0.4
+      - &feederShootingVel 0.4
+      - &feederCoughingVel -0.4
+      - &flywheelSpinUpTimeoutSecs 4
+      - &kickerThrottle -0.3
+      - &shooterThrottle 0.5
+  - Other:
+      - &feederIndexingTimeout 1
+      - &flywheelMinShootingSpeed 5000
+
 
 # WHETHER TO USE THE CAMERA SERVER
 useCameraServer: false
@@ -216,21 +225,24 @@ useCameraServer: false
   - *INTAKE_SUBSYSTEM
   - org.usfirst.frc.team449.robot._2020.intake.IntakeActuatedTwoSides:
       '@id': intake
+      velocities: !!map
+        IN_FAST: *intakeIntakingVel
       leftMotor:
         org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
-          '@id': intakeBrushMotor
-          name: intakeBrushMotor
+          '@id': intakeBumperMotor
+          name: intakeBumperMotor
           type: SPARK
-          port: *intakeBrushMotorPort
+          port: *intakeBumperMotorPort
           enableBrakeMode: true
           PDP: PDP
           currentLimit: 30
       rightMotor:
         org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
-          '@id': intakeBigWheelMotor
-          name: intakeBigWheelMotor
+          '@id': intakeTransitionWheelMotor
+          name: intakeTransitionWheelMotor
+          reverseOutput: true
           type: SPARK
-          port: *intakeBigWheelMotorPort
+          port: *intakeTransitionWheelMotorPort
           enableBrakeMode: true
           PDP: PDP
           currentLimit: 30
@@ -239,45 +251,35 @@ useCameraServer: false
         module: 0
         forward: *intakeSolenoidForward
         reverse: *intakeSolenoidReverse
-      inSlowVel: *intakeVel
-      inFastVel: *intakeVel
-      outSlowVel: *intakeVel
-      outFastVel: *intakeVel
 
   #***********************************************************************************************************************
   - *FEEDER_SUBSYSTEM
-  - org.usfirst.frc.team449.robot._2020.feeder.IntakeSimple:
+  - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
       '@id': feeder
+      velocities: !!map
+        IN_FAST: *feederIntakingVel
+        OUT_SLOW: *feederCoughingVel
+        OUT_FAST: *feederShootingVel
       motor:
         org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
           '@id': feederMotor
           type: SPARK
-          port: *feederMotor1Port
+          port: *feederMotorPort
           name: feederMotor
           reverseOutput: false
           enableBrakeMode: false
           PDP: PDP
           currentLimit: 30
           reverseSensor: false
-          perGearSettings:
-            - gearNum: 0
-              #              maxSpeed: 1000
-              kP: 0.01
-              kI: 0.01
-              kD: 0
-      inSlowVel: *feederVel
-      inFastVel: *feederVel
-      outSlowVel: *feederVel
-      outFastVel: *feederVel
 
   #***********************************************************************************************************************
   - *SHOOTER_SUBSYSTEM
   - org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
       '@id': shooterFlywheel
-      shooterThrottle: *shooterThrottle #.55 #percent
-      kickerThrottle: *kickerThrottle #percent
-      spinUpTimeoutSecs: 10
-      minShootingSpeedFPS: 150
+      shooterThrottle: *shooterThrottle
+      kickerThrottle: *kickerThrottle
+      spinUpTimeoutSecs: *flywheelSpinUpTimeoutSecs
+      minShootingSpeed: *flywheelMinShootingSpeed
       shooterMotor:
         org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
           &Shooter_Right_Motor
@@ -345,7 +347,7 @@ useCameraServer: false
               enableBrakeMode: false
           maxPower: 0.1
           powerLimitTimer:
-            '@id': climberLimitTimer
+            '@id': climberPowerLimitTimer
             bufferTimeSeconds: 1
       solenoidSubsystem:
         org.usfirst.frc.team449.robot._2020.climber.SolenoidSimple:
@@ -422,7 +424,7 @@ useCameraServer: false
               mechanismsJoystick
           buttonNumber: *intakeStartButtonNumber
       command:
-        org.usfirst.frc.team449.robot._2020.intake.commands.SetIntakeMode:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
           '@id': intakeStartCommand
           subsystem:
             org.usfirst.frc.team449.robot._2020.intake.IntakeActuatedTwoSides:
@@ -437,7 +439,7 @@ useCameraServer: false
               mechanismsJoystick
           buttonNumber: *intakeStopButtonNumber
       command:
-        org.usfirst.frc.team449.robot._2020.intake.commands.SetIntakeMode:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
           '@id': intakeStopCommand
           subsystem:
             org.usfirst.frc.team449.robot._2020.intake.IntakeActuatedTwoSides:
@@ -460,22 +462,37 @@ useCameraServer: false
       action: WHEN_PRESSED
 
     #***********************************************************************************************************************
-    # FEEDER COMMANDS (UNUSED)
-    #    - button:
-    #        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-    #          '@id': feederToggleButton
-    #          joystick:
-    #            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-    #              mechanismsJoystick
-    #          buttonNumber: 3 #X
-    #      command:
-    #        org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.ToggleIntaking:
-    #          '@id': feederToggleCommand
-    #          subsystem:
-    #            org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-    #              feeder
-    #          mode: IN_FAST
-    #      action:
+    - *FEEDER_COMMANDS
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': coughButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *feederCoughButtonNumber
+      command:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+          '@id': feederStartCommand_coughing
+          subsystem:
+            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+              feeder
+          mode: OUT_SLOW
+      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': coughButtonRelease
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *feederCoughButtonNumber
+      command:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+          '@id': feederStopCommand_coughing
+          subsystem:
+            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+              feeder
+          mode: "OFF"
+      action: WHEN_RELEASED
 
     #***********************************************************************************************************************
     - *SHOOTER_COMMANDS
@@ -528,7 +545,7 @@ useCameraServer: false
         #                                  shooterFlywheel
         #                          - org.usfirst.frc.team449.robot.commands.general.PlaceholderCommand:
         #                              debugMessage: SHOOTING
-        #                          - org.usfirst.frc.team449.robot.subsystem.interfaces.intake.commands.SetIntakeMode:
+        #                          - org.usfirst.frc.team449.robot.subsystem.interfaces.multiSubsystem.commands.SetIntakeMode:
         #                              &feederStartCommand
         #                              '@id': feederStartCommand_shooter
         #                              subsystem:
@@ -549,7 +566,7 @@ useCameraServer: false
             edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
               '@id': startShootingOrSpinUpFlywheelCommmandSequence
               commands:
-                - org.usfirst.frc.team449.robot._2020.shooter.commands.ConditionalCommandDynamic:
+                - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.ConditionalCommandDynamic:
                     '@id': startShootingOrSpinUpFlywheelCommmand
                     onTrue:
                       edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
@@ -562,11 +579,10 @@ useCameraServer: false
                                   shooterFlywheel
                           - edu.wpi.first.wpilibj2.command.PrintCommand:
                               SHOOTING
-                          - org.usfirst.frc.team449.robot._2020.feeder.commands.SetIntakeMode:
-                              &Feeder_Start_Command
-                              '@id': feederStartCommand_shooter
+                          - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                              '@id': feederStartCommand_shooting
                               subsystem:
-                                org.usfirst.frc.team449.robot._2020.feeder.IntakeSimple:
+                                org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
                                   feeder
                               mode: OUT_FAST
                     onFalse:
@@ -576,10 +592,10 @@ useCameraServer: false
                           org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
                             shooterFlywheel
                         feeder:
-                          org.usfirst.frc.team449.robot._2020.feeder.IntakeSimple:
+                          org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
                             feeder
                     booleanSupplier:
-                      org.usfirst.frc.team449.robot._2020.shooter.commands.BooleanSupplierSubsystemBased:
+                      org.usfirst.frc.team449.robot._2020.multiSubsystem.BooleanSupplierSubsystemBased:
                         subsystem:
                           org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
                             shooterFlywheel
@@ -604,11 +620,10 @@ useCameraServer: false
                 subsystem:
                   org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
                     shooterFlywheel
-            - org.usfirst.frc.team449.robot._2020.feeder.commands.SetIntakeMode:
-                &Feeder_Stop_Command
-                '@id': feederStopCommand_shooter
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': feederStopCommand_shootingStop
                 subsystem:
-                  org.usfirst.frc.team449.robot._2020.feeder.IntakeSimple:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
                     feeder
                 mode: "OFF"
       action: WHEN_PRESSED
@@ -788,42 +803,26 @@ useCameraServer: false
     #***********************************************************************************************************************
     - *FEEDER_DEFAULT_COMMAND
     - subsystem:
-        org.usfirst.frc.team449.robot._2020.feeder.IntakeSimple:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
           feeder
       command:
-        org.usfirst.frc.team449.robot._2020.feeder.commands.PerpetualCommandReinitializing:
-          '@id': defaultFeederCommand
-          command:
-            edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-              '@id': feederSensorCommandGroup
-              requiredSubsystems:
-                - org.usfirst.frc.team449.robot._2020.feeder.IntakeSimple:
-                    feeder
-              commands:
-                - org.usfirst.frc.team449.robot._2020.feeder.commands.ConditionalCommandDynamicChangeBased:
-                    '@id': feederSensorFirstCommand
-                    booleanSupplier:
-                      org.usfirst.frc.team449.robot._2020.feeder.commands.BooleanSupplierUpdatable:
-                        source:
-                          org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-                            '@id': feederSensorFirst
-                            channel: *feederSensorFirstPort
-                    afterBecomingTrue:
-                      org.usfirst.frc.team449.robot._2020.feeder.commands.SetIntakeMode:
-                        <<: *Feeder_Start_Command
-                        '@id': feederStartCommand_irsensor
-                - org.usfirst.frc.team449.robot._2020.feeder.commands.ConditionalCommandDynamicChangeBased:
-                    '@id': feederSensorSecondCommand
-                    booleanSupplier:
-                      org.usfirst.frc.team449.robot._2020.feeder.commands.BooleanSupplierUpdatable:
-                        source:
-                          org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-                            '@id': feederSensorSecond
-                            channel: *feederSensorSecondPort
-                    afterBecomingFalse:
-                      org.usfirst.frc.team449.robot._2020.feeder.commands.SetIntakeMode:
-                        <<: *Feeder_Stop_Command
-                        '@id': feederStopCommand_irsensor
+        org.usfirst.frc.team449.robot._2020.feeder.commands.DefaultFeederCommand:
+          requiredSubsystems:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                feeder
+          runMode: IN_FAST
+          timeout: *feederIndexingTimeout
+          subsystem:
+            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+              feeder
+          sensor1:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+              '@id': feederSensorFirst
+              channel: *feederSensorFirstPort
+          sensor2:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+              '@id': feederSensorSecond
+              channel: *feederSensorSecondPort
 
 
 ########################################################################################################################

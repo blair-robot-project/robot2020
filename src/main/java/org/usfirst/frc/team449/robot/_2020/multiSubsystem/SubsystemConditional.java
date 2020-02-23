@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot._2020.shooter;
+package org.usfirst.frc.team449.robot._2020.multiSubsystem;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;

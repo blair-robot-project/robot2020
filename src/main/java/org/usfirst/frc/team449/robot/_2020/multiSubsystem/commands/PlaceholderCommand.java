@@ -1,8 +1,9 @@
-package org.usfirst.frc.team449.robot._2020.shooter.commands;
+package org.usfirst.frc.team449.robot._2020.multiSubsystem.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+
 import java.util.Set;
 
 /**

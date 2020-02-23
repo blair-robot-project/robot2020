@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot._2020.feeder.commands;
+package org.usfirst.frc.team449.robot._2020.multiSubsystem.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot._2020.feeder.SubsystemIntake;
+import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 
 /**
  * Sets the mode of the intake.
@@ -39,8 +39,8 @@ public class SetIntakeMode<T extends Subsystem & SubsystemIntake> extends Instan
      */
     @JsonCreator
     public SetIntakeMode(
-            @NotNull @JsonProperty(required = true) T subsystem,
-            @NotNull @JsonProperty(required = true) SubsystemIntake.IntakeMode mode) {
+        @NotNull @JsonProperty(required = true) final T subsystem,
+        @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode mode) {
         addRequirements(subsystem);
         this.subsystem = subsystem;
         this.mode = mode;
@@ -68,7 +68,7 @@ public class SetIntakeMode<T extends Subsystem & SubsystemIntake> extends Instan
      * Log when this command ends
      */
     @Override
-    public void end(boolean interrupted) {
+    public void end(final boolean interrupted) {
         if (interrupted) {
             Shuffleboard.addEventMarker(
                     "SetIntakeMode Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);

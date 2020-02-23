@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot._2020.feeder.commands;
+package org.usfirst.frc.team449.robot._2020.multiSubsystem.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot._2020.shooter.commands.ConditionalCommandDynamic;
+import org.usfirst.frc.team449.robot._2020.multiSubsystem.BooleanSupplierUpdatable;
 import org.usfirst.frc.team449.robot.other.Clock;
 
 import java.util.function.BooleanSupplier;
