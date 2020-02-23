@@ -2,7 +2,6 @@ package org.usfirst.frc.team449.robot.commands.limelight;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.usfirst.frc.team449.robot.components.limelight.LimelightComponent;
 
 /**
@@ -27,7 +26,7 @@ public class SetPipeline extends InstantCommand {
      * @param index the index to set the pipeline to when this command is run
      */
     @JsonCreator
-    public SetPipeline(int index){
-        super(() -> LimelightComponent.setPipeline(index), null);
+    public SetPipeline(final int index) {
+        super(() -> LimelightComponent.setPipeline(index));
     }
 }
