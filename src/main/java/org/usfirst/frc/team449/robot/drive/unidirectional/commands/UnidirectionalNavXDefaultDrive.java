@@ -213,7 +213,7 @@ public class UnidirectionalNavXDefaultDrive<
    * @return false
    */
   @Override
-  @Log
+  //@Log
 public boolean isFinished() {
     return false;
   }
@@ -282,24 +282,8 @@ public boolean isFinished() {
   //        return "UnidirectionalNavXDefaultDrive";
   //    }
 
-  @Log
+  //@Log
 public boolean isDrivingStraight() {
     return this.drivingStraight;
-  }
-
-  //    @Log
-@Override
-  public double getRawOutput() {
-    return this.rawOutput;
-  }
-
-  @Log
-public double getProcessedOutput() {
-    return this.processedOutput;
-  }
-
-  @Log
-public double getFinalOutput() {
-    return this.finalOutput;
   }
 }

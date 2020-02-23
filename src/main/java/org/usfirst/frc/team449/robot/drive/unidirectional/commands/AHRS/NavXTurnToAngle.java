@@ -56,7 +56,7 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
    * @param kI Integral gain. Defaults to zero.
    * @param kD Derivative gain. Defaults to zero.
    * @param setpoint The setpoint, in degrees from 180 to -180.
-   * @param subsystem The drive subsystem to execute this command on.
+   * @param drive The drive subsystem to execute this command on.
    * @param timeout How long this command is allowed to run for, in seconds. Needed because
    *     sometimes floating-point errors prevent termination.
    */
@@ -73,7 +73,7 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
       double kI,
       double kD,
       @JsonProperty(required = true) double setpoint,
-      @NotNull @JsonProperty(required = true) T subsystem,
+      @NotNull @JsonProperty(required = true) T drive,
       @JsonProperty(required = true) double timeout) {
     super(
         absoluteTolerance,
@@ -83,11 +83,11 @@ public class NavXTurnToAngle<T extends Subsystem & DriveUnidirectional & Subsyst
         loopTimeMillis,
         deadband,
         inverted,
-        subsystem,
+        drive,
         kP,
         kI,
         kD);
-    this.subsystem = subsystem;
+    this.subsystem = drive;
     this.setpoint = setpoint;
     // Convert from seconds to milliseconds
     this.timeout = (long) (timeout * 1000);
