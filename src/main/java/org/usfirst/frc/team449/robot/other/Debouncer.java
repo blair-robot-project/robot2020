@@ -3,6 +3,8 @@ package org.usfirst.frc.team449.robot.other;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import io.github.oblarg.oblog.annotations.Log;
+import org.jetbrains.annotations.Contract;
 import org.usfirst.frc.team449.robot.components.ConditionTimingComponent;
 
 /** A timer that checks if condition has been true for the past n seconds/milliseconds. */
@@ -42,5 +44,11 @@ public class Debouncer extends ConditionTimingComponent {
   public boolean get(final boolean currentState) {
     this.update(Clock.currentTimeSeconds(), currentState);
     return this.hasBeenTrueForAtLeast(bufferTime);
+  }
+
+  @Log
+  @Contract(pure = true)
+  private boolean log_get() {
+    return this.get(this.isTrue());
   }
 }
