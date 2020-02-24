@@ -14,6 +14,7 @@ import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemConditional;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.other.Clock;
+import org.usfirst.frc.team449.robot.other.DebouncerEx;
 import org.usfirst.frc.team449.robot.other.SimUtil;
 
 /**
@@ -74,12 +75,10 @@ public class LoggingFlywheel extends SubsystemBase
   @Log.Exclude
   private final SimDevice simDevice;
   @Nullable
-  private final SimBoolean sim_manualStates;
-  @Nullable
-  private final SimBoolean sim_isAtSpeed;
-  @Nullable
-  private final SimBoolean sim_isTimedOut;
-//  private final BooleanSupplier manualStates;
+  private final SimBoolean sim_manualStates, sim_isAtSpeed, sim_isTimedOut;
+
+  @NotNull
+  private final DebouncerEx speedConditionDebouncer = new DebouncerEx(10);
 
   /**
    * Default constructor
@@ -195,7 +194,7 @@ public class LoggingFlywheel extends SubsystemBase
   @Log
   public boolean isReadyToShoot() {
     if (this.state == FlywheelState.OFF) return false;
-    return this.isAtShootingSpeed() || this.spinUpHasTimedOut();
+    return this.speedConditionDebouncer.get() || this.spinUpHasTimedOut();
   }
 
   @Log
@@ -225,7 +224,6 @@ public class LoggingFlywheel extends SubsystemBase
         });
   }
 
-
   /**
    * @return true if the condition is met, false otherwise
    */
@@ -248,6 +246,7 @@ public class LoggingFlywheel extends SubsystemBase
    */
   @Override
   public void update() {
+    this.speedConditionDebouncer.update(this.isAtShootingSpeed());
     this.conditionMetCached = this.isConditionTrue();
   }
 }
