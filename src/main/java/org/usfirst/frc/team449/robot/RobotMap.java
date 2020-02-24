@@ -11,19 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.MotorContainer;
 import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
-import org.usfirst.frc.team449.robot.units.AngleUnit;
-import org.usfirst.frc.team449.robot.units.DisplacementUnit;
-import org.usfirst.frc.team449.robot.units.DividedUnit;
-import org.usfirst.frc.team449.robot.units.Meter;
-import org.usfirst.frc.team449.robot.units.ReciprocalUnit;
-import org.usfirst.frc.team449.robot.units.Second;
-import org.usfirst.frc.team449.robot.units.TimeUnit;
-import org.usfirst.frc.team449.robot.units.TimesUnit;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * The Jackson-compatible object representing the entire robot.
@@ -76,29 +66,12 @@ public class RobotMap {
                     @NotNull @JsonProperty(required = true) final PDP pdp,
                     @NotNull final Runnable updater,
                     @NotNull final CommandContainer commands,
-                    final boolean useCameraServer,
-                    final DisplacementUnit[] distances,
-                    final MappedGenericTest genericTest,
-                    // TODO Don't use wildcards here either
-                    final TimesUnit<? extends DisplacementUnit<?>, ? extends Foot, ? extends TimeUnit<?>, ? extends Second>[] distTimes,
-                    final TimesUnit<? extends DisplacementUnit<?>, ? extends Meter, ? extends ReciprocalUnit<? extends TimeUnit<?>, ? extends Second>, ? extends ReciprocalUnit<? extends TimeUnit, ? extends Second>>[] speeds,
-                    final DividedUnit<? extends AngleUnit<?>, ? extends TimeUnit>[] angularSpeeds,
-                    final TimesUnit<? extends AngleUnit<?>, ? extends ReciprocalUnit<? extends TimesUnit<? extends TimeUnit<?>, ? extends Second, ? extends TimeUnit<?>, ? extends Second>>, ? extends ReciprocalUnit<? extends TimesUnit<? extends TimeUnit, ? extends Second, ? extends TimeUnit, ? extends Second>>>[] angularAccelerations) {
+                    final boolean useCameraServer) {
         this.updater = updater;
         this.pdp = pdp;
         this.useCameraServer = useCameraServer;
         this.subsystems = subsystems;
         this.commands = commands;
-
-        Stream.concat(Arrays.stream(distances),
-                Stream.concat(Arrays.stream(distTimes),
-                        Stream.concat(Arrays.stream(speeds),
-                                Stream.concat(Arrays.stream(angularSpeeds),
-                                        Arrays.stream(angularAccelerations)
-                                )
-                        )
-                )
-        ).map(u -> u.toString() + ": " + u.getNormalizedValue()).forEach(System.err::println);
     }
 
 //    /**

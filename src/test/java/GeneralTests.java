@@ -3,6 +3,7 @@ import org.junit.Test;
 import org.usfirst.frc.team449.robot.Robot;
 import org.usfirst.frc.team449.robot.RobotMap;
 import org.usfirst.frc.team449.robot.SimulationConfig;
+import org.usfirst.frc.team449.robot.other.Mapping;
 
 public final class GeneralTests {
     @org.junit.Before
@@ -12,8 +13,9 @@ public final class GeneralTests {
 
     @Test
     public void deserializeMap() {
-        Assert.assertNotNull(Robot.loadMap(RobotMap.class, Robot.MAP_PATH));
-        Assert.assertNotNull(Robot.loadMap(SimulationConfig.class, SimulationConfig.MAP_PATH));
+        Assert.assertTrue(Mapping.loadMap(RobotMap.class, Robot.MAP_PATH).isPresent());
+        Assert.assertTrue(Mapping.loadMap(SimulationConfig.class, SimulationConfig.MAP_PATH).isPresent());
+
         System.out.println("*******************************************\nMAP DESERIALIZATION SUCCESSFUL\n*******************************************");
     }
 }
