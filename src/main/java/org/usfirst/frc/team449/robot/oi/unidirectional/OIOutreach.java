@@ -6,8 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class OIOutreach implements OIUnidirectional {
@@ -64,7 +65,7 @@ public class OIOutreach implements OIUnidirectional {
    */
   @Override
   @Log
-  public double[] getLeftRightOutputCached() {
+public double[] getLeftRightOutputCached() {
     return this.cachedLeftRightOutput;
   }
 
@@ -92,7 +93,7 @@ public class OIOutreach implements OIUnidirectional {
    */
   @Override
   @Log
-  public double[] getFwdRotOutputCached() {
+public double[] getFwdRotOutputCached() {
     return this.cachedFwdRotOutput;
   }
 
@@ -103,7 +104,7 @@ public class OIOutreach implements OIUnidirectional {
    */
   @Override
   @Log
-  public boolean commandingStraight() {
+public boolean commandingStraight() {
     return this.getLeftRightOutputCached()[0] == this.getLeftRightOutputCached()[1];
   }
 

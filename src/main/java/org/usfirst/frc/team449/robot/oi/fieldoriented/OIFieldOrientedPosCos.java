@@ -42,9 +42,9 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
    */
   @JsonCreator
   public OIFieldOrientedPosCos(
-      @NotNull @JsonProperty(required = true) Throttle xThrottle,
-      @NotNull @JsonProperty(required = true) Throttle yThrottle,
-      double rDeadband) {
+      @NotNull @JsonProperty(required = true) final Throttle xThrottle,
+      @NotNull @JsonProperty(required = true) final Throttle yThrottle,
+      final double rDeadband) {
     this.xThrottle = xThrottle;
     this.yThrottle = yThrottle;
     this.rDeadband = rDeadband;
@@ -86,7 +86,7 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
   @Override
   @Nullable
   @Log
-  public Double getTheta() {
+public Double getTheta() {
     calcValues();
     return theta;
   }
@@ -98,7 +98,7 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
    */
   @Override
   @Log
-  public double getVel() {
+public double getVel() {
     calcValues();
     return vel;
   }

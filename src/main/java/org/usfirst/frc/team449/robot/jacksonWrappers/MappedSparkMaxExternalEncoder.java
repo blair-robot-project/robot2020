@@ -15,18 +15,19 @@ import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotorExternalEncoder;
+import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
+import org.usfirst.frc.team449.robot.other.Clock;
 
-/** Represents a spark max with an external encoder */
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder {
+public class MappedSparkMaxExternalEncoder implements SmartMotor {
   /** The PDP this Spark is connected to. */
   @Nullable @Log.Exclude protected final PDP PDP;
   /** The counts per rotation of the encoder being used, or null if there is no encoder. */
@@ -70,6 +71,10 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
   /** The setpoint in native units. Field to avoid garbage collection. */
   @Log private double nativeSetpoint;
 
+  private double lastTimeUpdate;
+
+  @Log private double timeDiff;
+
   /**
    * Create a new SPARK MAX Controller
    *
@@ -79,28 +84,28 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
    * @param enableBrakeMode Whether to brake or coast when stopped.
    * @param PDP The PDP this Spark is connected to.
    * @param fwdLimitSwitchNormallyOpen Whether the forward limit switch is normally open or closed.
-   *     If this is null, the forward limit switch is disabled.
+   * If this is null, the forward limit switch is disabled.
    * @param revLimitSwitchNormallyOpen Whether the reverse limit switch is normally open or closed.
-   *     If this is null, the reverse limit switch is disabled.
+   * If this is null, the reverse limit switch is disabled.
    * @param remoteLimitSwitchID The CAN ID the limit switch to use for this Spark is plugged into,
-   *     or null to not use a limit switch.
+   * or null to not use a limit switch.
    * @param fwdSoftLimit The forward software limit, in feet. If this is null, the forward software
-   *     limit is disabled. Ignored if there's no encoder.
+   * limit is disabled. Ignored if there's no encoder.
    * @param revSoftLimit The reverse software limit, in feet. If this is null, the reverse software
-   *     limit is disabled. Ignored if there's no encoder.
+   * limit is disabled. Ignored if there's no encoder.
    * @param postEncoderGearing The coefficient the output changes by after being measured by the
-   *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
-   *     final output. Defaults to 1.
+   * encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the final
+   * output. Defaults to 1.
    * @param unitPerRotation The number of feet travelled per rotation of the motor this is attached
-   *     to. Defaults to 1.
+   * to. Defaults to 1.
    * @param currentLimit The max amps this device can draw. If this is null, no current limit is
-   *     used.
+   * used.
    * @param enableVoltageComp Whether or not to use voltage compensation. Defaults to false.
    * @param perGearSettings The settings for each gear this motor has. Can be null to use default
-   *     values and gear # of zero. Gear numbers can't be repeated.
+   * values and gear # of zero. Gear numbers can't be repeated.
    * @param startingGear The gear to start in. Can be null to use startingGearNum instead.
    * @param startingGearNum The number of the gear to start in. Ignored if startingGear isn't null.
-   *     Defaults to the lowest gear.
+   * Defaults to the lowest gear.
    * @param statusFrameRatesMillis The update rates, in millis, for each of the status frames.
    * @param controlFrameRateMillis The update rate, in milliseconds, for each control frame.
    */
@@ -116,12 +121,12 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
       @Nullable final Integer remoteLimitSwitchID,
       @Nullable final Double fwdSoftLimit,
       @Nullable final Double revSoftLimit,
-      @Nullable MappedDigitalInput encoderDIO1,
-      @Nullable MappedDigitalInput encoderDIO2,
+      @Nullable final MappedDigitalInput encoderDIO1,
+      @Nullable final MappedDigitalInput encoderDIO2,
       @Nullable final Double postEncoderGearing,
       @Nullable final Double unitPerRotation,
-      @Nullable final Integer encoderCPR,
-      boolean reverseSensor,
+      @Nullable Integer encoderCPR,
+      final boolean reverseSensor,
       @Nullable final Integer currentLimit,
       final boolean enableVoltageComp,
       @Nullable final List<PerGearSettings> perGearSettings,
@@ -139,6 +144,7 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
       encoder = new Encoder(0, 1);
     }
     pidController = new PIDController(0, 0, 0);
+
 
     // Set the name to the given one or to spark_<portnum>
     this.name = name != null ? name : ("spark_" + port);
@@ -201,11 +207,10 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
     // postEncoderGearing defaults to 1
     this.postEncoderGearing = postEncoderGearing != null ? postEncoderGearing : 1.;
 
-    this.encoderCPR = encoderCPR != null ? encoderCPR : 1;
+    encoderCPR = encoderCPR != null ? encoderCPR : 1;
+    this.encoderCPR = encoderCPR;
 
-    //todo check this
-    getEncoder().setDistancePerPulse(1. / this.encoderCPR);
-    getEncoder().setSamplesToAverage(5);
+    encoder.setDistancePerPulse(1. / encoderCPR);
 
     // Only enable the limit switches if it was specified if they're normally open or closed.
     if (fwdLimitSwitchNormallyOpen != null) {
@@ -330,7 +335,7 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
    * @return That distance in feet, or null if no encoder CPR was given.
    */
   @Override
-  public double encoderToUnit(double revs) {
+  public double encoderToUnit(final double revs) {
     return revs * unitPerRotation * postEncoderGearing;
   }
 
@@ -340,10 +345,10 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
    *
    * @param feet A distance in feet.
    * @return That distance in native units as measured by the encoder, or null if no encoder CPR was
-   *     given.
+   * given.
    */
   @Override
-  public double unitToEncoder(double feet) {
+  public double unitToEncoder(final double feet) {
     return feet / unitPerRotation / postEncoderGearing;
   }
 
@@ -353,10 +358,10 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
    *
    * @param encoderReading The velocity read from the encoder with no conversions.
    * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if
-   *     no encoder CPR was given.
+   * no encoder CPR was given.
    */
   @Override
-  public double encoderToUPS(double encoderReading) {
+  public double encoderToUPS(final double encoderReading) {
     RPS = nativeToRPS(encoderReading);
     return RPS * postEncoderGearing * unitPerRotation;
   }
@@ -367,10 +372,10 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
    *
    * @param FPS The velocity of the output shaft, in FPS.
    * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was
-   *     given.
+   * given.
    */
   @Override
-  public double UPSToEncoder(double FPS) {
+  public double UPSToEncoder(final double FPS) {
     return RPSToNative((FPS / postEncoderGearing) / unitPerRotation);
   }
 
@@ -384,7 +389,7 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
   @Contract(pure = true)
   @Override
   public Double nativeToRPS(final double nat) {
-    return nat / 60.;
+    return nat;
   }
 
   /**
@@ -397,11 +402,19 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
   @Contract(pure = true)
   @Override
   public double RPSToNative(final double RPS) {
-    return RPS * 60.;
+    return RPS;
+  }
+
+  /** @return Total revolutions for debug purposes */
+  @Override
+  public double encoderPosition() {
+    return encoder.getDistance();
   }
 
   @Override
-  public void setVoltage(double volts) {
+  public void setVoltage(final double volts) {
+    timeDiff -= lastTimeUpdate;
+    lastTimeUpdate = Clock.currentTimeSeconds();
     spark.setVoltage(volts);
   }
 
@@ -414,9 +427,25 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
   public void setPositionSetpoint(final double feet) {
     this.setpoint = feet;
     this.nativeSetpoint = this.unitToEncoder(feet);
-    setVoltage(
-        currentGearSettings.feedForwardCalculator.ks
-            + pidController.calculate(encoderPosition(), nativeSetpoint));
+    setVoltage(currentGearSettings.feedForwardCalculator.ks + pidController.calculate(encoderPosition(), nativeSetpoint));
+  }
+
+  /** @return Current RPM for debug purposes */
+  @Override
+  @Log
+  public double encoderVelocity() {
+    return encoder.getRate();
+  }
+
+  /**
+   * Get the velocity of the CANTalon in FPS.
+   *
+   * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
+   */
+  @Override
+  @Log
+  public Double getVelocity() {
+    return this.encoderToUPS(encoder.getRate());
   }
 
   /**
@@ -425,7 +454,7 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
    * @param velocity the desired velocity, on [-1, 1].
    */
   @Override
-  public void setVelocity(double velocity) {
+  public void setVelocity(final double velocity) {
     if (currentGearSettings.maxSpeed != null) {
       setVelocityUPS(velocity * currentGearSettings.maxSpeed);
     } else {
@@ -439,13 +468,11 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
    * @param velocity velocity setpoint in FPS.
    */
   @Override
-  public void setVelocityUPS(double velocity) {
+  public void setVelocityUPS(final double velocity) {
     this.currentControlMode = ControlType.kVelocity;
     this.nativeSetpoint = UPSToEncoder(velocity);
     this.setpoint = velocity;
-    setVoltage(
-        currentGearSettings.feedForwardCalculator.calculate(velocity)
-            + pidController.calculate(encoderVelocity(), nativeSetpoint));
+    setVoltage(currentGearSettings.feedForwardCalculator.calculate(velocity) + pidController.calculate(encoderVelocity(), nativeSetpoint));
   }
 
   @Override
@@ -485,7 +512,7 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
   }
 
   @Override
-  public void setGearScaledVelocity(double velocity, int gear) {
+  public void setGearScaledVelocity(final double velocity, final int gear) {
     if (currentGearSettings.maxSpeed != null) {
       setVelocityUPS(currentGearSettings.maxSpeed * velocity);
     } else {
@@ -501,6 +528,16 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
   @Override
   public SimpleMotorFeedforward getCurrentGearFeedForward() {
     return this.currentGearSettings.feedForwardCalculator;
+  }
+
+  @Override
+  public Double getPositionUnits() {
+    return encoderToUnit(encoder.getDistance());
+  }
+
+  @Override
+  public void resetPosition() {
+    encoder.reset();
   }
 
   @Override
@@ -531,10 +568,5 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
   @Override
   public String configureLogName() {
     return this.name;
-  }
-
-  @Override
-  public Encoder getEncoder() {
-    return this.encoder;
   }
 }

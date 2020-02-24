@@ -34,9 +34,9 @@ public class OITankSimple extends OITank {
    */
   @JsonCreator
   public OITankSimple(
-      @NotNull @JsonProperty(required = true) Throttle leftThrottle,
-      @NotNull @JsonProperty(required = true) Throttle rightThrottle,
-      double commandingStraightTolerance) {
+      @NotNull @JsonProperty(required = true) final Throttle leftThrottle,
+      @NotNull @JsonProperty(required = true) final Throttle rightThrottle,
+      final double commandingStraightTolerance) {
     this.leftThrottle = leftThrottle;
     this.rightThrottle = rightThrottle;
     this.commandingStraightTolerance = commandingStraightTolerance;
@@ -49,7 +49,7 @@ public class OITankSimple extends OITank {
    */
   @Override
   @Log
-  public double getLeftThrottle() {
+public double getLeftThrottle() {
     // If the driver is trying to drive straight, use the average of the two sticks.
     if (commandingStraight()) {
       return (leftThrottle.getValue() + rightThrottle.getValue()) / 2.;
@@ -64,7 +64,7 @@ public class OITankSimple extends OITank {
    */
   @Override
   @Log
-  public double getRightThrottle() {
+public double getRightThrottle() {
     // If the driver is trying to drive straight, use the average of the two sticks.
     if (commandingStraight()) {
       return (leftThrottle.getValue() + rightThrottle.getValue()) / 2.;
@@ -79,7 +79,7 @@ public class OITankSimple extends OITank {
    */
   @Override
   @Log
-  public boolean commandingStraight() {
+public boolean commandingStraight() {
     return Math.abs(getLeftRightOutputCached()[0] - getLeftRightOutputCached()[1])
         <= commandingStraightTolerance;
   }

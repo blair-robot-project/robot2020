@@ -1,17 +1,21 @@
 package org.usfirst.frc.team449.robot.generalInterfaces.limelight;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CLASS,
     include = JsonTypeInfo.As.WRAPPER_OBJECT,
     property = "@class")
+@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class Limelight extends SubsystemBase implements Loggable {
 
   /** whether the limelight can see a valid target */
@@ -36,11 +40,16 @@ public class Limelight extends SubsystemBase implements Loggable {
   private final NetworkTableEntry heightTable;
   /** pipeline index of the limelight */
   private final NetworkTableEntry pipeTable;
+  /** entry to change pipeline */
+  private final NetworkTableEntry pipelineSet;
   /** camtran, for getting 3D pos */
   private final NetworkTableEntry camtran;
+
   /** pipeline for driver camera */
   private int driverPipeline;
-  private boolean validTarget;
+
+  //Cached values for the most recent state of the limelight while it was on
+  private double validTarget;
   private double x;
   private double y;
   private double area;
@@ -86,6 +95,7 @@ public class Limelight extends SubsystemBase implements Loggable {
     widthTable = table.getEntry("thor");
     heightTable = table.getEntry("tvert");
     pipeTable = table.getEntry("getpipe");
+    pipelineSet = table.getEntry("pipeline");
     camtran = table.getEntry("camtran");
     setPipeline(driverPipeline);
   }
@@ -93,8 +103,8 @@ public class Limelight extends SubsystemBase implements Loggable {
   @Override
   public void periodic() {
     pipeIndex = (int) pipeTable.getDouble(driverPipeline);
+    validTarget = validTargetTable.getDouble(-1);
     if (pipeIndex != driverPipeline) {
-      validTarget = validTargetTable.getBoolean(false);
       x = xTable.getDouble(0);
       y = yTable.getDouble(0);
       //            area = areaTable.getDouble(0);
@@ -114,74 +124,92 @@ public class Limelight extends SubsystemBase implements Loggable {
     }
   }
 
+  @Log
   public boolean hasTarget() {
-    return validTarget;
+    return validTarget == 1;
   }
 
+  @Log
   public double getX() {
     return x;
   }
 
+  @Log
   public double getY() {
     return y;
   }
 
+  @Log
   public double getArea() {
     return area;
   }
 
+  @Log
   public double getSkew() {
     return skew;
   }
 
+  @Log
   public double getLatency() {
     return latency;
   }
 
+  @Log
   public double getShortest() {
     return shortest;
   }
 
+  @Log
   public double getLongest() {
     return longest;
   }
 
+  @Log
   public double getWidth() {
     return width;
   }
 
+  @Log
   public double getHeight() {
     return height;
   }
 
+  @Log
   public double getPipeline() {
     return pipeIndex;
   }
 
+  @Log
   public void setPipeline(int index) {
-    pipeTable.setNumber(index);
+    pipelineSet.setNumber(index);
   }
 
+  @Log
   public double getPoseX() {
     return poseX;
   }
 
+  @Log
   public double getPoseY() {
     return poseY;
   }
 
+  @Log
   public double getPoseZ() {
     return poseZ;
   }
 
+  @Log
   public double getPitch() {
     return pitch;
   }
 
+  @Log
   public double getYaw() {
     return yaw;
   }
 
+  @Log
   public double getRoll() {
     return roll;
   }

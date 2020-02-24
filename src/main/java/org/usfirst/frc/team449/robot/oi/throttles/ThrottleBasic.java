@@ -34,9 +34,9 @@ public class ThrottleBasic implements Throttle {
    */
   @JsonCreator
   public ThrottleBasic(
-      @NotNull @JsonProperty(required = true) MappedJoystick stick,
-      @JsonProperty(required = true) int axis,
-      boolean inverted) {
+      @NotNull @JsonProperty(required = true) final MappedJoystick stick,
+      @JsonProperty(required = true) final int axis,
+      final boolean inverted) {
     this.stick = stick;
     this.axis = axis;
     this.inverted = inverted;
@@ -48,7 +48,8 @@ public class ThrottleBasic implements Throttle {
    * @return The raw joystick output, on [-1, 1].
    */
   @Log
-  public double getValue() {
+@Override
+public double getValue() {
     return (inverted ? -1 : 1) * stick.getRawAxis(axis);
   }
 
@@ -59,7 +60,7 @@ public class ThrottleBasic implements Throttle {
    */
   @Override
   @Log
-  public double getValueCached() {
+public double getValueCached() {
     return cachedOutput;
   }
 
@@ -75,7 +76,7 @@ public class ThrottleBasic implements Throttle {
    * @return the result to use in PIDController
    */
   @Log
-  public double pidGet() {
+public double pidGet() {
     return (inverted ? -1 : 1) * stick.getRawAxis(axis);
   }
 

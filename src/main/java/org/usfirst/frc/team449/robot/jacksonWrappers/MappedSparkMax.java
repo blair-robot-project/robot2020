@@ -10,19 +10,19 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedSparkMax implements SmartMotor {
@@ -53,11 +53,11 @@ public class MappedSparkMax implements SmartMotor {
   /** The settings currently being used by this Spark. */
   @NotNull protected PerGearSettings currentGearSettings;
   /** REV brushless controller object */
-  private CANSparkMax spark;
+  private final CANSparkMax spark;
   /** REV provided encoder object */
-  private CANEncoder canEncoder;
+  private final CANEncoder canEncoder;
   /** REV provided PID Controller */
-  private CANPIDController pidController;
+  private final CANPIDController pidController;
   /** The control mode of the motor */
   private ControlType currentControlMode;
   /** The most recently set setpoint. */
@@ -282,7 +282,7 @@ public class MappedSparkMax implements SmartMotor {
 
   @Override
   @Log
-  public int getGear() {
+public int getGear() {
     return this.currentGearSettings.gear;
   }
 
@@ -315,7 +315,7 @@ public class MappedSparkMax implements SmartMotor {
    * @return That distance in feet, or null if no encoder CPR was given.
    */
   @Override
-  public double encoderToUnit(double revs) {
+  public double encoderToUnit(final double revs) {
     return revs * unitPerRotation * postEncoderGearing;
   }
 
@@ -328,7 +328,7 @@ public class MappedSparkMax implements SmartMotor {
    *     given.
    */
   @Override
-  public double unitToEncoder(double feet) {
+  public double unitToEncoder(final double feet) {
     return feet / unitPerRotation / postEncoderGearing;
   }
 
@@ -341,7 +341,7 @@ public class MappedSparkMax implements SmartMotor {
    *     no encoder CPR was given.
    */
   @Override
-  public double encoderToUPS(double encoderReading) {
+  public double encoderToUPS(final double encoderReading) {
     RPS = nativeToRPS(encoderReading);
     return RPS * postEncoderGearing * unitPerRotation;
   }
@@ -355,7 +355,7 @@ public class MappedSparkMax implements SmartMotor {
    *     given.
    */
   @Override
-  public double UPSToEncoder(double FPS) {
+  public double UPSToEncoder(final double FPS) {
     return RPSToNative((FPS / postEncoderGearing) / unitPerRotation);
   }
 
@@ -392,7 +392,7 @@ public class MappedSparkMax implements SmartMotor {
   }
 
   @Override
-  public void setVoltage(double volts) {
+  public void setVoltage(final double volts) {
     spark.setVoltage(volts);
   }
 
@@ -417,7 +417,7 @@ public class MappedSparkMax implements SmartMotor {
   /** @return Current RPM for debug purposes */
   @Override
   @Log
-  public double encoderVelocity() {
+public double encoderVelocity() {
     return this.canEncoder.getVelocity();
   }
 
@@ -428,7 +428,7 @@ public class MappedSparkMax implements SmartMotor {
    */
   @Override
   @Log
-  public Double getVelocity() {
+public Double getVelocity() {
     return this.encoderToUPS(canEncoder.getVelocity());
   }
 
@@ -438,7 +438,7 @@ public class MappedSparkMax implements SmartMotor {
    * @param velocity the desired velocity, on [-1, 1].
    */
   @Override
-  public void setVelocity(double velocity) {
+  public void setVelocity(final double velocity) {
     if (currentGearSettings.maxSpeed != null) {
       setVelocityUPS(velocity * currentGearSettings.maxSpeed);
     } else {
@@ -452,7 +452,7 @@ public class MappedSparkMax implements SmartMotor {
    * @param velocity velocity setpoint in FPS.
    */
   @Override
-  public void setVelocityUPS(double velocity) {
+  public void setVelocityUPS(final double velocity) {
     this.currentControlMode = ControlType.kVelocity;
     this.nativeSetpoint = UPSToEncoder(velocity);
     this.setpoint = velocity;
@@ -467,32 +467,32 @@ public class MappedSparkMax implements SmartMotor {
 
   @Override
   @Log
-  public double getError() {
+public double getError() {
     return this.getSetpoint() - this.getVelocity();
   }
 
   @Nullable
   @Override
   @Log
-  public Double getSetpoint() {
+public Double getSetpoint() {
     return this.setpoint;
   }
 
   @Override
   @Log
-  public double getOutputVoltage() {
+public double getOutputVoltage() {
     return this.spark.getAppliedOutput() * this.spark.getBusVoltage();
   }
 
   @Override
   @Log
-  public double getBatteryVoltage() {
+public double getBatteryVoltage() {
     return this.spark.getBusVoltage();
   }
 
   @Override
   @Log
-  public double getOutputCurrent() {
+public double getOutputCurrent() {
     return this.spark.getOutputCurrent();
   }
 
@@ -502,7 +502,7 @@ public class MappedSparkMax implements SmartMotor {
   }
 
   @Override
-  public void setGearScaledVelocity(double velocity, int gear) {
+  public void setGearScaledVelocity(final double velocity, final int gear) {
     if (currentGearSettings.maxSpeed != null) {
       setVelocityUPS(currentGearSettings.maxSpeed * velocity);
     } else {

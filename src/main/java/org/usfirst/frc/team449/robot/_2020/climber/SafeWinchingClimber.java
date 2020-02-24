@@ -28,13 +28,13 @@ public class SafeWinchingClimber extends SubsystemBase
 
     private final long extensionTimeMillis;
     @Log
-    private boolean armIsExtending = false;
+private boolean armIsExtending = false;
     @Log
-    private long extensionStartTime = 0L;
+private long extensionStartTime = 0L;
     @Log
-    private boolean enableArm = true;
+private boolean enableArm = true;
     @Log
-    private boolean reallySure = false;
+private boolean reallySure = false;
 
     @JsonCreator
     public SafeWinchingClimber(@NotNull @JsonProperty(required = true) final ClimberCurrentLimited motorSubsystem,
@@ -114,7 +114,7 @@ public class SafeWinchingClimber extends SubsystemBase
     }
 
     @Log
-    private boolean armIsUp() {
+private boolean armIsUp() {
         if (!this.armIsExtending) {
             return false;
         }
@@ -132,7 +132,7 @@ public class SafeWinchingClimber extends SubsystemBase
 
     @Override
     @Log
-    public boolean isMotorOn() {
+public boolean isMotorOn() {
         return this.motorSubsystem.isMotorOn();
     }
 

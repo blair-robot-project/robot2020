@@ -32,7 +32,7 @@ CONSTANTS:
       - &rightMasterSlave2Port 6
   - JoystickPorts:
       - &driveJoystickPort 1
-      - &mechanismsJoystickPort 0
+      - &mechanismsJoystickPort 2
 
 # WHETHER TO USE THE CAMERA SERVER
 useCameraServer: false
@@ -163,7 +163,7 @@ useCameraServer: false
         org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
           drive
       command:
-        org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXShiftingDefaultDrive:
+        org.usfirst.frc.team449.robot.drive.unidirectional.commands.UnidirectionalNavXShiftingDefaultDrive:
           '@id': defaultDriveCommand
           kP: 0.003
           kI: 0.0
@@ -266,26 +266,36 @@ useCameraServer: false
               port: *mechanismsJoystickPort
           buttonNumber: 1 #shoulder right
       command:
-        org.usfirst.frc.team449.robot.commands.multiInterface.limelight.ScanThenTurn:
-          '@id': scanThenTurnCommand
-          scannerPipe: 1
-          turnCommand:
-            org.usfirst.frc.team449.robot.commands.multiInterface.drive.NavXTurnToAngleLimelight:
-              '@id': turnToAngleCommand
-              absoluteTolerance: 5
-              kP: 1
-              drive:
-                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-                  drive
-              timeout: 100
-              limelight:
-                org.usfirst.frc.team449.robot.subsystem.singleImplementation.limelight.Limelight:
-                  driverPipeline: 0
-          driverPipe: 1
+#        org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleRelative:
+#          '@id': turnToAngleCommand
+#          absoluteTolerance: 3
+#          kP: 0.01
+#          drive:
+#            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#              drive
+#          timeout: 100
+#          setpoint: 40
+#        org.usfirst.frc.team449.robot.generalInterfaces.limelight.commands.ScanThenTurn:
+#          '@id': scanThenTurnCommand
+#          scannerPipe: 1
+#          turnCommand:
+        org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleLimelight:
+          '@id': turnToAngleCommand
+          absoluteTolerance: 3
+          kP: .01
+          drive:
+            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+              drive
+          timeout: 100
           limelight:
-            org.usfirst.frc.team449.robot.subsystem.singleImplementation.limelight.Limelight:
+            org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
+              '@id': limelight
               driverPipeline: 0
-      action: WHILE_HELD
+#          driverPipe: 0
+#          limelight:
+#            org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
+#              limelight
+      action: WHEN_PRESSED
 
   *AUTO_COMMANDS:
     - *TRAJ_TEST_COMMAND
@@ -295,7 +305,7 @@ useCameraServer: false
           - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
               drive
         commands:
-          - org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerGoToPosition:
+          - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
               &driveconfig
               '@id': testDriveCommand
               drivetrain:
@@ -319,7 +329,7 @@ useCameraServer: false
                 rotation:
                   radians: -1.571
               reversed: false
-          - org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerGoToPosition:
+          - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
               <<: *driveconfig
               '@id': testDriveCommand2
               endingPose:
@@ -329,7 +339,7 @@ useCameraServer: false
                 rotation:
                   radians: -3.14
               reversed: true
-          - org.usfirst.frc.team449.robot.commands.multiInterface.drive.RamseteControllerGoToPosition:
+          - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
               <<: *driveconfig
               '@id': testDriveCommand3
               endingPose:

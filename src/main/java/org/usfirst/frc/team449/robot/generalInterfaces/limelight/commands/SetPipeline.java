@@ -21,6 +21,6 @@ public class SetPipeline extends InstantCommand {
    */
   @JsonCreator
   public SetPipeline(@NotNull @JsonProperty(required = true) Limelight limelight, int index) {
-    super(() -> limelight.setPipeline(index));
+    super(() -> limelight.setPipeline(index), limelight);
   }
 }

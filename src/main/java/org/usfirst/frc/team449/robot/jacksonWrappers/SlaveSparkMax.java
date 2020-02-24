@@ -20,7 +20,7 @@ public class SlaveSparkMax implements SlaveMotor, Loggable {
 
   @JsonCreator
   public SlaveSparkMax(
-      @JsonProperty(required = true) int port, @Nullable Boolean inverted, @Nullable PDP PDP) {
+      @JsonProperty(required = true) final int port, @Nullable final Boolean inverted, @Nullable final PDP PDP) {
 
     this.slaveSpark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
 
@@ -54,12 +54,12 @@ public class SlaveSparkMax implements SlaveMotor, Loggable {
   }
 
   @Log
-  public double getOutputCurrent() {
+public double getOutputCurrent() {
     return this.slaveSpark.getOutputCurrent();
   }
 
   @Log
-  public double getMotorOutputVoltage() {
+public double getMotorOutputVoltage() {
     return this.slaveSpark.getAppliedOutput();
   }
 }

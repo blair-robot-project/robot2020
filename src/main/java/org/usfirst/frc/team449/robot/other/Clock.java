@@ -32,4 +32,10 @@ public class Clock {
   public static synchronized long currentTimeMillis() {
     return currentTime;
   }
+
+  /** @return The time since the start time, in esconds. */
+  @Contract(pure = true)
+  public static synchronized double currentTimeSeconds() {
+    return currentTime * 0.001;
+  }
 }

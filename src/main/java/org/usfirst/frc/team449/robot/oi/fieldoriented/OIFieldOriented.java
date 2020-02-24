@@ -44,7 +44,7 @@ public abstract class OIFieldOriented implements OI {
    */
   @Nullable
   @Log
-  public Double getThetaCached() {
+public Double getThetaCached() {
     return cachedTheta;
   }
 
@@ -54,7 +54,7 @@ public abstract class OIFieldOriented implements OI {
    * @return A velocity from [-1, 1].
    */
   @Log
-  public double getVelCached() {
+public double getVelCached() {
     return cachedVel;
   }
 
