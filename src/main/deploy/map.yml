@@ -60,8 +60,8 @@ CONSTANTS:
       - &rightMasterEncoder1Port 2
       - &rightMasterEncoder2Port 3
   - JoystickPorts:
-      - &driveJoystickPort 1
       - &mechanismsJoystickPort 0
+      - &driveJoystickPort 1
   - ButtonNumbers:
       - &intakeStartButtonNumber 1
       - &intakeStopButtonNumber 2
@@ -74,17 +74,17 @@ CONSTANTS:
       - &intakePistonToggleButtonNumber 9
       - &feederCoughButtonNumber 10 #TODO Should coughing be an actual back-and-forth motion?
   - MotorSpeeds:
-      - &intakeBumperIntakingVel 0.5
-      - &intakeTransitionWheelIntakingVel 0.5
-      - &feederIntakingVel 0.4
-      - &feederShootingVel 0.4
+      - &intakeBumperIntakingVel 0.3
+      - &intakeTransitionWheelIntakingVel 0.3
+      - &feederIntakingVel 0.5
+      - &feederShootingVel 1
       - &feederCoughingVel -0.4
       - &flywheelSpinUpTimeoutSecs 4
       - &kickerThrottle -0.3
-      - &shooterThrottle 0.5
+      - &shooterThrottle 0.6
   - Other:
-      - &feederIndexingTimeoutSecs 1
-      - &flywheelMinShootingSpeed 5000
+      - &feederIndexingTimeoutSecs 0.3
+      - &flywheelMinShootingSpeed 53
 
 
 # WHETHER TO USE THE CAMERA SERVER
@@ -260,7 +260,6 @@ useCameraServer: false
                   enableBrakeMode: true
                   PDP: PDP
                   currentLimit: 30
-
 
   #***********************************************************************************************************************
   - *FEEDER_SUBSYSTEM
@@ -514,106 +513,54 @@ useCameraServer: false
               mechanismsJoystick
           buttonNumber: *shooterStartButtonNumber
       command:
-        #        org.usfirst.frc.team449.robot.commands.jacksonWrappers.MappedSequentialCommandGroup:
-        #          '@id': flywheelCommandSequence
-        #          commands:
-        #            - org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheel:
-        #                &Spin_Up_Flywheel_Command
-        #                '@id': spinUpFlywheelCommand_initial
-        #                flywheel:
-        #                  org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-        #                    shooterFlywheel
-        #                feeder:
-        #                  org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-        #                    feeder
-        #            - org.usfirst.frc.team449.robot.commands.jacksonWrappers.MappedPerpetualCommand:
-        #                '@id': startShootingOrSpinUpFlywheelCommmandPerpetual
-        #                requiredSubsystems:
-        #                  - org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-        #                      shooterFlywheel
-        #                command:
-        #                  org.usfirst.frc.team449.robot.commands.general.ConditionalCommandDynamicChangeBased:
-        #                    '@id': startShootingOrSpinUpFlywheelCommmand
-        #                    pollingInterval:
-        #                      1.0
-        #                    booleanSupplier:
-        #                      org.usfirst.frc.team449.robot.commands.general.BooleanSupplierUpdatable:
-        #                        source:
-        #                          org.usfirst.frc.team449.robot.commands.jacksonWrappers.BooleanSupplierSubsystemBased:
-        #                            subsystem:
-        #                              org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-        #                                shooterFlywheel
-        #                            useCached: true
-        #                    afterBecomingTrue:
-        #                      org.usfirst.frc.team449.robot.commands.jacksonWrappers.MappedSequentialCommandGroup:
-        #                        '@id': startShootingCommandSequence
-        #                        commands:
-        #                          - org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.TurnAllOn:
-        #                              '@id': setFlywheelShootingCommand
-        #                              subsystem:
-        #                                org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-        #                                  shooterFlywheel
-        #                          - org.usfirst.frc.team449.robot.commands.general.PlaceholderCommand:
-        #                              debugMessage: SHOOTING
-        #                          - org.usfirst.frc.team449.robot.subsystem.interfaces.multiSubsystem.commands.SetIntakeMode:
-        #                              &feederStartCommand
-        #                              '@id': feederStartCommand_shooter
-        #                              subsystem:
-        #                                org.usfirst.frc.team449.robot.subsystem.interfaces.intake.IntakeSimple:
-        #                                  feeder
-        #                              mode: OUT_FAST
-        #                    afterBecomingFalse:
-        #                      org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpFlywheel:
-        #                        <<: *Spin_Up_Flywheel_Command
-        #                        '@id': spinUpFlywheelCommand_followup
-
-        org.usfirst.frc.team449.robot._2020.shooter.commands.PerpetualCommandReinitializing:
-          '@id': startShootingOrSpinUpFlywheelCommmandPerpetual
-          requiredSubsystems:
-            - org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
-                shooterFlywheel
-          command:
-            edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
-              '@id': startShootingOrSpinUpFlywheelCommmandSequence
-              commands:
-                - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.ConditionalCommandDynamic:
-                    '@id': startShootingOrSpinUpFlywheelCommmand
-                    onTrue:
-                      edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
-                        '@id': startShootingCommandSequence
-                        commands:
-                          - org.usfirst.frc.team449.robot._2020.shooter.commands.TurnAllOn:
-                              '@id': setFlywheelShootingCommand
-                              subsystem:
-                                org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
-                                  shooterFlywheel
-                          - edu.wpi.first.wpilibj2.command.PrintCommand:
-                              SHOOTING
-                          - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-                              '@id': feederStartCommand_shooting
-                              subsystem:
-                                org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                                  feeder
-                              mode: OUT_FAST
-                    onFalse:
-                      org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
-                        '@id': spinUpFlywheelCommand
-                        flywheel:
-                          org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
-                            shooterFlywheel
-                        feeder:
-                          org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                            feeder
-                    booleanSupplier:
+        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
+          '@id': spinUpFlywheelCommandSequence
+          commands:
+            - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
+                &Spin_Up_Flywheel_Command
+                '@id': spinUpFlywheelCommand_initial
+                flywheel:
+                  org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
+                    shooterFlywheel
+                feeder:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                    feeder
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.ConditionalPerpetualCommandChangeBased:
+                '@id': startShootingOrSpinUpFlywheelCommmand
+                requiredSubsystems:
+                  - org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
+                      shooterFlywheel
+                booleanSupplier:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.BooleanSupplierUpdatable:
+                    source:
                       org.usfirst.frc.team449.robot._2020.multiSubsystem.BooleanSupplierSubsystemBased:
                         subsystem:
                           org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
                             shooterFlywheel
                         useCached: true
-                - edu.wpi.first.wpilibj2.command.WaitCommand:
-                    seconds: 1
-
+                afterBecomingFalse:
+                  org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
+                    <<: *Spin_Up_Flywheel_Command
+                    '@id': spinUpFlywheelCommand_whenNotReadyToShoot
+                afterBecomingTrue:
+                  edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
+                    '@id': startShootingCommandSequence
+                    commands:
+                      - org.usfirst.frc.team449.robot._2020.shooter.commands.TurnAllOn:
+                          '@id': setFlywheelShootingCommand
+                          subsystem:
+                            org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
+                              shooterFlywheel
+                      - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                          '@id': feederStartCommand_shooting
+                          subsystem:
+                            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                              feeder
+                          mode: OUT_FAST
+                      - edu.wpi.first.wpilibj2.command.PrintCommand:
+                          SHOOTING
       action: WHEN_PRESSED
+
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': shooterStopButton

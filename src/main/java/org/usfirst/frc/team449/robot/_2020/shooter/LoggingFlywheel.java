@@ -60,6 +60,7 @@ public class LoggingFlywheel extends SubsystemBase
    * Whether the flywheel is currently commanded to spin
    */
   @NotNull
+  @Log.ToString
   private SubsystemFlywheel.FlywheelState state;
 
   /**
@@ -97,11 +98,12 @@ public class LoggingFlywheel extends SubsystemBase
   public LoggingFlywheel(
       @NotNull @JsonProperty(required = true) final SmartMotor shooterMotor,
       @NotNull @JsonProperty(required = true) final SmartMotor otherShooterMotor,
-      @JsonProperty(required = true) final double shooterThrottle,
       @NotNull @JsonProperty(required = true) final SimpleMotor kickerMotor,
+      @JsonProperty(required = true) final double shooterThrottle,
       @JsonProperty(required = true) final double kickerThrottle,
       @JsonProperty(required = true) final double spinUpTimeoutSecs,
       @Nullable final Double minShootingSpeed) {
+
     this.shooterMotor = shooterMotor;
     this.otherShooterMotor = otherShooterMotor;
     this.shooterThrottle = shooterThrottle;
@@ -179,11 +181,6 @@ public class LoggingFlywheel extends SubsystemBase
     this.state = state;
   }
 
-  @Log
-  public String state() {
-    return this.state.name();
-  }
-
   /**
    * @return Expected time from giving the multiSubsystem voltage to being ready to fire, in
    * seconds.
@@ -241,8 +238,7 @@ public class LoggingFlywheel extends SubsystemBase
    * @return true if the condition was met when cached, false otherwise
    */
   @Override
-  @
-      Log
+  @Log
   public boolean isConditionTrueCached() {
     return this.conditionMetCached;
   }

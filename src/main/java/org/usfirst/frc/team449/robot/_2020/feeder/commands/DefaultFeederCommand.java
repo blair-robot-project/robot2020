@@ -25,7 +25,6 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
   @NotNull private final ConditionTimingComponentDecorator sensor1;
   @Log.Exclude
   @NotNull private final ConditionTimingComponentDecorator sensor2;
-  private final double timeout;
 
   /**
    * @param subsystem the feeder subsystem to operate on
@@ -39,13 +38,12 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
                               @NotNull @JsonProperty(required = true) final BooleanSupplier sensor1,
                               @NotNull @JsonProperty(required = true) final BooleanSupplier sensor2,
                               @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode runMode,
-                              @JsonProperty(required = true) final double timeout) {
+                              @Deprecated final double timeout) {
     this.feeder = subsystem;
     this.runMode = runMode;
     this.feederIsOn = new ConditionTimingComponentObserver(false);
     this.sensor1 = new ConditionTimingComponentDecorator(sensor1, false);
     this.sensor2 = new ConditionTimingComponentDecorator(sensor2, false);
-    this.timeout = timeout;
   }
 
   @Override
@@ -60,11 +58,7 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
   }
 
   public boolean shouldBeRunning() {
-    // Run when sensor is being actively tripped.
-    if (this.sensor1.isTrue() || this.sensor2.isTrue()) return true;
-    // Stop if timed out.
-    if (this.feederIsOn.hasBeenTrueForAtLeast(this.timeout)) return false;
-    // Keep running if already on and second sensor didn't just deactivate.
-    return this.feederIsOn.isTrue() && !this.sensor2.justBecameFalse();
+    // Run when either sensor is being actively tripped.
+    return this.sensor1.isTrue() || this.sensor2.isTrue();
   }
 }
