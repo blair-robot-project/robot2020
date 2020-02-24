@@ -20,6 +20,8 @@ import org.usfirst.frc.team449.robot.other.Clock;
 public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
     extends NavXTurnToAngleRelative {
 
+  private final Limelight limelight;
+
   /**
    * Default constructor.
    *
@@ -51,9 +53,9 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
       @Nullable Integer loopTimeMillis,
       double deadband,
       boolean inverted,
-      int kP,
-      int kI,
-      int kD,
+      double kP,
+      double kI,
+      double kD,
       @NotNull @JsonProperty(required = true) Limelight limelight,
       @NotNull @JsonProperty(required = true) T drive,
       @JsonProperty(required = true) double timeout) {
@@ -68,9 +70,10 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
         kP,
         kI,
         kD,
-        limelight.getX(),
+        limelight.getX(), // setpoint
         drive,
         timeout);
+    this.limelight = limelight;
   }
 
   /** Set up the start time and setpoint. */
@@ -82,17 +85,15 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
         "NavXTurnToAngleLimelight init.", this.getClass().getSimpleName(), EventImportance.kNormal);
     // Logger.addEvent("NavXRelativeTurnToAngle init.", this.getClass());
     // Do math to setup the setpoint.
-    this.setSetpoint(clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() + setpoint));
+    this.setSetpoint(clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() + super.setpoint));
   }
 
   @Override
   public void execute() {
     super.execute();
-    System.out.println(getSetpoint());
-    System.out.println(
-        pidController.calculate(
-            ((SubsystemAHRS) subsystem).getHeadingCached(), pidController.getSetpoint()));
-    System.out.println("system output: " + getOutput());
+    System.out.println(getOutput());
+    System.out.println(((SubsystemAHRS) subsystem).getHeading());
+    System.out.println("Setpoint: " + setpoint);
   }
 
   /** Log when the command ends. */

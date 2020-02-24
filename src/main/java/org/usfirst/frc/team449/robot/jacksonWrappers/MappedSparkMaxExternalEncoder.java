@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
+import org.usfirst.frc.team449.robot.other.Clock;
 
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +70,10 @@ public class MappedSparkMaxExternalEncoder implements SmartMotor {
 
   /** The setpoint in native units. Field to avoid garbage collection. */
   @Log private double nativeSetpoint;
+
+  private double lastTimeUpdate;
+
+  @Log private double timeDiff;
 
   /**
    * Create a new SPARK MAX Controller
@@ -384,7 +389,7 @@ public int getGear() {
   @Contract(pure = true)
   @Override
   public Double nativeToRPS(final double nat) {
-    return nat / 60.;
+    return nat;
   }
 
   /**
@@ -397,7 +402,7 @@ public int getGear() {
   @Contract(pure = true)
   @Override
   public double RPSToNative(final double RPS) {
-    return RPS * 60.;
+    return RPS;
   }
 
   /** @return Total revolutions for debug purposes */
@@ -408,6 +413,8 @@ public int getGear() {
 
   @Override
   public void setVoltage(final double volts) {
+    timeDiff -= lastTimeUpdate;
+    lastTimeUpdate = Clock.currentTimeSeconds();
     spark.setVoltage(volts);
   }
 

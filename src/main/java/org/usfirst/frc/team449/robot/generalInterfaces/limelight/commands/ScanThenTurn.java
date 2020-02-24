@@ -47,11 +47,6 @@ public class ScanThenTurn extends CommandBase implements Loggable {
     }
 
     @Override
-    public void execute(){
-        System.out.println("invoke");
-    }
-
-    @Override
     public boolean isFinished() {
         return limelight.hasTarget();
     }

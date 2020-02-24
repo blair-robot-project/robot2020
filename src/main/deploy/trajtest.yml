@@ -266,27 +266,36 @@ useCameraServer: false
               port: *mechanismsJoystickPort
           buttonNumber: 1 #shoulder right
       command:
-        org.usfirst.frc.team449.robot.generalInterfaces.limelight.commands.ScanThenTurn:
-          '@id': scanThenTurnCommand
-          scannerPipe: 1
-          turnCommand:
-            org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleLimelight:
-              '@id': turnToAngleCommand
-              absoluteTolerance: 5
-              kP: 1
-              drive:
-                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-                  drive
-              timeout: 100
-              limelight:
-                org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
-                  '@id': limelight
-                  driverPipeline: 0
-          driverPipe: 0
+#        org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleRelative:
+#          '@id': turnToAngleCommand
+#          absoluteTolerance: 3
+#          kP: 0.01
+#          drive:
+#            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+#              drive
+#          timeout: 100
+#          setpoint: 40
+#        org.usfirst.frc.team449.robot.generalInterfaces.limelight.commands.ScanThenTurn:
+#          '@id': scanThenTurnCommand
+#          scannerPipe: 1
+#          turnCommand:
+        org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleLimelight:
+          '@id': turnToAngleCommand
+          absoluteTolerance: 3
+          kP: .01
+          drive:
+            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+              drive
+          timeout: 100
           limelight:
             org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
-              limelight
-      action: WHILE_HELD
+              '@id': limelight
+              driverPipeline: 0
+#          driverPipe: 0
+#          limelight:
+#            org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
+#              limelight
+      action: WHEN_PRESSED
 
   *AUTO_COMMANDS:
     - *TRAJ_TEST_COMMAND
