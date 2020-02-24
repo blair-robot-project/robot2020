@@ -9,10 +9,27 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+/**
+ * Helpers for using the {@link edu.wpi.first.hal.SimDevice} framework.
+ */
 public class SimUtil {
-  @Contract("_, _, !null, null -> fail")
+  /**
+   * Gets the value for a property based on either a simulation variable or the real
+   * implementation.
+   *
+   * @param useSimValue whether to use the value provided by {@code simValue} instead of that
+   * provided by {@code regularImplementation}
+   * @param setSimValue whether to set the value of {@code simValue} to the returned value when
+   * using {@code regularImplementation}
+   * @param simValue the simulation variable that appears as an input in the WPILib simulation GUI
+   * @param regularImplementation a reference to the regular getter of the property
+   * @param <T> The type of the property. Used to cast the value obtained from {@code simValue}.
+   * @return a value for the property obtained from either a simulation input or the return value of
+   * the actual getter
+   */
+  @Contract("true, _, null, _ -> fail")
   public static <T> T getWithSimHelper(final boolean useSimValue,
-                                       final boolean setValueWhenNotSim,
+                                       final boolean setSimValue,
                                        @Nullable final SimValue simValue,
                                        @NotNull final Supplier<T> regularImplementation) {
     final T result;
@@ -23,22 +40,30 @@ public class SimUtil {
       result = (T) unwrapHALValue(simValue.getValue());
     } else {
       result = regularImplementation.get();
-      if (simValue != null && setValueWhenNotSim) simValue.setValue(makeHALValue(result));
+      if (simValue != null && setSimValue) simValue.setValue(makeHALValue(result));
     }
 
     return result;
   }
 
   /**
-   * <p>
-   * Returns enum as Integer.
-   * </p>
+   * Gets the underlying value of the specified {@link HALValue} instance.
+   *
+   * @param value the object to retrieve the value from
+   * @return Depending on {@link HALValue#getType()}:<ul>
+   * <li>{@link HALValue#kUnassigned}: {@code null}</li>
+   * <li>{@link HALValue#kBoolean}: {@link HALValue#getBoolean()}</li>
+   * <li>{@link HALValue#kDouble}: {@link HALValue#getDouble()}</li>
+   * <li>{@link HALValue#kInt}, {@link HALValue#kEnum}: {@code (int)}{@link
+   * HALValue#getLong()}</li>
+   * <li>{@link HALValue#kLong}: {@link HALValue#getLong()}</li>
+   * </ul>
    */
   @Nullable
   private static Object unwrapHALValue(@NotNull final HALValue value) {
     switch (value.getType()) {
       case HALValue.kUnassigned:
-        throw new IllegalStateException("Value is unassigned.");
+        return null;
       case HALValue.kBoolean:
         return value.getBoolean();
       case HALValue.kDouble:
@@ -49,13 +74,21 @@ public class SimUtil {
       case HALValue.kLong:
         return value.getLong();
     }
-    throw new IllegalStateException();
+    throw new IllegalStateException("value.getType() is invalid.");
   }
 
   /**
-   * <p>
-   * Serializes Enum instance with ordinal value.
-   * </p>
+   * Creates an instance of {@link HALValue} from the specified value.
+   *
+   * @param value the object to retrieve the value from
+   * @return Depending on {@code value}:<ul>
+   * <li>{@code null}: {@link HALValue#makeUnassigned()}</li>
+   * <li>{@link Boolean}: {@link HALValue#makeBoolean(boolean)}</li>
+   * <li>{@link Double}: {@link HALValue#makeDouble(double)}</li>
+   * <li>{@link Integer}: {@link HALValue#makeInt(int)}</li>
+   * <li>{@link Enum}: {@link HALValue#makeInt(int)} with {@link Enum#ordinal()}</li>
+   * <li>{@link Long}: {@link HALValue#makeLong(long)}</li>
+   * </ul>
    */
   @NotNull
   private static HALValue makeHALValue(@Nullable final Object value) {
