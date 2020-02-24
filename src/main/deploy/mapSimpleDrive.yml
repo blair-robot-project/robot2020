@@ -53,12 +53,12 @@ CONSTANTS:
       - &climberSolenoidForward 4
       - &climberSolenoidReverse 5
   - DIOPorts:
+      - &rightMasterEncoder1Port 0
+      - &rightMasterEncoder2Port 1
+      - &leftMasterEncoder1Port 2
+      - &leftMasterEncoder2Port 3
       - &feederSensor1Port 8
       - &feederSensor2Port 9
-      - &leftMasterEncoder1Port 0
-      - &leftMasterEncoder2Port 1
-      - &rightMasterEncoder1Port 2
-      - &rightMasterEncoder2Port 3
   - JoystickPorts:
       - &mechanismsJoystickPort 0
       - &driveJoystickPort 1
@@ -79,13 +79,13 @@ CONSTANTS:
       - &feederIntakingVel 0.5
       - &feederShootingVel 1
       - &feederCoughingVel -0.4
-      - &flywheelSpinUpTimeoutSecs 4
-      - &kickerThrottle -0.3
+      - &shooterMaxSpeed 91
       - &shooterThrottle 0.6
+      - &shooterMinShootingSpeed 53
+      - &kickerThrottle -0.3
   - Other:
       - &feederIndexingTimeoutSecs 0.3
-      - &flywheelMinShootingSpeed 53
-
+      - &flywheelSpinUpTimeoutSecs 4
 
 # WHETHER TO USE THE CAMERA SERVER
 useCameraServer: false
@@ -179,7 +179,6 @@ useCameraServer: false
                   PDP: PDP
                   currentLimit: 30
 
-
   #***********************************************************************************************************************
   - *FEEDER_SUBSYSTEM
   - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
@@ -202,51 +201,70 @@ useCameraServer: false
 
   #***********************************************************************************************************************
   - *SHOOTER_SUBSYSTEM
-  - org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
-      '@id': shooterFlywheel
-      shooterThrottle: *shooterThrottle
-      kickerThrottle: *kickerThrottle
-      spinUpTimeoutSecs: *flywheelSpinUpTimeoutSecs
-      minShootingSpeed: *flywheelMinShootingSpeed
-      shooterMotor:
-        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
-          &Shooter_Right_Motor
-          '@id': shooterRightMotor
-          type: SPARK
-          reverseSensor: false
-          port: *shooterRightMotorPort
-          name: shooterRightMotor
-          reverseOutput: true
-          enableBrakeMode: true
-          PDP: PDP
-          enableVoltageComp: true #TODO
-          perGearSettings:
-            - gearNum: 0
-              #              maxSpeed: 91
-              rampRate: 10
-              kP: 0.01
-              kI: 0.01
-              kD: 0
-      #          perGearSettings:
-      #          - gearNum: 0
-      #            feedForwardCalculator:
-      #              org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-      #                kS: 0
-      #                kV: 0 #0.126
-      #                kA: 0
-      #            maxSpeed: 90 #rps
-      #            kP: 0 #5e-5 #0.0001
-      #            kI: 0.
-      #            kD: 0
-      otherShooterMotor:
-        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
-          <<: *Shooter_Right_Motor
-          '@id': shooterLeftMotor
-          port: *shooterLeftMotorPort
-          name: shooterLeftMotor
-          reverseSensor: false
-          reverseOutput: false
-      kickerMotor:
+  - org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
+      '@id': shooterFlywheels
+      maximumSpeedRange: 5
+      flywheels:
+        - org.usfirst.frc.team449.robot._2020.shooter.FlywheelSimple:
+            '@id': shooterFlywheelLeft
+            shooterThrottle: *shooterThrottle
+            spinUpTimeoutSecs: *flywheelSpinUpTimeoutSecs
+            minShootingSpeed: *shooterMinShootingSpeed
+            shooterMotor:
+              org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+                &Shooter_Right_Motor
+                '@id': shooterRightMotor
+                type: SPARK
+                reverseSensor: false
+                port: *shooterRightMotorPort
+                name: shooterRightMotor
+                reverseOutput: true
+                enableBrakeMode: true
+                PDP: PDP
+                enableVoltageComp: true
+                perGearSettings:
+                  - gearNum: 0
+                    maxSpeed: *shooterMaxSpeed
+                    rampRate: 10
+                    kP: 0.01
+                    kI: 0.01
+                    kD: 0
+            #          perGearSettings:
+            #          - gearNum: 0
+            #            feedForwardCalculator:
+            #              org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
+            #                kS: 0
+            #                kV: 0 #0.126
+            #                kA: 0
+            #            maxSpeed: 90 #rps
+            #            kP: 0 #5e-5 #0.0001
+            #            kI: 0.
+            #            kD: 0
+        - org.usfirst.frc.team449.robot._2020.shooter.FlywheelSimple:
+            '@id': shooterFlywheelRight
+            shooterThrottle: *shooterThrottle
+            spinUpTimeoutSecs: *flywheelSpinUpTimeoutSecs
+            minShootingSpeed: *shooterMinShootingSpeed
+            shooterMotor:
+              org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+                <<: *Shooter_Right_Motor
+                '@id': shooterLeftMotor
+                port: *shooterLeftMotorPort
+                name: shooterLeftMotor
+                reverseSensor: false
+                reverseOutput: false
+                perGearSettings:
+                  - gearNum: 0
+                    maxSpeed: *shooterMaxSpeed
+                    rampRate: 1
+                    kP: 0.01
+                    kI: 0.01
+                    kD: 0
+
+  - org.usfirst.frc.team449.robot._2020.climber.AnalogMotorSingleSpeed:
+      '@id': kicker
+      speed: *kickerThrottle
+      motor:
         org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
           '@id': kickerMotor
           type: SPARK
@@ -257,7 +275,7 @@ useCameraServer: false
           enableBrakeMode: true
           PDP: PDP
           currentLimit: 30
-          enableVoltageComp: false #TODO
+          enableVoltageComp: true
 
   #***********************************************************************************************************************
   - *CLIMBER_SUBSYSTEM
@@ -285,7 +303,6 @@ useCameraServer: false
             module: 0
             forward: *climberSolenoidForward
             reverse: *climberSolenoidReverse
-
 
 *COMMANDS:
   ########################################################################################################################
@@ -440,37 +457,42 @@ useCameraServer: false
                 &Spin_Up_Flywheel_Command
                 '@id': spinUpFlywheelCommand_initial
                 flywheel:
-                  org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
-                    shooterFlywheel
+                  org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
+                    shooterFlywheels
                 feeder:
                   org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
                     feeder
             - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.ConditionalPerpetualCommandChangeBased:
                 '@id': startShootingOrSpinUpFlywheelCommmand
                 requiredSubsystems:
-                  - org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
-                      shooterFlywheel
+                  - org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
+                      shooterFlywheels
                 booleanSupplier:
                   org.usfirst.frc.team449.robot._2020.multiSubsystem.BooleanSupplierUpdatable:
                     source:
                       org.usfirst.frc.team449.robot._2020.multiSubsystem.BooleanSupplierSubsystemBased:
                         subsystem:
-                          org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
-                            shooterFlywheel
+                          org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
+                            shooterFlywheels
                         useCached: true
                 afterBecomingFalse:
                   org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
                     <<: *Spin_Up_Flywheel_Command
                     '@id': spinUpFlywheelCommand_whenNotReadyToShoot
                 afterBecomingTrue:
-                  edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
+                  edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
                     '@id': startShootingCommandSequence
                     commands:
                       - org.usfirst.frc.team449.robot._2020.shooter.commands.TurnAllOn:
                           '@id': setFlywheelShootingCommand
                           subsystem:
-                            org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
-                              shooterFlywheel
+                            org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
+                              shooterFlywheels
+                      - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
+                          '@id': kickerStartCommand
+                          subsystem:
+                            org.usfirst.frc.team449.robot._2020.climber.AnalogMotorSingleSpeed:
+                              kicker
                       - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
                           '@id': feederStartCommand_shooting
                           subsystem:
@@ -495,8 +517,13 @@ useCameraServer: false
             - org.usfirst.frc.team449.robot._2020.shooter.commands.TurnAllOffWithRequires:
                 '@id': shooterStopCommand
                 subsystem:
-                  org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel:
-                    shooterFlywheel
+                  org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
+                    shooterFlywheels
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOff:
+                '@id': kickerStopCommand
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.climber.AnalogMotorSingleSpeed:
+                    kicker
             - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
                 '@id': feederStopCommand_shootingStop
                 subsystem:
@@ -509,8 +536,8 @@ useCameraServer: false
     #        org.usfirst.frc.team449.robot.subsystem.interfaces.flywheel.commands.SpinUpThenShoot:
     #          '@id': shootCommand
     #          flywheel:
-    #            org.usfirst.frc.team449.robot.subsystem.complex.shooter.LoggingFlywheel:
-    #              shooterFlywheel
+    #            org.usfirst.frc.team449.robot.subsystem.complex.shooter.FlywheelCluster:
+    #              shooterFlywheels
     #          feeder:
     #            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
     #              feeder
@@ -540,7 +567,7 @@ useCameraServer: false
               mechanismsJoystick
           buttonNumber: *climberWinchButtonNumber
       command:
-        org.usfirst.frc.team449.robot._2020.climber.commands.TurnMotorOn:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
           '@id': climberWinchCommand
           subsystem:
             org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
@@ -689,4 +716,4 @@ useCameraServer: false
       - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
       - org.usfirst.frc.team449.robot._2020.climber.ClimberCurrentLimited: climberCurrentLimitSystem
       - org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber: climber
-      - org.usfirst.frc.team449.robot._2020.shooter.LoggingFlywheel: shooterFlywheel
+      - org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster: shooterFlywheels

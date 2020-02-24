@@ -12,37 +12,24 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemConditional;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
-import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.other.DebouncerEx;
 import org.usfirst.frc.team449.robot.other.SimUtil;
+
+import java.util.Optional;
 
 /**
  * A flywheel multiSubsystem with a single flywheel and a single-motor feeder system.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class LoggingFlywheel extends SubsystemBase
+public class FlywheelSimple extends SubsystemBase
     implements SubsystemFlywheel, SubsystemConditional, io.github.oblarg.oblog.Loggable {
 
   /**
-   * The flywheel's Talon
+   * The flywheel's motor
    */
   @NotNull
   private final SmartMotor shooterMotor;
-
-  @NotNull
-  private final SmartMotor otherShooterMotor;
-
-  /**
-   * The feeder's motor
-   */
-  @NotNull
-  private final SimpleMotor kickerMotor;
-
-  /**
-   * How fast to run the feeder, from [-1, 1]
-   */
-  private final double kickerThrottle;
 
   /**
    * Throttle at which to run the multiSubsystem, from [-1, 1]
@@ -78,15 +65,13 @@ public class LoggingFlywheel extends SubsystemBase
   private final SimBoolean sim_manualStates, sim_isAtSpeed, sim_isTimedOut;
 
   @NotNull
-  private final DebouncerEx speedConditionDebouncer = new DebouncerEx(10);
+  private final DebouncerEx speedConditionDebouncer = new DebouncerEx(30);
 
   /**
    * Default constructor
    *
    * @param shooterMotor The motor controlling the flywheel.
    * @param shooterThrottle The throttle, from [-1, 1], at which to run the multiSubsystem.
-   * @param kickerMotor The motor controlling the feeder.
-   * @param kickerThrottle The throttle, from [-1, 1], at which to run the feeder.
    * @param spinUpTimeoutSecs The amount of time that the flywheel will wait for the nominal
    * shooting condition to be reached before signalling that it is ready to shoot regardless.
    * @param minShootingSpeed The minimum speed at which the flywheel will signal that it is ready to
@@ -94,26 +79,20 @@ public class LoggingFlywheel extends SubsystemBase
    * {@code spinUpTimeoutSecs}.
    */
   @JsonCreator
-  public LoggingFlywheel(
+  public FlywheelSimple(
       @NotNull @JsonProperty(required = true) final SmartMotor shooterMotor,
-      @NotNull @JsonProperty(required = true) final SmartMotor otherShooterMotor,
-      @NotNull @JsonProperty(required = true) final SimpleMotor kickerMotor,
       @JsonProperty(required = true) final double shooterThrottle,
-      @JsonProperty(required = true) final double kickerThrottle,
       @JsonProperty(required = true) final double spinUpTimeoutSecs,
       @Nullable final Double minShootingSpeed) {
 
     this.shooterMotor = shooterMotor;
-    this.otherShooterMotor = otherShooterMotor;
     this.shooterThrottle = shooterThrottle;
-    this.kickerMotor = kickerMotor;
-    this.kickerThrottle = kickerThrottle;
     this.spinUpTimeoutSecs = spinUpTimeoutSecs;
     this.minShootingSpeed = minShootingSpeed;
 
     this.state = FlywheelState.OFF;
 
-    simDevice = SimDevice.create(this.getClass().getSimpleName(), shooterMotor.getPort(), otherShooterMotor.getPort());
+    simDevice = SimDevice.create(this.getClass().getSimpleName(), shooterMotor.getPort());
     if (simDevice != null) {
       sim_manualStates = simDevice.createBoolean("ManualStates", false, false);
       sim_isAtSpeed = simDevice.createBoolean("IsAtSpeed", false, false);
@@ -130,9 +109,7 @@ public class LoggingFlywheel extends SubsystemBase
   @Override
   public void turnFlywheelOn() {
     this.shooterMotor.enable();
-    this.otherShooterMotor.enable();
     this.shooterMotor.setVelocity(this.shooterThrottle);
-    this.otherShooterMotor.setVelocity(this.shooterThrottle);
   }
 
   /**
@@ -141,24 +118,6 @@ public class LoggingFlywheel extends SubsystemBase
   @Override
   public void turnFlywheelOff() {
     this.shooterMotor.disable();
-    this.otherShooterMotor.disable();
-  }
-
-  /**
-   * Start feeding balls into the multiSubsystem.
-   */
-  @Override
-  public void turnFeederOn() {
-    this.kickerMotor.enable();
-    this.kickerMotor.setVelocity(this.kickerThrottle);
-  }
-
-  /**
-   * Stop feeding balls into the multiSubsystem.
-   */
-  @Override
-  public void turnFeederOff() {
-    this.kickerMotor.disable();
   }
 
   /**
@@ -186,7 +145,7 @@ public class LoggingFlywheel extends SubsystemBase
    */
   @Override
   @Log
-  public double getSpinUpTimeoutSecs() {
+  public double getSpinUpTimeSecs() {
     return this.spinUpTimeoutSecs;
   }
 
@@ -248,5 +207,15 @@ public class LoggingFlywheel extends SubsystemBase
   public void update() {
     this.speedConditionDebouncer.update(this.isAtShootingSpeed());
     this.conditionMetCached = this.isConditionTrue();
+  }
+
+  @Override
+  public @NotNull Optional<Double> getSpeed() {
+    return Optional.of(Math.abs(this.shooterMotor.getVelocity()));
+  }
+
+  @Override
+  public String configureLogName() {
+    return this.getClass().getSimpleName() + this.shooterMotor.getPort();
   }
 }

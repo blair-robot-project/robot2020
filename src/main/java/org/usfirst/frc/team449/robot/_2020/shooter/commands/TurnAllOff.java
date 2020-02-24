@@ -24,7 +24,7 @@ public class TurnAllOff extends InstantCommand {
    * @param subsystem The subsystem to execute this command on.
    */
   @JsonCreator
-  public TurnAllOff(@NotNull @JsonProperty(required = true) SubsystemFlywheel subsystem) {
+  public TurnAllOff(@NotNull @JsonProperty(required = true) final SubsystemFlywheel subsystem) {
     this.subsystem = subsystem;
   }
 
@@ -39,14 +39,13 @@ public class TurnAllOff extends InstantCommand {
   /** Turn off the flywheel and feeder. */
   @Override
   public void execute() {
-    subsystem.turnFeederOff();
     subsystem.turnFlywheelOff();
     subsystem.setFlywheelState(SubsystemFlywheel.FlywheelState.OFF);
   }
 
   /** Log when this command ends */
   @Override
-  public void end(boolean interrupted) {
+  public void end(final boolean interrupted) {
     if (interrupted) {
       Shuffleboard.addEventMarker(
           "TurnAllOff Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);

@@ -57,7 +57,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
   @NotNull
   private final FPSSmartMotorSimulated.PID pid =
       new PID(MAX_INTEGRAL, () -> this.setpoint, 0, 0, 0);
-  @NotNull private ControlMode controlMode = ControlMode.Disabled;
+  @Log.ToString @NotNull private ControlMode controlMode = ControlMode.Disabled;
   @NotNull private PerGearSettings currentGearSettings;
   // Log the getters instead because logging the fields doesn't cause physics updates.
   private double percentOutput;
