@@ -6,9 +6,8 @@ import org.jetbrains.annotations.Contract;
 
 /**
  * Utility class that records and provides methods for examining the  times at which a condition
- * becomes true or false. The class is abstract and follows the observer patten. Subclasses must
- * update the condition with calls to {@link ConditionTimingComponent#update(double, boolean)}. Time
- * units are in seconds.
+ * becomes true or false. The class is an abstract observer to allow subclasses to provide custom
+ * implementations for updating the condition. This class is unit-agnostic.
  *
  * <p>
  * Behavior may be unexpected if object is updated more frequently than values are examined.
@@ -110,23 +109,23 @@ public abstract class ConditionTimingComponent implements Loggable {
   }
 
   @Contract(pure = true)
-  public boolean hasBeenFalseForAtLeast(final double seconds) {
-    return this.timeSinceLastBecameFalse() >= seconds;
+  public boolean hasBeenFalseForAtLeast(final double duration) {
+    return this.timeSinceLastBecameFalse() >= duration;
   }
 
   @Contract(pure = true)
-  public boolean hasBeenTrueForAtLeast(final double seconds) {
-    return this.timeSinceLastBecameTrue() >= seconds;
+  public boolean hasBeenTrueForAtLeast(final double duration) {
+    return this.timeSinceLastBecameTrue() >= duration;
   }
 
   @Contract(pure = true)
-  public boolean hasBeenFalseForAtMost(final double seconds) {
-    return this.timeSinceLastBecameFalse() <= seconds;
+  public boolean hasBeenFalseForAtMost(final double duration) {
+    return this.timeSinceLastBecameFalse() <= duration;
   }
 
   @Contract(pure = true)
-  public boolean hasBeenTrueForAtMost(final double seconds) {
-    return this.timeSinceLastBecameTrue() <= seconds;
+  public boolean hasBeenTrueForAtMost(final double duration) {
+    return this.timeSinceLastBecameTrue() <= duration;
   }
 
   @Contract(pure = true)

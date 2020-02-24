@@ -6,20 +6,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot._2020.climber.SubsystemSolenoid;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
-import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDoubleSolenoid;
 
-import java.util.Map;
-
 /**
- * An intake that goes up and down with a piston.
+ * A decorator to make an intake that goes up and down with a piston.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class IntakeActuatedTwoSides extends IntakeTwoSidesSimple implements Subsystem, SubsystemSolenoid, SubsystemIntake {
-
+public class IntakeActuated implements Subsystem, SubsystemIntake, SubsystemSolenoid, Loggable {
+  @NotNull
+  private final SubsystemIntake implementation;
   /**
    * The piston for actuating the intake.
    */
@@ -34,20 +33,15 @@ public class IntakeActuatedTwoSides extends IntakeTwoSidesSimple implements Subs
   /**
    * Default constructor.
    *
+   * @param implementation The intake instance to wrap.
    * @param piston The piston for actuating the intake.
-   * @param leftMotor The left motor that this subsystem controls.
-   * @param rightMotor The left motor that this subsystem controls.
-   * @param velocities The velocity for the motor to go at for each {@link IntakeMode}, on the
-   * interval [-1, 1]. Modes can be missing to indicate that this intake doesn't have/use them.
    */
   @JsonCreator
-  public IntakeActuatedTwoSides(@NotNull @JsonProperty(required = true) final MappedDoubleSolenoid piston,
-                                @NotNull @JsonProperty(required = true) final SimpleMotor leftMotor,
-                                @NotNull @JsonProperty(required = true) final SimpleMotor rightMotor,
-                                @NotNull @JsonProperty(required = true) final Map<IntakeMode, Double> velocities) {
-    super(leftMotor, rightMotor, velocities);
-    this.currentPistonPos = DoubleSolenoid.Value.kOff;
+  public IntakeActuated(@NotNull @JsonProperty(required = true) final SubsystemIntake implementation,
+                        @NotNull @JsonProperty(required = true) final MappedDoubleSolenoid piston) {
+    this.implementation = implementation;
     this.piston = piston;
+    this.currentPistonPos = DoubleSolenoid.Value.kOff;
   }
 
   /**
@@ -55,8 +49,8 @@ public class IntakeActuatedTwoSides extends IntakeTwoSidesSimple implements Subs
    */
   @Override
   public void setSolenoid(@NotNull final DoubleSolenoid.Value value) {
-    this.currentPistonPos = value;
-    this.piston.set(value);
+    currentPistonPos = value;
+    piston.set(value);
   }
 
   /**
@@ -65,6 +59,22 @@ public class IntakeActuatedTwoSides extends IntakeTwoSidesSimple implements Subs
   @Override
   @NotNull
   public DoubleSolenoid.Value getSolenoidPosition() {
-    return this.currentPistonPos;
+    return currentPistonPos;
+  }
+
+  /**
+   * @return the current mode of the intake.
+   */
+  @Override
+  public @NotNull IntakeMode getMode() {
+    return this.implementation.getMode();
+  }
+
+  /**
+   * @param mode The mode to switch the intake to.
+   */
+  @Override
+  public void setMode(@NotNull final IntakeMode mode) {
+    this.implementation.setMode(mode);
   }
 }

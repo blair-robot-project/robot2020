@@ -30,7 +30,7 @@ public class TurnAllOn extends InstantCommand {
      * @param subsystem The subsystem to execute this command on.
      */
     @JsonCreator
-    public TurnAllOn(@NotNull @JsonProperty(required = true) SubsystemFlywheel subsystem) {
+    public TurnAllOn(@NotNull @JsonProperty(required = true) final SubsystemFlywheel subsystem) {
         this.subsystem = subsystem;
     }
 
@@ -49,7 +49,6 @@ public class TurnAllOn extends InstantCommand {
      */
     @Override
     public void execute() {
-        subsystem.turnFeederOn();
         subsystem.turnFlywheelOn();
         subsystem.setFlywheelState(SubsystemFlywheel.FlywheelState.SHOOTING);
     }
@@ -58,7 +57,7 @@ public class TurnAllOn extends InstantCommand {
      * Log when this command ends
      */
     @Override
-    public void end(boolean interrupted) {
+    public void end(final boolean interrupted) {
         if (interrupted) {
             Shuffleboard.addEventMarker(
                     "TurnAllOn Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);

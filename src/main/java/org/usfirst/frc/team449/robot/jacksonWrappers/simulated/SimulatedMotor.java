@@ -26,6 +26,7 @@ public class SimulatedMotor implements Loggable {
    */
   @Log(name = "maxSpeed")
   private static final double TRUE_MAX_SPEED = TORQUE_COEFF * NOMINAL_VOLTAGE / -FRICTION_COEFF;
+  private static final double EPSILON = 1e-5;
 
   private final double moment;
   private final double torqueCoeff;
@@ -67,15 +68,18 @@ public class SimulatedMotor implements Loggable {
 
     this.velocity += angularAcceleration * deltaSecs;
     this.position += this.velocity * deltaSecs;
+
+    if (Math.abs(this.velocity) < EPSILON) this.velocity = 0;
+    if (Math.abs(this.position) < EPSILON) this.position = 0;
   }
 
   @Log
-public double getVelocity() {
+  public double getVelocity() {
     return this.velocity;
   }
 
   @Log
-public double getPosition() {
+  public double getPosition() {
     return this.position;
   }
 
@@ -84,7 +88,7 @@ public double getPosition() {
   }
 
   @Log
-public double getCurrent() {
+  public double getCurrent() {
     return this.voltageSource.getAsDouble() / RESISTANCE;
   }
 }

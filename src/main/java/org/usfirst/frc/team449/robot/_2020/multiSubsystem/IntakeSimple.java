@@ -14,10 +14,10 @@ import java.util.Map;
 import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /**
- * A simple intake subsystem.
+ * A simple intake subsystem that relies on a single motor to rotate some part of it.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class IntakeSimple extends SubsystemBase implements SubsystemIntake, Loggable {
+public class IntakeSimple extends SubsystemBase implements SubsystemIntake, SubsystemAnalogMotor, Loggable {
 
   /**
    * The motor this subsystem controls.
@@ -46,9 +46,8 @@ public class IntakeSimple extends SubsystemBase implements SubsystemIntake, Logg
    * interval [-1, 1]. Modes can be missing to indicate that this intake doesn't have/use them.
    */
   @JsonCreator
-  public IntakeSimple(
-      @JsonProperty(required = true) @NotNull final SimpleMotor motor,
-      @NotNull @JsonProperty(required = true) final Map<IntakeMode, Double> velocities) {
+  public IntakeSimple(@NotNull @JsonProperty(required = true) final SimpleMotor motor,
+                      @NotNull @JsonProperty(required = true) final Map<IntakeMode, Double> velocities) {
     this.motor = motor;
     this.velocities = velocities;
 
@@ -87,5 +86,23 @@ public class IntakeSimple extends SubsystemBase implements SubsystemIntake, Logg
     } else {
       System.err.println(getLogPrefix(this) + "Warning: use of undefined mode " + mode);
     }
+  }
+
+  /**
+   * Set output to a given input.
+   *
+   * @param input The input to give to the motor.
+   */
+  @Override
+  public void set(final double input) {
+    this.motor.setVelocity(input);
+  }
+
+  /**
+   * Disable the motor.
+   */
+  @Override
+  public void disable() {
+    this.motor.disable();
   }
 }

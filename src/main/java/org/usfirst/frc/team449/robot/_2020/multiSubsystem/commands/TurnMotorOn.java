@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot._2020.climber.commands;
+package org.usfirst.frc.team449.robot._2020.multiSubsystem.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -12,17 +12,17 @@ import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot._2020.climber.SubsystemBinaryMotor;
 
 /**
- * Turns off the motor of the specified subsystem.
+ * Turns on the motor of the specified subsystem.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class TurnMotorOff extends InstantCommand {
+public class TurnMotorOn extends InstantCommand {
 
     /**
      * The subsystem to execute this command on.
      */
     @NotNull
     @Log.Exclude
-    protected final SubsystemBinaryMotor subsystem;
+    private final SubsystemBinaryMotor subsystem;
 
     /**
      * Default constructor
@@ -30,7 +30,7 @@ public class TurnMotorOff extends InstantCommand {
      * @param subsystem The subsystem to execute this command on.
      */
     @JsonCreator
-    public TurnMotorOff(@NotNull @JsonProperty(required = true) SubsystemBinaryMotor subsystem) {
+    public TurnMotorOn(@NotNull @JsonProperty(required = true) final SubsystemBinaryMotor subsystem) {
         this.subsystem = subsystem;
     }
 
@@ -40,28 +40,28 @@ public class TurnMotorOff extends InstantCommand {
     @Override
     public void initialize() {
         Shuffleboard.addEventMarker(
-                "TurnMotorOff init.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        // Logger.addEvent("TurnMotorOff init.", this.getClass());
+                "TurnMotorOn init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+        // Logger.addEvent("TurnMotorOn init.", this.getClass());
     }
 
     /**
-     * Turn the motor off.
+     * Turn the motor on.
      */
     @Override
     public void execute() {
-        subsystem.turnMotorOff();
+        subsystem.turnMotorOn();
     }
 
     /**
      * Log when this command ends
      */
     @Override
-    public void end(boolean interrupted) {
+    public void end(final boolean interrupted) {
         if (interrupted) {
             Shuffleboard.addEventMarker(
-                    "TurnMotorOff Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
+                    "TurnMotorOn Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
         }
         Shuffleboard.addEventMarker(
-                "TurnMotorOff end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+                "TurnMotorOn end.", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
 }

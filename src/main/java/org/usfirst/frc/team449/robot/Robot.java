@@ -54,7 +54,7 @@ public class Robot extends TimedRobot {
    * The name of the map to read from. Should be overriden by a subclass to change the name.
    */
   @NotNull
-  public static final String mapName = "ballcycletest.yml";
+  public static final String mapName = "mapSimpleDrive.yml";
   /**
    * The filepath to the resources folder containing the config files.
    */
@@ -206,6 +206,8 @@ public class Robot extends TimedRobot {
   public static void notifyTesting() throws UnsupportedOperationException, IllegalStateException {
     if (RobotBase.isReal())
       throw new IllegalStateException("Attempt to enable unit testing mode while not running in simulation");
+
+    if (isUnitTesting) return;
     if (isTestingHasBeenCalled)
       throw new IllegalStateException("isTesting() has already been called at least once");
 

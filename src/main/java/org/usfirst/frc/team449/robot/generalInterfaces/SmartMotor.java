@@ -590,7 +590,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
 
   @Override
   default int[] configureLayoutPosition() {
-    return new int[] {3, 4};
+    return new int[] {3, 3};
   }
 
   /**
