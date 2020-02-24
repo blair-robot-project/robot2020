@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import edu.wpi.first.hal.SimBoolean;
+import edu.wpi.first.hal.SimDevice;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +14,7 @@ import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemConditional;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.other.Clock;
+import org.usfirst.frc.team449.robot.other.SimUtil;
 
 /**
  * A flywheel multiSubsystem with a single flywheel and a single-motor feeder system.
@@ -66,6 +69,17 @@ public class LoggingFlywheel extends SubsystemBase
   @Log
   private double lastSpinUpTimeMS;
 
+  @Nullable
+  @Log.Exclude
+  private final SimDevice simDevice;
+  @Nullable
+  private final SimBoolean sim_manualStates;
+  @Nullable
+  private final SimBoolean sim_isAtSpeed;
+  @Nullable
+  private final SimBoolean sim_isTimedOut;
+//  private final BooleanSupplier manualStates;
+
   /**
    * Default constructor
    *
@@ -97,6 +111,16 @@ public class LoggingFlywheel extends SubsystemBase
     this.minShootingSpeed = minShootingSpeed;
 
     this.state = FlywheelState.OFF;
+
+    simDevice = SimDevice.create(this.getClass().getSimpleName(), shooterMotor.getPort(), otherShooterMotor.getPort());
+    if (simDevice != null) {
+      sim_manualStates = simDevice.createBoolean("ManualStates", false, false);
+      sim_isAtSpeed = simDevice.createBoolean("IsAtSpeed", false, false);
+      sim_isTimedOut = simDevice.createBoolean("IsTimedOut", false, false);
+    } else {
+      // Bless me, Father, for I have sinned.
+      this.sim_manualStates = this.sim_isAtSpeed = this.sim_isTimedOut = null;
+    }
   }
 
   /**
@@ -170,28 +194,38 @@ public class LoggingFlywheel extends SubsystemBase
     return this.spinUpTimeoutSecs;
   }
 
-  // TODO: Also account for speed difference between flywheels?
-  // TODO: Split into FlywheelTwoSides like how intake does it?
   @Override
   @Log
   public boolean isReadyToShoot() {
     if (this.state == FlywheelState.OFF) return false;
-    return this.isAtShootingSpeed() || this.spinupHasTimedOut();
+    return this.isAtShootingSpeed() || this.spinUpHasTimedOut();
   }
 
   @Log
   private boolean isAtShootingSpeed() {
-    if (this.minShootingSpeed == null) return false;
+    return SimUtil.getWithSimHelper(
+        this.sim_manualStates != null && this.sim_manualStates.get(),
+        true,
+        this.sim_isAtSpeed,
+        () -> {
+          if (this.minShootingSpeed == null) return false;
 
-    final Double actualVelocity = this.shooterMotor.getVelocity();
-    // TODO: Should we be looking at velocity or speed?
-    return !Double.isNaN(actualVelocity) && Math.abs(actualVelocity) >= this.minShootingSpeed;
+          final Double actualVelocity = this.shooterMotor.getVelocity();
+          // TODO: Should we be looking at velocity or speed?
+          return !Double.isNaN(actualVelocity) && Math.abs(actualVelocity) >= this.minShootingSpeed;
+        });
   }
 
   @Log
-  private boolean spinupHasTimedOut() {
-    final double timeSinceLastSpinUp = Clock.currentTimeMillis() - this.lastSpinUpTimeMS;
-    return timeSinceLastSpinUp > 1000 * this.spinUpTimeoutSecs;
+  private boolean spinUpHasTimedOut() {
+    return SimUtil.getWithSimHelper(
+        this.sim_manualStates != null && this.sim_manualStates.get(),
+        true,
+        this.sim_isTimedOut,
+        () -> {
+          final double timeSinceLastSpinUp = Clock.currentTimeMillis() - this.lastSpinUpTimeMS;
+          return timeSinceLastSpinUp > 1000 * this.spinUpTimeoutSecs;
+        });
   }
 
 
