@@ -1,0 +1,83 @@
+genericTest:
+  .MappedGenericTest<org.usfirst.frc.team449.robot.units.m>:
+    .m: 10
+
+distances:
+  - .m: 1
+areas:
+  - .Product: {.: {.Meter: {}}, x: {.ft: 5}}
+speeds:
+  - .Product:
+      .: {.m: 84}
+      x: {.Reciprocal: {.s: 2}}
+  - .Quotient: {.: {.m: 1}, /: {.s: 1}}
+  - .Quotient:
+      .: {.m: 1}
+      /: {.Minute: 1}
+  - .Product:
+      .: {.m: 1}
+      x: {.Reciprocal: {.Minute: 1}}
+  - .Quotient:
+      .: {.ft: 1}
+      /: {.s: 1}
+  - .FootPerSecond: 27
+angularSpeeds:
+  - .Quotient:
+      .: {.Revolution: 100}
+      /: {.Minute: 2}
+  - .Quotient:
+      .: {.Revolution: 100}
+      /: {.Minute: {}}
+angularAccelerations:
+  - .Quotient:
+      .: {.Revolution: 1}
+      /:
+        .Product:
+          .: {.s: 2}
+          x: {.s: 2}
+  - .per:
+      .: {.Revolution: 1}
+      /: {.Squared: {.Second: 4}}
+  - .Product:
+      .: {.Revolution: 1}
+      x: {.InverseSquared: {.Second: 4}}
+  - .QuotientInverseSquared:
+      .: {.Revolution: 1}
+      /^2: {.Second: 4}
+  - .Quotient:
+      .: {.Revolution: 100}
+      /:
+        .Product:
+          .: {.Minute: 1}
+          x: {.s: 1}
+
+CONSTANTS:
+  - product:
+      - product:
+          - product:
+              - product:
+                  - product:
+                      - power:
+                          - scale:
+                              - second
+                              - unit
+                          - 4
+                      - power:
+                          - scale:
+                              - Ampere
+                              - unit
+                          - 2
+                  - placeholder
+              - placeholder
+          - reciprocal:
+              - power:
+                  - scale:
+                      - meter
+                      - unit
+                  - 2
+      - reciprocal:
+          - power:
+              - scale:
+                  - gram
+                  - kilo
+              - 1
