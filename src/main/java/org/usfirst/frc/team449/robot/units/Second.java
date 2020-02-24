@@ -1,28 +1,55 @@
 package org.usfirst.frc.team449.robot.units;
 
-public class Second extends TimeUnit<Second> {
-    public Second(final double value) {
-        super(value);
-    }
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
-    public Second(final int value) {
-        this((double) value);
-    }
+/**
+ * SI time base unit second (s).
+ */
+public class Second extends Time<Second> {
+  public Second(final double value) {
+    super(value);
+  }
 
-    @Override
-    public Second withValue(final double value) {
-        return new Second(value);
-    }
+  public Second(final int value) {
+    this((double) value);
+  }
 
-    private static final Second UNIT = new Second(1);
+  @Contract(pure = true)
+  @NotNull
+  @Override
+  public Second withValue(final double value) {
+    return new Second(value);
+  }
 
-    @Override
-    public Second getUnit() {
-        return UNIT;
-    }
+  private static final Second UNIT = new Second(1);
 
-    @Override
-    public String getShortUnitName() {
-        return "s";
-    }
+  @NotNull
+  @Override
+  public Second getUnit() {
+    return UNIT;
+  }
+
+  @Override
+  public String getShortUnitName() {
+    return "s";
+  }
+
+  public static Second get() {
+    return UNIT;
+  }
+}
+
+/**
+ * Use {@link Second} instead in Java.
+ */
+@Deprecated
+class s extends Second {
+  public s(final double value) {
+    super(value);
+  }
+
+  public s(final int value) {
+    super(value);
+  }
 }
