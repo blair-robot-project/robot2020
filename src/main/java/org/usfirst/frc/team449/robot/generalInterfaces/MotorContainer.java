@@ -9,38 +9,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class MotorContainer implements Loggable {
-    @NotNull
-    @Log.Exclude
-    private static final MotorContainer instance = new MotorContainer();
+  @NotNull @Log.Exclude private static final MotorContainer instance = new MotorContainer();
 
-    @NotNull
-    private final List<SmartMotor> motors = new ArrayList<>();
+  @NotNull private final List<SmartMotor> motors = new ArrayList<>();
 
-    private MotorContainer() {
-        Logger.setCycleWarningsEnabled(false);
-    }
+  private MotorContainer() {
+    Logger.setCycleWarningsEnabled(false);
+  }
 
-    @Override
-    public String configureLogName() {
-        return "Motors";
-    }
+  /**
+   * Registers a motor to be included in the container.
+   *
+   * @param motor the motor to be registered
+   */
+  public static void register(@NotNull final SmartMotor motor) {
+    instance.motors.add(motor);
+  }
 
-    /**
-     * Registers a motor to be included in the container.
-     *
-     * @param motor the motor to be registered
-     */
-    public static void register(@NotNull final SmartMotor motor) {
-        instance.motors.add(motor);
-    }
+  /**
+   * Gets the singleton instance.
+   *
+   * @return the single instantiated instance of the class
+   */
+  @NotNull
+  public static MotorContainer getInstance() {
+    return instance;
+  }
 
-    /**
-     * Gets the singleton instance.
-     *
-     * @return the single instantiated instance of the class
-     */
-    @NotNull
-    public static MotorContainer getInstance() {
-        return instance;
-    }
+  @Override
+  public String configureLogName() {
+    return "Motors";
+  }
 }

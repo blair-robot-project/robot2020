@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import org.usfirst.frc.team449.robot.commands.jacksonWrappers.BooleanSupplierBooleanSupplierBased;
+import org.usfirst.frc.team449.robot._2020.multiSubsystem.BooleanSupplierBooleanSupplierBased;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

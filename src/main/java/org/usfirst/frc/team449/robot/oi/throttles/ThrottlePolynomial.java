@@ -9,62 +9,60 @@ import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 
-/**
- * A polynomially scaled throttle.
- */
+/** A polynomially scaled throttle. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ThrottlePolynomial extends ThrottleDeadbanded {
 
-    /**
-     * The polynomial that scales the throttle.
-     */
-    @NotNull
-    protected final Polynomial polynomial;
+  /** The polynomial that scales the throttle. */
+  @NotNull protected final Polynomial polynomial;
 
-    protected double scale;
+  protected double scale;
 
-    /**
-     * A basic constructor.
-     *
-     * @param stick             The Joystick object being used
-     * @param axis              The axis being used. 0 is X, 1 is Y, 2 is Z.
-     * @param deadband          The deadband below which the input will be read as 0, on [0, 1]. Defaults to 0.
-     * @param smoothingTimeSecs How many seconds of input to take into account when smoothing. Defaults to 0.02.
-     * @param inverted          Whether or not to invert the joystick input. Defaults to false.
-     * @param polynomial        The polynomially that scales the throttle. Must not have any negative exponents.
-     */
-    @JsonCreator
-    public ThrottlePolynomial(@NotNull @JsonProperty(required = true) MappedJoystick stick,
-                              @JsonProperty(required = true) int axis,
-                              double deadband,
-                              @Nullable Double smoothingTimeSecs,
-                              boolean inverted,
-                              @NotNull @JsonProperty(required = true) Polynomial polynomial,
-                              @Nullable Double scale) {
-        super(stick, axis, deadband, smoothingTimeSecs, inverted);
+  /**
+   * A basic constructor.
+   *
+   * @param stick The Joystick object being used
+   * @param axis The axis being used. 0 is X, 1 is Y, 2 is Z.
+   * @param deadband The deadband below which the input will be read as 0, on [0, 1]. Defaults to 0.
+   * @param smoothingTimeSecs How many seconds of input to take into account when smoothing.
+   *     Defaults to 0.02.
+   * @param inverted Whether or not to invert the joystick input. Defaults to false.
+   * @param polynomial The polynomially that scales the throttle. Must not have any negative
+   *     exponents.
+   */
+  @JsonCreator
+  public ThrottlePolynomial(
+      @NotNull @JsonProperty(required = true) MappedJoystick stick,
+      @JsonProperty(required = true) int axis,
+      double deadband,
+      @Nullable Double smoothingTimeSecs,
+      boolean inverted,
+      @NotNull @JsonProperty(required = true) Polynomial polynomial,
+      @Nullable Double scale) {
+    super(stick, axis, deadband, smoothingTimeSecs, inverted);
 
-        this.scale = scale != null ? scale : 1;
+    this.scale = scale != null ? scale : 1;
 
-        //Check for negative exponents
-        for (Double power : polynomial.getPowerToCoefficientMap().keySet()) {
-            if (power < 0) {
-                throw new IllegalArgumentException("Negative exponents are not allowed!");
-            }
-        }
-
-        //Scale coefficient sum to 1
-        polynomial.scaleCoefficientSum(1);
-
-        this.polynomial = polynomial;
+    // Check for negative exponents
+    for (Double power : polynomial.getPowerToCoefficientMap().keySet()) {
+      if (power < 0) {
+        throw new IllegalArgumentException("Negative exponents are not allowed!");
+      }
     }
 
-    /**
-     * Passes the deadbanded joystick output to the polynomial, while preserving sign.
-     *
-     * @return The processed value of the joystick
-     */
-    @Override
-    public double getValue() {
-        return polynomial.applyAsDouble(super.getValue()) * scale;
-    }
+    // Scale coefficient sum to 1
+    polynomial.scaleCoefficientSum(1);
+
+    this.polynomial = polynomial;
+  }
+
+  /**
+   * Passes the deadbanded joystick output to the polynomial, while preserving sign.
+   *
+   * @return The processed value of the joystick
+   */
+  @Override
+  public double getValue() {
+    return polynomial.applyAsDouble(super.getValue()) * scale;
+  }
 }
