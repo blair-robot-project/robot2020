@@ -10,10 +10,6 @@ NAVIGATION:
   - &SUBSYSTEMS subsystems:
       # Other anchors, like these, become null list items and are explicitly ignored using @JsonInclude
       - &DRIVE_SUBSYSTEM
-      - &INTAKE_SUBSYSTEM
-      - &FEEDER_SUBSYSTEM
-      - &SHOOTER_SUBSYSTEM
-      - &CLIMBER_SUBSYSTEM
   - &COMMANDS commands:
       - &DEFAULT_COMMANDS defaultCommands:
           - &DRIVE_DEFAULT_COMMAND
@@ -32,10 +28,10 @@ CONSTANTS:
       - &rightMasterSlave1Port 4
       - &rightMasterSlave2Port 6
   - DIOPorts:
-      - &leftMasterEncoder1Port 0
-      - &leftMasterEncoder2Port 1
-      - &rightMasterEncoder1Port 2
-      - &rightMasterEncoder2Port 3
+      - &leftMasterEncoder1Port 2
+      - &leftMasterEncoder2Port 3
+      - &rightMasterEncoder1Port 0
+      - &rightMasterEncoder2Port 1
   - JoystickPorts:
       - &driveJoystickPort 1
 
@@ -80,35 +76,35 @@ useCameraServer: false
           reverseSensor: false
           enableBrakeMode: true
           postEncoderGearing: 0.13333333333
-          unitPerRotation: .5 #meters per rotation
-          currentLimit: 35
+          unitPerRotation: 0.47877872 #meters per rotation
+          currentLimit: 50
           enableVoltageComp: true
           encoderCPR: 256
           startingGear: LOW
           perGearSettings:
             - &Low_Gear
               gear: LOW
-              maxSpeed: 2.2
-              kP: 0.2
+              maxSpeed: 2.3
+              kP: 0.03
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 0.954
-                  kV: 5.19
-                  kA: 0.573
+                  kS: 0.128
+                  kV: 5.23
+                  kA: 0.0698
             - &High_Gear
               gear: HIGH
-              maxSpeed: 5
-              kP: 0.2
+              maxSpeed: 5.2
+              kP: 0.03
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 1.11
-                  kV: 2.04
-                  kA: 0
+                  kS: 0.156
+                  kV: 2.01
+                  kA: 0.154
           slaveSparks:
             - port: *leftMasterSlave1Port
-              inverted: true
+              inverted: false
             - port: *leftMasterSlave2Port
-              inverted: true
+              inverted: false
       rightMaster:
         org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
           <<: *Left_Master
@@ -124,34 +120,34 @@ useCameraServer: false
               '@id': rightMasterEncoder2
               channel: *rightMasterEncoder2Port
           reverseOutput: false
-          reverseSensor: false
+          reverseSensor: true
           perGearSettings:
             - <<: *Low_Gear
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 0.954
-                  kV: 5.19
-                  kA: 0.573
+                  kS: 0.139
+                  kV: 5.17
+                  kA: 0.0554
             - <<: *High_Gear
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 1.15
-                  kV: 2.05
-                  kA: 0.788
+                  kS: 0.165
+                  kV: 2.01
+                  kA: 0.155
           slaveSparks:
             - port: *rightMasterSlave1Port
               PDP: PDP
-              #inverted: false
+              inverted: false
             - port: *rightMasterSlave2Port
               PDP: PDP
-              #inverted: false
+              inverted: false
       startingOverrideAutoshift: false
       ahrs:
         org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS:
           '@id': navX
           port: kMXP
           invertYaw: true
-      trackWidthMeters: 0.6
+      trackWidthMeters: 0.61755
       shiftComponent:
         org.usfirst.frc.team449.robot.components.ShiftComponent:
           '@id': driveShiftComponent
@@ -163,8 +159,8 @@ useCameraServer: false
           piston:
             '@id': driveShifter
             module: 0
-            forward: 1
-            reverse: 0
+            forward: 0
+            reverse: 1
           startingGear: LOW
 
 *COMMANDS:
@@ -178,9 +174,9 @@ useCameraServer: false
       command:
         org.usfirst.frc.team449.robot.drive.unidirectional.commands.UnidirectionalNavXShiftingDefaultDrive:
           '@id': defaultDriveCommand
-          kP: 0.003
+          kP: 0.0
           kI: 0.0
-          kD: 0.05
+          kD: 0.0
           maximumOutput: 1
           absoluteTolerance: 0
           deadband: 2
@@ -189,8 +185,8 @@ useCameraServer: false
           highGearAngularCoefficient: 3
           rampComponent:
             org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent:
-              maxIncreasePerSecond: 3
-              maxDecreasePerSecond: 1.5
+              maxIncreasePerSecond: 2
+              maxDecreasePerSecond: 1
           driveStraightLoopEntryTimer:
             '@id': driveStraightLoopEntryTimer
             bufferTimeSeconds: 0.15
@@ -262,7 +258,7 @@ useCameraServer: false
                     #2: 0.25
           autoshiftComponent:
             '@id': autoshiftComponent
-            upshiftSpeed: 1.5
+            upshiftSpeed: 1.6
             downshiftSpeed: 1
             upshiftDebouncer:
               '@id': upshiftDebouncer
