@@ -197,3 +197,5 @@ updater:
       - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
       - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
       - org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
+      - org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial: rotThrottle
+      - org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial: fwdThrottle
