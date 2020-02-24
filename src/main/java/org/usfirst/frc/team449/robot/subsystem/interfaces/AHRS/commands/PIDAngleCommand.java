@@ -133,10 +133,6 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
         return pidController.getSetpoint();
     }
 
-    protected double getSetpoint(){
-        return this.getController().getSetpoint();
-    }
-
     /**
      * Raw output of the PID loop for later processing
      *
