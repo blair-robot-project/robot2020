@@ -22,9 +22,9 @@ public interface SmartMotorExternalEncoder extends SmartMotor {
   }
 
   /**
-   * Get the velocity of the CANTalon in FPS.
+   * Get the velocity of the motor in FPS.
    *
-   * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
+   * @return The motor's velocity in FPS, or null if no encoder CPR was given.
    */
   @Override
   @Log
