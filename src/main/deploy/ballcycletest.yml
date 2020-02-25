@@ -65,11 +65,11 @@ CONSTANTS:
       - &intakeBumperIntakingVel 0.8
       - &intakeTransitionWheelIntakingVel 0.3
       - &feederIntakingVel 0.35
-      - &feederShootingVel .7
+      - &feederShootingVel .65
       - &feederCoughingVel -0.4
       - &shooterMaxSpeed 90.5
-      - &shooterThrottle 0.43
-      - &shooterMinShootingSpeed 38.5
+      - &shooterThrottle 0.50
+      - &shooterMinShootingSpeed 44
       - &shooterMaxShootingSpeedDifference 5
       - &kickerThrottle -0.7
   - Other:
