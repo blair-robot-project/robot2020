@@ -8,13 +8,16 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot._2020.climber.SubsystemSolenoid;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDoubleSolenoid;
+import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemSolenoid;
 
 /**
  * A decorator to make an intake that goes up and down with a piston.
+ *
+ * @deprecated Use a separate {@link org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple}
+ * and {@link org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple} instead.
  */
+@Deprecated(forRemoval = true)
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class IntakeActuated implements Subsystem, SubsystemIntake, SubsystemSolenoid, Loggable {
   @NotNull
@@ -38,7 +41,7 @@ public class IntakeActuated implements Subsystem, SubsystemIntake, SubsystemSole
    */
   @JsonCreator
   public IntakeActuated(@NotNull @JsonProperty(required = true) final SubsystemIntake implementation,
-                        @NotNull @JsonProperty(required = true) final MappedDoubleSolenoid piston) {
+                        @NotNull @JsonProperty(required = true) final DoubleSolenoid piston) {
     this.implementation = implementation;
     this.piston = piston;
     this.currentPistonPos = DoubleSolenoid.Value.kOff;

@@ -1,10 +1,12 @@
 package org.usfirst.frc.team449.robot;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PerpetualCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -14,6 +16,8 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import org.usfirst.frc.team449.robot.mixIn.CommandBaseMixIn;
 import org.usfirst.frc.team449.robot.mixIn.CommandGroupMixIn;
 import org.usfirst.frc.team449.robot.mixIn.ConditionalCommandMixIn;
+import org.usfirst.frc.team449.robot.mixIn.DoubleSolenoidMixIn;
+import org.usfirst.frc.team449.robot.mixIn.PerpetualCommandMixIn;
 import org.usfirst.frc.team449.robot.mixIn.PrintCommandMixIn;
 import org.usfirst.frc.team449.robot.mixIn.SubsystemMixIn;
 import org.usfirst.frc.team449.robot.mixIn.UseCLASSIncludeWRAPPER_OBJECTMixIn;
@@ -42,8 +46,9 @@ public class WPIModule extends SimpleModule {
 
     context.setMixInAnnotations(Subsystem.class, SubsystemMixIn.class);
 
-    context.setMixInAnnotations(Command.class, UseCLASSIncludeWRAPPER_OBJECTMixIn.class);
+    context.setMixInAnnotations(DoubleSolenoid.class, DoubleSolenoidMixIn.class);
 
+    context.setMixInAnnotations(Command.class, UseCLASSIncludeWRAPPER_OBJECTMixIn.class);
     context.setMixInAnnotations(CommandBase.class, CommandBaseMixIn.class);
 
     // TODO Verify how this actually works (probably it's because Jackson ignores the constructor's
@@ -55,6 +60,7 @@ public class WPIModule extends SimpleModule {
     context.setMixInAnnotations(WaitUntilCommand.class, WaitUntilCommandMixIn.class);
     context.setMixInAnnotations(PrintCommand.class, PrintCommandMixIn.class);
     context.setMixInAnnotations(ConditionalCommand.class, ConditionalCommandMixIn.class);
+    context.setMixInAnnotations(PerpetualCommand.class, PerpetualCommandMixIn.class);
 
     context.setMixInAnnotations(Button.class, UseCLASSIncludeWRAPPER_OBJECTMixIn.class);
   }

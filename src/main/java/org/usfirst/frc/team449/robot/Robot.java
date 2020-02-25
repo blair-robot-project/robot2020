@@ -54,7 +54,7 @@ public class Robot extends TimedRobot {
    * The name of the map to read from. Should be overriden by a subclass to change the name.
    */
   @NotNull
-  public static final String mapName = "mapSimpleDrive.yml";
+  public static final String mapName = "ballcycletest.yml";
   /**
    * The filepath to the resources folder containing the config files.
    */
