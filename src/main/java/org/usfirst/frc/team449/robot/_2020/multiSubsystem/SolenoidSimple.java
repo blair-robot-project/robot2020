@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot._2020.climber;
+package org.usfirst.frc.team449.robot._2020.multiSubsystem;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDoubleSolenoid;
 
 /** A simple SubsystemSolenoid.java. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -27,9 +26,10 @@ public class SolenoidSimple extends SubsystemBase implements SubsystemSolenoid, 
    * @param piston The piston that comprises this subsystem.
    */
   @JsonCreator
-  public SolenoidSimple(@NotNull @JsonProperty(required = true) final MappedDoubleSolenoid piston) {
+  public SolenoidSimple(@NotNull @JsonProperty(required = true) final DoubleSolenoid piston) {
     this.piston = piston;
   }
+
   /** @param value The position to set the solenoid to. */
   @Override
   public void setSolenoid(@NotNull final DoubleSolenoid.Value value) {

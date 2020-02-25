@@ -142,5 +142,10 @@ public abstract class ConditionTimingComponent implements Loggable {
   public boolean isTrue() {
     return this.current;
   }
+
+  @Override
+  public String configureLogName() {
+    return this.toString();
+  }
 }
 

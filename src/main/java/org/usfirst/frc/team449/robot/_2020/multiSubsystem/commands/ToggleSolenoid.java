@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot._2020.climber.commands;
+package org.usfirst.frc.team449.robot._2020.multiSubsystem.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot._2020.climber.SubsystemSolenoid;
+import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemSolenoid;
 
 /** A command that toggles the position of a piston. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

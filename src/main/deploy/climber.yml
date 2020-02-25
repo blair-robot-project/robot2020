@@ -68,7 +68,7 @@ useCameraServer: false
             '@id': climberPowerLimitTimer
             bufferTimeSeconds: 1
       solenoidSubsystem:
-        org.usfirst.frc.team449.robot._2020.climber.SolenoidSimple:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
           '@id': climberSolenoidSystem
           piston:
             '@id': climberSolenoid
@@ -105,7 +105,7 @@ useCameraServer: false
               mechanismsJoystick
           buttonNumber: *climberWinchButtonNumber
       command:
-        org.usfirst.frc.team449.robot._2020.climber.commands.TurnMotorOn:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
           '@id': climberWinchCommand
           subsystem:
             org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:

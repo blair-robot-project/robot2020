@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
+import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemBinaryMotor;
+import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemSolenoid;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 import org.usfirst.frc.team449.robot.other.Clock;
 

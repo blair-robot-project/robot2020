@@ -5,15 +5,16 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Notifier;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput;
-import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDoubleSolenoid;
 import org.usfirst.frc.team449.robot.other.Debouncer;
+
+import java.util.List;
 
 /**
  * A component that a subsystem can use for shifting when the pistons have sensor to detect
@@ -73,7 +74,7 @@ public class ShiftWithSensorComponent extends ShiftComponent {
   @JsonCreator
   public ShiftWithSensorComponent(
       @NotNull @JsonProperty(required = true) final List<Shiftable> otherShiftables,
-      @NotNull @JsonProperty(required = true) final MappedDoubleSolenoid piston,
+      @NotNull @JsonProperty(required = true) final DoubleSolenoid piston,
       @Nullable final Shiftable.gear startingGear,
       @NotNull @JsonProperty(required = true) final List<MappedDigitalInput> highGearSensors,
       @NotNull @JsonProperty(required = true) final List<MappedDigitalInput> lowGearSensors,

@@ -71,18 +71,22 @@ public class IntakeSimple extends SubsystemBase implements SubsystemIntake, Subs
     return this.mode;
   }
 
+  // TODO Should we have a guard clause that just returns if this.mode == mode?
+  //  This sort of situation appears in a bunch of places.
+
   /**
    * @param mode The mode to switch the intake to.
    */
   @Override
   public void setMode(@NotNull final SubsystemIntake.IntakeMode mode) {
     if (mode == IntakeMode.OFF) {
+      this.mode = IntakeMode.OFF;
       motor.setVelocity(0);
       motor.disable();
     } else if (this.velocities.containsKey(mode)) {
+      this.mode = mode;
       this.motor.enable();
       this.motor.setVelocity(this.velocities.get(mode));
-      this.mode = mode;
     } else {
       System.err.println(getLogPrefix(this) + "Warning: use of undefined mode " + mode);
     }
