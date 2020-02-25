@@ -11,6 +11,7 @@ NAVIGATION:
       # Other anchors, like these, become null list items and are explicitly ignored using @JsonInclude
       - &DRIVE_SUBSYSTEM
       - &INTAKE_SUBSYSTEM
+      - &FEEDER_TRANSITION_SUBSYSTEM
       - &FEEDER_SUBSYSTEM
       - &SHOOTER_SUBSYSTEM
   - &COMMANDS commands:
@@ -21,6 +22,7 @@ NAVIGATION:
       - &DEFAULT_COMMANDS defaultCommands:
           - &DRIVE_DEFAULT_COMMAND
           - &FEEDER_DEFAULT_COMMAND
+          - &FEEDER_TRANSITION_COMMAND
   - &UPDATER updater
 
 # Anchors for transclusion into the rest of the map.
@@ -62,15 +64,15 @@ CONSTANTS:
       - &intakePistonToggleButtonNumber 9
       - &feederCoughButtonNumber 10 #TODO Should coughing be an actual back-and-forth motion?
   - MotorSpeeds:
-      - &intakeBumperIntakingVel 0.3
+      - &intakeBumperIntakingVel 0.8
       - &intakeTransitionWheelIntakingVel 0.3
-      - &feederIntakingVel 0.5
-      - &feederShootingVel 1
+      - &feederIntakingVel 0.35
+      - &feederShootingVel .7
       - &feederCoughingVel -0.4
-      - &shooterMaxSpeed 91
-      - &shooterThrottle 0.6
-      - &shooterMinShootingSpeed 53
-      - &kickerThrottle -0.3
+      - &shooterMaxSpeed 90.5
+      - &shooterThrottle 0.2
+      - &shooterMinShootingSpeed 16.1
+      - &kickerThrottle -0.7
   - Other:
       - &feederIndexingTimeoutSecs 0.3
       - &flywheelSpinUpTimeoutSecs 4
@@ -225,20 +227,6 @@ useCameraServer: false
                   enableBrakeMode: true
                   PDP: PDP
                   currentLimit: 30
-          - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-              '@id': intakeTransitionWheel
-              velocities: !!map
-                IN_FAST: *intakeTransitionWheelIntakingVel
-              motor:
-                org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
-                  '@id': intakeTransitionWheelMotor
-                  name: intakeTransitionWheelMotor
-                  reverseOutput: true
-                  type: SPARK
-                  port: *intakeTransitionWheelMotorPort
-                  enableBrakeMode: true
-                  PDP: PDP
-                  currentLimit: 30
 
   #***********************************************************************************************************************
   - *FEEDER_SUBSYSTEM
@@ -259,6 +247,22 @@ useCameraServer: false
           PDP: PDP
           currentLimit: 30
           reverseSensor: false
+
+  - *FEEDER_TRANSITION_SUBSYSTEM
+  -  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+      '@id': intakeTransitionWheel
+      velocities: !!map
+        IN_FAST: *intakeTransitionWheelIntakingVel
+      motor:
+        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+          '@id': intakeTransitionWheelMotor
+          name: intakeTransitionWheelMotor
+          reverseOutput: true
+          type: SPARK
+          port: *intakeTransitionWheelMotorPort
+          enableBrakeMode: true
+          PDP: PDP
+          currentLimit: 30
 
   #***********************************************************************************************************************
   - *SHOOTER_SUBSYSTEM
@@ -287,20 +291,12 @@ useCameraServer: false
                   - gearNum: 0
                     maxSpeed: *shooterMaxSpeed
                     rampRate: 10
-                    kP: 0.01
-                    kI: 0.01
-                    kD: 0
-            #          perGearSettings:
-            #          - gearNum: 0
-            #            feedForwardCalculator:
-            #              org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-            #                kS: 0
-            #                kV: 0 #0.126
-            #                kA: 0
-            #            maxSpeed: 90 #rps
-            #            kP: 0 #5e-5 #0.0001
-            #            kI: 0.
-            #            kD: 0
+                    kP: 0.00
+                    feedForwardCalculator:
+                      org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
+                        kS: 0.203
+                        kV: 0.126
+                        kA: 0.0284
         - org.usfirst.frc.team449.robot._2020.shooter.FlywheelSimple:
             '@id': shooterFlywheelRight
             shooterThrottle: *shooterThrottle
@@ -318,10 +314,12 @@ useCameraServer: false
                   - gearNum: 0
                     maxSpeed: *shooterMaxSpeed
                     rampRate: 1
-                    kP: 0.01
-                    kI: 0.01
-                    kD: 0
-
+                    kP: 0.00
+                    feedForwardCalculator:
+                      org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
+                        kS: 0.156
+                        kV: 0.124
+                        kA: 0.0301
   - org.usfirst.frc.team449.robot._2020.climber.AnalogMotorSingleSpeed:
       '@id': kicker
       speed: *kickerThrottle
@@ -352,12 +350,20 @@ useCameraServer: false
               port: *mechanismsJoystickPort
           buttonNumber: *intakeStartButtonNumber
       command:
-        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-          '@id': intakeStartCommand
-          subsystem:
-            org.usfirst.frc.team449.robot._2020.intake.IntakeActuated:
-              intake
-          mode: IN_FAST
+        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
+          '@id': runIntakeAndFeederNoseThing
+          commands:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': intakeStartCommand
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.intake.IntakeActuated:
+                    intake
+                mode: IN_FAST
+            - org.usfirst.frc.team449.robot._2020.feeder.commands.RunSoWeCanOverrideTheDefaultCommand:
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.intake.IntakeActuated:
+                    intakeTransitionWheel
+                mode: IN_FAST
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -622,6 +628,28 @@ useCameraServer: false
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
               '@id': feederSensor2
               channel: *feederSensor2Port
+
+    - *FEEDER_TRANSITION_COMMAND
+    - subsystem:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+          intakeTransitionWheel
+      command:
+        org.usfirst.frc.team449.robot._2020.feeder.commands.DefaultFeederCommand:
+          requiredSubsystems:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                intakeTransitionWheel
+          runMode: IN_FAST
+          timeout: *feederIndexingTimeoutSecs
+          subsystem:
+            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+              intakeTransitionWheel
+          sensor1:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+              feederSensor1
+          sensor2:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+              feederSensor2
+
 
 
 ########################################################################################################################
