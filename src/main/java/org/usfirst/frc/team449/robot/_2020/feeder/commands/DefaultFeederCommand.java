@@ -32,6 +32,7 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
    * @param sensor2 the second sensor of the transition from intake to feeder
    * @param runMode the {@link org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake.IntakeMode}
    * to run the feeder at when
+   * @param timeout unused
    */
   @JsonCreator
   public DefaultFeederCommand(@NotNull @JsonProperty(required = true) final SubsystemIntake subsystem,
@@ -54,7 +55,8 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
     this.sensor1.update(currentTime);
     this.sensor2.update(currentTime);
 
-    this.feeder.setMode(this.shouldBeRunning() ? this.runMode : SubsystemIntake.IntakeMode.OFF);
+    final var targetMode = this.shouldBeRunning() ? this.runMode : SubsystemIntake.IntakeMode.OFF;
+    if (this.feeder.getMode() != targetMode) this.feeder.setMode(targetMode);
   }
 
   public boolean shouldBeRunning() {
