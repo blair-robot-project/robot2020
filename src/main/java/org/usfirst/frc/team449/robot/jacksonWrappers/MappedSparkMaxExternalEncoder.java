@@ -15,19 +15,19 @@ import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
-import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
-import org.usfirst.frc.team449.robot.other.Clock;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotorExternalEncoder;
+import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
+import org.usfirst.frc.team449.robot.other.Clock;
 
+/** Represents a spark max with an external encoder */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MappedSparkMaxExternalEncoder implements SmartMotor {
+public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder {
   /** The PDP this Spark is connected to. */
   @Nullable @Log.Exclude protected final PDP PDP;
   /** The counts per rotation of the encoder being used, or null if there is no encoder. */
@@ -145,7 +145,6 @@ public class MappedSparkMaxExternalEncoder implements SmartMotor {
     }
     pidController = new PIDController(0, 0, 0);
 
-
     // Set the name to the given one or to spark_<portnum>
     this.name = name != null ? name : ("spark_" + port);
     // Set this to false because we only use reverseOutput for slaves.
@@ -211,7 +210,6 @@ public class MappedSparkMaxExternalEncoder implements SmartMotor {
     this.encoderCPR = encoderCPR;
 
     encoder.setDistancePerPulse(1. / encoderCPR);
-    encoder.setSamplesToAverage(5);
 
     // Only enable the limit switches if it was specified if they're normally open or closed.
     if (fwdLimitSwitchNormallyOpen != null) {
@@ -303,7 +301,7 @@ public class MappedSparkMaxExternalEncoder implements SmartMotor {
 
   @Override
   @Log
-  public int getGear() {
+public int getGear() {
     return this.currentGearSettings.gear;
   }
 
@@ -406,12 +404,6 @@ public class MappedSparkMaxExternalEncoder implements SmartMotor {
     return RPS;
   }
 
-  /** @return Total revolutions for debug purposes */
-  @Override
-  public double encoderPosition() {
-    return encoder.getDistance();
-  }
-
   @Override
   public void setVoltage(final double volts) {
     timeDiff -= lastTimeUpdate;
@@ -429,24 +421,6 @@ public class MappedSparkMaxExternalEncoder implements SmartMotor {
     this.setpoint = feet;
     this.nativeSetpoint = this.unitToEncoder(feet);
     setVoltage(currentGearSettings.feedForwardCalculator.ks + pidController.calculate(encoderPosition(), nativeSetpoint));
-  }
-
-  /** @return Current RPM for debug purposes */
-  @Override
-  @Log
-  public double encoderVelocity() {
-    return encoder.getRate();
-  }
-
-  /**
-   * Get the velocity of the CANTalon in FPS.
-   *
-   * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
-   */
-  @Override
-  @Log
-  public Double getVelocity() {
-    return this.encoderToUPS(encoder.getRate());
   }
 
   /**
@@ -473,37 +447,39 @@ public class MappedSparkMaxExternalEncoder implements SmartMotor {
     this.currentControlMode = ControlType.kVelocity;
     this.nativeSetpoint = UPSToEncoder(velocity);
     this.setpoint = velocity;
-    setVoltage(currentGearSettings.feedForwardCalculator.calculate(velocity) + pidController.calculate(encoderVelocity(), nativeSetpoint));
+    setVoltage(
+        currentGearSettings.feedForwardCalculator.calculate(velocity)
+            + pidController.calculate(encoderVelocity(), nativeSetpoint));
   }
 
   @Override
   @Log
-  public double getError() {
+public double getError() {
     return this.getSetpoint() - this.getVelocity();
   }
 
   @Nullable
   @Override
   @Log
-  public Double getSetpoint() {
+public Double getSetpoint() {
     return this.setpoint;
   }
 
   @Override
   @Log
-  public double getOutputVoltage() {
+public double getOutputVoltage() {
     return this.spark.getAppliedOutput() * this.spark.getBusVoltage();
   }
 
   @Override
   @Log
-  public double getBatteryVoltage() {
+public double getBatteryVoltage() {
     return this.spark.getBusVoltage();
   }
 
   @Override
   @Log
-  public double getOutputCurrent() {
+public double getOutputCurrent() {
     return this.spark.getOutputCurrent();
   }
 
@@ -529,16 +505,6 @@ public class MappedSparkMaxExternalEncoder implements SmartMotor {
   @Override
   public SimpleMotorFeedforward getCurrentGearFeedForward() {
     return this.currentGearSettings.feedForwardCalculator;
-  }
-
-  @Override
-  public Double getPositionUnits() {
-    return encoderToUnit(encoder.getDistance());
-  }
-
-  @Override
-  public void resetPosition() {
-    encoder.reset();
   }
 
   @Override
@@ -569,5 +535,10 @@ public class MappedSparkMaxExternalEncoder implements SmartMotor {
   @Override
   public String configureLogName() {
     return this.name;
+  }
+
+  @Override
+  public Encoder getEncoder() {
+    return this.encoder;
   }
 }
