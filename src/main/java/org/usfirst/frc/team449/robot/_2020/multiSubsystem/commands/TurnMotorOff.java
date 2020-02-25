@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot._2020.climber.SubsystemBinaryMotor;
+import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemBinaryMotor;
 
 /**
  * Turns off the motor of the specified subsystem.

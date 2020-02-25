@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot._2020.climber;
+package org.usfirst.frc.team449.robot._2020.multiSubsystem;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemAnalogMotor;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class AnalogMotorSingleSpeed extends SubsystemBase implements SubsystemBinaryMotor, Loggable {

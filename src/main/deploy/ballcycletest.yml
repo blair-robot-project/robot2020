@@ -11,7 +11,6 @@ NAVIGATION:
       # Other anchors, like these, become null list items and are explicitly ignored using @JsonInclude
       - &DRIVE_SUBSYSTEM
       - &INTAKE_SUBSYSTEM
-      - &FEEDER_TRANSITION_SUBSYSTEM
       - &FEEDER_SUBSYSTEM
       - &SHOOTER_SUBSYSTEM
   - &COMMANDS commands:
@@ -22,7 +21,6 @@ NAVIGATION:
       - &DEFAULT_COMMANDS defaultCommands:
           - &DRIVE_DEFAULT_COMMAND
           - &FEEDER_DEFAULT_COMMAND
-          - &FEEDER_TRANSITION_COMMAND
   - &UPDATER updater
 
 # Anchors for transclusion into the rest of the map.
@@ -72,6 +70,7 @@ CONSTANTS:
       - &shooterMaxSpeed 90.5
       - &shooterThrottle 0.2
       - &shooterMinShootingSpeed 16.1
+      - &shooterMaxShootingSpeedDifference 5
       - &kickerThrottle -0.7
   - Other:
       - &feederIndexingTimeoutSecs 0.3
@@ -205,28 +204,41 @@ useCameraServer: false
 
   #***********************************************************************************************************************
   - *INTAKE_SUBSYSTEM
-  - org.usfirst.frc.team449.robot._2020.intake.IntakeActuated:
-      '@id': intake
+  - org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
+      '@id': intakeSolenoid
       piston:
-        '@id': intakeSolenoid
-        module: 0
+        '@id': intakeSolenoidImpl
         forward: *intakeSolenoidForward
         reverse: *intakeSolenoidReverse
-      implementation:
-        org.usfirst.frc.team449.robot._2020.intake.IntakeCluster:
-          - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-              '@id': intakeBumper
-              velocities: !!map
-                IN_FAST: *intakeBumperIntakingVel
-              motor:
-                org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
-                  '@id': intakeBumperMotor
-                  name: intakeBumperMotor
-                  type: SPARK
-                  port: *intakeBumperMotorPort
-                  enableBrakeMode: true
-                  PDP: PDP
-                  currentLimit: 30
+
+  - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+      '@id': intakeBumper
+      velocities: !!map
+        IN_FAST: *intakeBumperIntakingVel
+      motor:
+        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+          '@id': intakeBumperMotor
+          name: intakeBumperMotor
+          type: SPARK
+          port: *intakeBumperMotorPort
+          enableBrakeMode: true
+          PDP: PDP
+          currentLimit: 30
+
+  - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+      '@id': intakeTransitionWheel
+      velocities: !!map
+        IN_FAST: *intakeTransitionWheelIntakingVel
+      motor:
+        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+          '@id': intakeTransitionWheelMotor
+          name: intakeTransitionWheelMotor
+          reverseOutput: true
+          type: SPARK
+          port: *intakeTransitionWheelMotorPort
+          enableBrakeMode: true
+          PDP: PDP
+          currentLimit: 30
 
   #***********************************************************************************************************************
   - *FEEDER_SUBSYSTEM
@@ -248,27 +260,12 @@ useCameraServer: false
           currentLimit: 30
           reverseSensor: false
 
-  - *FEEDER_TRANSITION_SUBSYSTEM
-  -  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-      '@id': intakeTransitionWheel
-      velocities: !!map
-        IN_FAST: *intakeTransitionWheelIntakingVel
-      motor:
-        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
-          '@id': intakeTransitionWheelMotor
-          name: intakeTransitionWheelMotor
-          reverseOutput: true
-          type: SPARK
-          port: *intakeTransitionWheelMotorPort
-          enableBrakeMode: true
-          PDP: PDP
-          currentLimit: 30
 
   #***********************************************************************************************************************
   - *SHOOTER_SUBSYSTEM
   - org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
       '@id': shooterFlywheels
-      maximumSpeedRange: 5
+      maximumSpeedRange: *shooterMaxShootingSpeedDifference
       flywheels:
         - org.usfirst.frc.team449.robot._2020.shooter.FlywheelSimple:
             '@id': shooterFlywheelLeft
@@ -313,14 +310,15 @@ useCameraServer: false
                 perGearSettings:
                   - gearNum: 0
                     maxSpeed: *shooterMaxSpeed
-                    rampRate: 1
+                    rampRate: 10
                     kP: 0.00
                     feedForwardCalculator:
                       org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                         kS: 0.156
                         kV: 0.124
                         kA: 0.0301
-  - org.usfirst.frc.team449.robot._2020.climber.AnalogMotorSingleSpeed:
+
+  - org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
       '@id': kicker
       speed: *kickerThrottle
       motor:
@@ -350,21 +348,31 @@ useCameraServer: false
               port: *mechanismsJoystickPort
           buttonNumber: *intakeStartButtonNumber
       command:
-        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
-          '@id': runIntakeAndFeederNoseThing
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+          '@id': runBumperAndTransitionWheel
+          requiredSubsystems:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                intakeTransitionWheel
           commands:
             - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-                '@id': intakeStartCommand
+                '@id': intakeBumperStartCommand
                 subsystem:
-                  org.usfirst.frc.team449.robot._2020.intake.IntakeActuated:
-                    intake
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                    intakeBumper
                 mode: IN_FAST
-            - org.usfirst.frc.team449.robot._2020.feeder.commands.RunSoWeCanOverrideTheDefaultCommand:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': intakeTransitionWheelStartCommand
                 subsystem:
-                  org.usfirst.frc.team449.robot._2020.intake.IntakeActuated:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
                     intakeTransitionWheel
                 mode: IN_FAST
+            # Never finishes in order to keep suppressing the default command.
+            - edu.wpi.first.wpilibj2.command.PerpetualCommand:
+                '@id': disableIntakeTransitionWheelDefaultCommand
+                command:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.PlaceholderCommand: {}
       action: WHEN_PRESSED
+
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': intakeStopButton
@@ -376,10 +384,19 @@ useCameraServer: false
         org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
           '@id': intakeStopCommand
           subsystem:
-            org.usfirst.frc.team449.robot._2020.intake.IntakeActuated:
-              intake
+            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+              intakeBumper
           mode: "OFF"
       action: WHEN_PRESSED
+
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          intakeStopButton
+      command:
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+          runBumperAndTransitionWheel
+      action: CANCEL_WHEN_PRESSED
+
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': intakePistonToggleButton
@@ -388,11 +405,11 @@ useCameraServer: false
               mechanismsJoystick
           buttonNumber: *intakePistonToggleButtonNumber
       command:
-        org.usfirst.frc.team449.robot._2020.climber.commands.ToggleSolenoid:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.ToggleSolenoid:
           '@id': intakePistonToggleCommand
           subsystem:
-            org.usfirst.frc.team449.robot._2020.intake.IntakeActuated:
-              intake
+            org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
+              intakeSolenoid
       action: WHEN_PRESSED
 
     #***********************************************************************************************************************
@@ -412,6 +429,18 @@ useCameraServer: false
               feeder
           mode: OUT_SLOW
       action: WHILE_HELD
+
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          coughButton
+      command:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+          '@id': feederStopCommand_coughingend
+          subsystem:
+            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+              feeder
+          mode: "OFF"
+      action: WHEN_RELEASED
 
     #***********************************************************************************************************************
     - *SHOOTER_COMMANDS
@@ -464,7 +493,7 @@ useCameraServer: false
                       - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
                           '@id': kickerStartCommand
                           subsystem:
-                            org.usfirst.frc.team449.robot._2020.climber.AnalogMotorSingleSpeed:
+                            org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
                               kicker
                       - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
                           '@id': feederStartCommand_shooting
@@ -495,7 +524,7 @@ useCameraServer: false
             - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOff:
                 '@id': kickerStopCommand
                 subsystem:
-                  org.usfirst.frc.team449.robot._2020.climber.AnalogMotorSingleSpeed:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
                     kicker
             - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
                 '@id': feederStopCommand_shootingStop
@@ -504,6 +533,7 @@ useCameraServer: false
                     feeder
                 mode: "OFF"
       action: WHEN_PRESSED
+
 
   ########################################################################################################################
   *DEFAULT_COMMANDS:
@@ -629,7 +659,6 @@ useCameraServer: false
               '@id': feederSensor2
               channel: *feederSensor2Port
 
-    - *FEEDER_TRANSITION_COMMAND
     - subsystem:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
           intakeTransitionWheel
