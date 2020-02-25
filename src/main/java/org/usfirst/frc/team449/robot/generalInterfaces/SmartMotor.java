@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import io.github.oblarg.oblog.Loggable;
-import io.github.oblarg.oblog.annotations.Log;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.SimulationConfig;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
@@ -30,8 +30,8 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
-import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.FPSSmartMotorSimulated;
-import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.FPSSmartMotorUnimplemented;
+import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.SimulatedSmartMotor;
+import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.SimulatedSmartMotorUnimplemented;
 import org.usfirst.frc.team449.robot.other.Updater;
 
 import java.util.HashMap;
@@ -47,7 +47,7 @@ import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   /**
-   * Whether to construct instances of {@link FPSSmartMotorSimulated} instead of the specified
+   * Whether to construct instances of {@link SimulatedSmartMotor} instead of the specified
    * controllers when the robot is running in a simulation.
    */
   boolean SIMULATE = true;
@@ -324,7 +324,40 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
         final SmartMotor simulated;
 
         if (SimulationConfig.get().motors().replaceSimulationWithUnimplemented()) {
-          final var actualSimulated = new FPSSmartMotorSimulated(
+          simulated = new SimulatedSmartMotorUnimplemented(
+              actualType,
+              port,
+              enableBrakeMode,
+              name,
+              reverseOutput,
+              PDP,
+              fwdLimitSwitchNormallyOpen,
+              revLimitSwitchNormallyOpen,
+              remoteLimitSwitchID,
+              fwdSoftLimit,
+              revSoftLimit,
+              postEncoderGearing,
+              unitPerRotation,
+              currentLimit,
+              enableVoltageComp,
+              perGearSettings,
+              startingGear,
+              startingGearNum,
+              sparkStatusFramesMap,
+              controlFrameRateMillis,
+              talonStatusFramesMap,
+              controlFrameRatesMillis,
+              voltagePerCurrentLinReg,
+              voltageCompSamples,
+              feedbackDevice,
+              encoderCPR,
+              reverseSensor,
+              updaterProcessPeriodSecs,
+              slaveTalons,
+              slaveVictors,
+              slaveSparks);
+        } else {
+          final var actualSimulated = new SimulatedSmartMotor(
               actualType,
               port,
               enableBrakeMode,
@@ -358,39 +391,6 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
               slaveSparks);
           Updater.subscribe(actualSimulated);
           simulated = actualSimulated;
-        } else {
-          simulated = new FPSSmartMotorUnimplemented(
-              actualType,
-              port,
-              enableBrakeMode,
-              name,
-              reverseOutput,
-              PDP,
-              fwdLimitSwitchNormallyOpen,
-              revLimitSwitchNormallyOpen,
-              remoteLimitSwitchID,
-              fwdSoftLimit,
-              revSoftLimit,
-              postEncoderGearing,
-              unitPerRotation,
-              currentLimit,
-              enableVoltageComp,
-              perGearSettings,
-              startingGear,
-              startingGearNum,
-              sparkStatusFramesMap,
-              controlFrameRateMillis,
-              talonStatusFramesMap,
-              controlFrameRatesMillis,
-              voltagePerCurrentLinReg,
-              voltageCompSamples,
-              feedbackDevice,
-              encoderCPR,
-              reverseSensor,
-              updaterProcessPeriodSecs,
-              slaveTalons,
-              slaveVictors,
-              slaveSparks);
         }
         result = simulated;
         break;
@@ -546,7 +546,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    *
    * @return Control mode as a string.
    */
-  String getControlMode();
+  @NotNull String getControlMode();
 
   /**
    * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
@@ -638,7 +638,6 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    *
    * @return whether the motor is a software simulation of a motor
    */
-  @Log
   default boolean isSimulated() {
     return false;
   }
@@ -651,7 +650,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
     /**
      * Simulated motor
      *
-     * @see FPSSmartMotorSimulated
+     * @see SimulatedSmartMotor
      */
     SIMULATED("SIMULATED"),
 

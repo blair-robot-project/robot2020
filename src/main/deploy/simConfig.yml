@@ -8,5 +8,5 @@ motors:
 joysticks:
   alwaysSimulateAll: false
   simulateAllWhenInSimulation: false
-  simulateMissing: false
+  simulateMissing: true
   replaceSimulationWithUnimplemented: false

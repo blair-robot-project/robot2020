@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
-import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotorBase;
+import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotorLoggingBase;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import java.util.Map;
  * non-unit-conversion in this class takes arguments in post-gearing FPS.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MappedTalon extends FPSSmartMotorBase {
+public class MappedTalon extends SmartMotorLoggingBase {
 
   /** The CTRE CAN Talon SRX that this class is a wrapper on */
   @NotNull protected final TalonSRX canTalon;
@@ -673,6 +673,7 @@ public int getGear() {
    *
    * @return Control mode as a string.
    */
+  @NotNull
   @Override
   public String getControlMode() {
     return this.canTalon.getControlMode().name();

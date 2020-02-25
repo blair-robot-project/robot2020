@@ -17,7 +17,7 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotorBase;
+import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotorLoggingBase;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MappedSparkMax extends FPSSmartMotorBase {
+public class MappedSparkMax extends SmartMotorLoggingBase {
   /** The PDP this Spark is connected to. */
   @Nullable @Log.Exclude protected final PDP PDP;
   /** The counts per rotation of the encoder being used, or null if there is no encoder. */
@@ -468,7 +468,7 @@ public class MappedSparkMax extends FPSSmartMotorBase {
   @Override
   @Log
   public double getError() {
-    Double setpoint = this.getSetpoint();
+    final Double setpoint = this.getSetpoint();
     if (setpoint == null) return Double.NaN;
     return setpoint - this.getVelocity();
   }
@@ -498,6 +498,7 @@ public class MappedSparkMax extends FPSSmartMotorBase {
     return this.spark.getOutputCurrent();
   }
 
+  @NotNull
   @Override
   public String getControlMode() {
     return this.currentControlMode.name();

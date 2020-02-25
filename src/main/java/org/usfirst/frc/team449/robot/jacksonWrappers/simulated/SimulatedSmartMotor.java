@@ -11,8 +11,8 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
-import org.usfirst.frc.team449.robot.generalInterfaces.FPSSmartMotorBase;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
+import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotorLoggingBase;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
@@ -37,10 +37,8 @@ import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
  * <p>This class is automatically instantiated by the FPSSmartMotor factory method when the robot
  * is running in a simulation and should not be otherwise referenced in code.
  */
-public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatable {
-  /**
-   * Maximum PID integral for anti-windup.
-   */
+public class SimulatedSmartMotor extends SmartMotorLoggingBase implements Updatable {
+  /** Maximum PID integral for anti-windup. */
   private static final double MAX_INTEGRAL = 100;
   @NotNull
   private final String name;
@@ -65,16 +63,14 @@ public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatab
   private final Map<Integer, PerGearSettings> perGearSettings;
   // Log the getters instead because logging the fields doesn't cause physics updates.
   private double percentOutput;
-  /**
-   * (V) Voltage supplied to controller.
-   */
+  /** (V) Voltage supplied to controller. */
   private final double busVoltage = SimulatedMotorSimple.DefaultConstants.NOMINAL_VOLTAGE;
   @NotNull
   private final SimulatedMotor motor = new SimulatedMotorSimple();
 
   @Log private double lastStateUpdateTime = Clock.currentTimeMillis();
 
-  public FPSSmartMotorSimulated(
+  public SimulatedSmartMotor(
       final Type type,
       final int port,
       final boolean enableBrakeMode,
@@ -469,6 +465,7 @@ public class FPSSmartMotorSimulated extends FPSSmartMotorBase implements Updatab
    *
    * @return Control mode as a string.
    */
+  @NotNull
   @Override
   public String getControlMode() {
     return this.controlMode.name();

@@ -30,50 +30,51 @@ import java.util.Objects;
  * running in a simulation and should not be otherwise referenced in code.
  * </p>
  */
-public class FPSSmartMotorUnimplemented implements SmartMotor, Loggable {
+public class SimulatedSmartMotorUnimplemented implements SmartMotor, Loggable {
   @NotNull
   @Log
   private final String name;
   @NotNull
-  @Log
+  @Log.ToString
   private final Type controllerType;
+  @Log
   private final int port;
   private final boolean reverseOutput;
   private final double feetPerRotation;
 
-  public FPSSmartMotorUnimplemented(final Type type,
-                                    final int port,
-                                    final boolean enableBrakeMode,
-                                    @Nullable final String name,
-                                    final boolean reverseOutput,
-                                    @Nullable final PDP PDP,
-                                    @Nullable final Boolean fwdLimitSwitchNormallyOpen,
-                                    @Nullable final Boolean revLimitSwitchNormallyOpen,
-                                    @Nullable final Integer remoteLimitSwitchID,
-                                    @Nullable final Double fwdSoftLimit,
-                                    @Nullable final Double revSoftLimit,
-                                    @Nullable final Double postEncoderGearing,
-                                    @Nullable final Double feetPerRotation,
-                                    @Nullable final Integer currentLimit,
-                                    final boolean enableVoltageComp,
-                                    @Nullable final List<PerGearSettings> perGearSettings,
-                                    @Nullable final Shiftable.gear startingGear,
-                                    @Nullable final Integer startingGearNum,
-                                    // Spark-specific
-                                    @Nullable final HashMap<CANSparkMaxLowLevel.PeriodicFrame, Integer> sparkStatusFramesMap,
-                                    @Nullable final Integer controlFrameRateMillis,
-                                    // Talon-specific
-                                    @Nullable final HashMap<StatusFrameEnhanced, Integer> talonStatusFramesMap,
-                                    @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
-                                    @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
-                                    @Nullable final Integer voltageCompSamples,
-                                    @Nullable final FeedbackDevice feedbackDevice,
-                                    @Nullable final Integer encoderCPR,
-                                    @Nullable final Boolean reverseSensor,
-                                    @Nullable final Double updaterProcessPeriodSecs,
-                                    @Nullable final List<SlaveTalon> slaveTalons,
-                                    @Nullable final List<SlaveVictor> slaveVictors,
-                                    @Nullable final List<SlaveSparkMax> slaveSparks) {
+  public SimulatedSmartMotorUnimplemented(final Type type,
+                                          final int port,
+                                          final boolean enableBrakeMode,
+                                          @Nullable final String name,
+                                          final boolean reverseOutput,
+                                          @Nullable final PDP PDP,
+                                          @Nullable final Boolean fwdLimitSwitchNormallyOpen,
+                                          @Nullable final Boolean revLimitSwitchNormallyOpen,
+                                          @Nullable final Integer remoteLimitSwitchID,
+                                          @Nullable final Double fwdSoftLimit,
+                                          @Nullable final Double revSoftLimit,
+                                          @Nullable final Double postEncoderGearing,
+                                          @Nullable final Double feetPerRotation,
+                                          @Nullable final Integer currentLimit,
+                                          final boolean enableVoltageComp,
+                                          @Nullable final List<PerGearSettings> perGearSettings,
+                                          @Nullable final Shiftable.gear startingGear,
+                                          @Nullable final Integer startingGearNum,
+                                          // Spark-specific
+                                          @Nullable final HashMap<CANSparkMaxLowLevel.PeriodicFrame, Integer> sparkStatusFramesMap,
+                                          @Nullable final Integer controlFrameRateMillis,
+                                          // Talon-specific
+                                          @Nullable final HashMap<StatusFrameEnhanced, Integer> talonStatusFramesMap,
+                                          @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
+                                          @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
+                                          @Nullable final Integer voltageCompSamples,
+                                          @Nullable final FeedbackDevice feedbackDevice,
+                                          @Nullable final Integer encoderCPR,
+                                          @Nullable final Boolean reverseSensor,
+                                          @Nullable final Double updaterProcessPeriodSecs,
+                                          @Nullable final List<SlaveTalon> slaveTalons,
+                                          @Nullable final List<SlaveVictor> slaveVictors,
+                                          @Nullable final List<SlaveSparkMax> slaveSparks) {
     this.controllerType = type;
     this.port = port;
     this.reverseOutput = reverseOutput;
@@ -305,6 +306,7 @@ public class FPSSmartMotorUnimplemented implements SmartMotor, Loggable {
    *
    * @return Control mode as a string.
    */
+  @NotNull
   @Override
   public String getControlMode() {
     return "Unimplemented";

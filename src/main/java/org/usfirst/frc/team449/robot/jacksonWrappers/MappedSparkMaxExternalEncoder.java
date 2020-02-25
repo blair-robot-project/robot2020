@@ -506,6 +506,7 @@ public double getOutputCurrent() {
     return this.spark.getOutputCurrent();
   }
 
+  @NotNull
   @Override
   public String getControlMode() {
     return this.currentControlMode.name();

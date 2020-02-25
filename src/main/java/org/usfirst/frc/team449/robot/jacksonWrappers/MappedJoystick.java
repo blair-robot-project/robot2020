@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import org.usfirst.frc.team449.robot.SimulationConfig;
@@ -31,13 +32,18 @@ public class MappedJoystick extends Joystick implements Rumbleable {
    */
   @JsonCreator
   public static MappedJoystick create(@JsonProperty(required = true) final int port) {
-    if (!SimulationConfig.get().joysticks().simulateAllWhenInSimulation() || RobotBase.isReal()) {
-      return new MappedJoystick(port);
+    final int kHIDMissing = 255;
+
+    if (SimulationConfig.get().joysticks().simulateAll() ||
+        SimulationConfig.get().joysticks().simulateAllWhenInSimulation() && RobotBase.isSimulation() ||
+        DriverStation.getInstance().getJoystickType(port) == kHIDMissing) {
+
+      System.out.println(
+          getLogPrefix(MappedJoystick.class) + "Creating simulated joystick on port " + port);
+      return new JoystickSimulated(port);
     }
 
-    System.out.println(
-        getLogPrefix(MappedJoystick.class) + "Creating simulated joystick on port " + port);
-    return new JoystickSimulated(port);
+    return new MappedJoystick(port);
   }
 
   /**
