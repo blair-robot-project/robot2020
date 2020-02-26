@@ -428,7 +428,7 @@ public double encoderVelocity() {
    */
   @Override
   @Log
-public Double getVelocity() {
+  public double getVelocity() {
     return this.encoderToUPS(canEncoder.getVelocity());
   }
 

@@ -569,9 +569,8 @@ public int getGear() {
    *
    * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
    */
-  @NotNull
   @Override
-  public Double getVelocity() {
+  public double getVelocity() {
     return encoderToUPS(canTalon.getSelectedSensorVelocity(0));
   }
 

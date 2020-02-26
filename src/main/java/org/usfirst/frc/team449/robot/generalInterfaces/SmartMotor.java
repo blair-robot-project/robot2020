@@ -450,7 +450,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    *
    * @return The controller's velocity in FPS, or null if no encoder CPR was given.
    */
-  Double getVelocity();
+  double getVelocity();
 
   /**
    * Set the velocity for the motor to go at.

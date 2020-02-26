@@ -108,7 +108,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
    */
   @Override
-  @Nullable
+  @NotNull
   public Double getLeftVel() {
     return this.leftMaster.getVelocity();
   }
@@ -119,7 +119,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
    */
   @Override
-  @Nullable
+  @NotNull
   public Double getRightVel() {
     return this.rightMaster.getVelocity();
   }
@@ -129,7 +129,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    *
    * @return The signed position in feet, or null if the drive doesn't have encoders.
    */
-  @Nullable
+  @NotNull
   @Override
   public Double getLeftPos() {
     return this.leftMaster.getPositionUnits();
@@ -140,7 +140,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    *
    * @return The signed position in feet, or null if the drive doesn't have encoders.
    */
-  @Nullable
+  @NotNull
   @Override
   public Double getRightPos() {
     return this.rightMaster.getPositionUnits();

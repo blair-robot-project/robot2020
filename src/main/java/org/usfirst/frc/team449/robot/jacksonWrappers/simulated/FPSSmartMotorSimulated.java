@@ -357,7 +357,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    */
   @Log
   @Override
-  public Double getVelocity() {
+  public double getVelocity() {
     return this.encoderToUPS(this.encoderVelocity());
   }
 
