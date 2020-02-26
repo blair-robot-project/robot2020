@@ -15,14 +15,14 @@ import org.usfirst.frc.team449.robot._2020.shooter.SubsystemFlywheel;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class TurnAllOffWithRequires<T extends Subsystem & SubsystemFlywheel> extends TurnAllOff {
 
-    /**
-     * Default constructor
-     *
-     * @param subsystem The subsystem to execute this command on.
-     */
-    @JsonCreator
-    public TurnAllOffWithRequires(@NotNull @JsonProperty(required = true) T subsystem) {
-        super(subsystem);
-        addRequirements(subsystem);
-    }
+  /**
+   * Default constructor
+   *
+   * @param subsystem The subsystem to execute this command on.
+   */
+  @JsonCreator
+  public TurnAllOffWithRequires(@NotNull @JsonProperty(required = true) final T subsystem) {
+    super(subsystem);
+    addRequirements(subsystem);
+  }
 }

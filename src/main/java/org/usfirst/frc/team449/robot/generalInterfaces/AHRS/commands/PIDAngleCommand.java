@@ -45,16 +45,16 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
    * Default constructor.
    *
    * @param absoluteTolerance The maximum number of degrees off from the target at which we can be
-   *     considered within tolerance.
+   * considered within tolerance.
    * @param onTargetBuffer A buffer timer for having the loop be on target before it stops running.
-   *     Can be null for no buffer.
+   * Can be null for no buffer.
    * @param minimumOutput The minimum output of the loop. Defaults to zero.
    * @param maximumOutput The maximum output of the loop. Can be null, and if it is, no maximum
-   *     output is used.
+   * output is used.
    * @param loopTimeMillis The time, in milliseconds, between each loop iteration. Defaults to 20
-   *     ms.
+   * ms.
    * @param deadband The deadband around the setpoint, in degrees, within which no output is given
-   *     to the motors. Defaults to zero.
+   * to the motors. Defaults to zero.
    * @param inverted Whether the loop is inverted. Defaults to false.
    * @param kP Proportional gain. Defaults to zero.
    * @param kI Integral gain. Defaults to zero.
@@ -117,7 +117,7 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
   }
 
   @Log
-protected double getSetpoint() {
+  protected double getSetpoint() {
     return pidController.getSetpoint();
   }
 
@@ -132,12 +132,12 @@ protected double getSetpoint() {
    * @return standard output
    */
   @Log
-protected double getRawOutput() {
+  protected double getRawOutput() {
     return pidController.calculate(subsystem.getHeadingCached());
   }
 
   @Log
-public double getError() {
+  public double getError() {
     return pidController.getPositionError();
   }
 
@@ -145,10 +145,10 @@ public double getError() {
    * Process the output of the PID loop to account for minimum output and inversion.
    *
    * @return The processed output, ready to be subtracted from the left side of the drive output and
-   *     added to the right side.
+   * added to the right side.
    */
   @Log
-protected double getOutput() {
+  protected double getOutput() {
     double controllerOutput = getRawOutput();
     // Set the output to the minimum if it's too small.
     if (controllerOutput > 0 && controllerOutput < minimumOutput) {
@@ -189,13 +189,12 @@ protected double getOutput() {
   }
 
   /**
-   * Whether or not the loop is on target. Use this instead of {@link
-   * PIDController}'s onTarget.
+   * Whether or not the loop is on target. Use this instead of {@link PIDController}'s onTarget.
    *
    * @return True if on target, false otherwise.
    */
   @Log
-protected boolean onTarget() {
+  protected boolean onTarget() {
     if (onTargetBuffer == null) {
       return pidController.atSetpoint();
     } else {

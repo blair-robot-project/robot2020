@@ -16,8 +16,8 @@ import org.usfirst.frc.team449.robot.other.Util;
 
 import java.util.Map;
 
-/**a
- * An intake that consists of rollers that are regulated to a consistent velocity relative to the
+/**
+ * a An intake that consists of rollers that are regulated to a consistent velocity relative to the
  * ground.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

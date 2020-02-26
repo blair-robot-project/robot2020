@@ -35,10 +35,11 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
   /**
    * Default constructor
    *
-   * @param xThrottle The throttle for the X-axis, which points towards the opposing driver station.
+   * @param xThrottle The throttle for the X-axis, which points towards the opposing driver
+   * station.
    * @param yThrottle The throttle for the Y-axis, which points towards the driver's left.
    * @param rDeadband The radius, from [0,1], within which the joystick is considered to be "at
-   *     rest." Defaults to 0.
+   * rest." Defaults to 0.
    */
   @JsonCreator
   public OIFieldOrientedPosCos(
@@ -80,13 +81,13 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
    * Get the absolute angle for the robot to move towards.
    *
    * @return An angular setpoint for the robot in degrees, where 0 is pointing at the other
-   *     alliance's driver station and 90 is pointing at the left wall when looking out from the
-   *     driver station.
+   * alliance's driver station and 90 is pointing at the left wall when looking out from the driver
+   * station.
    */
   @Override
   @Nullable
   @Log
-public Double getTheta() {
+  public Double getTheta() {
     calcValues();
     return theta;
   }
@@ -98,7 +99,7 @@ public Double getTheta() {
    */
   @Override
   @Log
-public double getVel() {
+  public double getVel() {
     calcValues();
     return vel;
   }

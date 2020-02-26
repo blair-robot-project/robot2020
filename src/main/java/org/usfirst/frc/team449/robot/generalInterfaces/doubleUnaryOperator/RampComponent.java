@@ -2,10 +2,11 @@ package org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.function.DoubleUnaryOperator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.other.Clock;
+
+import java.util.function.DoubleUnaryOperator;
 
 /** A component for limiting the rate of change of a value. */
 public class RampComponent implements DoubleUnaryOperator, Cloneable {
@@ -24,12 +25,12 @@ public class RampComponent implements DoubleUnaryOperator, Cloneable {
    *
    * @param maxIncreasePerSecond The maximum allowed increase in the value per second.
    * @param maxDecreasePerSecond The maximum allowed decrease in the value per second. Should be
-   *     positive. Defaults to maxIncreasePerSecond.
+   * positive. Defaults to maxIncreasePerSecond.
    */
   @JsonCreator
   public RampComponent(
-      @JsonProperty(required = true) double maxIncreasePerSecond,
-      @Nullable Double maxDecreasePerSecond) {
+      @JsonProperty(required = true) final double maxIncreasePerSecond,
+      @Nullable final Double maxDecreasePerSecond) {
     this.maxIncreasePerMillis = maxIncreasePerSecond / 1000.;
     this.maxDecreasePerMillis =
         maxDecreasePerSecond != null ? maxDecreasePerSecond / 1000. : maxIncreasePerMillis;
@@ -42,7 +43,7 @@ public class RampComponent implements DoubleUnaryOperator, Cloneable {
    * @return The ramped version of that value.
    */
   @Override
-  public double applyAsDouble(double value) {
+  public double applyAsDouble(final double value) {
     if (value > lastValue) {
       lastValue =
           Math.min(
@@ -59,9 +60,8 @@ public class RampComponent implements DoubleUnaryOperator, Cloneable {
   /**
    * Get an a copy of this object.
    *
-   * @return a new {@link
-   *     org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent} with the
-   *     same max change per second
+   * @return a new {@link org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent}
+   * with the same max change per second
    */
   @Override
   @NotNull

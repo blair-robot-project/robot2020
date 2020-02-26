@@ -38,7 +38,7 @@ public class TriggerButton extends Button {
    * Get whether this button is pressed.
    *
    * @return true if the throttle's output is greater than or equal to the trigger threshold, false
-   *     otherwise.
+   * otherwise.
    */
   @Override
   public boolean get() {

@@ -8,8 +8,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import java.util.ArrayList;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
@@ -18,6 +16,9 @@ import org.usfirst.frc.team449.robot.generalInterfaces.AHRS.commands.PIDAngleCom
 import org.usfirst.frc.team449.robot.oi.fieldoriented.OIFieldOriented;
 import org.usfirst.frc.team449.robot.other.Debouncer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Unidirectional drive with field-oriented control */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CLASS,
@@ -25,7 +26,7 @@ import org.usfirst.frc.team449.robot.other.Debouncer;
     property = "@class")
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class FieldOrientedUnidirectionalDriveCommand<
-        T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
+    T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
     extends PIDAngleCommand {
 
   /** The drive this command is controlling. */
@@ -47,16 +48,16 @@ public class FieldOrientedUnidirectionalDriveCommand<
    * Default constructor
    *
    * @param onTargetBuffer A buffer timer for having the loop be on target before it stops running.
-   *     Can be null for no buffer.
+   * Can be null for no buffer.
    * @param absoluteTolerance The maximum number of degrees off from the target at which we can be
-   *     considered within tolerance.
+   * considered within tolerance.
    * @param minimumOutput The minimum output of the loop. Defaults to zero.
    * @param maximumOutput The maximum output of the loop. Can be null, and if it is, no maximum
-   *     output is used.
+   * output is used.
    * @param loopTimeMillis The time, in milliseconds, between each loop iteration. Defaults to 20
-   *     ms.
+   * ms.
    * @param deadband The deadband around the setpoint, in degrees, within which no output is given
-   *     to the motors. Defaults to zero.
+   * to the motors. Defaults to zero.
    * @param inverted Whether the loop is inverted. Defaults to false.
    * @param kP Proportional gain. Defaults to zero.
    * @param kI Integral gain. Defaults to zero.
@@ -192,9 +193,9 @@ public class FieldOrientedUnidirectionalDriveCommand<
      *
      * @param snapTo The angle to snap the setpoint to, in degrees.
      * @param upperBound The upper bound, below which all angles above snapTo are changed to snapTo.
-     *     Measured in degrees.
+     * Measured in degrees.
      * @param lowerBound The lower bound, above which all angles below snapTo are changed to snapTo.
-     *     Measured in degrees.
+     * Measured in degrees.
      */
     @JsonCreator
     public AngularSnapPoint(
@@ -213,7 +214,7 @@ public class FieldOrientedUnidirectionalDriveCommand<
 
     /**
      * @return The upper bound, below which all angles above snapTo are changed to snapTo. Measured
-     *     in degrees.
+     * in degrees.
      */
     public double getUpperBound() {
       return this.upperBound;
@@ -221,7 +222,7 @@ public class FieldOrientedUnidirectionalDriveCommand<
 
     /**
      * @return The lower bound, above which all angles below snapTo are changed to snapTo. Measured
-     *     in degrees.
+     * in degrees.
      */
     public double getLowerBound() {
       return this.lowerBound;

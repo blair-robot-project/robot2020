@@ -19,52 +19,52 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput;
 public class IntakeSensored implements Subsystem, SubsystemIntake, SubsystemConditional, Loggable {
 
   private final SubsystemIntake implementation;
-    /**
-     * The sensor for detecting if there's something in the intake.
-     */
-    private final DigitalInput sensor;
+  /**
+   * The sensor for detecting if there's something in the intake.
+   */
+  private final DigitalInput sensor;
 
-    /**
-     * The state of the condition when {@link IntakeSensored#update()} was called.
-     */
-    private boolean cachedCondition;
+  /**
+   * The state of the condition when {@link IntakeSensored#update()} was called.
+   */
+  private boolean cachedCondition;
 
-    /**
-     * Default constructor.
-     *
-     * @param implementation The intake instance to wrap.
-     * @param sensor         The sensor for detecting if there's something in the intake.
-     */
-    @JsonCreator
-    public IntakeSensored(final SubsystemIntake implementation,
-                          @NotNull @JsonProperty(required = true) final MappedDigitalInput sensor) {
-      this.implementation = implementation;
-        this.sensor = sensor;
-    }
+  /**
+   * Default constructor.
+   *
+   * @param implementation The intake instance to wrap.
+   * @param sensor The sensor for detecting if there's something in the intake.
+   */
+  @JsonCreator
+  public IntakeSensored(final SubsystemIntake implementation,
+                        @NotNull @JsonProperty(required = true) final MappedDigitalInput sensor) {
+    this.implementation = implementation;
+    this.sensor = sensor;
+  }
 
-    /**
-     * @return true if the condition is met, false otherwise
-     */
-    @Override
-    public boolean isConditionTrue() {
-        return sensor.get();
-    }
+  /**
+   * @return true if the condition is met, false otherwise
+   */
+  @Override
+  public boolean isConditionTrue() {
+    return sensor.get();
+  }
 
-    /**
-     * @return true if the condition was met when cached, false otherwise
-     */
-    @Override
-    public boolean isConditionTrueCached() {
-        return cachedCondition;
-    }
+  /**
+   * @return true if the condition was met when cached, false otherwise
+   */
+  @Override
+  public boolean isConditionTrueCached() {
+    return cachedCondition;
+  }
 
-    /**
-     * Updates all cached values with current ones.
-     */
-    @Override
-    public void update() {
-        cachedCondition = isConditionTrue();
-    }
+  /**
+   * Updates all cached values with current ones.
+   */
+  @Override
+  public void update() {
+    cachedCondition = isConditionTrue();
+  }
 
   /**
    * @return the current mode of the intake.

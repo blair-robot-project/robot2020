@@ -11,8 +11,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
  */
 public abstract class InstantCommandMixIn {
   /**
-   * @see InstantCommand#InstantCommand(java.lang.Runnable,
-   *     edu.wpi.first.wpilibj2.command.Subsystem...)
+   * @see InstantCommand#InstantCommand(java.lang.Runnable, edu.wpi.first.wpilibj2.command.Subsystem...)
    */
   @JsonCreator()
   public InstantCommandMixIn(

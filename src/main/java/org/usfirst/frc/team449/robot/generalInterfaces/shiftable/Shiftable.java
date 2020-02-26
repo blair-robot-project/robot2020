@@ -30,7 +30,7 @@ public interface Shiftable {
 
     private final int numVal;
 
-    gear(int numVal) {
+    gear(final int numVal) {
       this.numVal = numVal;
     }
 
@@ -82,52 +82,52 @@ public interface Shiftable {
      * @param gearNum The gear number this is the settings for. Ignored if gear isn't null.
      * @param gear The gear this is the settings for. Can be null.
      * @param fwdPeakOutputVoltage The peak output voltage for closed-loop modes in the forwards
-     *     direction, in volts. Defaults to 12.
+     * direction, in volts. Defaults to 12.
      * @param revPeakOutputVoltage The peak output voltage for closed-loop modes in the reverse
-     *     direction, in volts. Defaults to -fwdPeakOutputVoltage.
+     * direction, in volts. Defaults to -fwdPeakOutputVoltage.
      * @param fwdNominalOutputVoltage The minimum output voltage for closed-loop modes in the
-     *     forwards direction. This does not rescale, it just sets any output below this voltage to
-     *     this voltage. Defaults to 0.
+     * forwards direction. This does not rescale, it just sets any output below this voltage to this
+     * voltage. Defaults to 0.
      * @param revNominalOutputVoltage The minimum output voltage for closed-loop modes in the
-     *     reverse direction. This does not rescale, it just sets any output below this voltage to
-     *     this voltage. Defaults to -fwdNominalOutputVoltage.
+     * reverse direction. This does not rescale, it just sets any output below this voltage to this
+     * voltage. Defaults to -fwdNominalOutputVoltage.
      * @param feedForwardCalculator The component for calculating feedforwards in closed-loop
-     *     control modes.
-     * @param rampRate The ramp rate, in volts/sec. Can be null, and if it is, no ramp rate is used.
+     * control modes.
+     * @param rampRate The ramp rate, in volts/sec. Can be null, and if it is, no ramp rate is
+     * used.
      * @param maxSpeed The maximum speed of the motor in this gear, in FPS. Used for throttle
-     *     scaling. Ignored if kVFwd is null. Calculated from the drive characterization terms if
-     *     null.
+     * scaling. Ignored if kVFwd is null. Calculated from the drive characterization terms if null.
      * @param kP The proportional PID constant for the motor in this gear. Ignored if kVFwd is null.
-     *     Defaults to 0.
+     * Defaults to 0.
      * @param kI The integral PID constant for the motor in this gear. Ignored if kVFwd is null.
-     *     Defaults to 0.
+     * Defaults to 0.
      * @param kD The derivative PID constant for the motor in this gear. Ignored if kVFwd is null.
-     *     Defaults to 0.
+     * Defaults to 0.
      * @param posKP The proportional PID constant for position control on the motor in this gear.
-     *     Ignored if kVFwd is null. Defaults to 0.
+     * Ignored if kVFwd is null. Defaults to 0.
      * @param posKI The integral PID constant for position control on the motor in this gear.
-     *     Ignored if kVFwd is null. Defaults to 0.
+     * Ignored if kVFwd is null. Defaults to 0.
      * @param posKD The derivative PID constant for position control on the motor in this gear.
-     *     Ignored if kVFwd is null. Defaults to 0.
+     * Ignored if kVFwd is null. Defaults to 0.
      */
     @JsonCreator
     public PerGearSettings(
-        int gearNum,
-        @Nullable Shiftable.gear gear,
-        @Nullable Double fwdPeakOutputVoltage,
-        @Nullable Double revPeakOutputVoltage,
-        @Nullable Double fwdNominalOutputVoltage,
-        @Nullable Double revNominalOutputVoltage,
-        @Nullable MappedFeedForwardCalculator feedForwardCalculator,
-        @Nullable Double rampRate,
-        @Nullable Double maxSpeed,
-        @Nullable Double postEncoderGearing,
-        double kP,
-        double kI,
-        double kD,
-        double posKP,
-        double posKI,
-        double posKD) {
+        final int gearNum,
+        @Nullable final Shiftable.gear gear,
+        @Nullable final Double fwdPeakOutputVoltage,
+        @Nullable final Double revPeakOutputVoltage,
+        @Nullable final Double fwdNominalOutputVoltage,
+        @Nullable final Double revNominalOutputVoltage,
+        @Nullable final MappedFeedForwardCalculator feedForwardCalculator,
+        @Nullable final Double rampRate,
+        @Nullable final Double maxSpeed,
+        @Nullable final Double postEncoderGearing,
+        final double kP,
+        final double kI,
+        final double kD,
+        final double posKP,
+        final double posKI,
+        final double posKD) {
       this.gear = gear != null ? gear.getNumVal() : gearNum;
       this.fwdPeakOutputVoltage = fwdPeakOutputVoltage != null ? fwdPeakOutputVoltage : 12;
       this.revPeakOutputVoltage =

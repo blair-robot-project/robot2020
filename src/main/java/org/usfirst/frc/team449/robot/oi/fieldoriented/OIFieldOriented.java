@@ -22,8 +22,8 @@ public abstract class OIFieldOriented implements OI {
    * Get the absolute angle for the robot to move towards.
    *
    * @return An angular setpoint for the robot in degrees, where 0 is pointing at the other
-   *     alliance's driver station and 90 is pointing at the left wall when looking out from the
-   *     driver station. Returns null if vel is 0.
+   * alliance's driver station and 90 is pointing at the left wall when looking out from the driver
+   * station. Returns null if vel is 0.
    */
   @Nullable
   public abstract Double getTheta();
@@ -39,12 +39,12 @@ public abstract class OIFieldOriented implements OI {
    * Get the cached absolute angle for the robot to move towards.
    *
    * @return An angular setpoint for the robot in degrees, where 0 is pointing at the other
-   *     alliance's driver station and 90 is pointing at the left wall when looking out from the
-   *     driver station. Returns null if vel is 0.
+   * alliance's driver station and 90 is pointing at the left wall when looking out from the driver
+   * station. Returns null if vel is 0.
    */
   @Nullable
   @Log
-public Double getThetaCached() {
+  public Double getThetaCached() {
     return cachedTheta;
   }
 
@@ -54,7 +54,7 @@ public Double getThetaCached() {
    * @return A velocity from [-1, 1].
    */
   @Log
-public double getVelCached() {
+  public double getVelCached() {
     return cachedVel;
   }
 

@@ -30,7 +30,7 @@ public class OITankSimple extends OITank {
    * @param leftThrottle The throttle for controlling the velocity of the left side of the drive.
    * @param rightThrottle The throttle for controlling the velocity of the right side of the drive.
    * @param commandingStraightTolerance The difference between left and right input within which the
-   *     driver is considered to be trying to drive straight. Defaults to 0.
+   * driver is considered to be trying to drive straight. Defaults to 0.
    */
   @JsonCreator
   public OITankSimple(
@@ -49,7 +49,7 @@ public class OITankSimple extends OITank {
    */
   @Override
   @Log
-public double getLeftThrottle() {
+  public double getLeftThrottle() {
     // If the driver is trying to drive straight, use the average of the two sticks.
     if (commandingStraight()) {
       return (leftThrottle.getValue() + rightThrottle.getValue()) / 2.;
@@ -64,7 +64,7 @@ public double getLeftThrottle() {
    */
   @Override
   @Log
-public double getRightThrottle() {
+  public double getRightThrottle() {
     // If the driver is trying to drive straight, use the average of the two sticks.
     if (commandingStraight()) {
       return (leftThrottle.getValue() + rightThrottle.getValue()) / 2.;
@@ -79,7 +79,7 @@ public double getRightThrottle() {
    */
   @Override
   @Log
-public boolean commandingStraight() {
+  public boolean commandingStraight() {
     return Math.abs(getLeftRightOutputCached()[0] - getLeftRightOutputCached()[1])
         <= commandingStraightTolerance;
   }

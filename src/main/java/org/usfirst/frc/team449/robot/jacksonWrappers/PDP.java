@@ -49,7 +49,7 @@ public class PDP implements Loggable, Updatable {
    * @return The voltage of the PDP in volts
    */
   @Log
-public double getVoltage() {
+  public double getVoltage() {
     return voltage;
   }
 
@@ -59,7 +59,7 @@ public double getVoltage() {
    * @return The current of all the channels in Amperes
    */
   @Log
-public double getTotalCurrent() {
+  public double getTotalCurrent() {
     return totalCurrent;
   }
 
@@ -69,7 +69,7 @@ public double getTotalCurrent() {
    * @return The temperature of the PDP in degrees Celsius.
    */
   @Log
-public double getTemperature() {
+  public double getTemperature() {
     return temperature;
   }
 
@@ -80,7 +80,7 @@ public double getTemperature() {
    */
   @Nullable
   @Log
-public Double getResistance() {
+  public Double getResistance() {
     return voltagePerCurrentLinReg == null ? null : resistance;
   }
 
@@ -88,11 +88,11 @@ public Double getResistance() {
    * Get the voltage at the PDP when there's no load on the battery.
    *
    * @return Voltage in volts when there's 0 amps of current draw, or null if not calculating
-   *     resistance.
+   * resistance.
    */
   @Nullable
   @Log
-public Double getUnloadedVoltage() {
+  public Double getUnloadedVoltage() {
     return voltagePerCurrentLinReg == null ? null : unloadedVoltage;
   }
 

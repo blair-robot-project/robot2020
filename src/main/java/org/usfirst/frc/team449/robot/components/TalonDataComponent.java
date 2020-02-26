@@ -2,9 +2,10 @@ package org.usfirst.frc.team449.robot.components;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.function.DoubleSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon;
+
+import java.util.function.DoubleSupplier;
 
 public class TalonDataComponent implements DoubleSupplier {
   @NotNull private final MappedTalon talon;
@@ -16,8 +17,8 @@ public class TalonDataComponent implements DoubleSupplier {
    */
   @JsonCreator
   public TalonDataComponent(
-      @NotNull @JsonProperty(required = true) MappedTalon talon,
-      @NotNull @JsonProperty(required = true) ReturnValue value) {
+      @NotNull @JsonProperty(required = true) final MappedTalon talon,
+      @NotNull @JsonProperty(required = true) final ReturnValue value) {
     this.talon = talon;
     this.value = value;
   }

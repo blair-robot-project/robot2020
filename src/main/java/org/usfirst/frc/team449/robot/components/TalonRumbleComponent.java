@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import javax.annotation.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.rumbleable.Rumbleable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon;
+
+import javax.annotation.Nullable;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class TalonRumbleComponent implements Runnable {
@@ -18,10 +19,10 @@ public class TalonRumbleComponent implements Runnable {
 
   @JsonCreator
   public TalonRumbleComponent(
-      @JsonProperty(required = true) MappedTalon talon,
-      @JsonProperty(required = true) Rumbleable joystick,
-      @Nullable Double rumbleAmount,
-      boolean inverted) {
+      @JsonProperty(required = true) final MappedTalon talon,
+      @JsonProperty(required = true) final Rumbleable joystick,
+      @Nullable final Double rumbleAmount,
+      final boolean inverted) {
     this.talon = talon;
     this.joystick = joystick;
     this.inverted = inverted;

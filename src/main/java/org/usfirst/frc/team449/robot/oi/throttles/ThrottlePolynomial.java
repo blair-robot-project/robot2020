@@ -23,28 +23,29 @@ public class ThrottlePolynomial extends ThrottleDeadbanded {
    *
    * @param stick The Joystick object being used
    * @param axis The axis being used. 0 is X, 1 is Y, 2 is Z.
-   * @param deadband The deadband below which the input will be read as 0, on [0, 1]. Defaults to 0.
+   * @param deadband The deadband below which the input will be read as 0, on [0, 1]. Defaults to
+   * 0.
    * @param smoothingTimeSecs How many seconds of input to take into account when smoothing.
-   *     Defaults to 0.02.
+   * Defaults to 0.02.
    * @param inverted Whether or not to invert the joystick input. Defaults to false.
    * @param polynomial The polynomially that scales the throttle. Must not have any negative
-   *     exponents.
+   * exponents.
    */
   @JsonCreator
   public ThrottlePolynomial(
-      @NotNull @JsonProperty(required = true) MappedJoystick stick,
-      @JsonProperty(required = true) int axis,
-      double deadband,
-      @Nullable Double smoothingTimeSecs,
-      boolean inverted,
-      @NotNull @JsonProperty(required = true) Polynomial polynomial,
-      @Nullable Double scale) {
+      @NotNull @JsonProperty(required = true) final MappedJoystick stick,
+      @JsonProperty(required = true) final int axis,
+      final double deadband,
+      @Nullable final Double smoothingTimeSecs,
+      final boolean inverted,
+      @NotNull @JsonProperty(required = true) final Polynomial polynomial,
+      @Nullable final Double scale) {
     super(stick, axis, deadband, smoothingTimeSecs, inverted);
 
     this.scale = scale != null ? scale : 1;
 
     // Check for negative exponents
-    for (Double power : polynomial.getPowerToCoefficientMap().keySet()) {
+    for (final Double power : polynomial.getPowerToCoefficientMap().keySet()) {
       if (power < 0) {
         throw new IllegalArgumentException("Negative exponents are not allowed!");
       }

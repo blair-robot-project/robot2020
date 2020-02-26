@@ -2,8 +2,9 @@ package org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.function.DoubleUnaryOperator;
 import org.usfirst.frc.team449.robot.other.Clock;
+
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * A component for limiting the second and first derivatives of a value. UNFINISHED DOESN'T ACTUALLY
@@ -35,12 +36,12 @@ public class SecondDerivativeLimit implements DoubleUnaryOperator {
    *
    * @param firstDerivativeLimit The maximum allowed change in the value per second.
    * @param secondDerivativeLimit The maximum allowed change per second of the change in the value
-   *     per second.
+   * per second.
    */
   @JsonCreator
   public SecondDerivativeLimit(
-      @JsonProperty(required = true) double firstDerivativeLimit,
-      @JsonProperty(required = true) double secondDerivativeLimit) {
+      @JsonProperty(required = true) final double firstDerivativeLimit,
+      @JsonProperty(required = true) final double secondDerivativeLimit) {
     this.firstDerivativeLimit = firstDerivativeLimit / 1000.; // convert to change/milliseconds
     this.secondDerivativeLimit =
         secondDerivativeLimit / 1000. / 1000.; // convert to change/millisecond^2
@@ -53,7 +54,7 @@ public class SecondDerivativeLimit implements DoubleUnaryOperator {
    * @return The first and second derivative limited value
    */
   @Override
-  public double applyAsDouble(double value) {
+  public double applyAsDouble(final double value) {
     // Time between the last value and this one
     deltaTime = Clock.currentTimeMillis() - previousTime;
     if (value - previousValue > previousFirstDerivative) {

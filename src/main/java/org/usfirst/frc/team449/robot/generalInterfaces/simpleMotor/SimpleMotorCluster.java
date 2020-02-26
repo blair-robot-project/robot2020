@@ -2,8 +2,9 @@ package org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * A cluster of simple motors that act as a single simple motor. Don't use this for talons, use
@@ -12,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class SimpleMotorCluster implements SimpleMotor {
 
   /** The motors in this cluster. Contains at least 1 element. */
-  @NotNull private List<SimpleMotor> motors;
+  @NotNull private final List<SimpleMotor> motors;
 
   /**
    * Default constructor
@@ -20,7 +21,7 @@ public class SimpleMotorCluster implements SimpleMotor {
    * @param motors The motors in this cluster. Must have at least 1 element.
    */
   @JsonCreator
-  public SimpleMotorCluster(@JsonProperty(required = true) @NotNull List<SimpleMotor> motors) {
+  public SimpleMotorCluster(@JsonProperty(required = true) @NotNull final List<SimpleMotor> motors) {
     if (motors.size() == 0) {
       throw new IllegalArgumentException("motors must have at least 1 element!");
     }
@@ -33,8 +34,8 @@ public class SimpleMotorCluster implements SimpleMotor {
    * @param velocity the desired velocity, on [-1, 1].
    */
   @Override
-  public void setVelocity(double velocity) {
-    for (SimpleMotor motor : motors) {
+  public void setVelocity(final double velocity) {
+    for (final SimpleMotor motor : motors) {
       motor.setVelocity(velocity);
     }
   }
@@ -42,7 +43,7 @@ public class SimpleMotorCluster implements SimpleMotor {
   /** Enables the motor, if applicable. */
   @Override
   public void enable() {
-    for (SimpleMotor motor : motors) {
+    for (final SimpleMotor motor : motors) {
       motor.enable();
     }
   }
@@ -50,7 +51,7 @@ public class SimpleMotorCluster implements SimpleMotor {
   /** Disables the motor, if applicable. */
   @Override
   public void disable() {
-    for (SimpleMotor motor : motors) {
+    for (final SimpleMotor motor : motors) {
       motor.disable();
     }
   }

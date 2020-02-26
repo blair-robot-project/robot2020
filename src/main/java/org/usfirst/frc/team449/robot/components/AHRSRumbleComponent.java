@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.generalInterfaces.rumbleable.Rumbleable;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
 import org.usfirst.frc.team449.robot.other.Clock;
+
+import java.util.List;
 
 /** A component to rumble controllers based off the jerk measurements from an AHRS. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -60,9 +61,9 @@ public class AHRSRumbleComponent implements Runnable {
    * @param rumbleables The things to rumble.
    * @param minJerk The minimum jerk that will trigger rumbling, in feet/(sec^3).
    * @param maxJerk The jerk, in feet/(sec^3), that's scaled to maximum rumble. All jerks of greater
-   *     magnitude are capped at 1.
+   * magnitude are capped at 1.
    * @param yIsFrontBack Whether the NavX Y-axis measures forwards-back jerk or left-right jerk.
-   *     Defaults to false.
+   * Defaults to false.
    * @param invertLeftRight Whether to invert the left-right jerk measurement. Defaults to false.
    */
   @JsonCreator

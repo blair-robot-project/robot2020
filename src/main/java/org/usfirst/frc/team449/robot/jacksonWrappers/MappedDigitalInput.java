@@ -32,7 +32,7 @@ public class MappedDigitalInput extends DigitalInput implements Loggable, Boolea
    */
   @Override
   @Log
-public boolean get() {
+  public boolean get() {
     return !super.get(); // true is off by default in WPILib, and that's dumb
   }
 

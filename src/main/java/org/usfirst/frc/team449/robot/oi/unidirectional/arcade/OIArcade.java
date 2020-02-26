@@ -25,7 +25,7 @@ public abstract class OIArcade implements OIUnidirectional {
    * Default constructor.
    *
    * @param rescaleOutputs Whether or not to scale the left and right outputs so the max output is
-   *     1. Defaults to false.
+   * 1. Defaults to false.
    */
   @JsonCreator
   public OIArcade(final boolean rescaleOutputs) {
@@ -39,7 +39,7 @@ public abstract class OIArcade implements OIUnidirectional {
    */
   @Override
   @Log
-public boolean commandingStraight() {
+  public boolean commandingStraight() {
     return getFwdRotOutputCached()[1] == 0;
   }
 
@@ -47,7 +47,7 @@ public boolean commandingStraight() {
    * The output to be given to the left and right sides of the drive.
    *
    * @return An array of length 2, where the 1st element is the output for the left and the second
-   *     for the right, both from [-1, 1].
+   * for the right, both from [-1, 1].
    */
   @Override
   @NotNull
@@ -85,7 +85,7 @@ public boolean commandingStraight() {
    * The cached output to be given to the left and right sides of the drive.
    *
    * @return An array of length 2, where the 1st element is the output for the left and the second
-   *     for the right, both from [-1, 1].
+   * for the right, both from [-1, 1].
    */
   @Override
   @NotNull
@@ -99,7 +99,7 @@ public boolean commandingStraight() {
    * The cached forwards and rotational movement given to the drive.
    *
    * @return An array of length 2, where the first element is the forwards output and the second is
-   *     the rotational, both from [-1, 1]
+   * the rotational, both from [-1, 1]
    */
   @Override
   @NotNull

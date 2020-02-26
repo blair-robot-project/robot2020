@@ -62,14 +62,14 @@ public class ShiftWithSensorComponent extends ShiftComponent {
    * @param otherShiftables All objects that should be shifted when this component's piston is.
    * @param piston The piston that shifts.
    * @param startingGear The gear to start in. Can be null, and if it is, the starting gear is
-   *     gotten from the piston's position.
+   * gotten from the piston's position.
    * @param highGearSensors The reed switches that detect if the shifter pistons are in high gear.
    * @param lowGearSensors The reed switches that detect if the shifter pistons are in low gear.
    * @param motorsToDisable The motors that should be disabled while the piston is shifting.
    * @param motorDisableTimer The timer for how long the piston can be considered shifting before we
-   *     ignore the sensors and re-enable the motors.
+   * ignore the sensors and re-enable the motors.
    * @param sensorCheckerPeriodSecs The period for the loop that checks the sensors and
-   *     enables/disables the motors, in seconds.
+   * enables/disables the motors, in seconds.
    */
   @JsonCreator
   public ShiftWithSensorComponent(

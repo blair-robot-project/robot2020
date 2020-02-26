@@ -29,20 +29,21 @@ public class ThrottleExponential extends ThrottleDeadbanded {
    *
    * @param stick The Joystick object being used
    * @param axis The axis being used.
-   * @param deadband The deadband below which the input will be read as 0, on [0, 1]. Defaults to 0.
+   * @param deadband The deadband below which the input will be read as 0, on [0, 1]. Defaults to
+   * 0.
    * @param smoothingTimeSecs How many seconds of input to take into account when smoothing.
-   *     Defaults to 0.02.
+   * Defaults to 0.02.
    * @param inverted Whether or not to invert the joystick input. Defaults to false.
    * @param base The base that is raised to the power of the joystick input.
    */
   @JsonCreator
   public ThrottleExponential(
-      @NotNull @JsonProperty(required = true) MappedJoystick stick,
-      @JsonProperty(required = true) int axis,
-      double deadband,
-      @Nullable Double smoothingTimeSecs,
-      boolean inverted,
-      @JsonProperty(required = true) double base) {
+      @NotNull @JsonProperty(required = true) final MappedJoystick stick,
+      @JsonProperty(required = true) final int axis,
+      final double deadband,
+      @Nullable final Double smoothingTimeSecs,
+      final boolean inverted,
+      @JsonProperty(required = true) final double base) {
     super(stick, axis, deadband, smoothingTimeSecs, inverted);
     this.base = base;
   }

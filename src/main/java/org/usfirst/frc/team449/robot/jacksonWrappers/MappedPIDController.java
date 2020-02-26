@@ -30,13 +30,13 @@ public class MappedPIDController extends PIDController implements Loggable {
 
   @Override
   @Log
-public double getVelocityError() {
+  public double getVelocityError() {
     return super.getVelocityError();
   }
 
   @Override
   @Log
-public double getSetpoint() {
+  public double getSetpoint() {
     return super.getSetpoint();
   }
 
@@ -47,12 +47,12 @@ public double getSetpoint() {
   }
 
   @Log
-public double getMeasurement() {
+  public double getMeasurement() {
     return measurement;
   }
 
   @Log
-public double getOutput() {
+  public double getOutput() {
     return output;
   }
 

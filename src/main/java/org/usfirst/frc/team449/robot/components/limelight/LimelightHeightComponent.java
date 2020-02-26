@@ -3,8 +3,9 @@ package org.usfirst.frc.team449.robot.components.limelight;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import java.util.function.DoubleSupplier;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.DoubleSupplier;
 
 /** Finds the height of a vision target above the limelight. Not entirely certain if it works...? */
 public class LimelightHeightComponent implements DoubleSupplier {
@@ -27,8 +28,8 @@ public class LimelightHeightComponent implements DoubleSupplier {
    */
   @JsonCreator
   public LimelightHeightComponent(
-      @JsonProperty(required = true) DoubleSupplier angularInput,
-      @JsonProperty(required = true) DoubleSupplier distanceToTarget) {
+      @JsonProperty(required = true) final DoubleSupplier angularInput,
+      @JsonProperty(required = true) final DoubleSupplier distanceToTarget) {
     this.angularInput = angularInput;
     this.distanceToTarget = distanceToTarget;
   }
@@ -36,7 +37,7 @@ public class LimelightHeightComponent implements DoubleSupplier {
   /** @return the height of the vision target above the limelight */
   @Override
   public double getAsDouble() {
-    double theta =
+    final double theta =
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
     return distanceToTarget.getAsDouble()
         * Math.cos(Math.toRadians(theta))

@@ -30,7 +30,7 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
    * @param inverted Whether or not to invert this Victor. Defaults to false.
    * @param enableVoltageComp Whether or not to enable voltage compensation. Defaults to false.
    * @param voltageCompSamples The number of 1-millisecond samples to use for voltage compensation.
-   *     Defaults to 32.
+   * Defaults to 32.
    * @param slaveVictors Any other Victor SPXs slaved to this one.
    */
   @JsonCreator
@@ -127,12 +127,12 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
   //    }
 
   @Log
-public double getBusVolt() {
+  public double getBusVolt() {
     return victorSPX.getBusVoltage();
   }
 
   @Log
-public double getMotorOutPutVolt() {
+  public double getMotorOutPutVolt() {
     return victorSPX.getMotorOutputVoltage();
   }
 }

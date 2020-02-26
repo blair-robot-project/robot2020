@@ -54,12 +54,12 @@ public class SlaveSparkMax implements SlaveMotor, Loggable {
   }
 
   @Log
-public double getOutputCurrent() {
+  public double getOutputCurrent() {
     return this.slaveSpark.getOutputCurrent();
   }
 
   @Log
-public double getMotorOutputVoltage() {
+  public double getMotorOutputVoltage() {
     return this.slaveSpark.getAppliedOutput();
   }
 }

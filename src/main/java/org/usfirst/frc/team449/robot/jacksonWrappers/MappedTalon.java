@@ -83,45 +83,47 @@ public class MappedTalon implements SmartMotor {
    * @param reverseOutput Whether to reverse the output.
    * @param enableBrakeMode Whether to brake or coast when stopped.
    * @param voltagePerCurrentLinReg The component for doing linear regression to find the
-   *     resistance.
+   * resistance.
    * @param PDP The PDP this Talon is connected to.
    * @param fwdLimitSwitchNormallyOpen Whether the forward limit switch is normally open or closed.
-   *     If this is null, the forward limit switch is disabled.
+   * If this is null, the forward limit switch is disabled.
    * @param revLimitSwitchNormallyOpen Whether the reverse limit switch is normally open or closed.
-   *     If this is null, the reverse limit switch is disabled.
+   * If this is null, the reverse limit switch is disabled.
    * @param remoteLimitSwitchID The CAN port of the Talon the limit switch to use for this talon is
-   *     plugged into, or null to not use a limit switch or use the limit switch plugged into this
-   *     talon.
+   * plugged into, or null to not use a limit switch or use the limit switch plugged into this
+   * talon.
    * @param fwdSoftLimit The forward software limit, in feet. If this is null, the forward software
-   *     limit is disabled. Ignored if there's no encoder.
+   * limit is disabled. Ignored if there's no encoder.
    * @param revSoftLimit The reverse software limit, in feet. If this is null, the reverse software
-   *     limit is disabled. Ignored if there's no encoder.
+   * limit is disabled. Ignored if there's no encoder.
    * @param postEncoderGearing The coefficient the output changes by after being measured by the
-   *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
-   *     final output. Defaults to 1.
+   * encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the final
+   * output. Defaults to 1.
    * @param unitPerRotation The number of feet travelled per rotation of the motor this is attached
-   *     to. Defaults to 1.
+   * to. Defaults to 1.
    * @param currentLimit The max amps this device can draw. If this is null, no current limit is
-   *     used.
+   * used.
    * @param enableVoltageComp Whether or not to use voltage compensation. Defaults to false.
    * @param voltageCompSamples The number of 1-millisecond samples to use for voltage compensation.
-   *     Defaults to 32.
+   * Defaults to 32.
    * @param feedbackDevice The type of encoder used to measure the output velocity of this motor.
-   *     Can be null if there is no encoder attached to this Talon.
+   * Can be null if there is no encoder attached to this Talon.
    * @param encoderCPR The counts per rotation of the encoder on this Talon. Can be null if
-   *     feedbackDevice is, but otherwise must have a value.
+   * feedbackDevice is, but otherwise must have a value.
    * @param reverseSensor Whether or not to reverse the reading from the encoder on this Talon.
-   *     Ignored if feedbackDevice is null. Defaults to false.
+   * Ignored if feedbackDevice is null. Defaults to false.
    * @param perGearSettings The settings for each gear this motor has. Can be null to use default
-   *     values and gear # of zero. Gear numbers can't be repeated.
+   * values and gear # of zero. Gear numbers can't be repeated.
    * @param startingGear The gear to start in. Can be null to use startingGearNum instead.
    * @param startingGearNum The number of the gear to start in. Ignored if startingGear isn't null.
-   *     Defaults to the lowest gear.
-   * @param statusFrameRatesMillis The update rates, in millis, for each of the Talon status frames.
-   * @param controlFrameRatesMillis The update rate, in milliseconds, for each of the control frame.
+   * Defaults to the lowest gear.
+   * @param statusFrameRatesMillis The update rates, in millis, for each of the Talon status
+   * frames.
+   * @param controlFrameRatesMillis The update rate, in milliseconds, for each of the control
+   * frame.
    * @param slaveTalons The other {@link TalonSRX}s that are slaved to this one.
    * @param slaveVictors The {@link com.ctre.phoenix.motorcontrol.can.VictorSPX}s that are slaved to
-   *     this Talon.
+   * this Talon.
    * @param slaveSparks The Spark/Neo combinations slaved to this Talon.
    */
   @JsonCreator
@@ -388,7 +390,7 @@ public class MappedTalon implements SmartMotor {
   /** @return The gear this subsystem is currently in. */
   @Override
   @Log
-public int getGear() {
+  public int getGear() {
     return this.currentGearSettings.gear;
   }
 
@@ -453,7 +455,7 @@ public int getGear() {
    *
    * @param feet A distance in feet.
    * @return That distance in native units as measured by the encoder, or null if no encoder CPR was
-   *     given.
+   * given.
    */
   @Override
   public double unitToEncoder(final double feet) {
@@ -469,7 +471,7 @@ public int getGear() {
    *
    * @param encoderReading The velocity read from the encoder with no conversions.
    * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if
-   *     no encoder CPR was given.
+   * no encoder CPR was given.
    */
   @Override
   public double encoderToUPS(final double encoderReading) {
@@ -486,7 +488,7 @@ public int getGear() {
    *
    * @param UPS The velocity of the output shaft, in FPS.
    * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was
-   *     given.
+   * given.
    */
   @Override
   public double UPSToEncoder(final double UPS) {
@@ -612,7 +614,7 @@ public int getGear() {
    * @return The closed-loop error in FPS, or null if no encoder CPR was given.
    */
   @Log
-@Override
+  @Override
   public double getError() {
     if (canTalon.getControlMode().equals(ControlMode.Velocity)) {
       return this.encoderToUPS(canTalon.getClosedLoopError(0));
@@ -628,7 +630,7 @@ public int getGear() {
    */
   @Nullable
   @Log
-@Override
+  @Override
   public Double getSetpoint() {
     return setpoint;
   }
@@ -639,7 +641,7 @@ public int getGear() {
    * @return Voltage in volts.
    */
   @Log
-@Override
+  @Override
   public double getOutputVoltage() {
     return canTalon.getMotorOutputVoltage();
   }
@@ -650,7 +652,7 @@ public int getGear() {
    * @return Voltage in volts.
    */
   @Log
-@Override
+  @Override
   public double getBatteryVoltage() {
     return canTalon.getBusVoltage();
   }
@@ -661,7 +663,7 @@ public int getGear() {
    * @return Current in amps.
    */
   @Log
-@Override
+  @Override
   public double getOutputCurrent() {
     return canTalon.getSupplyCurrent();
   }
@@ -681,7 +683,7 @@ public int getGear() {
    * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
    *
    * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
-   *     gear.
+   * gear.
    * @param gear The number of the gear to use the max speed from to scale the velocity.
    */
   @Override
@@ -697,7 +699,7 @@ public int getGear() {
    * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
    *
    * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
-   *     gear.
+   * gear.
    * @param gear The gear to use the max speed from to scale the velocity.
    */
   @Override
@@ -714,7 +716,7 @@ public int getGear() {
   /** @return the position of the talon in feet, or null of inches per rotation wasn't given. */
   @Override
   @Log
-public Double getPositionUnits() {
+  public Double getPositionUnits() {
     return encoderToUnit(canTalon.getSelectedSensorPosition(0));
   }
 

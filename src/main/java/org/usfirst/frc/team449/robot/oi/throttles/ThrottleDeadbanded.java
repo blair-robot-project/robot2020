@@ -35,9 +35,10 @@ public class ThrottleDeadbanded extends ThrottleBasic {
    *
    * @param stick The Joystick object being used
    * @param axis The axis being used. 0 is X, 1 is Y, 2 is Z.
-   * @param deadband The deadband below which the input will be read as 0, on [0, 1]. Defaults to 0.
+   * @param deadband The deadband below which the input will be read as 0, on [0, 1]. Defaults to
+   * 0.
    * @param smoothingTimeSecs How many seconds of input to take into account when smoothing.
-   *     Defaults to 0.02.
+   * Defaults to 0.02.
    * @param inverted Whether or not to invert the joystick input. Defaults to false.
    */
   @JsonCreator

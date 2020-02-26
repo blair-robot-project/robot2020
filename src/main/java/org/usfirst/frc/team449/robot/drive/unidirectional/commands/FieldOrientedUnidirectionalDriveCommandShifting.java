@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.AutoshiftComponent;
@@ -19,6 +18,8 @@ import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.oi.fieldoriented.OIFieldOriented;
 import org.usfirst.frc.team449.robot.other.Debouncer;
 
+import java.util.List;
+
 /** Unidirectional drive with field-oriented control and autoshifting. */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CLASS,
@@ -26,7 +27,7 @@ import org.usfirst.frc.team449.robot.other.Debouncer;
     property = "@class")
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class FieldOrientedUnidirectionalDriveCommandShifting<
-        T extends Subsystem & DriveUnidirectional & SubsystemAHRS & DriveShiftable>
+    T extends Subsystem & DriveUnidirectional & SubsystemAHRS & DriveShiftable>
     extends FieldOrientedUnidirectionalDriveCommand {
 
   /** The drive to execute this command on. */
@@ -48,16 +49,16 @@ public class FieldOrientedUnidirectionalDriveCommandShifting<
    * Default constructor
    *
    * @param onTargetBuffer A buffer timer for having the loop be on target before it stops running.
-   *     Can be null for no buffer.
+   * Can be null for no buffer.
    * @param absoluteTolerance The maximum number of degrees off from the target at which we can be
-   *     considered within tolerance.
+   * considered within tolerance.
    * @param minimumOutput The minimum output of the loop. Defaults to zero.
    * @param maximumOutput The maximum output of the loop. Can be null, and if it is, no maximum
-   *     output is used.
+   * output is used.
    * @param loopTimeMillis The time, in milliseconds, between each loop iteration. Defaults to 20
-   *     ms.
+   * ms.
    * @param deadband The deadband around the setpoint, in degrees, within which no output is given
-   *     to the motors. Defaults to zero.
+   * to the motors. Defaults to zero.
    * @param inverted Whether the loop is inverted. Defaults to false.
    * @param kP Proportional gain. Defaults to zero.
    * @param kI Integral gain. Defaults to zero.
@@ -67,7 +68,7 @@ public class FieldOrientedUnidirectionalDriveCommandShifting<
    * @param snapPoints The points to snap the PID controller input to.
    * @param autoshiftComponent The helper object for autoshifting.
    * @param highGearAngularCoefficient The coefficient to multiply the loop output by in high gear.
-   *     Defaults to 1.
+   * Defaults to 1.
    */
   @JsonCreator
   public FieldOrientedUnidirectionalDriveCommandShifting(

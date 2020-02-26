@@ -45,7 +45,7 @@ public class OIOutreach implements OIUnidirectional {
    * The output to be given to the left and right sides of the drive.
    *
    * @return An array of length 2, where the 1st element is the output for the left and the second
-   *     for the right, both from [-1, 1].
+   * for the right, both from [-1, 1].
    */
   @Override
   public double[] getLeftRightOutput() {
@@ -61,11 +61,11 @@ public class OIOutreach implements OIUnidirectional {
    * The cached output to be given to the left and right sides of the drive.
    *
    * @return An array of length 2, where the 1st element is the output for the left and the second
-   *     for the right, both from [-1, 1].
+   * for the right, both from [-1, 1].
    */
   @Override
   @Log
-public double[] getLeftRightOutputCached() {
+  public double[] getLeftRightOutputCached() {
     return this.cachedLeftRightOutput;
   }
 
@@ -73,7 +73,7 @@ public double[] getLeftRightOutputCached() {
    * The forwards and rotational movement given to the drive.
    *
    * @return An array of length 2, where the first element is the forwards output and the second is
-   *     the rotational, both from [-1, 1]
+   * the rotational, both from [-1, 1]
    */
   @Override
   public double[] getFwdRotOutput() {
@@ -89,11 +89,11 @@ public double[] getLeftRightOutputCached() {
    * The cached forwards and rotational movement given to the drive.
    *
    * @return An array of length 2, where the first element is the forwards output and the second is
-   *     the rotational, both from [-1, 1]
+   * the rotational, both from [-1, 1]
    */
   @Override
   @Log
-public double[] getFwdRotOutputCached() {
+  public double[] getFwdRotOutputCached() {
     return this.cachedFwdRotOutput;
   }
 
@@ -104,7 +104,7 @@ public double[] getFwdRotOutputCached() {
    */
   @Override
   @Log
-public boolean commandingStraight() {
+  public boolean commandingStraight() {
     return this.getLeftRightOutputCached()[0] == this.getLeftRightOutputCached()[1];
   }
 

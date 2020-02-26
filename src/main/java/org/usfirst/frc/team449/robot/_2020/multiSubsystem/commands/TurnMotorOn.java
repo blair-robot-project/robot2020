@@ -17,51 +17,51 @@ import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemBinaryMotor;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class TurnMotorOn extends InstantCommand {
 
-    /**
-     * The subsystem to execute this command on.
-     */
-    @NotNull
-    @Log.Exclude
-    private final SubsystemBinaryMotor subsystem;
+  /**
+   * The subsystem to execute this command on.
+   */
+  @NotNull
+  @Log.Exclude
+  private final SubsystemBinaryMotor subsystem;
 
-    /**
-     * Default constructor
-     *
-     * @param subsystem The subsystem to execute this command on.
-     */
-    @JsonCreator
-    public TurnMotorOn(@NotNull @JsonProperty(required = true) final SubsystemBinaryMotor subsystem) {
-        this.subsystem = subsystem;
-    }
+  /**
+   * Default constructor
+   *
+   * @param subsystem The subsystem to execute this command on.
+   */
+  @JsonCreator
+  public TurnMotorOn(@NotNull @JsonProperty(required = true) final SubsystemBinaryMotor subsystem) {
+    this.subsystem = subsystem;
+  }
 
-    /**
-     * Log when this command is initialized
-     */
-    @Override
-    public void initialize() {
-        Shuffleboard.addEventMarker(
-                "TurnMotorOn init.", this.getClass().getSimpleName(), EventImportance.kNormal);
-        // Logger.addEvent("TurnMotorOn init.", this.getClass());
-    }
+  /**
+   * Log when this command is initialized
+   */
+  @Override
+  public void initialize() {
+    Shuffleboard.addEventMarker(
+        "TurnMotorOn init.", this.getClass().getSimpleName(), EventImportance.kNormal);
+    // Logger.addEvent("TurnMotorOn init.", this.getClass());
+  }
 
-    /**
-     * Turn the motor on.
-     */
-    @Override
-    public void execute() {
-        subsystem.turnMotorOn();
-    }
+  /**
+   * Turn the motor on.
+   */
+  @Override
+  public void execute() {
+    subsystem.turnMotorOn();
+  }
 
-    /**
-     * Log when this command ends
-     */
-    @Override
-    public void end(final boolean interrupted) {
-        if (interrupted) {
-            Shuffleboard.addEventMarker(
-                    "TurnMotorOn Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-        }
-        Shuffleboard.addEventMarker(
-                "TurnMotorOn end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+  /**
+   * Log when this command ends
+   */
+  @Override
+  public void end(final boolean interrupted) {
+    if (interrupted) {
+      Shuffleboard.addEventMarker(
+          "TurnMotorOn Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
     }
+    Shuffleboard.addEventMarker(
+        "TurnMotorOn end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+  }
 }

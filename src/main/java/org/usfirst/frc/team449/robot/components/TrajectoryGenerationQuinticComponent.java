@@ -11,9 +11,10 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.trajectory.constraint.TrajectoryConstraint;
+import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 @JsonTypeInfo(
@@ -33,7 +34,7 @@ public class TrajectoryGenerationQuinticComponent implements TrajectoryGeneratio
       @JsonProperty(required = true) final double maxSpeedMeters,
       @JsonProperty(required = true) final double maxAccelMeters,
       @JsonProperty(required = true) final List<Pose2d> waypoints,
-      boolean reversed) {
+      final boolean reversed) {
     this.constraint =
         new DifferentialDriveVoltageConstraint(
             drivetrain.getLeftFeedforwardCalculator(), drivetrain.getDriveKinematics(), 12);

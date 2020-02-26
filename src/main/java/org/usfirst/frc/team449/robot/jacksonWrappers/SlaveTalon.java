@@ -35,7 +35,7 @@ public class SlaveTalon implements SlaveMotor, Loggable {
    *
    * @param port The CAN ID of this Talon SRX.
    * @param invertType Whether or not to invert this Talon. Defaults to FollowMaster , but can be
-   *     changed to OpposeMaster.
+   * changed to OpposeMaster.
    */
   @JsonCreator
   public SlaveTalon(@JsonProperty(required = true) final int port, final InvertType invertType) {
@@ -77,7 +77,7 @@ public class SlaveTalon implements SlaveMotor, Loggable {
    * @param brakeMode Whether this Talon should be in brake mode or coast mode.
    * @param currentLimit The current limit for this Talon. Can be null for no current limit.
    * @param voltageCompSamples The number of voltage compensation samples to use, or null to not
-   *     compensate voltage.
+   * compensate voltage.
    * @param PDP The PDP this Talon is connected to.
    * @param linRegComponent The linear regression component for logging resistance.
    */
@@ -165,17 +165,17 @@ public class SlaveTalon implements SlaveMotor, Loggable {
   //    }
 
   @Log
-public double getOutputCurrent() {
+  public double getOutputCurrent() {
     return this.talonSRX.getSupplyCurrent();
   }
 
   @Log
-public double getMotorOutputVoltage() {
+  public double getMotorOutputVoltage() {
     return this.talonSRX.getMotorOutputVoltage();
   }
 
   @Log
-public Double getResistance() {
+  public Double getResistance() {
     return (this.linRegComponent != null && this.PDP != null)
         ? -this.linRegComponent.getSlope()
         : Double.NaN;

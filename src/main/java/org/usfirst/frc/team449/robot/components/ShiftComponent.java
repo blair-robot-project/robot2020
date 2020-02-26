@@ -35,7 +35,7 @@ public class ShiftComponent {
    * @param otherShiftables All objects that should be shifted when this component's piston is.
    * @param piston The piston that shifts.
    * @param startingGear The gear to start in. Can be null, and if it is, the starting gear is
-   *     gotten from the piston's position.
+   * gotten from the piston's position.
    */
   @JsonCreator
   public ShiftComponent(

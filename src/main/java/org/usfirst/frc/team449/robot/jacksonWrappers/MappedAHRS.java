@@ -39,7 +39,7 @@ public class MappedAHRS implements Updatable, Loggable {
    * Default constructor.
    *
    * @param port The port the NavX is plugged into. It seems like only kMXP (the port on the RIO)
-   *     works.
+   * works.
    * @param invertYaw Whether or not to invert the yaw axis. Defaults to true.
    */
   @JsonCreator
@@ -140,7 +140,7 @@ public class MappedAHRS implements Updatable, Loggable {
    * @return The heading, in degrees from [-180, 180]
    */
   @Log
-public double getCachedHeading() {
+  public double getCachedHeading() {
     return cachedHeading;
   }
 
@@ -151,7 +151,7 @@ public double getCachedHeading() {
    * @return The angular displacement, in degrees.
    */
   @Log
-public double getCachedAngularDisplacement() {
+  public double getCachedAngularDisplacement() {
     return cachedAngularDisplacement;
   }
 
@@ -161,7 +161,7 @@ public double getCachedAngularDisplacement() {
    * @return The angular yaw velocity, in degrees/sec.
    */
   @Log
-public double getCachedAngularVelocity() {
+  public double getCachedAngularVelocity() {
     return cachedAngularVel;
   }
 
@@ -171,7 +171,7 @@ public double getCachedAngularVelocity() {
    * @return Linear X acceleration, in feet/(sec^2)
    */
   @Log
-public double getCachedXAccel() {
+  public double getCachedXAccel() {
     return cachedXAccel;
   }
 
@@ -181,7 +181,7 @@ public double getCachedXAccel() {
    * @return Linear Y acceleration, in feet/(sec^2)
    */
   @Log
-public double getCachedYAccel() {
+  public double getCachedYAccel() {
     return cachedYAccel;
   }
 
@@ -191,7 +191,7 @@ public double getCachedYAccel() {
    * @return The pitch, in degrees from [-180, 180]
    */
   @Log
-public double getCachedPitch() {
+  public double getCachedPitch() {
     return cachedPitch;
   }
 

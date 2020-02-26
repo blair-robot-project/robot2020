@@ -3,9 +3,10 @@ package org.usfirst.frc.team449.robot.generalInterfaces;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.Logger;
 import io.github.oblarg.oblog.annotations.Log;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 
 public class MotorContainer implements Loggable {
   @NotNull @Log.Exclude private static final MotorContainer instance = new MotorContainer();

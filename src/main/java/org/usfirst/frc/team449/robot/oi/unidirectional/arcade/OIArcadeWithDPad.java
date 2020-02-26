@@ -46,29 +46,29 @@ public class OIArcadeWithDPad extends OIArcade {
    * Default constructor
    *
    * @param gamepad The gamepad containing the joysticks and buttons. Can be null if not using the
-   *     D-pad.
+   * D-pad.
    * @param rotThrottle The throttle for rotating the robot.
    * @param fwdThrottle The throttle for driving the robot straight.
    * @param invertDPad Whether or not to invert the D-pad. Defaults to false.
    * @param dPadShift How fast the dPad should turn the robot, on [0, 1]. Defaults to 0.
    * @param scaleRotByFwdPoly The polynomial to scale the forwards throttle output by before using
-   *     it to scale the rotational throttle. Can be null, and if it is, rotational throttle is not
-   *     scaled by forwards throttle.
+   * it to scale the rotational throttle. Can be null, and if it is, rotational throttle is not
+   * scaled by forwards throttle.
    * @param turnInPlaceRotScale The scalar that scales the rotational throttle while turning in
-   *     place.
+   * place.
    * @param rescaleOutputs Whether or not to scale the left and right outputs so the max output is
-   *     1. Defaults to false.
+   * 1. Defaults to false.
    */
   @JsonCreator
   public OIArcadeWithDPad(
-      @NotNull @JsonProperty(required = true) Throttle rotThrottle,
-      @NotNull @JsonProperty(required = true) Throttle fwdThrottle,
-      double dPadShift,
-      boolean invertDPad,
-      @Nullable MappedJoystick gamepad,
-      @Nullable Polynomial scaleRotByFwdPoly,
-      @JsonProperty(required = true) double turnInPlaceRotScale,
-      boolean rescaleOutputs) {
+      @NotNull @JsonProperty(required = true) final Throttle rotThrottle,
+      @NotNull @JsonProperty(required = true) final Throttle fwdThrottle,
+      final double dPadShift,
+      final boolean invertDPad,
+      @Nullable final MappedJoystick gamepad,
+      @Nullable final Polynomial scaleRotByFwdPoly,
+      @JsonProperty(required = true) final double turnInPlaceRotScale,
+      final boolean rescaleOutputs) {
     super(rescaleOutputs);
     this.dPadShift = (invertDPad ? -1 : 1) * dPadShift;
     this.rotThrottle = rotThrottle;
@@ -82,7 +82,7 @@ public class OIArcadeWithDPad extends OIArcade {
    * The forwards and rotational movement given to the drive.
    *
    * @return An array of length 2, where the first element is the forwards output and the second is
-   *     the rotational, both from [-1, 1]
+   * the rotational, both from [-1, 1]
    */
   @Override
   public double[] getFwdRotOutput() {
@@ -96,7 +96,7 @@ public class OIArcadeWithDPad extends OIArcade {
       return new double[] {fwd, rotThrottle.getValue() * turnInPlaceRotScale};
     } else if (scaleRotByFwdPoly != null) { // If we're using Cheezy Drive
       return new double[] {
-        fwd, rotThrottle.getValue() * scaleRotByFwdPoly.applyAsDouble(Math.abs(fwd))
+          fwd, rotThrottle.getValue() * scaleRotByFwdPoly.applyAsDouble(Math.abs(fwd))
       };
     } else { // Plain and simple
       return new double[] {fwd, rotThrottle.getValue()};

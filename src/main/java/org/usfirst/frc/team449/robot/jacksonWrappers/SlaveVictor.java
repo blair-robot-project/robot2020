@@ -25,7 +25,7 @@ public class SlaveVictor implements SlaveMotor {
    *
    * @param port The CAN ID of this Victor SPX.
    * @param invertType Whether to invert this relative to the master. Defaults to not inverting
-   *     relative to master.
+   * relative to master.
    */
   @JsonCreator
   public SlaveVictor(@JsonProperty(required = true) final int port, final InvertType invertType) {
@@ -53,7 +53,7 @@ public class SlaveVictor implements SlaveMotor {
    * @param toFollow The motor controller to follow.
    * @param brakeMode Whether this Talon should be in brake mode or coast mode.
    * @param voltageCompSamples The number of voltage compensation samples to use, or null to not
-   *     compensate voltage.
+   * compensate voltage.
    */
   public void setMaster(
       @NotNull final IMotorController toFollow,

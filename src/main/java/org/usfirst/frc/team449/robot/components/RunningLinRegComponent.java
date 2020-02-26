@@ -40,11 +40,11 @@ public class RunningLinRegComponent {
    *
    * @param bufferSize The maximum number of points to take the linear regression over.
    * @param rSquaredThreshhold The minimum R^2 value considered significant enough to return the
-   *     regression slope instead of NaN. Defaults to 0.
+   * regression slope instead of NaN. Defaults to 0.
    */
   @JsonCreator
   public RunningLinRegComponent(
-      @JsonProperty(required = true) int bufferSize, double rSquaredThreshhold) {
+      @JsonProperty(required = true) final int bufferSize, final double rSquaredThreshhold) {
     xBuffer = new CircularBuffer(bufferSize);
     yBuffer = new CircularBuffer(bufferSize);
     this.rSquaredThreshhold = rSquaredThreshhold;
@@ -82,7 +82,7 @@ public class RunningLinRegComponent {
    * @param x The x point to add.
    * @param y The y point to add
    */
-  public void addPoint(double x, double y) {
+  public void addPoint(final double x, final double y) {
     if (numPoints >= bufferSize) {
       // Pop the last point and remove it from the sums
       backX = xBuffer.removeLast();

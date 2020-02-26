@@ -3,11 +3,12 @@ package org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.DoubleUnaryOperator;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /** A polynomial of a single variable. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -29,13 +30,13 @@ public class Polynomial implements DoubleUnaryOperator {
    * Default constructor.
    *
    * @param powerToCoefficientMap A map of the powers and coefficients of each term. Defaults to
-   *     [1:1] if null or 0-length.
+   * [1:1] if null or 0-length.
    * @param scaleCoefficientSumTo Scales each coefficient so they all add up to this number. Can be
-   *     null to avoid scaling.
+   * null to avoid scaling.
    */
   @JsonCreator
   public Polynomial(
-      @Nullable Map<Double, Double> powerToCoefficientMap, @Nullable Double scaleCoefficientSumTo) {
+      @Nullable final Map<Double, Double> powerToCoefficientMap, @Nullable final Double scaleCoefficientSumTo) {
     // Default powerToCoefficientMap to just be [1:1].
     if (powerToCoefficientMap == null || powerToCoefficientMap.size() == 0) {
       this.powerToCoefficientMap = new HashMap<>(1);
@@ -57,11 +58,11 @@ public class Polynomial implements DoubleUnaryOperator {
    * @return The value of the polynomial evaluated at |x|, then changed to the sign of x.
    */
   @Override
-  public double applyAsDouble(double x) {
+  public double applyAsDouble(final double x) {
     sign = Math.signum(x);
     abs = Math.abs(x);
     toRet = 0;
-    for (double power : powerToCoefficientMap.keySet()) {
+    for (final double power : powerToCoefficientMap.keySet()) {
       toRet += Math.pow(abs, power) * powerToCoefficientMap.get(power);
     }
     return toRet * sign;
@@ -72,13 +73,13 @@ public class Polynomial implements DoubleUnaryOperator {
    *
    * @param scaleTo The number to scale the sum of coefficients to.
    */
-  public void scaleCoefficientSum(double scaleTo) {
+  public void scaleCoefficientSum(final double scaleTo) {
     double coefficientSum = 0;
-    for (double power : powerToCoefficientMap.keySet()) {
+    for (final double power : powerToCoefficientMap.keySet()) {
       coefficientSum += powerToCoefficientMap.get(power);
     }
-    double scaleFactor = scaleTo / coefficientSum;
-    for (double power : powerToCoefficientMap.keySet()) {
+    final double scaleFactor = scaleTo / coefficientSum;
+    for (final double power : powerToCoefficientMap.keySet()) {
       powerToCoefficientMap.replace(power, powerToCoefficientMap.get(power) * scaleFactor);
     }
   }

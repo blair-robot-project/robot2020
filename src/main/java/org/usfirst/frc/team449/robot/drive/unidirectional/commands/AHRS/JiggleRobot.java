@@ -21,16 +21,16 @@ public class JiggleRobot<T extends Subsystem & DriveUnidirectional & SubsystemAH
    * Instantiate the CommandGroup
    *
    * @param onTargetBuffer A buffer timer for having the loop be on target before it stops running.
-   *     Can be null for no buffer.
+   * Can be null for no buffer.
    * @param absoluteTolerance The maximum number of degrees off from the target at which we can be
-   *     considered within tolerance.
+   * considered within tolerance.
    * @param minimumOutput The minimum output of the loop. Defaults to zero.
    * @param maximumOutput The maximum output of the loop. Can be null, and if it is, no maximum
-   *     output is used.
+   * output is used.
    * @param loopTimeMillis The time, in milliseconds, between each loop iteration. Defaults to 20
-   *     ms.
+   * ms.
    * @param deadband The deadband around the setpoint, in degrees, within which no output is given
-   *     to the motors. Defaults to zero.
+   * to the motors. Defaults to zero.
    * @param inverted Whether the loop is inverted. Defaults to false.
    * @param kP Proportional gain. Defaults to zero.
    * @param kI Integral gain. Defaults to zero.
@@ -39,17 +39,17 @@ public class JiggleRobot<T extends Subsystem & DriveUnidirectional & SubsystemAH
    */
   @JsonCreator
   public JiggleRobot(
-      @JsonProperty(required = true) double absoluteTolerance,
-      @Nullable Debouncer onTargetBuffer,
-      double minimumOutput,
-      @Nullable Double maximumOutput,
-      @Nullable Integer loopTimeMillis,
-      double deadband,
-      boolean inverted,
-      int kP,
-      int kI,
-      int kD,
-      @NotNull @JsonProperty(required = true) T subsystem) {
+      @JsonProperty(required = true) final double absoluteTolerance,
+      @Nullable final Debouncer onTargetBuffer,
+      final double minimumOutput,
+      @Nullable final Double maximumOutput,
+      @Nullable final Integer loopTimeMillis,
+      final double deadband,
+      final boolean inverted,
+      final int kP,
+      final int kI,
+      final int kD,
+      @NotNull @JsonProperty(required = true) final T subsystem) {
     addCommands(
         new NavXTurnToAngleRelative<>(
             absoluteTolerance,

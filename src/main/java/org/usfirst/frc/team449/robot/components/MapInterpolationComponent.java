@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
@@ -13,25 +14,26 @@ import java.util.TreeMap;
 public class MapInterpolationComponent {
 
   private InterpolationMethod currentMethod;
-  private TreeMap<Double, Double> LUT;
+  private final TreeMap<Double, Double> LUT;
   private Map.Entry<Double, Double> upper;
   private Map.Entry<Double, Double> lower;
+
   @JsonCreator
   public MapInterpolationComponent(
-      @JsonProperty(required = true) InterpolationMethod method,
-      @JsonProperty(required = true) List<Map.Entry<Double, Double>> entries) {
+      @JsonProperty(required = true) final InterpolationMethod method,
+      @JsonProperty(required = true) final List<Map.Entry<Double, Double>> entries) {
     currentMethod = method;
     LUT = new TreeMap<>();
-    for (Map.Entry<Double, Double> entry : entries) {
+    for (final Map.Entry<Double, Double> entry : entries) {
       LUT.put(entry.getKey(), entry.getValue());
     }
   }
 
-  public void updateMethod(InterpolationMethod method) {
+  public void updateMethod(final InterpolationMethod method) {
     currentMethod = method;
   }
 
-  public double calculate(double x) {
+  public double calculate(final double x) {
     if (LUT.containsKey(x)) {
       return LUT.get(x);
     }
@@ -39,7 +41,7 @@ public class MapInterpolationComponent {
     double ratio;
     try {
       ratio = (x - lower.getKey()) / (upper.getKey() - lower.getKey());
-    } catch (ArithmeticException e) {
+    } catch (final ArithmeticException e) {
       ratio = 0;
     }
     switch (currentMethod) {
@@ -52,18 +54,18 @@ public class MapInterpolationComponent {
     }
   }
 
-  private void updateEntries(double x) {
+  private void updateEntries(final double x) {
     lower = LUT.floorEntry(x) != null ? LUT.floorEntry(x) : new AbstractMap.SimpleEntry<>(0., 0.);
     upper =
         LUT.ceilingEntry(x) != null ? LUT.ceilingEntry(x) : new AbstractMap.SimpleEntry<>(0., 0.);
   }
 
-  private double linear(double x) {
+  private double linear(final double x) {
     return lower.getValue() * (1 - x) + upper.getValue() * x;
   }
 
-  private double cosine(double x) {
-    double smoothpoint = (1 - Math.cos(x * Math.PI)) / 2;
+  private double cosine(final double x) {
+    final double smoothpoint = (1 - Math.cos(x * Math.PI)) / 2;
     return linear(smoothpoint);
   }
 

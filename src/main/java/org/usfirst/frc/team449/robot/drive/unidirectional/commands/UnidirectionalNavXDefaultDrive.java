@@ -31,14 +31,15 @@ import java.util.function.DoubleUnaryOperator;
     property = "@class")
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class UnidirectionalNavXDefaultDrive<
-        T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
+    T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
     extends PIDAngleCommand implements Loggable {
   /** The drive this command is controlling. */
   @NotNull @Log.Exclude protected final T subsystem;
   /** The OI giving the input stick values. */
   @NotNull protected final OIUnidirectional oi;
   /**
-   * The maximum velocity for the robot to be at in order to switch to driveStraight, in degrees/sec
+   * The maximum velocity for the robot to be at in order to switch to driveStraight, in
+   * degrees/sec
    */
   private final double maxAngularVelToEnterLoop;
   /**
@@ -62,18 +63,18 @@ public class UnidirectionalNavXDefaultDrive<
    * Default constructor
    *
    * @param onTargetBuffer A buffer timer for having the loop be on target before it stops running.
-   *     Can be null for no buffer.
+   * Can be null for no buffer.
    * @param absoluteTolerance The maximum number of degrees off from the target at which we can be
-   *     considered within tolerance.
+   * considered within tolerance.
    * @param minimumOutput The minimum output of the loop. Defaults to zero.
    * @param maximumOutput The maximum output of the loop. Can be null, and if it is, no maximum
-   *     output is used.
+   * output is used.
    * @param loopTimeMillis The time, in milliseconds, between each loop iteration. Defaults to 20
-   *     ms.
+   * ms.
    * @param deadband The deadband around the setpoint, in degrees, within which no output is given
-   *     to the motors. Defaults to zero.
+   * to the motors. Defaults to zero.
    * @param maxAngularVelToEnterLoop The maximum angular velocity, in degrees/sec, at which the loop
-   *     will be entered. Defaults to 180.
+   * will be entered. Defaults to 180.
    * @param inverted Whether the loop is inverted. Defaults to false.
    * @param kP Proportional gain. Defaults to zero.
    * @param kI Integral gain. Defaults to zero.
@@ -82,7 +83,7 @@ public class UnidirectionalNavXDefaultDrive<
    * @param subsystem The drive to execute this command on.
    * @param oi The OI controlling the robot.
    * @param rampComponent The acceleration-limiting ramp for the output to the drive. Defaults to no
-   *     ramp.
+   * ramp.
    */
   @JsonCreator
   public UnidirectionalNavXDefaultDrive(
@@ -214,7 +215,7 @@ public class UnidirectionalNavXDefaultDrive<
    */
   @Override
   //@Log
-public boolean isFinished() {
+  public boolean isFinished() {
     return false;
   }
 
@@ -283,7 +284,7 @@ public boolean isFinished() {
   //    }
 
   //@Log
-public boolean isDrivingStraight() {
+  public boolean isDrivingStraight() {
     return this.drivingStraight;
   }
 }

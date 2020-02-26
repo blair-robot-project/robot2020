@@ -15,10 +15,11 @@ import edu.wpi.first.wpilibj.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import io.github.oblarg.oblog.Loggable;
-import java.util.ArrayList;
-import java.util.List;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 @JsonTypeInfo(
@@ -27,32 +28,32 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController;
     property = "@class")
 public class RamseteControllerGoToPosition extends CommandBase implements Loggable {
 
-  private DriveUnidirectionalWithGyro drivetrain;
-  private MappedPIDController leftPidController;
-  private MappedPIDController rightPidController;
-  private Pose2d endingPose;
-  private List<Translation2d> translations;
+  private final DriveUnidirectionalWithGyro drivetrain;
+  private final MappedPIDController leftPidController;
+  private final MappedPIDController rightPidController;
+  private final Pose2d endingPose;
+  private final List<Translation2d> translations;
   private RamseteCommand wrappedCommand;
-  private TrajectoryConfig config;
+  private final TrajectoryConfig config;
 
   @JsonCreator
   public RamseteControllerGoToPosition(
-      @JsonProperty(required = true) DriveUnidirectionalWithGyro drivetrain,
+      @JsonProperty(required = true) final DriveUnidirectionalWithGyro drivetrain,
       @JsonProperty(required = true) final double maxSpeedMeters,
       @JsonProperty(required = true) final double maxAccelMeters,
-      Double maxCentripetalAcceleration,
-      @JsonProperty(required = true) MappedPIDController leftPidController,
-      @JsonProperty(required = true) MappedPIDController rightPidController,
-      @JsonProperty(required = true) Pose2d endingPose,
-      List<Translation2d> translations,
-      boolean reversed) {
+      final Double maxCentripetalAcceleration,
+      @JsonProperty(required = true) final MappedPIDController leftPidController,
+      @JsonProperty(required = true) final MappedPIDController rightPidController,
+      @JsonProperty(required = true) final Pose2d endingPose,
+      final List<Translation2d> translations,
+      final boolean reversed) {
     this.drivetrain = drivetrain;
     this.leftPidController = leftPidController;
     this.rightPidController = rightPidController;
     this.endingPose = endingPose;
     this.translations = translations;
 
-    TrajectoryConstraint voltageConstraint =
+    final TrajectoryConstraint voltageConstraint =
         new DifferentialDriveVoltageConstraint(
             drivetrain.getLeftFeedforwardCalculator(), drivetrain.getDriveKinematics(), 12);
 
@@ -92,7 +93,7 @@ public class RamseteControllerGoToPosition extends CommandBase implements Loggab
   }
 
   @Override
-  public void end(boolean interrupted) {
+  public void end(final boolean interrupted) {
     wrappedCommand.end(interrupted);
   }
 
