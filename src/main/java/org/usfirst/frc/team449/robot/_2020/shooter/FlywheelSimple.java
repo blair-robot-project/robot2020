@@ -18,56 +18,31 @@ import org.usfirst.frc.team449.robot.other.SimUtil;
 
 import java.util.Optional;
 
-/**
- * A flywheel multiSubsystem with a single flywheel and a single-motor feeder system.
- */
+/** A flywheel multiSubsystem with a single flywheel and a single-motor feeder system. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class FlywheelSimple extends SubsystemBase
     implements SubsystemFlywheel, SubsystemConditional, io.github.oblarg.oblog.Loggable {
 
   final int SPEED_CONDITION_BUFFER_SIZE = 30;
 
-  /**
-   * The flywheel's motor
-   */
-  @NotNull
-  private final SmartMotor shooterMotor;
+  /** The flywheel's motor */
+  @NotNull private final SmartMotor shooterMotor;
 
-  /**
-   * Throttle at which to run the multiSubsystem, from [-1, 1]
-   */
+  /** Throttle at which to run the multiSubsystem, from [-1, 1] */
   private final double shooterThrottle;
 
-  /**
-   * Time from giving the multiSubsystem voltage to being ready to fire, in seconds.
-   */
+  /** Time from giving the multiSubsystem voltage to being ready to fire, in seconds. */
   private final double spinUpTimeoutSecs;
 
-  @Nullable
-  private final Double minShootingSpeed;
-
-  /**
-   * Whether the flywheel is currently commanded to spin
-   */
-  @NotNull
-  @Log.ToString
-  private SubsystemFlywheel.FlywheelState state;
-
-  /**
-   * Whether the condition was met last time caching was done.
-   */
+  @Nullable private final Double minShootingSpeed;
+  @Nullable @Log.Exclude private final SimDevice simDevice;
+  @Nullable private final SimBoolean sim_manualStates, sim_isAtSpeed, sim_isTimedOut;
+  @NotNull private final DebouncerEx speedConditionDebouncer = new DebouncerEx(SPEED_CONDITION_BUFFER_SIZE);
+  /** Whether the flywheel is currently commanded to spin */
+  @NotNull @Log.ToString private SubsystemFlywheel.FlywheelState state;
+  /** Whether the condition was met last time caching was done. */
   private boolean conditionMetCached;
-  @Log
-  private double lastSpinUpTimeMS;
-
-  @Nullable
-  @Log.Exclude
-  private final SimDevice simDevice;
-  @Nullable
-  private final SimBoolean sim_manualStates, sim_isAtSpeed, sim_isTimedOut;
-
-  @NotNull
-  private final DebouncerEx speedConditionDebouncer = new DebouncerEx(SPEED_CONDITION_BUFFER_SIZE);
+  @Log private double lastSpinUpTimeMS;
 
   /**
    * Default constructor
@@ -105,35 +80,27 @@ public class FlywheelSimple extends SubsystemBase
     }
   }
 
-  /**
-   * Turn the multiSubsystem on to a map-specified speed.
-   */
+  /** Turn the multiSubsystem on to a map-specified speed. */
   @Override
   public void turnFlywheelOn() {
     this.shooterMotor.enable();
     this.shooterMotor.setVelocity(this.shooterThrottle);
   }
 
-  /**
-   * Turn the multiSubsystem off.
-   */
+  /** Turn the multiSubsystem off. */
   @Override
   public void turnFlywheelOff() {
     this.shooterMotor.disable();
   }
 
-  /**
-   * @return The current state of the multiSubsystem.
-   */
+  /** @return The current state of the multiSubsystem. */
   @NotNull
   @Override
   public SubsystemFlywheel.FlywheelState getFlywheelState() {
     return this.state;
   }
 
-  /**
-   * @param state The state to switch the multiSubsystem to.
-   */
+  /** @param state The state to switch the multiSubsystem to. */
   @Override
   public void setFlywheelState(@NotNull final SubsystemFlywheel.FlywheelState state) {
     if (this.state != FlywheelState.SPINNING_UP && state == FlywheelState.SPINNING_UP)
@@ -185,26 +152,20 @@ public class FlywheelSimple extends SubsystemBase
         });
   }
 
-  /**
-   * @return true if the condition is met, false otherwise
-   */
+  /** @return true if the condition is met, false otherwise */
   @Override
   public boolean isConditionTrue() {
     return this.isReadyToShoot();
   }
 
-  /**
-   * @return true if the condition was met when cached, false otherwise
-   */
+  /** @return true if the condition was met when cached, false otherwise */
   @Override
   @Log
   public boolean isConditionTrueCached() {
     return this.conditionMetCached;
   }
 
-  /**
-   * Updates all cached values with current ones.
-   */
+  /** Updates all cached values with current ones. */
   @Override
   public void update() {
     this.speedConditionDebouncer.update(this.isAtShootingSpeed());

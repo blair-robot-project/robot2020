@@ -59,6 +59,7 @@ public class MappedTalon implements SmartMotor {
   private final boolean fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen;
   /** The settings currently being used by this Talon. */
   @NotNull protected PerGearSettings currentGearSettings;
+
   Faults faults = new Faults();
   /**
    * The coefficient the output changes by after being measured by the encoder, e.g. this would be
@@ -388,7 +389,7 @@ public class MappedTalon implements SmartMotor {
   /** @return The gear this subsystem is currently in. */
   @Override
   @Log
-public int getGear() {
+  public int getGear() {
     return this.currentGearSettings.gear;
   }
 
@@ -612,7 +613,7 @@ public int getGear() {
    * @return The closed-loop error in FPS, or null if no encoder CPR was given.
    */
   @Log
-@Override
+  @Override
   public double getError() {
     if (canTalon.getControlMode().equals(ControlMode.Velocity)) {
       return this.encoderToUPS(canTalon.getClosedLoopError(0));
@@ -628,7 +629,7 @@ public int getGear() {
    */
   @Nullable
   @Log
-@Override
+  @Override
   public Double getSetpoint() {
     return setpoint;
   }
@@ -639,7 +640,7 @@ public int getGear() {
    * @return Voltage in volts.
    */
   @Log
-@Override
+  @Override
   public double getOutputVoltage() {
     return canTalon.getMotorOutputVoltage();
   }
@@ -650,7 +651,7 @@ public int getGear() {
    * @return Voltage in volts.
    */
   @Log
-@Override
+  @Override
   public double getBatteryVoltage() {
     return canTalon.getBusVoltage();
   }
@@ -661,7 +662,7 @@ public int getGear() {
    * @return Current in amps.
    */
   @Log
-@Override
+  @Override
   public double getOutputCurrent() {
     return canTalon.getSupplyCurrent();
   }
@@ -714,7 +715,7 @@ public int getGear() {
   /** @return the position of the talon in feet, or null of inches per rotation wasn't given. */
   @Override
   @Log
-public Double getPositionUnits() {
+  public double getPositionUnits() {
     return encoderToUnit(canTalon.getSelectedSensorPosition(0));
   }
 

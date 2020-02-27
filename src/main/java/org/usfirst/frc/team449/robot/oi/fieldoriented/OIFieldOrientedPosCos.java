@@ -86,7 +86,7 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
   @Override
   @Nullable
   @Log
-public Double getTheta() {
+  public Double getTheta() {
     calcValues();
     return theta;
   }
@@ -98,7 +98,7 @@ public Double getTheta() {
    */
   @Override
   @Log
-public double getVel() {
+  public double getVel() {
     calcValues();
     return vel;
   }

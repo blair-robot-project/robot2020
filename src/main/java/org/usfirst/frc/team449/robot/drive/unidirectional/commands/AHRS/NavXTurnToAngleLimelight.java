@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.generalInterfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight;
-import org.usfirst.frc.team449.robot.other.Debouncer;
 import org.usfirst.frc.team449.robot.other.Clock;
+import org.usfirst.frc.team449.robot.other.Debouncer;
 
 /** Turn a certain number of degrees from the current heading, based on input from the limelight */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

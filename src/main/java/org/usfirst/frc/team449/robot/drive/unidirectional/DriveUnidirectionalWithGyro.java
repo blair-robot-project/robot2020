@@ -307,7 +307,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /** @return true if the NavX is currently overriden, false otherwise. */
   @Override
   @Log
-public boolean getOverrideGyro() {
+  public boolean getOverrideGyro() {
     return this.overrideGyro;
   }
 
@@ -319,7 +319,7 @@ public boolean getOverrideGyro() {
 
   /** Reset odometry tracker to current robot pose */
   @Log
-public void resetOdometry(final Pose2d pose) {
+  public void resetOdometry(final Pose2d pose) {
     resetPosition();
     ahrs.setHeading(pose.getRotation().getDegrees());
     driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(this.getHeading()));

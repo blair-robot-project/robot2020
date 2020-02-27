@@ -16,27 +16,27 @@ import org.jetbrains.annotations.NotNull;
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class PerpetualCommandReinitializing extends PerpetualCommand {
-    /**
-     * Creates a new PerpetualCommand. Will run another command in perpetuity, ignoring that command's
-     * end conditions, unless this command itself is interrupted.
-     *
-     * @param command            the command to run perpetually
-     */
-    @JsonCreator
-    public PerpetualCommandReinitializing(
-        @NotNull @JsonProperty(required = true) final Command command) {
-        // TODO: We should requireNonNull all @Nullable parameters because map errors can cause them to
-        //   be null, resulting in weird Jackson exceptions.
-        super(command);
-    }
+  /**
+   * Creates a new PerpetualCommand. Will run another command in perpetuity, ignoring that command's
+   * end conditions, unless this command itself is interrupted.
+   *
+   * @param command the command to run perpetually
+   */
+  @JsonCreator
+  public PerpetualCommandReinitializing(
+      @NotNull @JsonProperty(required = true) final Command command) {
+    // TODO: We should requireNonNull all @Nullable parameters because map errors can cause them to
+    //   be null, resulting in weird Jackson exceptions.
+    super(command);
+  }
 
-    @Override
-    public void execute() {
-        // TODO: How much less jank is this compared to ConditionalCommandDynamic?
-        if (this.m_command.isFinished()) {
-            this.m_command.end(false);
-            this.m_command.initialize();
-        }
-        super.execute();
+  @Override
+  public void execute() {
+    // TODO: How much less jank is this compared to ConditionalCommandDynamic?
+    if (this.m_command.isFinished()) {
+      this.m_command.end(false);
+      this.m_command.initialize();
     }
+    super.execute();
+  }
 }

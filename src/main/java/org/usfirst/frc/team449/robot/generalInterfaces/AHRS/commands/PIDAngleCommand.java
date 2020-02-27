@@ -117,7 +117,7 @@ public abstract class PIDAngleCommand extends CommandBase implements Loggable {
   }
 
   @Log
-protected double getSetpoint() {
+  protected double getSetpoint() {
     return pidController.getSetpoint();
   }
 
@@ -132,12 +132,12 @@ protected double getSetpoint() {
    * @return standard output
    */
   @Log
-protected double getRawOutput() {
+  protected double getRawOutput() {
     return pidController.calculate(subsystem.getHeadingCached());
   }
 
   @Log
-public double getError() {
+  public double getError() {
     return pidController.getPositionError();
   }
 
@@ -148,7 +148,7 @@ public double getError() {
    *     added to the right side.
    */
   @Log
-protected double getOutput() {
+  protected double getOutput() {
     double controllerOutput = getRawOutput();
     // Set the output to the minimum if it's too small.
     if (controllerOutput > 0 && controllerOutput < minimumOutput) {
@@ -189,13 +189,12 @@ protected double getOutput() {
   }
 
   /**
-   * Whether or not the loop is on target. Use this instead of {@link
-   * PIDController}'s onTarget.
+   * Whether or not the loop is on target. Use this instead of {@link PIDController}'s onTarget.
    *
    * @return True if on target, false otherwise.
    */
   @Log
-protected boolean onTarget() {
+  protected boolean onTarget() {
     if (onTargetBuffer == null) {
       return pidController.atSetpoint();
     } else {

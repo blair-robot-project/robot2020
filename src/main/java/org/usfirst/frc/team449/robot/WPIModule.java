@@ -25,8 +25,7 @@ import org.usfirst.frc.team449.robot.mixIn.WaitCommandMixIn;
 import org.usfirst.frc.team449.robot.mixIn.WaitUntilCommandMixIn;
 
 /**
- * A Jackson {@link com.fasterxml.jackson.databind.Module} for adding mix-in annotations to
- * classes.
+ * A Jackson {@link com.fasterxml.jackson.databind.Module} for adding mix-in annotations to classes.
  */
 public class WPIModule extends SimpleModule {
 

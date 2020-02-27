@@ -27,7 +27,9 @@ public class MappedAnalogInput extends AnalogInput implements Updatable, Loggabl
    */
   @JsonCreator
   public MappedAnalogInput(
-      @JsonProperty(required = true) final int port, final int oversampleBits, final int averageBits) {
+      @JsonProperty(required = true) final int port,
+      final int oversampleBits,
+      final int averageBits) {
     super(port);
     setOversampleBits(oversampleBits);
     setAverageBits(averageBits);
@@ -39,13 +41,13 @@ public class MappedAnalogInput extends AnalogInput implements Updatable, Loggabl
    * @return The value of the analog input on [0,1], scaled so that 5 volts is 1 and 0 volts is 0.
    */
   @Log
-public double getPercentValue() {
+  public double getPercentValue() {
     // Round to 3 decimal places and clip to between 0 and 1.
     return Math.min(Math.max(Math.round((getAverageValue() - 55.) / 64190. * 1000.) / 1000., 0), 1);
   }
 
   @Log
-public double getPercentValueCached() {
+  public double getPercentValueCached() {
     return percentValueCached;
   }
 
