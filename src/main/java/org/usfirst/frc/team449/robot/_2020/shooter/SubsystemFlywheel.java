@@ -1,49 +1,34 @@
 package org.usfirst.frc.team449.robot._2020.shooter;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemConditional;
 
-import java.util.Optional;
-
-/**
- * A subsystem with a flywheel and feeder.
- */
+/** A subsystem with a flywheel and feeder. */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CLASS,
     include = JsonTypeInfo.As.WRAPPER_OBJECT,
     property = "@class")
 public interface SubsystemFlywheel extends SubsystemConditional {
 
-  /**
-   * Turn the flywheel on to the speed passed to the constructor.
-   */
+  /** Turn the flywheel on to the speed passed to the constructor. */
   void turnFlywheelOn();
 
-  /**
-   * Turn the flywheel off.
-   */
+  /** Turn the flywheel off. */
   void turnFlywheelOff();
 
-  /**
-   * @return The current state of the flywheel.
-   */
+  /** @return The current state of the flywheel. */
   @NotNull
   FlywheelState getFlywheelState();
 
-  /**
-   * @param state The state to switch the flywheel to.
-   */
+  /** @param state The state to switch the flywheel to. */
   void setFlywheelState(@NotNull FlywheelState state);
 
-  /**
-   * @return Expected time from giving the flywheel voltage to being ready to fire, in seconds.
-   */
+  /** @return Expected time from giving the flywheel voltage to being ready to fire, in seconds. */
   double getSpinUpTimeSecs();
 
-  /**
-   * @return Whether the flywheel has attained a speed specified to be sufficient for shooting.
-   */
+  /** @return Whether the flywheel has attained a speed specified to be sufficient for shooting. */
   default boolean isReadyToShoot() {
     return true;
   }
@@ -53,9 +38,7 @@ public interface SubsystemFlywheel extends SubsystemConditional {
     return Optional.empty();
   }
 
-  /**
-   * An enum for the possible states of the flywheel.
-   */
+  /** An enum for the possible states of the flywheel. */
   enum FlywheelState {
     // Both flywheel and feeder off
     OFF,

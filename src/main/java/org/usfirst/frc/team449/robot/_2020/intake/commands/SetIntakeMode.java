@@ -12,24 +12,15 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 
-/**
- * Sets the mode of the intake.
- */
+/** Sets the mode of the intake. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SetIntakeMode<T extends Subsystem & SubsystemIntake> extends InstantCommand {
 
-  /**
-   * The subsystem to execute this command on.
-   */
-  @NotNull
-  @Log.Exclude
-  private final T subsystem;
+  /** The subsystem to execute this command on. */
+  @NotNull @Log.Exclude private final T subsystem;
 
-  /**
-   * The mode to set this subsystem to.
-   */
-  @NotNull
-  private final SubsystemIntake.IntakeMode mode;
+  /** The mode to set this subsystem to. */
+  @NotNull private final SubsystemIntake.IntakeMode mode;
 
   /**
    * Default constructor
@@ -46,9 +37,7 @@ public class SetIntakeMode<T extends Subsystem & SubsystemIntake> extends Instan
     this.mode = mode;
   }
 
-  /**
-   * Log when this command is initialized
-   */
+  /** Log when this command is initialized */
   @Override
   public void initialize() {
     Shuffleboard.addEventMarker(
@@ -56,17 +45,13 @@ public class SetIntakeMode<T extends Subsystem & SubsystemIntake> extends Instan
     // Logger.addEvent("SetIntakeMode init.", this.getClass());
   }
 
-  /**
-   * Set the intake to the given mode.
-   */
+  /** Set the intake to the given mode. */
   @Override
   public void execute() {
     subsystem.setMode(mode);
   }
 
-  /**
-   * Log when this command ends
-   */
+  /** Log when this command ends */
   @Override
   public void end(final boolean interrupted) {
     if (interrupted) {
