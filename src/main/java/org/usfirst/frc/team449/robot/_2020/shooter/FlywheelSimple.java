@@ -131,7 +131,7 @@ public class FlywheelSimple extends SubsystemBase
         () -> {
           if (this.minShootingSpeed == null) return false;
 
-          final Double actualVelocity = this.shooterMotor.getVelocity();
+          final double actualVelocity = this.shooterMotor.getVelocity();
           // TODO: Should we be looking at velocity or speed?
           return !Double.isNaN(actualVelocity) && Math.abs(actualVelocity) >= this.minShootingSpeed;
         });
