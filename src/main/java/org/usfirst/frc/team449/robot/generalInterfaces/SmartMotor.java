@@ -1,7 +1,5 @@
 package org.usfirst.frc.team449.robot.generalInterfaces;
 
-import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
-
 import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
@@ -21,9 +19,6 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
@@ -36,6 +31,12 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.FPSSmartMotorSimulated;
 import org.usfirst.frc.team449.robot.other.Updater;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /**
  * A motor with built in advanced capability featuring encoder, current limiting, and gear shifting
@@ -533,7 +534,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   SimpleMotorFeedforward getCurrentGearFeedForward();
 
   /** @return the position of the talon in feet, or null of inches per rotation wasn't given. */
-  Double getPositionUnits();
+  double getPositionUnits();
 
   /** Resets the position of the Talon to 0. */
   void resetPosition();

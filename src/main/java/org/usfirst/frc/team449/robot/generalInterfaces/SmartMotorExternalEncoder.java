@@ -28,12 +28,12 @@ public interface SmartMotorExternalEncoder extends SmartMotor {
    */
   @Override
   @Log
-  default Double getVelocity() {
+  default double getVelocity() {
     return this.encoderToUPS(getEncoder().getRate());
   }
 
   @Override
-  default Double getPositionUnits() {
+  default double getPositionUnits() {
     return encoderToUnit(getEncoder().getDistance());
   }
 
