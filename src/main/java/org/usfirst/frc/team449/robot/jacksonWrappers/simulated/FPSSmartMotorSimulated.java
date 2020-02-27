@@ -1,8 +1,5 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers.simulated;
 
-import static org.usfirst.frc.team449.robot.other.Util.clamp;
-import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
-
 import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -11,11 +8,6 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.DoubleSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
@@ -27,6 +19,15 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
 import org.usfirst.frc.team449.robot.other.Clock;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.DoubleSupplier;
+
+import static org.usfirst.frc.team449.robot.other.Util.clamp;
+import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /**
  * Class that implements {@link SmartMotor} without relying on the existence of actual hardware.
@@ -513,7 +514,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
 
   /** @return the position of the talon in feet, or null of inches per rotation wasn't given. */
   @Override
-  public Double getPositionUnits() {
+  public double getPositionUnits() {
     return this.encoderToUnit(this.encoderPosition());
   }
 
