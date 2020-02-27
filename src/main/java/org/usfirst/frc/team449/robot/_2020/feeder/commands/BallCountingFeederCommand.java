@@ -1,21 +1,30 @@
 package org.usfirst.frc.team449.robot._2020.feeder.commands;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.StringIdGenerator;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.Loggable;
 import java.util.function.BooleanSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake.IntakeMode;
+import org.usfirst.frc.team449.robot._2020.shooter.SubsystemFlywheel;
+import org.usfirst.frc.team449.robot._2020.shooter.SubsystemFlywheel.FlywheelState;
 
 /** A feeder that counts balls */
+@JsonIdentityInfo(generator = StringIdGenerator.class)
 public class BallCountingFeederCommand extends CommandBase implements Loggable {
 
   private final SubsystemIntake feeder;
   private final BooleanSupplier sensor1, sensor2;
   private final int ballThreshold;
   private final IntakeMode defaultMode;
+  private final Command flywheelStopCommand;
   // private final double updateTimeMillis;
 
   /** The previous values from the IR sensors */
@@ -27,14 +36,17 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
    * @param feeder the feeder feeder to operate on
    * @param sensor1 the first sensor of the transition from intake to feeder
    * @param sensor2 the second sensor of the transition from intake to feeder
+   * @param flywheelStopCommand to know if the shooter's stopped shooting
    * @param defaultMode The default intake mode
    * @param ballThreshold The number of balls that it will shoot at once before waiting /@param
    *     updateTimeMillis The time, in millisecs, to wait to update
    */
+  @JsonCreator
   public BallCountingFeederCommand(
       @NotNull SubsystemIntake feeder,
       @NotNull BooleanSupplier sensor1,
       @NotNull BooleanSupplier sensor2,
+      @NotNull @JsonProperty(required = true) Command flywheelStopCommand,
       @NotNull @JsonProperty(required = true) IntakeMode defaultMode,
       @JsonProperty(required = true) int ballThreshold
       /*@JsonProperty(required = true) double updateTimeMillis*/ ) {
@@ -46,6 +58,7 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
     this.sensor2 = sensor2;
     this.ballThreshold = ballThreshold;
     this.defaultMode = defaultMode;
+    this.flywheelStopCommand = flywheelStopCommand;
 
     sensor1Cached = sensor1.getAsBoolean();
     sensor2Cached = sensor2.getAsBoolean();
@@ -56,9 +69,7 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
   public synchronized void execute() {
     boolean sensor1Now = sensor1.getAsBoolean(), sensor2Now = sensor2.getAsBoolean();
     // var mode = feeder.getMode();
-    if (sensor2Cached
-        && !sensor2
-            .getAsBoolean() /*&& mode == IntakeMode.OUT_FAST && shooter.isReadyToShoot()*/) {
+    if (sensor2Cached && !sensor2.getAsBoolean() && flywheelStopCommand.isFinished() /*&& mode == IntakeMode.OUT_FAST && shooter.isReadyToShoot()*/) {
       // the ball(s) was/were there and now it's/they've moved on, probably been shot,
       //  since OUT_FAST means it's at shooting speed
       //  We can restart the count now (unless only one ball got shot, which probably
@@ -83,7 +94,7 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
       feeder.setMode(defaultMode);
     }
 
-    //Update sensor values
+    // Update sensor values
     sensor1Cached = sensor1Now;
     sensor2Cached = sensor2Now;
   }

@@ -76,6 +76,7 @@ useCameraServer: false
           perGearSettings:
             - &Low_Gear
               gear: LOW
+              postEncoderGearing: 0.0488998
               maxSpeed: 2.3
               kP: 0
               feedForwardCalculator:
@@ -85,6 +86,7 @@ useCameraServer: false
                   kA: 0.0698
             - &High_Gear
               gear: HIGH
+              postEncoderGearing: 0.12936611
               maxSpeed: 5.2
               kP: 0
               feedForwardCalculator:
