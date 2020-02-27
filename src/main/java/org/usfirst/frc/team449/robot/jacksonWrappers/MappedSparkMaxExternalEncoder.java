@@ -53,14 +53,14 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
   @NotNull private final String name;
   /** Whether the forwards or reverse limit switches are normally open or closed, respectively. */
   private final boolean fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen;
-  /** The settings currently being used by this Spark. */
-  @NotNull protected PerGearSettings currentGearSettings;
   /** REV brushless controller object */
   private final CANSparkMax spark;
   /** WPI provided encoder object */
   private final Encoder encoder;
   /** WPI provided PID Controller */
   private final PIDController pidController;
+  /** The settings currently being used by this Spark. */
+  @NotNull protected PerGearSettings currentGearSettings;
   /** The control mode of the motor */
   private ControlType currentControlMode;
   /** The most recently set setpoint. */

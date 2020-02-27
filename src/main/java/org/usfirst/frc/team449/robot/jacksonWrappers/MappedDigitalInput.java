@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DigitalInput;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-
 import java.util.function.BooleanSupplier;
 
 /** A roboRIO digital input pin. */
@@ -32,7 +31,7 @@ public class MappedDigitalInput extends DigitalInput implements Loggable, Boolea
    */
   @Override
   @Log
-public boolean get() {
+  public boolean get() {
     return !super.get(); // true is off by default in WPILib, and that's dumb
   }
 

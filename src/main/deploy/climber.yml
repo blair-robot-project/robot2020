@@ -25,12 +25,12 @@ CONSTANTS:
   - JoystickPorts:
       - &mechanismsJoystickPort 0
   - SolenoidPorts:
-      - &climberSolenoidForward 4
-      - &climberSolenoidReverse 5
+      - &climberSolenoidForward 6
+      - &climberSolenoidReverse 7
   - ButtonNumbers:
-      - &climberOffButtonNumber 5
-      - &climberLowerButtonNumber 6
-      - &climberRaiseButtonNumber 7
+      - &climberOffButtonNumber 9
+      - &climberLowerButtonNumber 5
+      - &climberRaiseButtonNumber 6
       - &climberWinchButtonNumber 8
 
 

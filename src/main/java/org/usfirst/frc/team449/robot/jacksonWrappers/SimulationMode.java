@@ -12,5 +12,5 @@ public enum SimulationMode {
    */
   WHEN_NECESSARY,
   /** Never simulate the hardware component. */
-  NEVER;
+  NEVER
 }
