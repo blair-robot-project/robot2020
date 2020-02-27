@@ -1,6 +1,9 @@
 package org.usfirst.frc.team449.robot._2020.feeder.commands;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.StringIdGenerator;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.Loggable;
@@ -10,6 +13,7 @@ import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake.IntakeMode;
 
 /** A feeder that counts balls */
+@JsonIdentityInfo(generator = StringIdGenerator.class)
 public class BallCountingFeederCommand extends CommandBase implements Loggable {
 
   private final SubsystemIntake feeder;
@@ -31,6 +35,7 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
    * @param ballThreshold The number of balls that it will shoot at once before waiting /@param
    *     updateTimeMillis The time, in millisecs, to wait to update
    */
+  @JsonCreator
   public BallCountingFeederCommand(
       @NotNull SubsystemIntake feeder,
       @NotNull BooleanSupplier sensor1,
