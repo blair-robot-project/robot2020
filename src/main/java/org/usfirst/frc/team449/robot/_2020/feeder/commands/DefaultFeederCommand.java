@@ -25,14 +25,18 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
   @NotNull private final ConditionTimingComponentDecorator sensor1;
   @Log.Exclude
   @NotNull private final ConditionTimingComponentDecorator sensor2;
+  private final double timeout;
 
   /**
+   * Default constructor
+   *
    * @param subsystem the feeder subsystem to operate on
    * @param sensor1 the first sensor of the transition from intake to feeder
    * @param sensor2 the second sensor of the transition from intake to feeder
    * @param runMode the {@link org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake.IntakeMode}
    * to run the feeder at when
-   * @param timeout unused
+   * @param timeout maximum duration for which to keep running the feeder if the sensors remain
+   * continuously activated
    */
   @JsonCreator
   public DefaultFeederCommand(@NotNull @JsonProperty(required = true) final SubsystemIntake subsystem,
@@ -41,10 +45,11 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
                               @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode runMode,
                               @Deprecated final double timeout) {
     this.feeder = subsystem;
-    this.runMode = runMode;
     this.feederIsOn = new ConditionTimingComponentObserver(false);
     this.sensor1 = new ConditionTimingComponentDecorator(sensor1, false);
     this.sensor2 = new ConditionTimingComponentDecorator(sensor2, false);
+    this.runMode = runMode;
+    this.timeout = timeout;
   }
 
   @Override
@@ -60,6 +65,13 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
   }
 
   public boolean shouldBeRunning() {
+    // Give up if it's been long enough after either sensor last activated and there's still something
+    // activating one of them. This specifically will continue giving up even if one of the sensors
+    // deactivates but the other still surpasses the timeout.
+    if (Math.min(this.sensor1.timeSinceLastBecameTrue(), this.sensor2.timeSinceLastBecameTrue()) > this.timeout) {
+      return false;
+    }
+
     // Run when either sensor is being actively tripped.
     return this.sensor1.isTrue() || this.sensor2.isTrue();
   }
