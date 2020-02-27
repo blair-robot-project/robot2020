@@ -11,7 +11,6 @@ public class Util {
    *
    * @param o the object to retrieve a prefix for
    * @return the prefix to be prepended to the message when the specified object logs
-   *
    * @implNote the prefix is the simple name of the type of the object within brackets
    */
   public static String getLogPrefix(@NotNull final Object o) {
@@ -23,7 +22,6 @@ public class Util {
    *
    * @param clazz the type to retrieve a prefix for
    * @return the prefix to be prepended to the message when the specified type logs
-   *
    * @implNote the prefix is the simple name of the type within brackets
    */
   public static String getLogPrefix(final Class<?> clazz) {

@@ -1,5 +1,7 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers;
 
+import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,8 +13,6 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
-
-import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
 
 /** A Jackson-compatible, invertible wrapper for the NavX. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -43,7 +43,8 @@ public class MappedAHRS implements Updatable, Loggable {
    * @param invertYaw Whether or not to invert the yaw axis. Defaults to true.
    */
   @JsonCreator
-  public MappedAHRS(@JsonProperty(required = true) final SerialPort.Port port, final Boolean invertYaw) {
+  public MappedAHRS(
+      @JsonProperty(required = true) final SerialPort.Port port, final Boolean invertYaw) {
     if (port.equals(SerialPort.Port.kMXP)) {
       this.ahrs = new AHRS(SPI.Port.kMXP);
     } else {
@@ -140,7 +141,7 @@ public class MappedAHRS implements Updatable, Loggable {
    * @return The heading, in degrees from [-180, 180]
    */
   @Log
-public double getCachedHeading() {
+  public double getCachedHeading() {
     return cachedHeading;
   }
 
@@ -151,7 +152,7 @@ public double getCachedHeading() {
    * @return The angular displacement, in degrees.
    */
   @Log
-public double getCachedAngularDisplacement() {
+  public double getCachedAngularDisplacement() {
     return cachedAngularDisplacement;
   }
 
@@ -161,7 +162,7 @@ public double getCachedAngularDisplacement() {
    * @return The angular yaw velocity, in degrees/sec.
    */
   @Log
-public double getCachedAngularVelocity() {
+  public double getCachedAngularVelocity() {
     return cachedAngularVel;
   }
 
@@ -171,7 +172,7 @@ public double getCachedAngularVelocity() {
    * @return Linear X acceleration, in feet/(sec^2)
    */
   @Log
-public double getCachedXAccel() {
+  public double getCachedXAccel() {
     return cachedXAccel;
   }
 
@@ -181,7 +182,7 @@ public double getCachedXAccel() {
    * @return Linear Y acceleration, in feet/(sec^2)
    */
   @Log
-public double getCachedYAccel() {
+  public double getCachedYAccel() {
     return cachedYAccel;
   }
 
@@ -191,7 +192,7 @@ public double getCachedYAccel() {
    * @return The pitch, in degrees from [-180, 180]
    */
   @Log
-public double getCachedPitch() {
+  public double getCachedPitch() {
     return cachedPitch;
   }
 

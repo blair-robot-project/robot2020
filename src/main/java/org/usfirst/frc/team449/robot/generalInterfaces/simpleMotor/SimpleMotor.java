@@ -35,9 +35,7 @@ public interface SimpleMotor extends SubsystemAnalogMotor {
     this.setVelocity(input);
   }
 
-  /**
-   * Unused.
-   */
+  /** Unused. */
   enum Type {
     FPSTalon,
     Victor,

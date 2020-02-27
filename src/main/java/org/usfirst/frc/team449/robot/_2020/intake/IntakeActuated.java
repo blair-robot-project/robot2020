@@ -14,24 +14,18 @@ import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemSolenoid;
 /**
  * A decorator to make an intake that goes up and down with a piston.
  *
- * @deprecated Use a separate {@link org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple}
- * and {@link org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple} instead.
+ * @deprecated Use a separate {@link
+ *     org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple} and {@link
+ *     org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple} instead.
  */
 @Deprecated(forRemoval = true)
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class IntakeActuated implements Subsystem, SubsystemIntake, SubsystemSolenoid, Loggable {
-  @NotNull
-  private final SubsystemIntake implementation;
-  /**
-   * The piston for actuating the intake.
-   */
-  @NotNull
-  private final DoubleSolenoid piston;
-  /**
-   * The current position of the piston
-   */
-  @NotNull
-  private DoubleSolenoid.Value currentPistonPos;
+  @NotNull private final SubsystemIntake implementation;
+  /** The piston for actuating the intake. */
+  @NotNull private final DoubleSolenoid piston;
+  /** The current position of the piston */
+  @NotNull private DoubleSolenoid.Value currentPistonPos;
 
   /**
    * Default constructor.
@@ -40,42 +34,35 @@ public class IntakeActuated implements Subsystem, SubsystemIntake, SubsystemSole
    * @param piston The piston for actuating the intake.
    */
   @JsonCreator
-  public IntakeActuated(@NotNull @JsonProperty(required = true) final SubsystemIntake implementation,
-                        @NotNull @JsonProperty(required = true) final DoubleSolenoid piston) {
+  public IntakeActuated(
+      @NotNull @JsonProperty(required = true) final SubsystemIntake implementation,
+      @NotNull @JsonProperty(required = true) final DoubleSolenoid piston) {
     this.implementation = implementation;
     this.piston = piston;
     this.currentPistonPos = DoubleSolenoid.Value.kOff;
   }
 
-  /**
-   * @param value The position to set the solenoid to.
-   */
+  /** @param value The position to set the solenoid to. */
   @Override
   public void setSolenoid(@NotNull final DoubleSolenoid.Value value) {
     currentPistonPos = value;
     piston.set(value);
   }
 
-  /**
-   * @return the current position of the solenoid.
-   */
+  /** @return the current position of the solenoid. */
   @Override
   @NotNull
   public DoubleSolenoid.Value getSolenoidPosition() {
     return currentPistonPos;
   }
 
-  /**
-   * @return the current mode of the intake.
-   */
+  /** @return the current mode of the intake. */
   @Override
   public @NotNull IntakeMode getMode() {
     return this.implementation.getMode();
   }
 
-  /**
-   * @param mode The mode to switch the intake to.
-   */
+  /** @param mode The mode to switch the intake to. */
   @Override
   public void setMode(@NotNull final IntakeMode mode) {
     this.implementation.setMode(mode);

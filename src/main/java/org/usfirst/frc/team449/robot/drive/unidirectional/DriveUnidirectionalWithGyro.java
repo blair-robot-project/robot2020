@@ -108,7 +108,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
    */
   @Override
-  @Nullable
+  @NotNull
   public Double getLeftVel() {
     return this.leftMaster.getVelocity();
   }
@@ -119,7 +119,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
    */
   @Override
-  @Nullable
+  @NotNull
   public Double getRightVel() {
     return this.rightMaster.getVelocity();
   }
@@ -129,7 +129,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    *
    * @return The signed position in feet, or null if the drive doesn't have encoders.
    */
-  @Nullable
+  @NotNull
   @Override
   public Double getLeftPos() {
     return this.leftMaster.getPositionUnits();
@@ -140,7 +140,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    *
    * @return The signed position in feet, or null if the drive doesn't have encoders.
    */
-  @Nullable
+  @NotNull
   @Override
   public Double getRightPos() {
     return this.rightMaster.getPositionUnits();
@@ -307,7 +307,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /** @return true if the NavX is currently overriden, false otherwise. */
   @Override
   @Log
-public boolean getOverrideGyro() {
+  public boolean getOverrideGyro() {
     return this.overrideGyro;
   }
 
@@ -319,7 +319,7 @@ public boolean getOverrideGyro() {
 
   /** Reset odometry tracker to current robot pose */
   @Log
-public void resetOdometry(final Pose2d pose) {
+  public void resetOdometry(final Pose2d pose) {
     resetPosition();
     ahrs.setHeading(pose.getRotation().getDegrees());
     driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(this.getHeading()));

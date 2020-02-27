@@ -28,7 +28,7 @@ public class Debouncer extends ConditionTimingComponent {
    * Constructor for a time given in milliseconds.
    *
    * @param bufferTimeMilliseconds the amount of time the condition has to be true for, in
-   * milliseconds
+   *     milliseconds
    */
   public Debouncer(final long bufferTimeMilliseconds) {
     this(bufferTimeMilliseconds * 0.001);
@@ -39,7 +39,7 @@ public class Debouncer extends ConditionTimingComponent {
    *
    * @param currentState the current state of the condition
    * @return {@code true} if the condition has been true for the specified amount of time, {@code
-   * false} otherwise
+   *     false} otherwise
    */
   public boolean get(final boolean currentState) {
     this.update(Clock.currentTimeSeconds(), currentState);

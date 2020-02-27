@@ -14,15 +14,14 @@ import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedSparkMax implements SmartMotor {
@@ -50,14 +49,14 @@ public class MappedSparkMax implements SmartMotor {
   @NotNull private final String name;
   /** Whether the forwards or reverse limit switches are normally open or closed, respectively. */
   private final boolean fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen;
-  /** The settings currently being used by this Spark. */
-  @NotNull protected PerGearSettings currentGearSettings;
   /** REV brushless controller object */
   private final CANSparkMax spark;
   /** REV provided encoder object */
   private final CANEncoder canEncoder;
   /** REV provided PID Controller */
   private final CANPIDController pidController;
+  /** The settings currently being used by this Spark. */
+  @NotNull protected PerGearSettings currentGearSettings;
   /** The control mode of the motor */
   private ControlType currentControlMode;
   /** The most recently set setpoint. */
@@ -282,7 +281,7 @@ public class MappedSparkMax implements SmartMotor {
 
   @Override
   @Log
-public int getGear() {
+  public int getGear() {
     return this.currentGearSettings.gear;
   }
 
@@ -417,7 +416,7 @@ public int getGear() {
   /** @return Current RPM for debug purposes */
   @Override
   @Log
-public double encoderVelocity() {
+  public double encoderVelocity() {
     return this.canEncoder.getVelocity();
   }
 
@@ -428,7 +427,7 @@ public double encoderVelocity() {
    */
   @Override
   @Log
-public Double getVelocity() {
+  public double getVelocity() {
     return this.encoderToUPS(canEncoder.getVelocity());
   }
 
@@ -467,32 +466,32 @@ public Double getVelocity() {
 
   @Override
   @Log
-public double getError() {
+  public double getError() {
     return this.getSetpoint() - this.getVelocity();
   }
 
   @Nullable
   @Override
   @Log
-public Double getSetpoint() {
+  public Double getSetpoint() {
     return this.setpoint;
   }
 
   @Override
   @Log
-public double getOutputVoltage() {
+  public double getOutputVoltage() {
     return this.spark.getAppliedOutput() * this.spark.getBusVoltage();
   }
 
   @Override
   @Log
-public double getBatteryVoltage() {
+  public double getBatteryVoltage() {
     return this.spark.getBusVoltage();
   }
 
   @Override
   @Log
-public double getOutputCurrent() {
+  public double getOutputCurrent() {
     return this.spark.getOutputCurrent();
   }
 
