@@ -130,6 +130,24 @@ public class FlywheelCluster extends SubsystemBase implements SubsystemFlywheel,
   }
 
   /**
+   * Returns mean speed of the flywheels in the cluster
+   *
+   * @return mean speed of the flywheels in the cluster
+   */
+  @Override
+  public @NotNull Optional<Double> getSpeed() {
+    double sum = 0, count = 0;
+    for (final SubsystemFlywheel flywheel : this.flywheels) {
+      final Optional<Double> speed = flywheel.getSpeed();
+      if (speed.isPresent()) {
+        count++;
+        sum += speed.get();
+      }
+    }
+    return Optional.of(sum / count);
+  }
+
+  /**
    * Updates all cached values with current ones.
    */
   @Override
