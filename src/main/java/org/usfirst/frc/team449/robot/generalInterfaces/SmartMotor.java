@@ -19,6 +19,9 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
@@ -31,10 +34,6 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.FPSSmartMotorSimulated;
 import org.usfirst.frc.team449.robot.other.Updater;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
@@ -480,8 +479,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    *
    * @return The setpoint in sensible units for the current control mode.
    */
-  @Nullable
-  Double getSetpoint();
+  double getSetpoint();
 
   /**
    * Get the voltage the Talon is currently drawing from the PDP.

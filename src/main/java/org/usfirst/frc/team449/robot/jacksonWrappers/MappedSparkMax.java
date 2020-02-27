@@ -14,15 +14,14 @@ import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedSparkMax implements SmartMotor {
@@ -471,10 +470,9 @@ public class MappedSparkMax implements SmartMotor {
     return this.getSetpoint() - this.getVelocity();
   }
 
-  @Nullable
   @Override
   @Log
-  public Double getSetpoint() {
+  public double getSetpoint() {
     return this.setpoint;
   }
 

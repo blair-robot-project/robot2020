@@ -465,7 +465,7 @@ public class MappedSparkMaxExternalEncoder implements SmartMotorExternalEncoder 
   @Nullable
   @Override
   @Log
-  public Double getSetpoint() {
+  public double getSetpoint() {
     return this.setpoint;
   }
 
