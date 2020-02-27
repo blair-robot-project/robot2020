@@ -77,28 +77,28 @@ public class MappedSparkMax implements SmartMotor {
    * @param enableBrakeMode Whether to brake or coast when stopped.
    * @param PDP The PDP this Spark is connected to.
    * @param fwdLimitSwitchNormallyOpen Whether the forward limit switch is normally open or closed.
-   *     If this is null, the forward limit switch is disabled.
+   * If this is null, the forward limit switch is disabled.
    * @param revLimitSwitchNormallyOpen Whether the reverse limit switch is normally open or closed.
-   *     If this is null, the reverse limit switch is disabled.
+   * If this is null, the reverse limit switch is disabled.
    * @param remoteLimitSwitchID The CAN ID the limit switch to use for this Spark is plugged into,
-   *     or null to not use a limit switch.
+   * or null to not use a limit switch.
    * @param fwdSoftLimit The forward software limit, in feet. If this is null, the forward software
-   *     limit is disabled. Ignored if there's no encoder.
+   * limit is disabled. Ignored if there's no encoder.
    * @param revSoftLimit The reverse software limit, in feet. If this is null, the reverse software
-   *     limit is disabled. Ignored if there's no encoder.
+   * limit is disabled. Ignored if there's no encoder.
    * @param postEncoderGearing The coefficient the output changes by after being measured by the
-   *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
-   *     final output. Defaults to 1.
+   * encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the final
+   * output. Defaults to 1.
    * @param unitPerRotation The number of feet travelled per rotation of the motor this is attached
-   *     to. Defaults to 1.
+   * to. Defaults to 1.
    * @param currentLimit The max amps this device can draw. If this is null, no current limit is
-   *     used.
+   * used.
    * @param enableVoltageComp Whether or not to use voltage compensation. Defaults to false.
    * @param perGearSettings The settings for each gear this motor has. Can be null to use default
-   *     values and gear # of zero. Gear numbers can't be repeated.
+   * values and gear # of zero. Gear numbers can't be repeated.
    * @param startingGear The gear to start in. Can be null to use startingGearNum instead.
    * @param startingGearNum The number of the gear to start in. Ignored if startingGear isn't null.
-   *     Defaults to the lowest gear.
+   * Defaults to the lowest gear.
    * @param statusFrameRatesMillis The update rates, in millis, for each of the status frames.
    * @param controlFrameRateMillis The update rate, in milliseconds, for each control frame.
    */
@@ -301,7 +301,9 @@ public class MappedSparkMax implements SmartMotor {
       this.spark.setOpenLoopRampRate(0);
     }
 
-    this.postEncoderGearing = currentGearSettings.postEncoderGearing;
+    if (this.currentGearSettings.postEncoderGearing != null) {
+      this.postEncoderGearing = currentGearSettings.postEncoderGearing;
+    }
 
     this.pidController.setP(this.currentGearSettings.kP, 0);
     this.pidController.setI(this.currentGearSettings.kI, 0);
@@ -326,7 +328,7 @@ public class MappedSparkMax implements SmartMotor {
    *
    * @param feet A distance in feet.
    * @return That distance in native units as measured by the encoder, or null if no encoder CPR was
-   *     given.
+   * given.
    */
   @Override
   public double unitToEncoder(final double feet) {
@@ -339,7 +341,7 @@ public class MappedSparkMax implements SmartMotor {
    *
    * @param encoderReading The velocity read from the encoder with no conversions.
    * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if
-   *     no encoder CPR was given.
+   * no encoder CPR was given.
    */
   @Override
   public double encoderToUPS(final double encoderReading) {
@@ -353,7 +355,7 @@ public class MappedSparkMax implements SmartMotor {
    *
    * @param FPS The velocity of the output shaft, in FPS.
    * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was
-   *     given.
+   * given.
    */
   @Override
   public double UPSToEncoder(final double FPS) {
