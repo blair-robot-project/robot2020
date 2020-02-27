@@ -25,6 +25,8 @@ import java.util.Optional;
 public class FlywheelSimple extends SubsystemBase
     implements SubsystemFlywheel, SubsystemConditional, io.github.oblarg.oblog.Loggable {
 
+  final int SPEED_CONDITION_BUFFER_SIZE = 30;
+
   /**
    * The flywheel's motor
    */
@@ -65,7 +67,7 @@ public class FlywheelSimple extends SubsystemBase
   private final SimBoolean sim_manualStates, sim_isAtSpeed, sim_isTimedOut;
 
   @NotNull
-  private final DebouncerEx speedConditionDebouncer = new DebouncerEx(30);
+  private final DebouncerEx speedConditionDebouncer = new DebouncerEx(SPEED_CONDITION_BUFFER_SIZE);
 
   /**
    * Default constructor

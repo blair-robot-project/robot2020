@@ -6,17 +6,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import java.util.Iterator;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.MotorContainer;
 import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
 
+import java.util.Iterator;
+import java.util.List;
+
 /** The Jackson-compatible object representing the entire robot. */
 @JsonIgnoreProperties({"CONSTANTS", "NAVIGATION"})
 public class RobotMap {
-
   @NotNull private final List<Subsystem> subsystems;
 
   @NotNull private final MotorContainer motors = MotorContainer.getInstance();
@@ -48,8 +48,7 @@ public class RobotMap {
    */
   @JsonCreator
   public RobotMap(
-      @NotNull @JsonProperty(required = true) @JsonInclude(content = JsonInclude.Include.NON_NULL)
-          final List<Subsystem> subsystems,
+      @NotNull @JsonProperty(required = true) @JsonInclude(content = JsonInclude.Include.NON_NULL) final List<Subsystem> subsystems,
       @NotNull @JsonProperty(required = true) final PDP pdp,
       @NotNull @JsonProperty(required = true) final Runnable updater,
       @NotNull @JsonProperty(required = true) final CommandContainer commands,
