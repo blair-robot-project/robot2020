@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
@@ -47,7 +46,10 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /** Whether or not to use the NavX for driving straight */
   private boolean overrideGyro;
   /** Cached values for various sensor readings. */
-  @Nullable private Double cachedLeftVel, cachedRightVel, cachedLeftPos, cachedRightPos;
+  private double cachedLeftVel = Double.NaN;
+  private double cachedRightVel = Double.NaN;
+  private double cachedLeftPos = Double.NaN;
+  private double cachedRightPos = Double.NaN;
 
   /**
    * Default constructor.
@@ -151,7 +153,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    *
    * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
    */
-  @Nullable
+  @NotNull
   @Override
   public Double getLeftVelCached() {
     return this.cachedLeftVel;
@@ -162,7 +164,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    *
    * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
    */
-  @Nullable
+  @NotNull
   @Override
   public Double getRightVelCached() {
     return this.cachedRightVel;
@@ -173,7 +175,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    *
    * @return The signed position in feet, or null if the drive doesn't have encoders.
    */
-  @Nullable
+  @NotNull
   @Override
   public Double getLeftPosCached() {
     return this.cachedLeftPos;
@@ -184,7 +186,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    *
    * @return The signed position in feet, or null if the drive doesn't have encoders.
    */
-  @Nullable
+  @NotNull
   @Override
   public Double getRightPosCached() {
     return this.cachedRightPos;
