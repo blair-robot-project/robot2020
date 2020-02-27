@@ -42,12 +42,15 @@ public class Robot extends TimedRobot {
    */
   @NotNull public static final String RESOURCES_PATH_SIMULATED = "./src/main/deploy/";
   /** The name of the map to read from. Should be overriden by a subclass to change the name. */
-  @NotNull public static final String mapName = "ballcycletest.yml";
-  /** The filepath to the resources folder containing the config files. */
   @NotNull
-  public static final String RESOURCES_PATH =
-      RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
+  public static final String mapName = "sparkdrive.yml";
   /**
+   * The filepath to the resources folder containing the config files.
+   */
+  @NotNull
+  public static final String RESOURCES_PATH = RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
+  /**
+   * The object constructed directly from the yaml map.
    * Format for the reference chain (place in the map where the error occured) when a map error is
    * printed.
    */
