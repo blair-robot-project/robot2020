@@ -70,7 +70,7 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
         kP,
         kI,
         kD,
-        limelight.getX(), // setpoint
+        0, // setpoint
         drive,
         timeout);
     this.limelight = limelight;
@@ -85,15 +85,20 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
         "NavXTurnToAngleLimelight init.", this.getClass().getSimpleName(), EventImportance.kNormal);
     // Logger.addEvent("NavXRelativeTurnToAngle init.", this.getClass());
     // Do math to setup the setpoint.
-    this.setSetpoint(clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() + super.setpoint));
+    this.setSetpoint(clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() - limelight.getX()));
+    //System.out.println("Current setpoint = " + limelight.getX());
+    System.out.println("Heading = " + ((SubsystemAHRS) subsystem).getHeading());
+//    this.setpoint = clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() + limelight.getX());
+    System.out.println("Output = " + getOutput());
+    System.out.println("Setpoint: " + pidController.getSetpoint() + " (Limelight X = " + limelight.getX() + ")");
   }
 
   @Override
   public void execute() {
     super.execute();
-    System.out.println(getOutput());
-    System.out.println(((SubsystemAHRS) subsystem).getHeading());
-    System.out.println("Setpoint: " + setpoint);
+    //System.out.println(getOutput());
+    //System.out.println("Heading = " + ((SubsystemAHRS) subsystem).getHeading());
+    //System.out.println("Setpoint: " + setpoint);
   }
 
   /** Log when the command ends. */
