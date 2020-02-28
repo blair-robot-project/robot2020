@@ -2,11 +2,10 @@ package org.usfirst.frc.team449.robot.jacksonWrappers.simulated;
 
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Objects;
 import java.util.function.DoubleSupplier;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /** Units are in rotations. */
 public class SimulatedMotor implements Loggable {
@@ -26,6 +25,7 @@ public class SimulatedMotor implements Loggable {
    */
   @Log(name = "maxSpeed")
   private static final double TRUE_MAX_SPEED = TORQUE_COEFF * NOMINAL_VOLTAGE / -FRICTION_COEFF;
+
   private static final double EPSILON = 1e-5;
 
   private final double moment;

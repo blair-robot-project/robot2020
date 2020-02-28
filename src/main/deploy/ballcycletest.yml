@@ -65,16 +65,17 @@ CONSTANTS:
       - &intakeBumperIntakingVel 0.8
       - &intakeTransitionWheelIntakingVel 0.3
       - &feederIntakingVel 0.35
-      - &feederShootingVel .7
+      - &feederShootingVel .65
       - &feederCoughingVel -0.4
       - &shooterMaxSpeed 90.5
-      - &shooterThrottle 0.2
-      - &shooterMinShootingSpeed 16.1
+      - &shooterThrottle 0.50
+      - &shooterMinShootingSpeed 44
       - &shooterMaxShootingSpeedDifference 5
       - &kickerThrottle -0.7
   - Other:
       - &feederIndexingTimeoutSecs 0.3
       - &flywheelSpinUpTimeoutSecs 4
+      - &flywheelKP 0.00001
 
 # WHETHER TO USE THE CAMERA SERVER
 useCameraServer: false
@@ -260,7 +261,6 @@ useCameraServer: false
           currentLimit: 30
           reverseSensor: false
 
-
   #***********************************************************************************************************************
   - *SHOOTER_SUBSYSTEM
   - org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
@@ -288,7 +288,7 @@ useCameraServer: false
                   - gearNum: 0
                     maxSpeed: *shooterMaxSpeed
                     rampRate: 10
-                    kP: 0.00
+                    kP: *flywheelKP
                     feedForwardCalculator:
                       org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                         kS: 0.203
@@ -311,7 +311,7 @@ useCameraServer: false
                   - gearNum: 0
                     maxSpeed: *shooterMaxSpeed
                     rampRate: 10
-                    kP: 0.00
+                    kP: *flywheelKP
                     feedForwardCalculator:
                       org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                         kS: 0.156

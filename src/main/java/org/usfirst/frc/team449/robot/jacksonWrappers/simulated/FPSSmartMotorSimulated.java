@@ -34,8 +34,8 @@ import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
  * This class simulates a smart motor controller. Motor physics are simulated by {@link
  * SimulatedMotor}.
  *
- * <p>This class is automatically instantiated by the FPSSmartMotor factory method when the robot
- * is running in a simulation and should not be otherwise referenced in code.
+ * <p>This class is automatically instantiated by the FPSSmartMotor factory method when the robot is
+ * running in a simulation and should not be otherwise referenced in code.
  *
  * <p>The current implementation relies on fictional physics and does not involve
  */
@@ -54,13 +54,16 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
   private final double busVoltage = SimulatedMotor.NOMINAL_VOLTAGE;
   /** (Depends on mode) */
   @Log private double setpoint;
+
   @NotNull
   private final FPSSmartMotorSimulated.PID pid =
       new PID(MAX_INTEGRAL, () -> this.setpoint, 0, 0, 0);
+
   @Log.ToString @NotNull private ControlMode controlMode = ControlMode.Disabled;
   @NotNull private PerGearSettings currentGearSettings;
   // Log the getters instead because logging the fields doesn't cause physics updates.
   private double percentOutput;
+
   @NotNull
   private final SimulatedMotor motor =
       new SimulatedMotor(() -> this.busVoltage * this.percentOutput);
@@ -110,11 +113,11 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
         name != null
             ? name
             : String.format(
-            "%s_%d",
-            type == Type.SPARK
-                ? "spark"
-                : type == Type.TALON ? "talon" : "MotorControllerUnknownType",
-            port);
+                "%s_%d",
+                type == Type.SPARK
+                    ? "spark"
+                    : type == Type.TALON ? "talon" : "MotorControllerUnknownType",
+                port);
 
     // Most of the constructor is stolen from FPSSparkMax.
 
@@ -268,7 +271,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    *
    * @param feet A distance in feet.
    * @return That distance in native units as measured by the encoder, or null if no encoder CPR was
-   * given.
+   *     given.
    */
   @Override
   public double unitToEncoder(final double feet) {
@@ -281,7 +284,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    *
    * @param encoderReading The velocity read from the encoder with no conversions.
    * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if
-   * no encoder CPR was given.
+   *     no encoder CPR was given.
    */
   @Override
   public double encoderToUPS(final double encoderReading) {
@@ -294,7 +297,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    *
    * @param FPS The velocity of the output shaft, in FPS.
    * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was
-   * given.
+   *     given.
    */
   @Override
   public double UPSToEncoder(final double FPS) {
@@ -347,7 +350,11 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
 
   @Override
   public void setVoltage(final double volts) {
-    this.setControlModeAndSetpoint(ControlMode.PercentOutput, this.enableVoltageComp ? volts / this.getBatteryVoltage() : volts / SimulatedMotor.NOMINAL_VOLTAGE);
+    this.setControlModeAndSetpoint(
+        ControlMode.PercentOutput,
+        this.enableVoltageComp
+            ? volts / this.getBatteryVoltage()
+            : volts / SimulatedMotor.NOMINAL_VOLTAGE);
   }
 
   /**
@@ -357,7 +364,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    */
   @Log
   @Override
-  public Double getVelocity() {
+  public double getVelocity() {
     return this.encoderToUPS(this.encoderVelocity());
   }
 
@@ -415,15 +422,14 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    * @return The setpoint in sensible units for the current control mode.
    */
   @Override
-  @Nullable
-  public Double getSetpoint() {
+  public double getSetpoint() {
     switch (this.controlMode) {
       case Velocity:
         return this.encoderToUPS(this.setpoint);
       case Position:
         return this.encoderToUnit(this.setpoint);
       default:
-        return null;
+        return Double.NaN;
     }
   }
 
@@ -475,7 +481,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
    *
    * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
-   * gear.
+   *     gear.
    * @param gear The number of the gear to use the max speed from to scale the velocity.
    */
   @Override
@@ -491,7 +497,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
    *
    * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
-   * gear.
+   *     gear.
    * @param gear The gear to use the max speed from to scale the velocity.
    */
   @Override
@@ -507,7 +513,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
 
   /** @return the position of the talon in feet, or null of inches per rotation wasn't given. */
   @Override
-  public Double getPositionUnits() {
+  public double getPositionUnits() {
     return this.encoderToUnit(this.encoderPosition());
   }
 

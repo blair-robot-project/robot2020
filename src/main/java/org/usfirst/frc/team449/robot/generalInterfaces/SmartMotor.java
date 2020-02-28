@@ -19,6 +19,9 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.LayoutType;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
@@ -31,10 +34,6 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.FPSSmartMotorSimulated;
 import org.usfirst.frc.team449.robot.other.Updater;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
@@ -51,6 +50,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   boolean SIMULATE = true;
   /** Whether to simulate sparks if they cause a HAL error when constructed. */
   boolean SIMULATE_SPARKS_IF_ERR = true;
+
   int LOG_WIDTH = 4, LOG_HEIGHT = 3;
 
   /**
@@ -59,58 +59,57 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * @param type The type of controller to create.
    * @param port CAN port of this controller.
    * @param name The controller's name, used for logging purposes. Defaults to
-   * &lt;type&gt;_&lt;port&gt;
+   *     &lt;type&gt;_&lt;port&gt;
    * @param reverseOutput Whether to reverse the output.
    * @param enableBrakeMode Whether to brake or coast when stopped.
    * @param voltagePerCurrentLinReg TALON-SPECIFIC. The component for doing linear regression to
-   * find the resistance.
+   *     find the resistance.
    * @param PDP The PDP this controller is connected to.
    * @param fwdLimitSwitchNormallyOpen Whether the forward limit switch is normally open or closed.
-   * If this is null, the forward limit switch is disabled.
+   *     If this is null, the forward limit switch is disabled.
    * @param revLimitSwitchNormallyOpen Whether the reverse limit switch is normally open or closed.
-   * If this is null, the reverse limit switch is disabled.
+   *     If this is null, the reverse limit switch is disabled.
    * @param remoteLimitSwitchID The CAN port that the limit switch to use for this controller is
-   * plugged into, or null to not use a limit switch or use the limit switch plugged directly into
-   * this controller (for some controllers).
+   *     plugged into, or null to not use a limit switch or use the limit switch plugged directly
+   *     into this controller (for some controllers).
    * @param fwdSoftLimit The forward software limit, in feet. If this is null, the forward software
-   * limit is disabled. Ignored if there's no encoder.
+   *     limit is disabled. Ignored if there's no encoder.
    * @param revSoftLimit The reverse software limit, in feet. If this is null, the reverse software
-   * limit is disabled. Ignored if there's no encoder.
+   *     limit is disabled. Ignored if there's no encoder.
    * @param postEncoderGearing The coefficient the output changes by after being measured by the
-   * encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the final
-   * output. Defaults to 1.
+   *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
+   *     final output. Defaults to 1.
    * @param unitPerRotation The number of feet travelled per rotation of the motor this is attached
-   * to. Defaults to 1.
+   *     to. Defaults to 1.
    * @param currentLimit The max amps this device can draw. If this is null, no current limit is
-   * used.
+   *     used.
    * @param enableVoltageComp Whether or not to use voltage compensation. Defaults to false.
    * @param voltageCompSamples TALON-SPECIFIC. The number of 1-millisecond samples to use for
-   * voltage compensation. Defaults to 32.
+   *     voltage compensation. Defaults to 32.
    * @param feedbackDevice TALON-SPECIFIC. The type of encoder used to measure the output velocity
-   * of this motor. Can be null if there is no encoder attached to this controller.
+   *     of this motor. Can be null if there is no encoder attached to this controller.
    * @param encoderCPR TALON-SPECIFIC. The counts per rotation of the encoder on this controller.
-   * Can be null if feedbackDevice is, but otherwise must have a value.
+   *     Can be null if feedbackDevice is, but otherwise must have a value.
    * @param reverseSensor TALON-SPECIFIC. Whether or not to reverse the reading from the encoder on
-   * this controller. Ignored if feedbackDevice is null. Defaults to false.
+   *     this controller. Ignored if feedbackDevice is null. Defaults to false.
    * @param perGearSettings The settings for each gear this motor has. Can be null to use default
-   * values and gear # of zero. Gear numbers can't be repeated.
+   *     values and gear # of zero. Gear numbers can't be repeated.
    * @param startingGear The gear to start in. Can be null to use startingGearNum instead.
    * @param startingGearNum The number of the gear to start in. Ignored if startingGear isn't null.
-   * Defaults to the lowest gear.
+   *     Defaults to the lowest gear.
    * @param updaterProcessPeriodSecs TALON-SPECIFIC. The period for the {@link Notifier} that moves
-   * points between the MP buffers, in seconds. Defaults to 0.005.
+   *     points between the MP buffers, in seconds. Defaults to 0.005.
    * @param controlFrameRateMillis SPARK-SPECIFIC. The update rate, in milliseconds, each control
-   * frame.
+   *     frame.
    * @param controlFrameRatesMillis TALON-SPECIFIC. The update rate, in milliseconds, for each of
-   * the control frame.
+   *     the control frame.
    * @param slaveTalons TALON-SPECIFIC. The {@link TalonSRX}s that are slaved to this controller.
    * @param slaveVictors TALON-SPECIFIC. The {@link com.ctre.phoenix.motorcontrol.can.VictorSPX}s
-   * that are slaved to this controller.
-   * @param slaveSparks The {@link com.revrobotics.CANSparkMax}s that are slaved to this
-   * controller.
+   *     that are slaved to this controller.
+   * @param slaveSparks The {@link com.revrobotics.CANSparkMax}s that are slaved to this controller.
    * @param statusFrameRatesMillis The update rates, in millis, for each of the controller status
-   * frames. Each key can be an instance of {@link String}, {@link CANSparkMaxLowLevel.PeriodicFrame},
-   * or {@link StatusFrameEnhanced}.
+   *     frames. Each key can be an instance of {@link String}, {@link
+   *     CANSparkMaxLowLevel.PeriodicFrame}, or {@link StatusFrameEnhanced}.
    */
   @JsonCreator
   static SmartMotor create(
@@ -391,7 +390,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    *
    * @param feet A distance in feet.
    * @return That distance in native units as measured by the encoder, or null if no encoder CPR was
-   * given.
+   *     given.
    */
   double unitToEncoder(double feet);
 
@@ -401,7 +400,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    *
    * @param encoderReading The velocity read from the encoder with no conversions.
    * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if
-   * no encoder CPR was given.
+   *     no encoder CPR was given.
    */
   double encoderToUPS(double encoderReading);
 
@@ -411,7 +410,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    *
    * @param FPS The velocity of the output shaft, in FPS.
    * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was
-   * given.
+   *     given.
    */
   double UPSToEncoder(double FPS);
 
@@ -450,7 +449,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    *
    * @return The controller's velocity in FPS, or null if no encoder CPR was given.
    */
-  Double getVelocity();
+  double getVelocity();
 
   /**
    * Set the velocity for the motor to go at.
@@ -480,8 +479,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    *
    * @return The setpoint in sensible units for the current control mode.
    */
-  @Nullable
-  Double getSetpoint();
+  double getSetpoint();
 
   /**
    * Get the voltage the Talon is currently drawing from the PDP.
@@ -516,7 +514,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
    *
    * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
-   * gear.
+   *     gear.
    * @param gear The number of the gear to use the max speed from to scale the velocity.
    */
   void setGearScaledVelocity(double velocity, int gear);
@@ -525,7 +523,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * Set the velocity scaled to a given gear's max velocity. Used mostly when autoshifting.
    *
    * @param velocity The velocity to go at, from [-1, 1], where 1 is the max speed of the given
-   * gear.
+   *     gear.
    * @param gear The gear to use the max speed from to scale the velocity.
    */
   void setGearScaledVelocity(double velocity, Shiftable.gear gear);
@@ -534,7 +532,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   SimpleMotorFeedforward getCurrentGearFeedForward();
 
   /** @return the position of the talon in feet, or null of inches per rotation wasn't given. */
-  Double getPositionUnits();
+  double getPositionUnits();
 
   /** Resets the position of the Talon to 0. */
   void resetPosition();

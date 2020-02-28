@@ -2,31 +2,23 @@ package org.usfirst.frc.team449.robot._2020.climber;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-/**
- * A climber subsystem that has an arm that can be raised and lowered.
- */
+/** A climber subsystem that has an arm that can be raised and lowered. */
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.CLASS,
-        include = JsonTypeInfo.As.WRAPPER_OBJECT,
-        property = "@class")
+    use = JsonTypeInfo.Id.CLASS,
+    include = JsonTypeInfo.As.WRAPPER_OBJECT,
+    property = "@class")
 public interface SubsystemClimberWithArm {
-    /**
-     * Raises the climber arm.
-     */
-    void raise();
+  /** Raises the climber arm. */
+  void raise();
 
-    /**
-     * Lowers the climber arm.
-     */
-    void lower();
+  /** Lowers the climber arm. */
+  void lower();
 
-    /**
-     * Turns off all devices associated with the climber arm.
-     */
-    void off();
+  /** Turns off all devices associated with the climber arm. */
+  void off();
 
-    enum ArmState {
-        UP,
-        DOWN;
-    }
+  enum ArmState {
+    UP,
+    DOWN
+  }
 }

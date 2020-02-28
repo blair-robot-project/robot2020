@@ -88,7 +88,7 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
   /** @return The gear this subsystem is currently in. */
   @Override
   @Log
-public int getGear() {
+  public int getGear() {
     return this.shiftComponent.getCurrentGear();
   }
 

@@ -10,40 +10,35 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class AnalogMotorSingleSpeed extends SubsystemBase implements SubsystemBinaryMotor, Loggable {
+public class AnalogMotorSingleSpeed extends SubsystemBase
+    implements SubsystemBinaryMotor, Loggable {
   private final SubsystemAnalogMotor motor;
   private final double speed;
-  @Log
-  private boolean isMotorOn;
+  @Log private boolean isMotorOn;
 
   @JsonCreator
-  public AnalogMotorSingleSpeed(@NotNull @JsonProperty(required = true) final SubsystemAnalogMotor motor,
-                                @JsonProperty(required = true) final double speed) {
+  public AnalogMotorSingleSpeed(
+      @NotNull @JsonProperty(required = true) final SubsystemAnalogMotor motor,
+      @JsonProperty(required = true) final double speed) {
     this.motor = motor;
     this.speed = speed;
   }
 
-  /**
-   * Turns the motor on, and sets it to a map-specified speed.
-   */
+  /** Turns the motor on, and sets it to a map-specified speed. */
   @Override
   public void turnMotorOn() {
     this.isMotorOn = true;
     this.motor.set(this.speed);
   }
 
-  /**
-   * Turns the motor off.
-   */
+  /** Turns the motor off. */
   @Override
   public void turnMotorOff() {
     this.isMotorOn = false;
     this.motor.disable();
   }
 
-  /**
-   * @return true if the motor is on, false otherwise.
-   */
+  /** @return true if the motor is on, false otherwise. */
   @Override
   public boolean isMotorOn() {
     return this.isMotorOn;

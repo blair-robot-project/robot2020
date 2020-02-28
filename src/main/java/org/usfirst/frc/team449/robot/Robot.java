@@ -11,11 +11,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.other.Clock;
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -27,34 +22,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.other.Clock;
+import org.yaml.snakeyaml.Yaml;
 
-/**
- * The main class of the robot, constructs all the subsystems and initializes default commands.
- */
+/** The main class of the robot, constructs all the subsystems and initializes default commands. */
 public class Robot extends TimedRobot {
-  /**
-   * Format for the reference chain (place in the map where the error occured) when a map error is
-   * printed.
-   */
-  private static final MapErrorFormat MAP_REF_CHAIN_FORMAT = MapErrorFormat.TABLE;
-
   /**
    * The absolute filepath to the resources folder containing the config files when the robot is
    * real.
    */
   @NotNull
-  public static final String RESOURCES_PATH_REAL = Filesystem.getDeployDirectory().getAbsolutePath();
+  public static final String RESOURCES_PATH_REAL =
+      Filesystem.getDeployDirectory().getAbsolutePath();
   /**
    * The relative filepath to the resources folder containing the config files when the robot is
    * simulated.
    */
+  @NotNull public static final String RESOURCES_PATH_SIMULATED = "./src/main/deploy/";
+  /** The name of the map to read from. Should be overriden by a subclass to change the name. */
   @NotNull
-  public static final String RESOURCES_PATH_SIMULATED = "./src/main/deploy/";
-  /**
-   * The name of the map to read from. Should be overriden by a subclass to change the name.
-   */
-  @NotNull
-  public static final String mapName = "ballcycletest.yml";
+  public static final String mapName = "externalencoders.yml";
   /**
    * The filepath to the resources folder containing the config files.
    */
@@ -62,129 +51,57 @@ public class Robot extends TimedRobot {
   public static final String RESOURCES_PATH = RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
   /**
    * The object constructed directly from the yaml map.
+   * Format for the reference chain (place in the map where the error occured) when a map error is
+   * printed.
    */
-  @NotNull
-  protected final RobotMap robotMap = Objects.requireNonNull(loadMap());
+  private static final MapErrorFormat MAP_REF_CHAIN_FORMAT = MapErrorFormat.TABLE;
+  private static boolean isUnitTesting = false;
+  private static boolean isTestingHasBeenCalled = false;
+  /** The object constructed directly from the yaml map. */
+  @NotNull protected final RobotMap robotMap = Objects.requireNonNull(loadMap());
 
-  /**
-   * The method that runs when the robot is turned on. Initializes all subsystems from the map.
-   */
+  /** The method that runs when the robot is turned on. Initializes all subsystems from the map. */
   public static @Nullable RobotMap loadMap() {
     try {
-      //Read the yaml file with SnakeYaml so we can use anchors and merge syntax.
-      final Map<?, ?> normalized = (Map<?, ?>) new Yaml().load(new FileReader(RESOURCES_PATH + "/" + mapName));
+      // Read the yaml file with SnakeYaml so we can use anchors and merge syntax.
+      final Map<?, ?> normalized =
+          (Map<?, ?>) new Yaml().load(new FileReader(RESOURCES_PATH + "/" + mapName));
 
       final YAMLMapper mapper = new YAMLMapper();
 
-      //Turn the Map read by SnakeYaml into a String so Jackson can read it.
+      // Turn the Map read by SnakeYaml into a String so Jackson can read it.
       final String fixed = mapper.writeValueAsString(normalized);
 
-      //Use a parameter name module so we don't have to specify name for every field.
+      // Use a parameter name module so we don't have to specify name for every field.
       mapper.registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES));
 
-      //Add mix-ins
+      // Add mix-ins
       mapper.registerModule(new WPIModule());
       mapper.registerModule(new JavaModule());
 
-      //Deserialize the map into an object.
+      // Deserialize the map into an object.
       return mapper.readValue(fixed, RobotMap.class);
 
     } catch (final IOException ex) {
-      //The map file is either absent from the file system or improperly formatted.
+      // The map file is either absent from the file system or improperly formatted.
       System.out.println("Config file is bad/nonexistent!");
 
       formatAndPrintMapException(ex);
 
-      //Prevent watchdog from restarting by looping infinitely but only when on the robot is in a simulation in order not to hang unit tests.
+      // Prevent watchdog from restarting by looping infinitely but only when on the robot is in a
+      // simulation in order not to hang unit tests.
       if (RobotBase.isSimulation()) return null;
       // Suppress IntelliJ inspections.
       //noinspection InfiniteLoopStatement,StatementWithEmptyBody
-      while (true) {
-      }
-    }
-  }
-
-  @Override
-  public void robotInit() {
-    //Set up start time
-    Clock.setStartTime();
-
-    //Yes this should be a print statement, it's useful to know that robotInit started.
-    System.out.println("Started robotInit.");
-
-    if (this.robotMap.useCameraServer()) {
-      CameraServer.getInstance().startAutomaticCapture();
-    }
-
-    //Read sensors
-    this.robotMap.getUpdater().run();
-
-    Logger.configureLoggingAndConfig(this.robotMap, false);
-    Shuffleboard.setRecordingFileNameFormat("log-${time}");
-    Shuffleboard.startRecording();
-
-    //start systems
-    if (this.robotMap.getRobotStartupCommands() != null) {
-      this.robotMap.getRobotStartupCommands().forEachRemaining(Command::schedule);
-    }
-  }
-
-  @Override
-  public void robotPeriodic() {
-    //save current time
-    Clock.updateTime();
-    //Read sensors
-    this.robotMap.getUpdater().run();
-    //update shuffleboard
-    Logger.updateEntries();
-    //Run all commands. This is a WPILib thing you don't really have to worry about.
-    CommandScheduler.getInstance().run();
-  }
-
-  /**
-   * Run when we first enable in teleop.
-   */
-  @Override
-  public void teleopInit() {
-    //cancel remaining auto commands
-    if (this.robotMap.getAutoStartupCommands() != null) {
-      this.robotMap.getAutoStartupCommands().forEachRemaining(Command::cancel);
-    }
-
-    //Run teleop startup commands
-    if (this.robotMap.getTeleopStartupCommands() != null) {
-      this.robotMap.getTeleopStartupCommands().forEachRemaining(Command::schedule);
-    }
-  }
-
-  /**
-   * Run when we first enable in autonomous
-   */
-  @Override
-  public void autonomousInit() {
-    //Run the auto startup command
-    if (this.robotMap.getAutoStartupCommands() != null) {
-      this.robotMap.getAutoStartupCommands().forEachRemaining(Command::schedule);
-    }
-  }
-
-  /**
-   * Run when we first enable in test mode.
-   */
-  @Override
-  public void testInit() {
-    //Run startup command if we start in test mode.
-    if (this.robotMap.getTestStartupCommands() != null) {
-      this.robotMap.getTestStartupCommands().forEachRemaining(Command::schedule);
+      while (true) {}
     }
   }
 
   /**
    * Whether robot code is being unit tested. Note that this is NOT the same as test mode.
-   * <p>
-   * The return value will never change observably. {@link Robot#notifyTesting()} will thus throw an
-   * exception if it is called after the first time that this method is called.
-   * </p>
+   *
+   * <p>The return value will never change observably. {@link Robot#notifyTesting()} will thus throw
+   * an exception if it is called after the first time that this method is called.
    *
    * @return whether the current run is a unit test
    */
@@ -193,19 +110,17 @@ public class Robot extends TimedRobot {
     return isUnitTesting;
   }
 
-  private static boolean isUnitTesting = false;
-  private static boolean isTestingHasBeenCalled = false;
-
   /**
    * Notifies robot code that it is being unit tested.
    *
    * @throws UnsupportedOperationException if the robot is not running in a simulation
    * @throws IllegalStateException if {@link Robot#isUnitTesting()} has already been called before
-   * this method is called
+   *     this method is called
    */
   public static void notifyTesting() throws UnsupportedOperationException, IllegalStateException {
     if (RobotBase.isReal())
-      throw new IllegalStateException("Attempt to enable unit testing mode while not running in simulation");
+      throw new IllegalStateException(
+          "Attempt to enable unit testing mode while not running in simulation");
 
     if (isUnitTesting) return;
     if (isTestingHasBeenCalled)
@@ -251,10 +166,14 @@ public class Robot extends TimedRobot {
       switch (MAP_REF_CHAIN_FORMAT) {
         case LEFT_ALIGN:
         case RIGHT_ALIGN:
-          final Optional<String> longest = Arrays.stream(links).max(Comparator.comparingInt(String::length));
+          final Optional<String> longest =
+              Arrays.stream(links).max(Comparator.comparingInt(String::length));
 
           final int maxLinkLength = longest.get().length();
-          final String linkFormat = "\t\t->%" + (MAP_REF_CHAIN_FORMAT == MapErrorFormat.LEFT_ALIGN ? "" : maxLinkLength) + "s\n";
+          final String linkFormat =
+              "\t\t->%"
+                  + (MAP_REF_CHAIN_FORMAT == MapErrorFormat.LEFT_ALIGN ? "" : maxLinkLength)
+                  + "s\n";
 
           for (final String s : links) {
             System.err.format(linkFormat, s);
@@ -312,21 +231,82 @@ public class Robot extends TimedRobot {
     return sb.toString();
   }
 
-  /**
-   * Formatting for map reference chain of exception caused by map error.
-   */
+  @Override
+  public void robotInit() {
+    // Set up start time
+    Clock.setStartTime();
+
+    // Yes this should be a print statement, it's useful to know that robotInit started.
+    System.out.println("Started robotInit.");
+
+    if (this.robotMap.useCameraServer()) {
+      CameraServer.getInstance().startAutomaticCapture();
+    }
+
+    // Read sensors
+    this.robotMap.getUpdater().run();
+
+    Logger.configureLoggingAndConfig(this.robotMap, false);
+    Shuffleboard.setRecordingFileNameFormat("log-${time}");
+    Shuffleboard.startRecording();
+
+    // start systems
+    if (this.robotMap.getRobotStartupCommands() != null) {
+      this.robotMap.getRobotStartupCommands().forEachRemaining(Command::schedule);
+    }
+  }
+
+  @Override
+  public void robotPeriodic() {
+    // save current time
+    Clock.updateTime();
+    // Read sensors
+    this.robotMap.getUpdater().run();
+    // update shuffleboard
+    Logger.updateEntries();
+    // Run all commands. This is a WPILib thing you don't really have to worry about.
+    CommandScheduler.getInstance().run();
+  }
+
+  /** Run when we first enable in teleop. */
+  @Override
+  public void teleopInit() {
+    // cancel remaining auto commands
+    if (this.robotMap.getAutoStartupCommands() != null) {
+      this.robotMap.getAutoStartupCommands().forEachRemaining(Command::cancel);
+    }
+
+    // Run teleop startup commands
+    if (this.robotMap.getTeleopStartupCommands() != null) {
+      this.robotMap.getTeleopStartupCommands().forEachRemaining(Command::schedule);
+    }
+  }
+
+  /** Run when we first enable in autonomous */
+  @Override
+  public void autonomousInit() {
+    // Run the auto startup command
+    if (this.robotMap.getAutoStartupCommands() != null) {
+      this.robotMap.getAutoStartupCommands().forEachRemaining(Command::schedule);
+    }
+  }
+
+  /** Run when we first enable in test mode. */
+  @Override
+  public void testInit() {
+    // Run startup command if we start in test mode.
+    if (this.robotMap.getTestStartupCommands() != null) {
+      this.robotMap.getTestStartupCommands().forEachRemaining(Command::schedule);
+    }
+  }
+
+  /** Formatting for map reference chain of exception caused by map error. */
   private enum MapErrorFormat {
-    /**
-     * The chain is printed as-is on one line.
-     */
+    /** The chain is printed as-is on one line. */
     NONE,
-    /**
-     * The chain is split up into one frame per line and left-justified.
-     */
+    /** The chain is split up into one frame per line and left-justified. */
     LEFT_ALIGN,
-    /**
-     * The chain is split up into one frame per line and right-justified.
-     */
+    /** The chain is split up into one frame per line and right-justified. */
     RIGHT_ALIGN,
     /**
      * The chain is split up into one frame per line and formatted as a table with locations to the
