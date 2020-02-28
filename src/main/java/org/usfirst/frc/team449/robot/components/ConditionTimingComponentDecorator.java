@@ -5,7 +5,8 @@ import java.util.function.BooleanSupplier;
 public class ConditionTimingComponentDecorator extends ConditionTimingComponent {
   private final BooleanSupplier source;
 
-  public ConditionTimingComponentDecorator(final BooleanSupplier source, final boolean initialValue) {
+  public ConditionTimingComponentDecorator(
+      final BooleanSupplier source, final boolean initialValue) {
     super(initialValue);
     this.source = source;
   }

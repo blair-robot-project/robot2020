@@ -48,8 +48,8 @@ public class ThrottleBasic implements Throttle {
    * @return The raw joystick output, on [-1, 1].
    */
   @Log
-@Override
-public double getValue() {
+  @Override
+  public double getValue() {
     return (inverted ? -1 : 1) * stick.getRawAxis(axis);
   }
 
@@ -60,7 +60,7 @@ public double getValue() {
    */
   @Override
   @Log
-public double getValueCached() {
+  public double getValueCached() {
     return cachedOutput;
   }
 
@@ -76,7 +76,7 @@ public double getValueCached() {
    * @return the result to use in PIDController
    */
   @Log
-public double pidGet() {
+  public double pidGet() {
     return (inverted ? -1 : 1) * stick.getRawAxis(axis);
   }
 

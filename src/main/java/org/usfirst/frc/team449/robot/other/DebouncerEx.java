@@ -2,26 +2,21 @@ package org.usfirst.frc.team449.robot.other;
 
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-
 import java.util.LinkedList;
 
-/**
- * Debouncer that takes the average of the samples in a limited-length buffer.
- */
+/** Debouncer that takes the average of the samples in a limited-length buffer. */
 public class DebouncerEx implements Loggable {
   private final double bufferSize;
   private final boolean stateWhenTied;
-  @Log.ToString
-  private final LinkedList<Boolean> buffer;
-  @Log
-  private int bufferSum;
+  @Log.ToString private final LinkedList<Boolean> buffer;
+  @Log private int bufferSum;
 
   /**
    * Constructor for a time given in seconds.
    *
    * @param bufferSize the number of samples to keep in the buffer
    * @param stateWhenTied the state to return when there are an equal number of true and false
-   * samples in the buffer
+   *     samples in the buffer
    */
   public DebouncerEx(final int bufferSize, final boolean stateWhenTied) {
     this.bufferSize = bufferSize;

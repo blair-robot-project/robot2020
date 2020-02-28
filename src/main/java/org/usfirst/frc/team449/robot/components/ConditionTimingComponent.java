@@ -5,23 +5,17 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 
 /**
- * Utility class that records and provides methods for examining the  times at which a condition
+ * Utility class that records and provides methods for examining the times at which a condition
  * becomes true or false. The class is an abstract observer to allow subclasses to provide custom
  * implementations for updating the condition. This class is unit-agnostic.
  *
- * <p>
- * Behavior may be unexpected if object is updated more frequently than values are examined.
- * </p>
+ * <p>Behavior may be unexpected if object is updated more frequently than values are examined.
  */
 public abstract class ConditionTimingComponent implements Loggable {
-  @Log
-  private boolean current;
-  @Log
-  private double now = Double.NaN;
-  @Log
-  private double lastBecameTrue = Double.NaN;
-  @Log
-  private double lastBecameFalse = Double.NaN;
+  @Log private boolean current;
+  @Log private double now = Double.NaN;
+  @Log private double lastBecameTrue = Double.NaN;
+  @Log private double lastBecameFalse = Double.NaN;
 
   public ConditionTimingComponent(final boolean initialValue) {
     this.current = initialValue;
@@ -40,8 +34,7 @@ public abstract class ConditionTimingComponent implements Loggable {
   }
 
   /**
-   * Updates the current state of the condition and acts as if condition changed even if it did
-   * not.
+   * Updates the current state of the condition and acts as if condition changed even if it did not.
    *
    * @param now the current time
    */
@@ -61,13 +54,11 @@ public abstract class ConditionTimingComponent implements Loggable {
   /**
    * Gets the time at which the condition last became true.
    *
-   * <p>
-   * Returns {@link Double#NaN} if the condition has never become true.
-   * </p>
+   * <p>Returns {@link Double#NaN} if the condition has never become true.
    *
-   * @return the time supplied to the most recent call to {@link ConditionTimingComponent#update(double,
-   * boolean)} where the value supplied to the method was true and the previous state of the
-   * condition was false.
+   * @return the time supplied to the most recent call to {@link
+   *     ConditionTimingComponent#update(double, boolean)} where the value supplied to the method
+   *     was true and the previous state of the condition was false.
    */
   @Contract(pure = true)
   public double lastBecameTrueTime() {
@@ -83,13 +74,11 @@ public abstract class ConditionTimingComponent implements Loggable {
   /**
    * Gets the time at which the condition last became false.
    *
-   * <p>
-   * Returns {@link Double#NaN} if the condition has never become false.
-   * </p>
+   * <p>Returns {@link Double#NaN} if the condition has never become false.
    *
-   * @return the time supplied to the most recent call to {@link ConditionTimingComponent#update(double,
-   * boolean)} where the value supplied to the method was false and the previous state of the
-   * condition was true.
+   * @return the time supplied to the most recent call to {@link
+   *     ConditionTimingComponent#update(double, boolean)} where the value supplied to the method
+   *     was false and the previous state of the condition was true.
    */
   @Contract(pure = true)
   public double lastBecameFalseTime() {
@@ -134,9 +123,7 @@ public abstract class ConditionTimingComponent implements Loggable {
     return this.now - this.lastBecameFalse;
   }
 
-  /**
-   * @implNote returns min(lastBecameTrue(), lastBecameFalse())
-   */
+  /** @implNote returns min(lastBecameTrue(), lastBecameFalse()) */
   @Contract(pure = true)
   public double lastUpdateTime() {
     return this.now;

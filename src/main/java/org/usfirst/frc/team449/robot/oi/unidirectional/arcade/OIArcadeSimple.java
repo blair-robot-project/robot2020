@@ -44,7 +44,7 @@ public class OIArcadeSimple extends OIArcade {
    */
   @Override
   @Log
-public double[] getFwdRotOutput() {
+  public double[] getFwdRotOutput() {
     return new double[] {velThrottle.getValue(), rotThrottle.getValue()};
   }
 

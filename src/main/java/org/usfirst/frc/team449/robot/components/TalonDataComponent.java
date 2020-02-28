@@ -43,6 +43,6 @@ public class TalonDataComponent implements DoubleSupplier {
     position,
     velocity,
     current,
-    voltage;
+    voltage
   }
 }

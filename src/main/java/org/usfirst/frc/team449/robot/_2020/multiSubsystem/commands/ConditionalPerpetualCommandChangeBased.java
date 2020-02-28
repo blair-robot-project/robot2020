@@ -6,20 +6,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import java.util.Objects;
+import java.util.function.BooleanSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.BooleanSupplierUpdatable;
 
-import java.util.Objects;
-import java.util.function.BooleanSupplier;
-
 /**
- * {@link ConditionalPerpetualCommand} but only runs a command when the specified condition
- * changes.
+ * {@link ConditionalPerpetualCommand} but only runs a command when the specified condition changes.
  *
- * <p>
- * The condition is not monitored while a command is being run as a result of a change.
- * </p>
+ * <p>The condition is not monitored while a command is being run as a result of a change.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ConditionalPerpetualCommandChangeBased extends ConditionalPerpetualCommand {
@@ -27,9 +23,9 @@ public class ConditionalPerpetualCommandChangeBased extends ConditionalPerpetual
    * Default constructor
    *
    * @param afterBecomingTrue the Command to execute if BooleanSupplier returns begins returning
-   * {@code true}
+   *     {@code true}
    * @param afterBecomingFalse the Command to execute if BooleanSupplier returns begins returning
-   * {@code true}
+   *     {@code true}
    * @param booleanSupplier a method for determining which command to run
    */
   @JsonCreator
@@ -37,7 +33,8 @@ public class ConditionalPerpetualCommandChangeBased extends ConditionalPerpetual
       @NotNull @JsonProperty(required = true) final BooleanSupplierUpdatable booleanSupplier,
       @Nullable final Command afterBecomingTrue,
       @Nullable final Command afterBecomingFalse) {
-//      @Nullable final Double pollingInterval) { TODO: Not sure if polling interval logic works.
+    //      @Nullable final Double pollingInterval) { TODO: Not sure if polling interval logic
+    // works.
     super(
         // The command to run when the condition changes.
         new ConditionalCommand(
@@ -55,10 +52,11 @@ public class ConditionalPerpetualCommandChangeBased extends ConditionalPerpetual
 
           @Override
           public boolean getAsBoolean() {
-//            final var now = Clock.currentTimeMillis();
-//            if (pollingInterval != null && now - this.lastPollTime < pollingInterval) return false;
+            //            final var now = Clock.currentTimeMillis();
+            //            if (pollingInterval != null && now - this.lastPollTime < pollingInterval)
+            // return false;
 
-//            this.lastPollTime = now;
+            //            this.lastPollTime = now;
             booleanSupplier.update();
 
             final boolean current = booleanSupplier.getAsBoolean();

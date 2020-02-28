@@ -5,13 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.function.BooleanSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 import org.usfirst.frc.team449.robot.components.ConditionTimingComponentDecorator;
 import org.usfirst.frc.team449.robot.components.ConditionTimingComponentObserver;
 import org.usfirst.frc.team449.robot.other.Clock;
-
-import java.util.function.BooleanSupplier;
 
 /**
  * Feeder indexing. Turns the feeder on when incoming balls from the intake are detected by two
@@ -25,7 +24,6 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
   @NotNull private final ConditionTimingComponentDecorator sensor1;
   @Log.Exclude
   @NotNull private final ConditionTimingComponentDecorator sensor2;
-  private final double timeout;
 
   /**
    * Default constructor
@@ -33,17 +31,17 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
    * @param subsystem the feeder subsystem to operate on
    * @param sensor1 the first sensor of the transition from intake to feeder
    * @param sensor2 the second sensor of the transition from intake to feeder
-   * @param runMode the {@link org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake.IntakeMode}
-   * to run the feeder at when
+   * @param runMode the {@link SubsystemIntake.IntakeMode} to run the feeder in when indexing
    * @param timeout maximum duration for which to keep running the feeder if the sensors remain
    * continuously activated
    */
   @JsonCreator
-  public DefaultFeederCommand(@NotNull @JsonProperty(required = true) final SubsystemIntake subsystem,
-                              @NotNull @JsonProperty(required = true) final BooleanSupplier sensor1,
-                              @NotNull @JsonProperty(required = true) final BooleanSupplier sensor2,
-                              @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode runMode,
-                              @Deprecated final double timeout) {
+  public DefaultFeederCommand(
+      @NotNull @JsonProperty(required = true) final SubsystemIntake subsystem,
+      @NotNull @JsonProperty(required = true) final BooleanSupplier sensor1,
+      @NotNull @JsonProperty(required = true) final BooleanSupplier sensor2,
+      @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode runMode,
+      @Deprecated final double timeout) {
     this.feeder = subsystem;
     this.feederIsOn = new ConditionTimingComponentObserver(false);
     this.sensor1 = new ConditionTimingComponentDecorator(sensor1, false);

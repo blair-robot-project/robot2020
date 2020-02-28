@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.AutoshiftComponent;
 import org.usfirst.frc.team449.robot.drive.shifting.DriveShiftable;
-import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
+import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
 import org.usfirst.frc.team449.robot.generalInterfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
 import org.usfirst.frc.team449.robot.oi.fieldoriented.OIFieldOriented;
@@ -26,8 +26,8 @@ import org.usfirst.frc.team449.robot.other.Debouncer;
     property = "@class")
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class FieldOrientedUnidirectionalDriveCommandShifting<
-        T extends Subsystem & DriveUnidirectional & SubsystemAHRS & DriveShiftable>
-    extends FieldOrientedUnidirectionalDriveCommand {
+    T extends DriveUnidirectionalWithGyro & Subsystem & SubsystemAHRS & DriveShiftable>
+    extends FieldOrientedUnidirectionalDriveCommand<T> {
 
   /** The drive to execute this command on. */
   @NotNull protected final T subsystem;
@@ -119,7 +119,7 @@ public class FieldOrientedUnidirectionalDriveCommandShifting<
           this.oi.getVelCached(),
           this.subsystem.getLeftVelCached(),
           this.subsystem.getRightVelCached(),
-          gear -> this.subsystem.setGear(gear));
+          this.subsystem::setGear);
     }
 
     // Gain schedule the loop if we shifted

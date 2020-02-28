@@ -23,7 +23,7 @@ public abstract class OITank implements OIUnidirectional {
    * @return percent of max speed for left motor cluster from [-1.0, 1.0]
    */
   @Log
-public abstract double getLeftThrottle();
+  public abstract double getLeftThrottle();
 
   /**
    * Get the throttle for the right side of the drive.
@@ -31,7 +31,7 @@ public abstract double getLeftThrottle();
    * @return percent of max speed for right motor cluster from [-1.0, 1.0]
    */
   @Log
-public abstract double getRightThrottle();
+  public abstract double getRightThrottle();
 
   /**
    * The output to be given to the left and right sides of the drive.
@@ -41,7 +41,7 @@ public abstract double getRightThrottle();
    */
   @Override
   @Log
-public double[] getLeftRightOutput() {
+  public double[] getLeftRightOutput() {
     return new double[] {getLeftThrottle(), getRightThrottle()};
   }
 
@@ -53,7 +53,7 @@ public double[] getLeftRightOutput() {
    */
   @Override
   @Log
-public double[] getLeftRightOutputCached() {
+  public double[] getLeftRightOutputCached() {
     return leftRightOutputCached;
   }
 
@@ -65,7 +65,7 @@ public double[] getLeftRightOutputCached() {
    */
   @Override
   @Log
-public double[] getFwdRotOutput() {
+  public double[] getFwdRotOutput() {
     return new double[] {
       (getLeftThrottle() + getRightThrottle()) / 2., (getLeftThrottle() - getRightThrottle()) / 2.
     };
@@ -79,7 +79,7 @@ public double[] getFwdRotOutput() {
    */
   @Override
   @Log
-public double[] getFwdRotOutputCached() {
+  public double[] getFwdRotOutputCached() {
     return fwdRotOutputCached;
   }
 

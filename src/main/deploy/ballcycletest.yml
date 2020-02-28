@@ -62,14 +62,15 @@ CONSTANTS:
       - &intakePistonToggleButtonNumber 9
       - &feederCoughButtonNumber 10 #TODO Should coughing be an actual back-and-forth motion?
   - MotorSpeeds:
-      - &intakeBumperIntakingVel 0.8
+      - &intakeBumperIntakingVel 1
       - &intakeTransitionWheelIntakingVel 0.3
       - &feederIntakingVel 0.35
-      - &feederShootingVel .7
+      - &feederShootingVel 0.35 # TODO Was at 0.65, but apparently that's less reliable than 0.35.
       - &feederCoughingVel -0.4
+      - &intakeTransitionWheelCoughingVel -0.1
       - &shooterMaxSpeed 90.5
-      - &shooterThrottle 0.43
-      - &shooterMinShootingSpeed 38.5
+      - &shooterThrottle 0.50
+      - &shooterMinShootingSpeed 44
       - &shooterMaxShootingSpeedDifference 5
       - &kickerThrottle -0.7
   - Other:
@@ -230,6 +231,7 @@ useCameraServer: false
       '@id': intakeTransitionWheel
       velocities: !!map
         IN_FAST: *intakeTransitionWheelIntakingVel
+        OUT_SLOW: *intakeTransitionWheelCoughingVel
       motor:
         org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
           '@id': intakeTransitionWheelMotor
@@ -422,12 +424,21 @@ useCameraServer: false
               mechanismsJoystick
           buttonNumber: *feederCoughButtonNumber
       command:
-        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-          '@id': feederStartCommand_coughing
-          subsystem:
-            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-              feeder
-          mode: OUT_SLOW
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+          '@id': coughCommandSequence
+          commands:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': feederStartCommand_coughing
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                    feeder
+                mode: OUT_SLOW
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': intakeTransitionWheelStartCommand_coughing
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                    intakeTransitionWheel
+                mode: OUT_SLOW
       action: WHILE_HELD
 
     - button:

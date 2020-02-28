@@ -12,8 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class CommandButton implements Loggable {
 
   /** The command mapped to the button. Field to allow logging. */
-  @Log.Include
-  private final Command command;
+  @Log.Include private final Command command;
 
   /**
    * Default constructor.
