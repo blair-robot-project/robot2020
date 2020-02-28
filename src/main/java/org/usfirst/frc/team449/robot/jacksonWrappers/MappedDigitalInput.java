@@ -5,13 +5,22 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.BooleanSupplier;
+import org.jetbrains.annotations.NotNull;
 
-/** A roboRIO digital input pin. */
+/**
+ * A roboRIO digital input pin. Caches the input, only updating when {@link
+ * MappedDigitalInput#periodic()} is called.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
-public class MappedDigitalInput extends DigitalInput implements Loggable, BooleanSupplier {
+public final class MappedDigitalInput extends DigitalInput implements Subsystem, Loggable, BooleanSupplier {
+
+  private boolean value;
 
   /**
    * Create an instance of a Digital Input class. Creates a digital input given a channel.
@@ -21,6 +30,7 @@ public class MappedDigitalInput extends DigitalInput implements Loggable, Boolea
   @JsonCreator
   public MappedDigitalInput(@JsonProperty(required = true) final int channel) {
     super(channel);
+    this.register();
   }
 
   /**
@@ -32,7 +42,7 @@ public class MappedDigitalInput extends DigitalInput implements Loggable, Boolea
   @Override
   @Log
   public boolean get() {
-    return !super.get(); // true is off by default in WPILib, and that's dumb
+    return this.value;
   }
 
   /**
@@ -45,37 +55,25 @@ public class MappedDigitalInput extends DigitalInput implements Loggable, Boolea
     return this.get();
   }
 
-  //    /**
-  //     * Get the headers for the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of String labels for data, where N is the length of the
-  // Object[] returned by getData().
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public String[] getHeader() {
-  //        return new String[]{"value"};
-  //    }
-  //
-  //    /**
-  //     * Get the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public Object[] getData() {
-  //        return new Object[]{this.get()};
-  //    }
-  //
-  //    /**
-  //     * Get the name of this object.
-  //     *
-  //     * @return A string that will identify this object in the log file.
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public String getLogName() {
-  //        return "DigitalInput" + this.getChannel();
-  //    }
+  /**
+   * This method is called periodically by the {@link CommandScheduler}.  Useful for updating
+   * subsystem-specific state that you don't want to offload to a {@link Command}.  Teams should try
+   * to be consistent within their own codebases about which responsibilities will be handled by
+   * Commands, and which will be handled here.
+   */
+  @Override
+  public void periodic() {
+    this.value = !super.get(); // true is off by default in WPILib, and that's dumb
+  }
+
+  /**
+   * Get the name of this object.
+   *
+   * @return A string that will identify this object in the log file.
+   */
+  @NotNull
+  @Override
+  public String configureLogName() {
+    return this.getClass().getSimpleName() + this.getChannel();
+  }
 }
