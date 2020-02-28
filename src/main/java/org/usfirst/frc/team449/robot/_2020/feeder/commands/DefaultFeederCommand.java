@@ -24,6 +24,7 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
   @NotNull private final ConditionTimingComponentDecorator sensor1;
   @Log.Exclude
   @NotNull private final ConditionTimingComponentDecorator sensor2;
+  private final double timeout;
 
   /**
    * Default constructor
