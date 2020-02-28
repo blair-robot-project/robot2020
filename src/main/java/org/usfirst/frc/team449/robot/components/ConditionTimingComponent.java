@@ -9,7 +9,8 @@ import org.jetbrains.annotations.Contract;
  * becomes true or false. The class is an abstract observer to allow subclasses to provide custom
  * implementations for updating the condition. This class is unit-agnostic.
  *
- * <p>Behavior may be unexpected if object is updated more frequently than values are examined.
+ * <p>Behavior may be unexpected if an instance of this class is updated more frequently than its
+ * properties are examined.
  */
 public abstract class ConditionTimingComponent implements Loggable {
   @Log private boolean current;
@@ -34,7 +35,8 @@ public abstract class ConditionTimingComponent implements Loggable {
   }
 
   /**
-   * Updates the current state of the condition and acts as if condition changed even if it did not.
+   * Updates the current state of the condition and acts as if condition changed even if it did
+   * not.
    *
    * @param now the current time
    */
@@ -56,9 +58,9 @@ public abstract class ConditionTimingComponent implements Loggable {
    *
    * <p>Returns {@link Double#NaN} if the condition has never become true.
    *
-   * @return the time supplied to the most recent call to {@link
-   *     ConditionTimingComponent#update(double, boolean)} where the value supplied to the method
-   *     was true and the previous state of the condition was false.
+   * @return the time supplied to the most recent call to {@link ConditionTimingComponent#update(double,
+   * boolean)} where the value supplied to the method was true and the previous state of the
+   * condition was false.
    */
   @Contract(pure = true)
   public double lastBecameTrueTime() {
@@ -76,9 +78,9 @@ public abstract class ConditionTimingComponent implements Loggable {
    *
    * <p>Returns {@link Double#NaN} if the condition has never become false.
    *
-   * @return the time supplied to the most recent call to {@link
-   *     ConditionTimingComponent#update(double, boolean)} where the value supplied to the method
-   *     was false and the previous state of the condition was true.
+   * @return the time supplied to the most recent call to {@link ConditionTimingComponent#update(double,
+   * boolean)} where the value supplied to the method was false and the previous state of the
+   * condition was true.
    */
   @Contract(pure = true)
   public double lastBecameFalseTime() {
