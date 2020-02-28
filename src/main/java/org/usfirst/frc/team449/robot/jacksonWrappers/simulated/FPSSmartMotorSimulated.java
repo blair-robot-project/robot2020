@@ -422,15 +422,14 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    * @return The setpoint in sensible units for the current control mode.
    */
   @Override
-  @Nullable
-  public Double getSetpoint() {
+  public double getSetpoint() {
     switch (this.controlMode) {
       case Velocity:
         return this.encoderToUPS(this.setpoint);
       case Position:
         return this.encoderToUnit(this.setpoint);
       default:
-        return null;
+        return Double.NaN;
     }
   }
 

@@ -18,7 +18,7 @@ import org.usfirst.frc.team449.robot.other.Debouncer;
 /** Turn a certain number of degrees from the current heading, based on input from the limelight */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
-    extends NavXTurnToAngleRelative {
+    extends NavXTurnToAngleRelative<T> {
 
   private final Limelight limelight;
 
@@ -46,19 +46,19 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
    */
   @JsonCreator
   public NavXTurnToAngleLimelight(
-      @JsonProperty(required = true) double absoluteTolerance,
-      @Nullable Debouncer onTargetBuffer,
-      double minimumOutput,
-      @Nullable Double maximumOutput,
-      @Nullable Integer loopTimeMillis,
-      double deadband,
-      boolean inverted,
-      double kP,
-      double kI,
-      double kD,
-      @NotNull @JsonProperty(required = true) Limelight limelight,
-      @NotNull @JsonProperty(required = true) T drive,
-      @JsonProperty(required = true) double timeout) {
+      @JsonProperty(required = true) final double absoluteTolerance,
+      @Nullable final Debouncer onTargetBuffer,
+      final double minimumOutput,
+      @Nullable final Double maximumOutput,
+      @Nullable final Integer loopTimeMillis,
+      final double deadband,
+      final boolean inverted,
+      final double kP,
+      final double kI,
+      final double kD,
+      @NotNull @JsonProperty(required = true) final Limelight limelight,
+      @NotNull @JsonProperty(required = true) final T drive,
+      @JsonProperty(required = true) final double timeout) {
     super(
         absoluteTolerance,
         onTargetBuffer,
@@ -98,7 +98,7 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
 
   /** Log when the command ends. */
   @Override
-  public void end(boolean interrupted) {
+  public void end(final boolean interrupted) {
     if (interrupted) {
       Shuffleboard.addEventMarker(
           "NavXTurnToAngleLimelight interrupted!",
