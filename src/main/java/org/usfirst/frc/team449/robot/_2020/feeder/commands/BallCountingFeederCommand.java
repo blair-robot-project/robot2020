@@ -6,15 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.StringIdGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.Loggable;
 import java.util.function.BooleanSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake.IntakeMode;
-import org.usfirst.frc.team449.robot._2020.shooter.SubsystemFlywheel;
-import org.usfirst.frc.team449.robot._2020.shooter.SubsystemFlywheel.FlywheelState;
 
 /** A feeder that counts balls */
 @JsonIdentityInfo(generator = StringIdGenerator.class)
@@ -28,9 +25,11 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
   // private final double updateTimeMillis;
 
   /** The previous values from the IR sensors */
-  private boolean sensor1Cached, sensor2Cached;
+  private boolean sensor1Cached, sensor2Cached, flywheelStoppedCached;
   /** The current number of balls inside the robot */
   private int numBalls;
+
+  private long lastTime;
 
   /**
    * @param feeder the feeder feeder to operate on
@@ -62,41 +61,48 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
 
     sensor1Cached = sensor1.getAsBoolean();
     sensor2Cached = sensor2.getAsBoolean();
+    flywheelStoppedCached = flywheelStopCommand.isFinished();
     // this.updateTimeMillis = updateTimeMillis;
   }
 
   @Override
   public synchronized void execute() {
-    boolean sensor1Now = sensor1.getAsBoolean(), sensor2Now = sensor2.getAsBoolean();
+    long now = System.currentTimeMillis();
+    System.out.println("Executed at " + now);
+    System.out.println("Time to update = " + (now - lastTime));
+    boolean sensor1Now = sensor1.getAsBoolean(),
+        sensor2Now = sensor2.getAsBoolean(),
+        flywheelStoppedNow = flywheelStopCommand.isFinished();
     // var mode = feeder.getMode();
-    if (sensor2Cached && !sensor2.getAsBoolean() && flywheelStopCommand.isFinished() /*&& mode == IntakeMode.OUT_FAST && shooter.isReadyToShoot()*/) {
-      // the ball(s) was/were there and now it's/they've moved on, probably been shot,
-      //  since OUT_FAST means it's at shooting speed
-      //  We can restart the count now (unless only one ball got shot, which probably
-      // happened).
-      // TODO find a better way to figure out if balls were shot out (use the flywheel
-      //   maybe)?
-      numBalls = 0;
-    } else if (sensor1Cached && !sensor1.getAsBoolean()) {
-      // The feeder has managed to trap a ball in its jaws
-      // We can assume it's only one ball at a time, because it's that slow
-      numBalls++;
+    if (!flywheelStoppedCached && flywheelStopCommand.isFinished()) {
+      if (!sensor2Now) {
+        numBalls = 0;
+      } else {
+        // Having a ball still there wouldn't make sense. Maybe set numBalls to 1?
+        // numBalls --;
+      }
     }
 
-    /*
-     * If it's taking in balls and it's over the limit, stop
-     * If it's not supposed to be running, stop
-     */
-    if ((numBalls > ballThreshold && feeder.getMode() == IntakeMode.IN_FAST)
+    //todo check if sensor2 should also be checked
+    if (!sensor1Now && sensor1Cached) {
+      //A ball has moved in
+      numBalls ++;
+    }
+
+//     If it's taking in balls and it's over the limit, stop
+//     If it's not supposed to be running, stop
+    if ((numBalls > ballThreshold /*&& feeder.getMode() == IntakeMode.IN_FAST*/)
         || !shouldBeRunning()) {
       feeder.setMode(IntakeMode.OFF);
     } else {
+      //keep going otherwise
       feeder.setMode(defaultMode);
     }
 
     // Update sensor values
     sensor1Cached = sensor1Now;
     sensor2Cached = sensor2Now;
+    flywheelStoppedCached = flywheelStoppedNow;
   }
 
   public boolean shouldBeRunning() {
