@@ -11,49 +11,37 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDoubleSolenoid;
 
-/**
- * A simple SubsystemSolenoid.java.
- */
+/** A simple SubsystemSolenoid.java. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SolenoidSimple extends SubsystemBase implements SubsystemSolenoid, Loggable {
 
-    /**
-     * Piston for pushing gears
-     */
-    @NotNull
-    private final DoubleSolenoid piston;
+  /** Piston for pushing gears */
+  @NotNull private final DoubleSolenoid piston;
 
-    /**
-     * The piston's current position
-     */
-    @NotNull
-    private DoubleSolenoid.Value pistonPos = DoubleSolenoid.Value.kOff;
+  /** The piston's current position */
+  @NotNull private DoubleSolenoid.Value pistonPos = DoubleSolenoid.Value.kOff;
 
-    /**
-     * Default constructor
-     *
-     * @param piston The piston that comprises this subsystem.
-     */
-    @JsonCreator
-    public SolenoidSimple(@NotNull @JsonProperty(required = true) final MappedDoubleSolenoid piston) {
-        this.piston = piston;
-    }
-    /**
-     * @param value The position to set the solenoid to.
-     */
-    @Override
-    public void setSolenoid(@NotNull final DoubleSolenoid.Value value) {
-        this.piston.set(value);
-        this.pistonPos = value;
-    }
+  /**
+   * Default constructor
+   *
+   * @param piston The piston that comprises this subsystem.
+   */
+  @JsonCreator
+  public SolenoidSimple(@NotNull @JsonProperty(required = true) final MappedDoubleSolenoid piston) {
+    this.piston = piston;
+  }
+  /** @param value The position to set the solenoid to. */
+  @Override
+  public void setSolenoid(@NotNull final DoubleSolenoid.Value value) {
+    this.piston.set(value);
+    this.pistonPos = value;
+  }
 
-    /**
-     * @return the current position of the solenoid.
-     */
-    @NotNull
-    @Override
-    @Log.ToString
-    public DoubleSolenoid.Value getSolenoidPosition() {
-        return this.pistonPos;
-    }
+  /** @return the current position of the solenoid. */
+  @NotNull
+  @Override
+  @Log.ToString
+  public DoubleSolenoid.Value getSolenoidPosition() {
+    return this.pistonPos;
+  }
 }
