@@ -1,8 +1,5 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers.simulated;
 
-import static org.usfirst.frc.team449.robot.other.Util.clamp;
-import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
-
 import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -11,11 +8,6 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.DoubleSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
@@ -27,6 +19,15 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
 import org.usfirst.frc.team449.robot.other.Clock;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.DoubleSupplier;
+
+import static org.usfirst.frc.team449.robot.other.Util.clamp;
+import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /**
  * Class that implements {@link SmartMotor} without relying on the existence of actual hardware.
@@ -46,19 +47,23 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
   private final Type controllerType;
   private final int port;
   private final boolean reverseOutput;
-  private final double feetPerRotation;
+  private final double unitPerRotation;
+  private final boolean enableVoltageComp;
   @NotNull private final Map<Integer, PerGearSettings> perGearSettings;
   /** (V) */
   private final double busVoltage = SimulatedMotor.NOMINAL_VOLTAGE;
   /** (Depends on mode) */
   @Log private double setpoint;
+
   @NotNull
   private final FPSSmartMotorSimulated.PID pid =
       new PID(MAX_INTEGRAL, () -> this.setpoint, 0, 0, 0);
-  @NotNull private ControlMode controlMode = ControlMode.Disabled;
+
+  @Log.ToString @NotNull private ControlMode controlMode = ControlMode.Disabled;
   @NotNull private PerGearSettings currentGearSettings;
   // Log the getters instead because logging the fields doesn't cause physics updates.
   private double percentOutput;
+
   @NotNull
   private final SimulatedMotor motor =
       new SimulatedMotor(() -> this.busVoltage * this.percentOutput);
@@ -78,7 +83,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
       @Nullable final Double fwdSoftLimit,
       @Nullable final Double revSoftLimit,
       @Nullable final Double postEncoderGearing,
-      @Nullable final Double feetPerRotation,
+      @Nullable final Double unitPerRotation,
       @Nullable final Integer currentLimit,
       final boolean enableVoltageComp,
       @Nullable final List<PerGearSettings> perGearSettings,
@@ -102,7 +107,8 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
     this.controllerType = type;
     this.port = port;
     this.reverseOutput = reverseOutput;
-    this.feetPerRotation = Objects.requireNonNullElse(feetPerRotation, 1.0);
+    this.unitPerRotation = Objects.requireNonNullElse(unitPerRotation, 1.0);
+    this.enableVoltageComp = enableVoltageComp;
     this.name =
         name != null
             ? name
@@ -256,7 +262,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    */
   @Override
   public double encoderToUnit(final double nativeUnits) {
-    return nativeUnits * this.feetPerRotation;
+    return nativeUnits * this.unitPerRotation;
   }
 
   /**
@@ -269,7 +275,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    */
   @Override
   public double unitToEncoder(final double feet) {
-    return feet / this.feetPerRotation;
+    return feet / this.unitPerRotation;
   }
 
   /**
@@ -282,7 +288,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    */
   @Override
   public double encoderToUPS(final double encoderReading) {
-    return encoderReading * this.feetPerRotation;
+    return encoderReading * this.unitPerRotation;
   }
 
   /**
@@ -295,7 +301,7 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    */
   @Override
   public double UPSToEncoder(final double FPS) {
-    return FPS / this.feetPerRotation;
+    return FPS / this.unitPerRotation;
   }
 
   /**
@@ -336,10 +342,19 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
   }
 
   /** @return Raw velocity units for debugging purposes */
-  @Override
   @Log
+  @Override
   public double encoderVelocity() {
     return this.motor.getVelocity();
+  }
+
+  @Override
+  public void setVoltage(final double volts) {
+    this.setControlModeAndSetpoint(
+        ControlMode.PercentOutput,
+        this.enableVoltageComp
+            ? volts / this.getBatteryVoltage()
+            : volts / SimulatedMotor.NOMINAL_VOLTAGE);
   }
 
   /**
@@ -347,8 +362,9 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    *
    * @return The controller's velocity in FPS, or null if no encoder CPR was given.
    */
+  @Log
   @Override
-  public Double getVelocity() {
+  public double getVelocity() {
     return this.encoderToUPS(this.encoderVelocity());
   }
 
@@ -406,15 +422,14 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
    * @return The setpoint in sensible units for the current control mode.
    */
   @Override
-  @Nullable
-  public Double getSetpoint() {
+  public double getSetpoint() {
     switch (this.controlMode) {
       case Velocity:
         return this.encoderToUPS(this.setpoint);
       case Position:
         return this.encoderToUnit(this.setpoint);
       default:
-        return null;
+        return Double.NaN;
     }
   }
 
@@ -493,12 +508,12 @@ public class FPSSmartMotorSimulated implements SmartMotor, Updatable {
   /** @return Feedforward calculator for this gear */
   @Override
   public SimpleMotorFeedforward getCurrentGearFeedForward() {
-    return null;
+    return currentGearSettings.feedForwardCalculator;
   }
 
   /** @return the position of the talon in feet, or null of inches per rotation wasn't given. */
   @Override
-  public Double getPositionUnits() {
+  public double getPositionUnits() {
     return this.encoderToUnit(this.encoderPosition());
   }
 

@@ -24,9 +24,6 @@ public class MappedAHRS implements Updatable, Loggable {
   /** A multiplier for the yaw angle. -1 to invert, 1 to not. */
   protected final int invertYaw;
 
-  /** The angle, in degrees, to offset the output of getHeading by. */
-  protected double offsetAngle;
-
   /** The 9-axis heading value to return. Field to avoid garbage collection. */
   private double toRet;
 
@@ -46,19 +43,19 @@ public class MappedAHRS implements Updatable, Loggable {
    * @param invertYaw Whether or not to invert the yaw axis. Defaults to true.
    */
   @JsonCreator
-  public MappedAHRS(@JsonProperty(required = true) SerialPort.Port port, Boolean invertYaw) {
+  public MappedAHRS(
+      @JsonProperty(required = true) final SerialPort.Port port, final Boolean invertYaw) {
     if (port.equals(SerialPort.Port.kMXP)) {
       this.ahrs = new AHRS(SPI.Port.kMXP);
     } else {
       this.ahrs = new AHRS(port, kProcessedData, (byte) 100);
     }
-    ahrs.reset();
+    setHeading(0);
     if (invertYaw == null || invertYaw) {
       this.invertYaw = -1;
     } else {
       this.invertYaw = 1;
     }
-    setHeading(0);
   }
 
   /**
@@ -68,7 +65,7 @@ public class MappedAHRS implements Updatable, Loggable {
    * @return That acceleration in feet/(sec^2)
    */
   @Contract(pure = true)
-  protected static double gsToFeetPerSecondSquared(double accelGs) {
+  protected static double gsToFeetPerSecondSquared(final double accelGs) {
     return accelGs * 32.17; // Wolfram alpha said so
   }
 
@@ -78,13 +75,8 @@ public class MappedAHRS implements Updatable, Loggable {
    * @return The heading, in degrees from [-180, 180]
    */
   public double getHeading() {
-    toRet = invertYaw * ahrs.getFusedHeading() - offsetAngle;
-    while (toRet > 180) {
-      toRet -= 360;
-    }
-    while (toRet < -180) {
-      toRet += 360;
-    }
+    toRet = invertYaw * ahrs.getYaw();
+    //        toRet = Math.IEEEremainder(toRet, 360);
     return toRet;
   }
 
@@ -93,9 +85,8 @@ public class MappedAHRS implements Updatable, Loggable {
    *
    * @param headingDegrees An angle in degrees, from [-180, 180], to set the heading to.
    */
-  public void setHeading(double headingDegrees) {
-    this.offsetAngle = getHeading() - headingDegrees;
-    cachedHeading = headingDegrees;
+  public void setHeading(final double headingDegrees) {
+    ahrs.setAngleAdjustment(headingDegrees);
   }
 
   /**

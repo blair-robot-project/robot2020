@@ -5,13 +5,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 /** A button mapped to a command. */
 public class CommandButton implements Loggable {
 
   /** The command mapped to the button. Field to allow logging. */
-  private final Command command;
+  @Log.Include private final Command command;
 
   /**
    * Default constructor.
@@ -44,11 +45,6 @@ public class CommandButton implements Loggable {
         button.toggleWhenPressed(command);
         break;
     }
-  }
-
-  @Override
-  public boolean skipLayout() {
-    return true;
   }
 
   /** The possible actions for the button to do to the command. */

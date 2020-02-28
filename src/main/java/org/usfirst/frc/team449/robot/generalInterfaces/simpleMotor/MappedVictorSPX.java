@@ -34,14 +34,14 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
    */
   @JsonCreator
   public MappedVictorSPX(
-      @JsonProperty(required = true) int port,
-      @JsonProperty(required = true) boolean brakeMode,
-      boolean inverted,
-      boolean enableVoltageComp,
-      Double peakVoltageForward,
-      Double peakVoltageRev,
-      @Nullable Integer voltageCompSamples,
-      @Nullable List<SlaveVictor> slaveVictors) {
+      @JsonProperty(required = true) final int port,
+      @JsonProperty(required = true) final boolean brakeMode,
+      final boolean inverted,
+      final boolean enableVoltageComp,
+      final Double peakVoltageForward,
+      final Double peakVoltageRev,
+      @Nullable final Integer voltageCompSamples,
+      @Nullable final List<SlaveVictor> slaveVictors) {
     victorSPX = new VictorSPX(port);
     victorSPX.setInverted(inverted);
     victorSPX.setNeutralMode(brakeMode ? NeutralMode.Brake : NeutralMode.Coast);
@@ -54,7 +54,7 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
 
     if (slaveVictors != null) {
       // Set up slaves.
-      for (SlaveVictor slave : slaveVictors) {
+      for (final SlaveVictor slave : slaveVictors) {
         slave.setMaster(
             victorSPX,
             brakeMode,
@@ -69,7 +69,7 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
    * @param velocity the desired velocity, on [-1, 1].
    */
   @Override
-  public void setVelocity(double velocity) {
+  public void setVelocity(final double velocity) {
     victorSPX.set(ControlMode.PercentOutput, velocity);
   }
 

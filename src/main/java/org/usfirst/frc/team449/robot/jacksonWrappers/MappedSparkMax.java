@@ -33,12 +33,12 @@ public class MappedSparkMax implements SmartMotor {
    * The coefficient the output changes by after being measured by the encoder, e.g. this would be
    * 1/70 if there was a 70:1 gearing between the encoder and the final output.
    */
-  private final double postEncoderGearing;
+  @Log private double postEncoderGearing;
   /**
    * The number of feet travelled per rotation of the motor this is attached to, or null if there is
    * no encoder.
    */
-  private final double feetPerRotation;
+  private final double unitPerRotation;
   /** A list of all the gears this robot has and their settings. */
   @NotNull private final Map<Integer, PerGearSettings> perGearSettings;
   /** Forward limit switch object */
@@ -49,14 +49,14 @@ public class MappedSparkMax implements SmartMotor {
   @NotNull private final String name;
   /** Whether the forwards or reverse limit switches are normally open or closed, respectively. */
   private final boolean fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen;
+  /** REV brushless controller object */
+  private final CANSparkMax spark;
+  /** REV provided encoder object */
+  private final CANEncoder canEncoder;
+  /** REV provided PID Controller */
+  private final CANPIDController pidController;
   /** The settings currently being used by this Spark. */
   @NotNull protected PerGearSettings currentGearSettings;
-  /** REV brushless controller object */
-  private CANSparkMax spark;
-  /** REV provided encoder object */
-  private CANEncoder canEncoder;
-  /** REV provided PID Controller */
-  private CANPIDController pidController;
   /** The control mode of the motor */
   private ControlType currentControlMode;
   /** The most recently set setpoint. */
@@ -77,28 +77,28 @@ public class MappedSparkMax implements SmartMotor {
    * @param enableBrakeMode Whether to brake or coast when stopped.
    * @param PDP The PDP this Spark is connected to.
    * @param fwdLimitSwitchNormallyOpen Whether the forward limit switch is normally open or closed.
-   *     If this is null, the forward limit switch is disabled.
+   * If this is null, the forward limit switch is disabled.
    * @param revLimitSwitchNormallyOpen Whether the reverse limit switch is normally open or closed.
-   *     If this is null, the reverse limit switch is disabled.
+   * If this is null, the reverse limit switch is disabled.
    * @param remoteLimitSwitchID The CAN ID the limit switch to use for this Spark is plugged into,
-   *     or null to not use a limit switch.
+   * or null to not use a limit switch.
    * @param fwdSoftLimit The forward software limit, in feet. If this is null, the forward software
-   *     limit is disabled. Ignored if there's no encoder.
+   * limit is disabled. Ignored if there's no encoder.
    * @param revSoftLimit The reverse software limit, in feet. If this is null, the reverse software
-   *     limit is disabled. Ignored if there's no encoder.
+   * limit is disabled. Ignored if there's no encoder.
    * @param postEncoderGearing The coefficient the output changes by after being measured by the
-   *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
-   *     final output. Defaults to 1.
-   * @param feetPerRotation The number of feet travelled per rotation of the motor this is attached
-   *     to. Defaults to 1.
+   * encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the final
+   * output. Defaults to 1.
+   * @param unitPerRotation The number of feet travelled per rotation of the motor this is attached
+   * to. Defaults to 1.
    * @param currentLimit The max amps this device can draw. If this is null, no current limit is
-   *     used.
+   * used.
    * @param enableVoltageComp Whether or not to use voltage compensation. Defaults to false.
    * @param perGearSettings The settings for each gear this motor has. Can be null to use default
-   *     values and gear # of zero. Gear numbers can't be repeated.
+   * values and gear # of zero. Gear numbers can't be repeated.
    * @param startingGear The gear to start in. Can be null to use startingGearNum instead.
    * @param startingGearNum The number of the gear to start in. Ignored if startingGear isn't null.
-   *     Defaults to the lowest gear.
+   * Defaults to the lowest gear.
    * @param statusFrameRatesMillis The update rates, in millis, for each of the status frames.
    * @param controlFrameRateMillis The update rate, in milliseconds, for each control frame.
    */
@@ -115,7 +115,7 @@ public class MappedSparkMax implements SmartMotor {
       @Nullable final Double fwdSoftLimit,
       @Nullable final Double revSoftLimit,
       @Nullable final Double postEncoderGearing,
-      @Nullable final Double feetPerRotation,
+      @Nullable final Double unitPerRotation,
       @Nullable final Integer currentLimit,
       final boolean enableVoltageComp,
       @Nullable final List<PerGearSettings> perGearSettings,
@@ -153,7 +153,7 @@ public class MappedSparkMax implements SmartMotor {
 
     this.PDP = PDP;
 
-    this.feetPerRotation = feetPerRotation != null ? feetPerRotation : 1;
+    this.unitPerRotation = unitPerRotation != null ? unitPerRotation : 1;
 
     // Initialize
     this.perGearSettings = new HashMap<>();
@@ -301,6 +301,10 @@ public class MappedSparkMax implements SmartMotor {
       this.spark.setOpenLoopRampRate(0);
     }
 
+    if (this.currentGearSettings.postEncoderGearing != null) {
+      this.postEncoderGearing = currentGearSettings.postEncoderGearing;
+    }
+
     this.pidController.setP(this.currentGearSettings.kP, 0);
     this.pidController.setI(this.currentGearSettings.kI, 0);
     this.pidController.setD(this.currentGearSettings.kD, 0);
@@ -314,8 +318,8 @@ public class MappedSparkMax implements SmartMotor {
    * @return That distance in feet, or null if no encoder CPR was given.
    */
   @Override
-  public double encoderToUnit(double revs) {
-    return revs * feetPerRotation * postEncoderGearing;
+  public double encoderToUnit(final double revs) {
+    return revs * unitPerRotation * postEncoderGearing;
   }
 
   /**
@@ -324,11 +328,11 @@ public class MappedSparkMax implements SmartMotor {
    *
    * @param feet A distance in feet.
    * @return That distance in native units as measured by the encoder, or null if no encoder CPR was
-   *     given.
+   * given.
    */
   @Override
-  public double unitToEncoder(double feet) {
-    return feet / feetPerRotation / postEncoderGearing;
+  public double unitToEncoder(final double feet) {
+    return feet / unitPerRotation / postEncoderGearing;
   }
 
   /**
@@ -337,12 +341,12 @@ public class MappedSparkMax implements SmartMotor {
    *
    * @param encoderReading The velocity read from the encoder with no conversions.
    * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if
-   *     no encoder CPR was given.
+   * no encoder CPR was given.
    */
   @Override
-  public double encoderToUPS(double encoderReading) {
+  public double encoderToUPS(final double encoderReading) {
     RPS = nativeToRPS(encoderReading);
-    return RPS * postEncoderGearing * feetPerRotation;
+    return RPS * postEncoderGearing * unitPerRotation;
   }
 
   /**
@@ -351,11 +355,11 @@ public class MappedSparkMax implements SmartMotor {
    *
    * @param FPS The velocity of the output shaft, in FPS.
    * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was
-   *     given.
+   * given.
    */
   @Override
-  public double UPSToEncoder(double FPS) {
-    return RPSToNative((FPS / postEncoderGearing) / feetPerRotation);
+  public double UPSToEncoder(final double FPS) {
+    return RPSToNative((FPS / postEncoderGearing) / unitPerRotation);
   }
 
   /**
@@ -390,6 +394,11 @@ public class MappedSparkMax implements SmartMotor {
     return this.canEncoder.getPosition();
   }
 
+  @Override
+  public void setVoltage(final double volts) {
+    spark.setVoltage(volts);
+  }
+
   /**
    * Set a position setpoint for the Spark.
    *
@@ -422,7 +431,7 @@ public class MappedSparkMax implements SmartMotor {
    */
   @Override
   @Log
-  public Double getVelocity() {
+  public double getVelocity() {
     return this.encoderToUPS(canEncoder.getVelocity());
   }
 
@@ -432,7 +441,7 @@ public class MappedSparkMax implements SmartMotor {
    * @param velocity the desired velocity, on [-1, 1].
    */
   @Override
-  public void setVelocity(double velocity) {
+  public void setVelocity(final double velocity) {
     if (currentGearSettings.maxSpeed != null) {
       setVelocityUPS(velocity * currentGearSettings.maxSpeed);
     } else {
@@ -446,7 +455,7 @@ public class MappedSparkMax implements SmartMotor {
    * @param velocity velocity setpoint in FPS.
    */
   @Override
-  public void setVelocityUPS(double velocity) {
+  public void setVelocityUPS(final double velocity) {
     this.currentControlMode = ControlType.kVelocity;
     this.nativeSetpoint = UPSToEncoder(velocity);
     this.setpoint = velocity;
@@ -465,10 +474,9 @@ public class MappedSparkMax implements SmartMotor {
     return this.getSetpoint() - this.getVelocity();
   }
 
-  @Nullable
   @Override
   @Log
-  public Double getSetpoint() {
+  public double getSetpoint() {
     return this.setpoint;
   }
 
@@ -496,7 +504,7 @@ public class MappedSparkMax implements SmartMotor {
   }
 
   @Override
-  public void setGearScaledVelocity(double velocity, int gear) {
+  public void setGearScaledVelocity(final double velocity, final int gear) {
     if (currentGearSettings.maxSpeed != null) {
       setVelocityUPS(currentGearSettings.maxSpeed * velocity);
     } else {
@@ -515,7 +523,7 @@ public class MappedSparkMax implements SmartMotor {
   }
 
   @Override
-  public Double getPositionUnits() {
+  public double getPositionUnits() {
     return encoderToUnit(canEncoder.getPosition());
   }
 

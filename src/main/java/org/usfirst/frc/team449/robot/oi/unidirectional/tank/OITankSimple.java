@@ -34,9 +34,9 @@ public class OITankSimple extends OITank {
    */
   @JsonCreator
   public OITankSimple(
-      @NotNull @JsonProperty(required = true) Throttle leftThrottle,
-      @NotNull @JsonProperty(required = true) Throttle rightThrottle,
-      double commandingStraightTolerance) {
+      @NotNull @JsonProperty(required = true) final Throttle leftThrottle,
+      @NotNull @JsonProperty(required = true) final Throttle rightThrottle,
+      final double commandingStraightTolerance) {
     this.leftThrottle = leftThrottle;
     this.rightThrottle = rightThrottle;
     this.commandingStraightTolerance = commandingStraightTolerance;

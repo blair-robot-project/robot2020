@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteLimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -46,7 +47,7 @@ public class MappedTalon implements SmartMotor {
    * The number of feet travelled per rotation of the motor this is attached to, or null if there is
    * no encoder.
    */
-  private final double feetPerRotation;
+  private final double unitPerRotation;
   /** A list of all the gears this robot has and their settings. */
   @NotNull private final Map<Integer, PerGearSettings> perGearSettings;
   /** The talon's name, used for logging purposes. */
@@ -57,6 +58,7 @@ public class MappedTalon implements SmartMotor {
   private final boolean fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen;
   /** The settings currently being used by this Talon. */
   @NotNull protected PerGearSettings currentGearSettings;
+
   Faults faults = new Faults();
   /**
    * The coefficient the output changes by after being measured by the encoder, e.g. this would be
@@ -70,6 +72,8 @@ public class MappedTalon implements SmartMotor {
 
   /** The setpoint in native units. Field to avoid garbage collection. */
   private double nativeSetpoint;
+
+  private boolean voltageCompEnabled;
 
   /**
    * Default constructor.
@@ -122,33 +126,33 @@ public class MappedTalon implements SmartMotor {
    */
   @JsonCreator
   public MappedTalon(
-      @JsonProperty(required = true) int port,
-      @Nullable String name,
-      boolean reverseOutput,
-      @JsonProperty(required = true) boolean enableBrakeMode,
-      @Nullable RunningLinRegComponent voltagePerCurrentLinReg,
-      @Nullable PDP PDP,
-      @Nullable Boolean fwdLimitSwitchNormallyOpen,
-      @Nullable Boolean revLimitSwitchNormallyOpen,
-      @Nullable Integer remoteLimitSwitchID,
-      @Nullable Double fwdSoftLimit,
-      @Nullable Double revSoftLimit,
-      @Nullable Double postEncoderGearing,
-      @Nullable Double unitPerRotation,
-      @Nullable Integer currentLimit,
-      boolean enableVoltageComp,
-      @Nullable Integer voltageCompSamples,
-      @Nullable FeedbackDevice feedbackDevice,
-      @Nullable Integer encoderCPR,
-      boolean reverseSensor,
-      @Nullable List<PerGearSettings> perGearSettings,
-      @Nullable Shiftable.gear startingGear,
-      @Nullable Integer startingGearNum,
-      @Nullable Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
-      @Nullable Map<ControlFrame, Integer> controlFrameRatesMillis,
-      @Nullable List<SlaveTalon> slaveTalons,
-      @Nullable List<SlaveVictor> slaveVictors,
-      @Nullable List<SlaveSparkMax> slaveSparks) {
+      @JsonProperty(required = true) final int port,
+      @Nullable final String name,
+      final boolean reverseOutput,
+      @JsonProperty(required = true) final boolean enableBrakeMode,
+      @Nullable final RunningLinRegComponent voltagePerCurrentLinReg,
+      @Nullable final PDP PDP,
+      @Nullable final Boolean fwdLimitSwitchNormallyOpen,
+      @Nullable final Boolean revLimitSwitchNormallyOpen,
+      @Nullable final Integer remoteLimitSwitchID,
+      @Nullable final Double fwdSoftLimit,
+      @Nullable final Double revSoftLimit,
+      @Nullable final Double postEncoderGearing,
+      @Nullable final Double unitPerRotation,
+      @Nullable final Integer currentLimit,
+      final boolean enableVoltageComp,
+      @Nullable final Integer voltageCompSamples,
+      @Nullable final FeedbackDevice feedbackDevice,
+      @Nullable final Integer encoderCPR,
+      final boolean reverseSensor,
+      @Nullable final List<PerGearSettings> perGearSettings,
+      @Nullable final Shiftable.gear startingGear,
+      @Nullable final Integer startingGearNum,
+      @Nullable final Map<StatusFrameEnhanced, Integer> statusFrameRatesMillis,
+      @Nullable final Map<ControlFrame, Integer> controlFrameRatesMillis,
+      @Nullable final List<SlaveTalon> slaveTalons,
+      @Nullable final List<SlaveVictor> slaveVictors,
+      @Nullable final List<SlaveSparkMax> slaveSparks) {
     // Instantiate the base CANTalon this is a wrapper on.
     this.canTalon = new TalonSRX(port);
     // Set the name to the given one or to talon_portnum
@@ -177,7 +181,7 @@ public class MappedTalon implements SmartMotor {
     }
 
     // Set fields
-    this.feetPerRotation = unitPerRotation != null ? unitPerRotation : 1;
+    this.unitPerRotation = unitPerRotation != null ? unitPerRotation : 1;
 
     // Initialize
     this.perGearSettings = new HashMap<>();
@@ -309,10 +313,14 @@ public class MappedTalon implements SmartMotor {
     }
 
     // Enable or disable voltage comp
-    this.canTalon.enableVoltageCompensation(enableVoltageComp);
-    this.canTalon.configVoltageCompSaturation(12, 0);
+    if (enableVoltageComp) {
+      canTalon.enableVoltageCompensation(true);
+      canTalon.configVoltageCompSaturation(12, 0);
+      voltageCompEnabled = true;
+    }
+
     final int notNullVoltageCompSamples = voltageCompSamples != null ? voltageCompSamples : 32;
-    this.canTalon.configVoltageMeasurementFilter(notNullVoltageCompSamples, 0);
+    canTalon.configVoltageMeasurementFilter(notNullVoltageCompSamples, 0);
 
     // Use slot 0
     this.canTalon.selectProfileSlot(0, 0);
@@ -343,6 +351,9 @@ public class MappedTalon implements SmartMotor {
         slave.setMasterPhoenix(port, enableBrakeMode);
       }
     }
+
+    canTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms);
+    canTalon.configVelocityMeasurementWindow(10);
   }
 
   /** Disables the motor, if applicable. */
@@ -356,6 +367,7 @@ public class MappedTalon implements SmartMotor {
    *
    * @param percentVoltage percent of total voltage from [-1, 1]
    */
+  @Override
   public void setPercentVoltage(double percentVoltage) {
     // Warn the user if they're setting Vbus to a number that's outside the range of values.
     if (Math.abs(percentVoltage) > 1.0) {
@@ -428,11 +440,11 @@ public class MappedTalon implements SmartMotor {
    * @return That distance in feet, or null if no encoder CPR was given.
    */
   @Override
-  public double encoderToUnit(double nativeUnits) {
+  public double encoderToUnit(final double nativeUnits) {
     if (encoderCPR == null) {
       return Double.NaN;
     }
-    return nativeUnits / (this.encoderCPR * 4) * this.postEncoderGearing * this.feetPerRotation;
+    return nativeUnits / (this.encoderCPR * 4) * this.postEncoderGearing * this.unitPerRotation;
   }
 
   /**
@@ -444,11 +456,11 @@ public class MappedTalon implements SmartMotor {
    *     given.
    */
   @Override
-  public double unitToEncoder(double feet) {
+  public double unitToEncoder(final double feet) {
     if (encoderCPR == null) {
       return Double.NaN;
     }
-    return feet / this.feetPerRotation * (this.encoderCPR * 4) / this.postEncoderGearing;
+    return feet / this.unitPerRotation * (this.encoderCPR * 4) / this.postEncoderGearing;
   }
 
   /**
@@ -460,12 +472,12 @@ public class MappedTalon implements SmartMotor {
    *     no encoder CPR was given.
    */
   @Override
-  public double encoderToUPS(double encoderReading) {
+  public double encoderToUPS(final double encoderReading) {
     RPS = nativeToRPS(encoderReading);
     if (RPS == null) {
       return Double.NaN;
     }
-    return this.RPS * this.postEncoderGearing * this.feetPerRotation;
+    return this.RPS * this.postEncoderGearing * this.unitPerRotation;
   }
 
   /**
@@ -477,8 +489,8 @@ public class MappedTalon implements SmartMotor {
    *     given.
    */
   @Override
-  public double UPSToEncoder(double UPS) {
-    return RPSToNative((UPS / postEncoderGearing) / feetPerRotation);
+  public double UPSToEncoder(final double UPS) {
+    return RPSToNative((UPS / postEncoderGearing) / unitPerRotation);
   }
 
   /**
@@ -520,6 +532,15 @@ public class MappedTalon implements SmartMotor {
     return this.canTalon.getSelectedSensorPosition();
   }
 
+  @Override
+  public void setVoltage(final double volts) {
+    if (voltageCompEnabled) {
+      setPercentVoltage(volts / 12.);
+    } else {
+      setPercentVoltage(volts / getBatteryVoltage());
+    }
+  }
+
   /**
    * Set a position setpoint for the Talon.
    *
@@ -548,9 +569,8 @@ public class MappedTalon implements SmartMotor {
    *
    * @return The CANTalon's velocity in FPS, or null if no encoder CPR was given.
    */
-  @NotNull
   @Override
-  public Double getVelocity() {
+  public double getVelocity() {
     return encoderToUPS(canTalon.getSelectedSensorVelocity(0));
   }
 
@@ -560,7 +580,7 @@ public class MappedTalon implements SmartMotor {
    * @param velocity the desired velocity, on [-1, 1].
    */
   @Override
-  public void setVelocity(double velocity) {
+  public void setVelocity(final double velocity) {
     if (currentGearSettings.maxSpeed != null) {
       setVelocityUPS(velocity * currentGearSettings.maxSpeed);
     } else {
@@ -574,7 +594,7 @@ public class MappedTalon implements SmartMotor {
    * @param velocity velocity setpoint in FPS.
    */
   @Override
-  public void setVelocityUPS(double velocity) {
+  public void setVelocityUPS(final double velocity) {
     nativeSetpoint = UPSToEncoder(velocity);
     setpoint = velocity;
     canTalon.config_kF(0, 0, 0);
@@ -606,10 +626,9 @@ public class MappedTalon implements SmartMotor {
    *
    * @return The setpoint in sensible units for the current control mode.
    */
-  @Nullable
   @Log
   @Override
-  public Double getSetpoint() {
+  public double getSetpoint() {
     return setpoint;
   }
 
@@ -694,7 +713,7 @@ public class MappedTalon implements SmartMotor {
   /** @return the position of the talon in feet, or null of inches per rotation wasn't given. */
   @Override
   @Log
-  public Double getPositionUnits() {
+  public double getPositionUnits() {
     return encoderToUnit(canTalon.getSelectedSensorPosition(0));
   }
 

@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
-import org.usfirst.frc.team449.robot.other.BufferTimer;
 import org.usfirst.frc.team449.robot.other.Clock;
+import org.usfirst.frc.team449.robot.other.Debouncer;
 
 /** A component class for autoshifting. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -30,7 +30,7 @@ public class AutoshiftComponent {
    * BufferTimers for shifting that make it so all the other conditions to shift must be met for
    * some amount of time before shifting actually happens.
    */
-  @Nullable private final BufferTimer upshiftDebouncer, downshiftDebouncer;
+  @Nullable private final Debouncer upshiftDebouncer, downshiftDebouncer;
 
   /** The forward velocity setpoint (on a 0-1 scale) below which we stay in low gear */
   private final double upshiftFwdThresh;
@@ -63,8 +63,8 @@ public class AutoshiftComponent {
   public AutoshiftComponent(
       @JsonProperty(required = true) double upshiftSpeed,
       @JsonProperty(required = true) double downshiftSpeed,
-      @Nullable BufferTimer upshiftDebouncer,
-      @Nullable BufferTimer downshiftDebouncer,
+      @Nullable Debouncer upshiftDebouncer,
+      @Nullable Debouncer downshiftDebouncer,
       double upshiftFwdThresh,
       double cooldownAfterUpshift,
       double cooldownAfterDownshift) {
@@ -97,7 +97,7 @@ public class AutoshiftComponent {
         okayToDownshift && Clock.currentTimeMillis() - timeLastUpshifted > cooldownAfterUpshift;
 
     if (downshiftDebouncer != null) {
-      // We use a BufferTimer so we only shift if the conditions are met for a specific continuous
+      // We use a Debouncer so we only shift if the conditions are met for a specific continuous
       // interval.
       // This avoids brief blips causing shifting.
       okayToDownshift = downshiftDebouncer.get(okayToDownshift);
@@ -128,7 +128,7 @@ public class AutoshiftComponent {
         okayToUpshift && Clock.currentTimeMillis() - timeLastDownshifted > cooldownAfterDownshift;
 
     if (upshiftDebouncer != null) {
-      // We use a BufferTimer so we only shift if the conditions are met for a specific continuous
+      // We use a Debouncer so we only shift if the conditions are met for a specific continuous
       // interval.
       // This avoids brief blips causing shifting.
       okayToUpshift = upshiftDebouncer.get(okayToUpshift);

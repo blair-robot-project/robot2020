@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MappedTranslationSet {
@@ -24,17 +23,12 @@ public class MappedTranslationSet {
 
   @JsonCreator
   public MappedTranslationSet(
-      @JsonProperty(required = true) final MappedPose2d startingPose,
-      @JsonProperty final List<MappedTranslation2d> translations,
-      @JsonProperty(required = true) final MappedPose2d endingPose) {
-    this.startingPose = startingPose.pose;
-    this.endingPose = endingPose.pose;
-    this.translations = new ArrayList<>();
-    if (translations != null) {
-      for (final var entry : translations) {
-        this.translations.add(entry.translation);
-      }
-    }
+      @JsonProperty(required = true) final Pose2d startingPose,
+      @JsonProperty final List<Translation2d> translations,
+      @JsonProperty(required = true) final Pose2d endingPose) {
+    this.startingPose = startingPose;
+    this.endingPose = endingPose;
+    this.translations = translations;
   }
 
   public Pose2d getStartingPose() {

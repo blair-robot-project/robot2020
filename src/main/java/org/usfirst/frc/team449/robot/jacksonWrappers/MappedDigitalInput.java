@@ -19,7 +19,7 @@ public class MappedDigitalInput extends DigitalInput implements Loggable, Boolea
    * @param channel the DIO channel for the digital input 0-9 are on-board, 10-25 are on the MXP
    */
   @JsonCreator
-  public MappedDigitalInput(@JsonProperty(required = true) int channel) {
+  public MappedDigitalInput(@JsonProperty(required = true) final int channel) {
     super(channel);
   }
 

@@ -1,7 +1,5 @@
 package org.usfirst.frc.team449.robot.generalInterfaces;
 
-import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
-
 import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
@@ -37,6 +35,8 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.simulated.FPSSmartMotorSimulated;
 import org.usfirst.frc.team449.robot.other.Updater;
 
+import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
+
 /**
  * A motor with built in advanced capability featuring encoder, current limiting, and gear shifting
  * support. Also features built in FPS conversions.
@@ -50,6 +50,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   boolean SIMULATE = true;
   /** Whether to simulate sparks if they cause a HAL error when constructed. */
   boolean SIMULATE_SPARKS_IF_ERR = true;
+
   int LOG_WIDTH = 4, LOG_HEIGHT = 3;
 
   /**
@@ -78,7 +79,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * @param postEncoderGearing The coefficient the output changes by after being measured by the
    *     encoder, e.g. this would be 1/70 if there was a 70:1 gearing between the encoder and the
    *     final output. Defaults to 1.
-   * @param feetPerRotation The number of feet travelled per rotation of the motor this is attached
+   * @param unitPerRotation The number of feet travelled per rotation of the motor this is attached
    *     to. Defaults to 1.
    * @param currentLimit The max amps this device can draw. If this is null, no current limit is
    *     used.
@@ -124,7 +125,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
       @Nullable final Double fwdSoftLimit,
       @Nullable final Double revSoftLimit,
       @Nullable final Double postEncoderGearing,
-      @Nullable final Double feetPerRotation,
+      @Nullable final Double unitPerRotation,
       @Nullable final Integer currentLimit,
       final boolean enableVoltageComp,
       @Nullable final List<PerGearSettings> perGearSettings,
@@ -272,7 +273,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
                 fwdSoftLimit,
                 revSoftLimit,
                 postEncoderGearing,
-                feetPerRotation,
+                unitPerRotation,
                 currentLimit,
                 enableVoltageComp,
                 perGearSettings,
@@ -301,7 +302,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
                 fwdSoftLimit,
                 revSoftLimit,
                 postEncoderGearing,
-                feetPerRotation,
+                unitPerRotation,
                 currentLimit,
                 enableVoltageComp,
                 voltageCompSamples,
@@ -334,7 +335,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
                 fwdSoftLimit,
                 revSoftLimit,
                 postEncoderGearing,
-                feetPerRotation,
+                unitPerRotation,
                 currentLimit,
                 enableVoltageComp,
                 perGearSettings,
@@ -440,18 +441,22 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   /** @return Raw velocity units for debugging purposes */
   double encoderVelocity();
 
+  /** Sets the output in volts. */
+  void setVoltage(double volts);
+
   /**
    * Get the velocity of the controller in FPS.
    *
    * @return The controller's velocity in FPS, or null if no encoder CPR was given.
    */
-  Double getVelocity();
+  double getVelocity();
 
   /**
    * Set the velocity for the motor to go at.
    *
    * @param velocity the desired velocity, on [-1, 1].
    */
+  @Override
   void setVelocity(double velocity);
 
   /**
@@ -474,8 +479,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    *
    * @return The setpoint in sensible units for the current control mode.
    */
-  @Nullable
-  Double getSetpoint();
+  double getSetpoint();
 
   /**
    * Get the voltage the Talon is currently drawing from the PDP.
@@ -528,7 +532,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
   SimpleMotorFeedforward getCurrentGearFeedForward();
 
   /** @return the position of the talon in feet, or null of inches per rotation wasn't given. */
-  Double getPositionUnits();
+  double getPositionUnits();
 
   /** Resets the position of the Talon to 0. */
   void resetPosition();
@@ -582,10 +586,10 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
     return new int[] {4, 3};
   }
 
-  //    @Override
-  //    default int[] configureLayoutPosition() {
-  //        return new int[] {3, 4};
-  //    }
+  @Override
+  default int[] configureLayoutPosition() {
+    return new int[] {3, 3};
+  }
 
   /**
    * Gets whether the motor is a simulated motor.

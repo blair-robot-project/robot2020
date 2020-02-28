@@ -28,9 +28,9 @@ public class OIArcadeSimple extends OIArcade {
    */
   @JsonCreator
   public OIArcadeSimple(
-      @NotNull @JsonProperty(required = true) Throttle rotThrottle,
-      @NotNull @JsonProperty(required = true) Throttle velThrottle,
-      boolean rescaleOutputs) {
+      @NotNull @JsonProperty(required = true) final Throttle rotThrottle,
+      @NotNull @JsonProperty(required = true) final Throttle velThrottle,
+      final boolean rescaleOutputs) {
     super(rescaleOutputs);
     this.rotThrottle = rotThrottle;
     this.velThrottle = velThrottle;
