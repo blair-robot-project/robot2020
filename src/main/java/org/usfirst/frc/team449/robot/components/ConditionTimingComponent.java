@@ -65,6 +65,12 @@ public abstract class ConditionTimingComponent implements Loggable {
     return this.lastBecameTrue;
   }
 
+  @Contract(pure = true)
+  public double becameTrueTime() {
+    if (!this.current) return Double.NaN;
+    return this.lastBecameTrueTime();
+  }
+
   /**
    * Gets the time at which the condition last became false.
    *
@@ -79,40 +85,77 @@ public abstract class ConditionTimingComponent implements Loggable {
     return this.lastBecameFalse;
   }
 
-  public double timeSinceLastBecameTrue() {
+  @Contract(pure = true)
+  public double becameFalseTime() {
+    if (this.current) return Double.NaN;
+    return this.lastBecameFalseTime();
+  }
+
+  /**
+   * <p>
+   * Returns {@link Double#NaN} if not currently true.
+   * </p>
+   */
+  @Contract(pure = true)
+  public double timeSinceBecameTrue() {
     if (!this.current) return Double.NaN;
+    return this.timeSinceLastBecameTrue();
+  }
+
+  /**
+   * <p>
+   * Returns {@link Double#NaN} if not currently false.
+   * </p>
+   */
+  @Contract(pure = true)
+  public double timeSinceBecameFalse() {
+    if (this.current) return Double.NaN;
+    return this.timeSinceLastBecameFalse();
+  }
+
+  @Contract(pure = true)
+  public double timeSinceLastBecameTrue() {
     return this.now - this.lastBecameTrue;
   }
 
+  @Contract(pure = true)
   public double timeSinceLastBecameFalse() {
-    if (this.current) return Double.NaN;
     return this.now - this.lastBecameFalse;
   }
 
   /** @implNote returns min(lastBecameTrue(), lastBecameFalse()) */
   @Contract(pure = true)
+  public double lastUpdateTime() {
+    return this.now;
+  }
+
+  /**
+   * @implNote returns max(lastBecameTrue(), lastBecameFalse())
+   */
+  @Contract(pure = true)
   public double lastChangeTime() {
-    return Math.min(this.lastBecameFalse, this.lastBecameTrue);
+    // Should be max, as time increases over time.
+    return Math.max(this.lastBecameFalse, this.lastBecameTrue);
   }
 
   @Contract(pure = true)
   public boolean hasBeenFalseForAtLeast(final double duration) {
-    return this.timeSinceLastBecameFalse() >= duration;
+    return this.timeSinceBecameFalse() >= duration;
   }
 
   @Contract(pure = true)
   public boolean hasBeenTrueForAtLeast(final double duration) {
-    return this.timeSinceLastBecameTrue() >= duration;
+    return this.timeSinceBecameTrue() >= duration;
   }
 
   @Contract(pure = true)
   public boolean hasBeenFalseForAtMost(final double duration) {
-    return this.timeSinceLastBecameFalse() <= duration;
+    return this.timeSinceBecameFalse() <= duration;
   }
 
   @Contract(pure = true)
   public boolean hasBeenTrueForAtMost(final double duration) {
-    return this.timeSinceLastBecameTrue() <= duration;
+    return this.timeSinceBecameTrue() <= duration;
   }
 
   @Contract(pure = true)
@@ -130,7 +173,9 @@ public abstract class ConditionTimingComponent implements Loggable {
     return this.current;
   }
 
+  // TODO This is not a good permanent solution because the hash may change between runs.
   @Override
+  @Contract(pure = true)
   public String configureLogName() {
     return this.toString();
   }
