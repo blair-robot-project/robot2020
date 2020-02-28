@@ -8,7 +8,6 @@ import edu.wpi.first.hal.SimBoolean;
 import edu.wpi.first.hal.SimDevice;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemConditional;
@@ -17,10 +16,14 @@ import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.other.DebouncerEx;
 import org.usfirst.frc.team449.robot.other.SimUtil;
 
+import java.util.Optional;
+
 /** A flywheel multiSubsystem with a single flywheel and a single-motor feeder system. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class FlywheelSimple extends SubsystemBase
     implements SubsystemFlywheel, SubsystemConditional, io.github.oblarg.oblog.Loggable {
+
+  final int SPEED_CONDITION_BUFFER_SIZE = 30;
 
   /** The flywheel's motor */
   @NotNull private final SmartMotor shooterMotor;
@@ -34,7 +37,7 @@ public class FlywheelSimple extends SubsystemBase
   @Nullable private final Double minShootingSpeed;
   @Nullable @Log.Exclude private final SimDevice simDevice;
   @Nullable private final SimBoolean sim_manualStates, sim_isAtSpeed, sim_isTimedOut;
-  @NotNull private final DebouncerEx speedConditionDebouncer = new DebouncerEx(30);
+  @NotNull private final DebouncerEx speedConditionDebouncer = new DebouncerEx(SPEED_CONDITION_BUFFER_SIZE);
   /** Whether the flywheel is currently commanded to spin */
   @NotNull @Log.ToString private SubsystemFlywheel.FlywheelState state;
   /** Whether the condition was met last time caching was done. */
@@ -47,10 +50,10 @@ public class FlywheelSimple extends SubsystemBase
    * @param shooterMotor The motor controlling the flywheel.
    * @param shooterThrottle The throttle, from [-1, 1], at which to run the multiSubsystem.
    * @param spinUpTimeoutSecs The amount of time that the flywheel will wait for the nominal
-   *     shooting condition to be reached before signalling that it is ready to shoot regardless.
+   * shooting condition to be reached before signalling that it is ready to shoot regardless.
    * @param minShootingSpeed The minimum speed at which the flywheel will signal that it is ready to
-   *     shoot. Null means that the flywheel will always behave according to the timeout specified
-   *     by {@code spinUpTimeoutSecs}.
+   * shoot. Null means that the flywheel will always behave according to the timeout specified by
+   * {@code spinUpTimeoutSecs}.
    */
   @JsonCreator
   public FlywheelSimple(
@@ -107,7 +110,7 @@ public class FlywheelSimple extends SubsystemBase
 
   /**
    * @return Expected time from giving the multiSubsystem voltage to being ready to fire, in
-   *     seconds.
+   * seconds.
    */
   @Override
   @Log

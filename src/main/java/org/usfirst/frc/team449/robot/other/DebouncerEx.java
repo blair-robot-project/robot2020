@@ -29,7 +29,7 @@ public class DebouncerEx implements Loggable {
   }
 
   public void update(final boolean currentState) {
-    this.buffer.push(currentState);
+    this.buffer.addFirst(currentState);
     this.bufferSum += currentState ? 1 : -1;
 
     if (this.buffer.size() > this.bufferSize) {
