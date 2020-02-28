@@ -336,6 +336,20 @@ useCameraServer: false
           currentLimit: 30
           enableVoltageComp: true
 
+  - org.usfirst.frc.team449.robot._2020.feeder.BallCounter:
+      '@id': ballCounter
+      sensor1:
+        org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+          '@id': feederSensor1
+          channel: *feederSensor1Port
+      sensor2:
+        org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+          '@id': feederSensor2
+          channel: *feederSensor2Port
+      flywheel:
+        org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
+          shooterFlywheels
+
 *COMMANDS:
   ########################################################################################################################
   *BUTTONS:
@@ -663,12 +677,10 @@ useCameraServer: false
               feeder
           sensor1:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-              '@id': feederSensor1
-              channel: *feederSensor1Port
+              feederSensor1
           sensor2:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-              '@id': feederSensor2
-              channel: *feederSensor2Port
+              feederSensor2
 
     - subsystem:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:

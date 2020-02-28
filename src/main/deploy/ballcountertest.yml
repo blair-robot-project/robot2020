@@ -343,7 +343,7 @@ useCameraServer: false
                     kI: 0.01
                     kD: 0
 
-  - org.usfirst.frc.team449.robot._2020.climber.AnalogMotorSingleSpeed:
+  - org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
       '@id': kicker
       speed: *kickerThrottle
       motor:
@@ -378,7 +378,7 @@ useCameraServer: false
             '@id': climberPowerLimitTimer
             bufferTimeSeconds: 1
       solenoidSubsystem:
-        org.usfirst.frc.team449.robot._2020.climber.SolenoidSimple:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
           '@id': climberSolenoidSystem
           piston:
             '@id': climberSolenoid
@@ -481,7 +481,7 @@ useCameraServer: false
               mechanismsJoystick
           buttonNumber: *intakePistonToggleButtonNumber
       command:
-        org.usfirst.frc.team449.robot._2020.climber.commands.ToggleSolenoid:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.ToggleSolenoid:
           '@id': intakePistonToggleCommand
           subsystem:
             org.usfirst.frc.team449.robot._2020.intake.IntakeActuated:
@@ -572,7 +572,7 @@ useCameraServer: false
                       - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
                           '@id': kickerStartCommand
                           subsystem:
-                            org.usfirst.frc.team449.robot._2020.climber.AnalogMotorSingleSpeed:
+                            org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
                               kicker
                       - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
                           '@id': feederStartCommand_shooting
@@ -603,7 +603,7 @@ useCameraServer: false
             - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOff:
                 '@id': kickerStopCommand
                 subsystem:
-                  org.usfirst.frc.team449.robot._2020.climber.AnalogMotorSingleSpeed:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
                     kicker
             - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
                 '@id': feederStopCommand_shootingStop
@@ -790,25 +790,25 @@ useCameraServer: false
     - subsystem:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
           feeder
-        command:
-          org.usfirst.frc.team449.robot._2020.feeder.commands.BallCountingFeederCommand:
-            feeder:
-              org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                feeder
-            defaultMode: IN_FAST
-            shooterStopCommand:
-              org.usfirst.frc.team449.robot._2020.shooter.commands.TurnAllOffWithRequires:
-                shooterStopCommand
-            ballThreshold: 4
-            #timeout: *feederIndexingTimeoutSecs
-            sensor1:
-              org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-                '@id': feederSensor1
-                channel: *feederSensor1Port
-            sensor2:
-              org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-                '@id': feederSensor2
-                channel: *feederSensor2Port
+      command:
+        org.usfirst.frc.team449.robot._2020.feeder.commands.BallCountingFeederCommand:
+          feeder:
+            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+              feeder
+          defaultMode: IN_FAST
+          shooterStopCommand:
+            org.usfirst.frc.team449.robot._2020.shooter.commands.TurnAllOffWithRequires:
+              shooterStopCommand
+          ballThreshold: 4
+          #timeout: *feederIndexingTimeoutSecs
+          sensor1:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+              '@id': feederSensor1
+              channel: *feederSensor1Port
+          sensor2:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+              '@id': feederSensor2
+              channel: *feederSensor2Port
 
 
 ########################################################################################################################
