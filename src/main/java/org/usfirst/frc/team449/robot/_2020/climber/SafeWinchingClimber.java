@@ -99,15 +99,15 @@ public class SafeWinchingClimber extends SubsystemBase
    */
   @Override
   public void turnMotorOn() {
-    if (this.armIsUp()) {
-      if (!this.reallySure) {
-        this.reallySure = true;
-      } else {
-        this.setSolenoid(DoubleSolenoid.Value.kReverse);
-        this.motorSubsystem.turnMotorOn();
-        this.enableArm = false;
-      }
-    }
+    this.motorSubsystem.turnMotorOn();
+//    if (this.armIsUp()) {
+//      if (!this.reallySure) {
+//        this.reallySure = true;
+//      } else {
+//        this.setSolenoid(DoubleSolenoid.Value.kReverse);
+//        this.enableArm = false;
+//      }
+//    }
   }
 
   @Log
