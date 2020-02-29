@@ -3,6 +3,7 @@ package org.usfirst.frc.team449.robot.components.limelight;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.function.DoubleSupplier;
+
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight;
 
@@ -24,20 +25,21 @@ public class LimelightDistanceComponent implements DoubleSupplier {
   /**
    * Default constructor
    *
+   * @param limelight the limelight that supplies the angles
    * @param limelightHeight The height of the Limelight
-   * @param limelightAngleDown The angle of the Limelight, in degrees
+   * @param limelightAngleUp The angle of the Limelight, in degrees
    * @param targetHeight the height of the expected vision target, probably provided by the game
    *     manual
    */
   @JsonCreator
   public LimelightDistanceComponent(
-      @NotNull @JsonProperty(required = true) Limelight limelight,
-      @JsonProperty(required = true) double limelightHeight,
-      @JsonProperty(required = true) double limelightAngleDown,
-      @JsonProperty(required = true) double targetHeight) {
+          @NotNull @JsonProperty(required = true) Limelight limelight,
+          @JsonProperty(required = true) double limelightHeight,
+          double limelightAngleUp,
+          @JsonProperty(required = true) double targetHeight) {
     this.limelight = limelight;
     this.limelightHeight = limelightHeight;
-    this.limelightAngle = limelightAngleDown;
+    this.limelightAngle = limelightAngleUp;
     this.targetHeight = targetHeight;
   }
 
@@ -45,6 +47,6 @@ public class LimelightDistanceComponent implements DoubleSupplier {
   @Override
   public double getAsDouble() {
     return (targetHeight - limelightHeight)
-        * Math.tan(Math.toRadians(limelightAngle + limelight.getY()));
+            / Math.tan(Math.toRadians(limelightAngle + limelight.getY()));
   }
 }
