@@ -13,14 +13,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public abstract class CommandGroupMixIn {
   @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-<<<<<<< .merge_file_a08304
   public CommandGroupMixIn(
-      @JsonProperty(value = "commands", required = true) final Command... commands) {}
-=======
-  public CommandGroupMixIn(@JsonProperty("commands") final Command... commands) {}
-
-  @JsonSetter(value = "requiredSubsystems", nulls = Nulls.SKIP, contentNulls = Nulls.FAIL)
-  @JsonAlias("requirements")
-  abstract void addRequirements(Subsystem... requirements);
->>>>>>> .merge_file_a14160
+          @JsonProperty(value = "commands", required = true) final Command... commands) {}
 }

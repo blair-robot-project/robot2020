@@ -10,11 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 
-<<<<<<< .merge_file_a13696
 /** A version of {@link JoystickButton} that is a Button. */
-=======
-/** A version of {@link edu.wpi.first.wpilibj.buttons.JoystickButton} that is a Button. */
->>>>>>> .merge_file_a13408
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SimpleButton extends Button {
 

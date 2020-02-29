@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
-import org.usfirst.frc.team449.robot.other.BufferTimer;
 import org.usfirst.frc.team449.robot.other.Clock;
+import org.usfirst.frc.team449.robot.other.Debouncer;
 
 /** A component class for autoshifting. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -30,7 +30,7 @@ public class AutoshiftComponent {
    * BufferTimers for shifting that make it so all the other conditions to shift must be met for
    * some amount of time before shifting actually happens.
    */
-  @Nullable private final BufferTimer upshiftDebouncer, downshiftDebouncer;
+  @Nullable private final Debouncer upshiftDebouncer, downshiftDebouncer;
 
   /** The forward velocity setpoint (on a 0-1 scale) below which we stay in low gear */
   private final double upshiftFwdThresh;
@@ -61,13 +61,13 @@ public class AutoshiftComponent {
    */
   @JsonCreator
   public AutoshiftComponent(
-      @JsonProperty(required = true) double upshiftSpeed,
-      @JsonProperty(required = true) double downshiftSpeed,
-      @Nullable BufferTimer upshiftDebouncer,
-      @Nullable BufferTimer downshiftDebouncer,
-      double upshiftFwdThresh,
-      double cooldownAfterUpshift,
-      double cooldownAfterDownshift) {
+          @JsonProperty(required = true) double upshiftSpeed,
+          @JsonProperty(required = true) double downshiftSpeed,
+          @Nullable Debouncer upshiftDebouncer,
+          @Nullable Debouncer downshiftDebouncer,
+          double upshiftFwdThresh,
+          double cooldownAfterUpshift,
+          double cooldownAfterDownshift) {
     this.upshiftSpeed = upshiftSpeed;
     this.downshiftSpeed = downshiftSpeed;
     this.upshiftFwdThresh = upshiftFwdThresh;
@@ -94,10 +94,10 @@ public class AutoshiftComponent {
     okayToDownshift = okayToDownshift || (Math.abs(forwardThrottle) < upshiftFwdThresh);
     // But we can only shift if we're out of the cooldown period.
     okayToDownshift =
-        okayToDownshift && Clock.currentTimeMillis() - timeLastUpshifted > cooldownAfterUpshift;
+            okayToDownshift && Clock.currentTimeMillis() - timeLastUpshifted > cooldownAfterUpshift;
 
     if (downshiftDebouncer != null) {
-      // We use a BufferTimer so we only shift if the conditions are met for a specific continuous
+      // We use a Debouncer so we only shift if the conditions are met for a specific continuous
       // interval.
       // This avoids brief blips causing shifting.
       okayToDownshift = downshiftDebouncer.get(okayToDownshift);
@@ -125,10 +125,10 @@ public class AutoshiftComponent {
     okayToUpshift = okayToUpshift && Math.abs(forwardThrottle) > upshiftFwdThresh;
     // But we can only shift if we're out of the cooldown period.
     okayToUpshift =
-        okayToUpshift && Clock.currentTimeMillis() - timeLastDownshifted > cooldownAfterDownshift;
+            okayToUpshift && Clock.currentTimeMillis() - timeLastDownshifted > cooldownAfterDownshift;
 
     if (upshiftDebouncer != null) {
-      // We use a BufferTimer so we only shift if the conditions are met for a specific continuous
+      // We use a Debouncer so we only shift if the conditions are met for a specific continuous
       // interval.
       // This avoids brief blips causing shifting.
       okayToUpshift = upshiftDebouncer.get(okayToUpshift);
@@ -149,7 +149,7 @@ public class AutoshiftComponent {
    * @param shift The function to actually shift gears.
    */
   public void autoshift(
-      double forwardThrottle, double leftVel, double rightVel, Consumer<Integer> shift) {
+          double forwardThrottle, double leftVel, double rightVel, Consumer<Integer> shift) {
     if (shouldDownshift(forwardThrottle, leftVel, rightVel)) {
       shift.accept(Shiftable.gear.LOW.getNumVal());
     } else if (shouldUpshift(forwardThrottle, leftVel, rightVel)) {

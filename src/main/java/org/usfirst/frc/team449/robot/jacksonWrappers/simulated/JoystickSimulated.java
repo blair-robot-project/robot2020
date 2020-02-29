@@ -35,13 +35,7 @@ public class JoystickSimulated extends MappedJoystick {
     this.logPrefix = "[" + this.logName + "] ";
 
     // The virtual joystick user interface.
-<<<<<<< .merge_file_a10228
     new SimulatedJoystickUI(this.logName) {};
-=======
-    if (!Robot.isUnitTesting()) {
-      new SimulatedJoystickUI(this.logName).setVisible(true);
-    }
->>>>>>> .merge_file_a09984
   }
 
   /**
@@ -88,11 +82,7 @@ public class JoystickSimulated extends MappedJoystick {
    */
   @Override
   public double getRawAxis(final int axis) {
-<<<<<<< .merge_file_a10228
     return this.keyStates.getOrDefault("0", false) ? 10 : 0;
-=======
-    return 0;
->>>>>>> .merge_file_a09984
   }
 
   /**
@@ -430,13 +420,7 @@ public class JoystickSimulated extends MappedJoystick {
     private final JLabel[][] buttonStateLayout = new JLabel[3][3];
     private final Map<String, JLabel> buttonStateLabels = new HashMap<>();
 
-<<<<<<< .merge_file_a10228
     {
-=======
-    public SimulatedJoystickUI(final String logName) {
-      super(logName);
-
->>>>>>> .merge_file_a09984
       this.setLayout(new GridLayout(3, 3));
       for (int r = 0; r < 3; r++) {
         for (int c = 0; c < 3; c++) {
@@ -446,7 +430,6 @@ public class JoystickSimulated extends MappedJoystick {
           this.add(String.format("r%dc%d", r, c), this.buttonStateLayout[r][c] = label);
         }
       }
-<<<<<<< .merge_file_a10228
 
       this.buttonStateLabels.put("1", this.buttonStateLayout[0][1]);
       this.buttonStateLabels.put("2", this.buttonStateLayout[1][2]);
@@ -454,10 +437,10 @@ public class JoystickSimulated extends MappedJoystick {
       this.buttonStateLabels.put("4", this.buttonStateLayout[1][0]);
 
       this.buttonStateLabels.forEach(
-          (name, label) -> {
-            label.setBackground(Color.LIGHT_GRAY);
-            label.setText(name);
-          });
+              (name, label) -> {
+                label.setBackground(Color.LIGHT_GRAY);
+                label.setText(name);
+              });
 
       this.doLayout();
 
@@ -466,21 +449,6 @@ public class JoystickSimulated extends MappedJoystick {
 
     public SimulatedJoystickUI(final String logName) {
       super(logName);
-=======
-
-      this.buttonStateLabels.put("1", this.buttonStateLayout[0][1]);
-      this.buttonStateLabels.put("2", this.buttonStateLayout[1][2]);
-      this.buttonStateLabels.put("3", this.buttonStateLayout[2][1]);
-      this.buttonStateLabels.put("4", this.buttonStateLayout[1][0]);
-
-      this.buttonStateLabels.forEach(
-          (name, label) -> {
-            label.setBackground(Color.LIGHT_GRAY);
-            label.setText(name);
-          });
-
-      this.doLayout();
->>>>>>> .merge_file_a09984
     }
 
     @Override
@@ -492,7 +460,6 @@ public class JoystickSimulated extends MappedJoystick {
         case KeyEvent.KEY_PRESSED:
           newState = true;
           break;
-<<<<<<< .merge_file_a10228
 
         case KeyEvent.KEY_RELEASED:
           newState = false;
@@ -504,31 +471,12 @@ public class JoystickSimulated extends MappedJoystick {
 
       if (JoystickSimulated.this.keyStates.getOrDefault(keyName, false) != newState) {
         System.out.println(
-            JoystickSimulated.this.logPrefix + keyName + (newState ? " [#]" : " [ ]"));
+                JoystickSimulated.this.logPrefix + keyName + (newState ? " [#]" : " [ ]"));
         if (this.buttonStateLabels.containsKey(keyName))
           this.buttonStateLabels
-              .get(keyName)
-              .setBackground(newState ? Color.GREEN.darker() : Color.LIGHT_GRAY);
+                  .get(keyName)
+                  .setBackground(newState ? Color.GREEN.darker() : Color.LIGHT_GRAY);
 
-=======
-
-        case KeyEvent.KEY_RELEASED:
-          newState = false;
-          break;
-
-        default:
-          return;
-      }
-
-      if (JoystickSimulated.this.keyStates.getOrDefault(keyName, false) != newState) {
-        System.out.println(
-            JoystickSimulated.this.logPrefix + keyName + (newState ? " [#]" : " [ ]"));
-        if (this.buttonStateLabels.containsKey(keyName))
-          this.buttonStateLabels
-              .get(keyName)
-              .setBackground(newState ? Color.GREEN.darker() : Color.LIGHT_GRAY);
-
->>>>>>> .merge_file_a09984
         JoystickSimulated.this.keyStates.put(keyName, newState);
       }
     }

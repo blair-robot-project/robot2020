@@ -32,13 +32,10 @@ public class Clock {
   public static synchronized long currentTimeMillis() {
     return currentTime;
   }
-<<<<<<< .merge_file_a14240
 
   /** @return The time since the start time, in esconds. */
   @Contract(pure = true)
   public static synchronized double currentTimeSeconds() {
     return currentTime * 0.001;
   }
-=======
->>>>>>> .merge_file_a13264
 }

@@ -42,15 +42,9 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
    */
   @JsonCreator
   public OIFieldOrientedPosCos(
-<<<<<<< .merge_file_a10232
-      @NotNull @JsonProperty(required = true) final Throttle xThrottle,
-      @NotNull @JsonProperty(required = true) final Throttle yThrottle,
-      final double rDeadband) {
-=======
-      @NotNull @JsonProperty(required = true) Throttle xThrottle,
-      @NotNull @JsonProperty(required = true) Throttle yThrottle,
-      double rDeadband) {
->>>>>>> .merge_file_a13948
+          @NotNull @JsonProperty(required = true) final Throttle xThrottle,
+          @NotNull @JsonProperty(required = true) final Throttle yThrottle,
+          final double rDeadband) {
     this.xThrottle = xThrottle;
     this.yThrottle = yThrottle;
     this.rDeadband = rDeadband;
