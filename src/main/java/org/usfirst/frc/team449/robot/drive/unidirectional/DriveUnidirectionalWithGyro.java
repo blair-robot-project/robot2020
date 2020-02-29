@@ -12,13 +12,15 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.generalInterfaces.AHRS.SubsystemAHRS;
+import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
 /** A drive with a cluster of any number of CANTalonSRX controlled motors on each side. */
 @JsonTypeInfo(
@@ -46,10 +48,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /** Whether or not to use the NavX for driving straight */
   private boolean overrideGyro;
   /** Cached values for various sensor readings. */
-  private double cachedLeftVel = Double.NaN;
-  private double cachedRightVel = Double.NaN;
-  private double cachedLeftPos = Double.NaN;
-  private double cachedRightPos = Double.NaN;
+  @Nullable private Double cachedLeftVel, cachedRightVel, cachedLeftPos, cachedRightPos;
 
   /**
    * Default constructor.
@@ -61,10 +60,10 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    */
   @JsonCreator
   public DriveUnidirectionalWithGyro(
-      @NotNull @JsonProperty(required = true) final SmartMotor leftMaster,
-      @NotNull @JsonProperty(required = true) final SmartMotor rightMaster,
-      @NotNull @JsonProperty(required = true) final MappedAHRS ahrs,
-      @JsonProperty(required = true) final double trackWidthMeters) {
+      @NotNull @JsonProperty(required = true) SmartMotor leftMaster,
+      @NotNull @JsonProperty(required = true) SmartMotor rightMaster,
+      @NotNull @JsonProperty(required = true) MappedAHRS ahrs,
+      @JsonProperty(required = true) double trackWidthMeters) {
     super();
     // Initialize stuff
     this.rightMaster = rightMaster;
@@ -73,11 +72,6 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
     this.overrideGyro = false;
     this.driveKinematics = new DifferentialDriveKinematics(trackWidthMeters);
     this.driveOdometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(this.getHeading()));
-  }
-
-  @Override
-  public void periodic() {
-    updateOdometry();
   }
 
   /**
@@ -100,8 +94,8 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    * @param right The voltage output for the right side of the drive from [-12, 12]
    */
   public void setVoltage(final double left, final double right) {
-    leftMaster.setVoltage(left);
-    rightMaster.setVoltage(right);
+    this.leftMaster.setPercentVoltage(left / 12);
+    this.rightMaster.setPercentVoltage(right / 12);
   }
 
   /**
@@ -110,7 +104,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
    */
   @Override
-  @NotNull
+  @Nullable
   public Double getLeftVel() {
     return this.leftMaster.getVelocity();
   }
@@ -121,7 +115,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
    */
   @Override
-  @NotNull
+  @Nullable
   public Double getRightVel() {
     return this.rightMaster.getVelocity();
   }
@@ -131,7 +125,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    *
    * @return The signed position in feet, or null if the drive doesn't have encoders.
    */
-  @NotNull
+  @Nullable
   @Override
   public Double getLeftPos() {
     return this.leftMaster.getPositionUnits();
@@ -142,7 +136,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    *
    * @return The signed position in feet, or null if the drive doesn't have encoders.
    */
-  @NotNull
+  @Nullable
   @Override
   public Double getRightPos() {
     return this.rightMaster.getPositionUnits();
@@ -153,7 +147,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    *
    * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
    */
-  @NotNull
+  @Nullable
   @Override
   public Double getLeftVelCached() {
     return this.cachedLeftVel;
@@ -164,7 +158,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    *
    * @return The signed velocity in feet per second, or null if the drive doesn't have encoders.
    */
-  @NotNull
+  @Nullable
   @Override
   public Double getRightVelCached() {
     return this.cachedRightVel;
@@ -175,7 +169,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    *
    * @return The signed position in feet, or null if the drive doesn't have encoders.
    */
-  @NotNull
+  @Nullable
   @Override
   public Double getLeftPosCached() {
     return this.cachedLeftPos;
@@ -186,7 +180,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
    *
    * @return The signed position in feet, or null if the drive doesn't have encoders.
    */
-  @NotNull
+  @Nullable
   @Override
   public Double getRightPosCached() {
     return this.cachedRightPos;
@@ -322,20 +316,20 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /** Reset odometry tracker to current robot pose */
   @Log
   public void resetOdometry(final Pose2d pose) {
-    resetPosition();
-    ahrs.setHeading(pose.getRotation().getDegrees());
-    driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(this.getHeading()));
+    this.resetPosition();
+    this.driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(this.getHeading()));
   }
 
   /** Update odometry tracker with current heading, and encoder readings */
   public void updateOdometry() {
     // need to convert to meters
     this.driveOdometry.update(
-        Rotation2d.fromDegrees(this.getHeading()), this.getLeftPos(), this.getRightPos());
+        Rotation2d.fromDegrees(this.getHeading()),
+        Units.feetToMeters(this.getLeftPos()),
+        Units.feetToMeters(this.getRightPos()));
   }
 
   /** @return Current estimated pose based on odometry tracker data */
-  @Log.ToString
   public Pose2d getCurrentPose() {
     return this.driveOdometry.getPoseMeters() != null
         ? this.driveOdometry.getPoseMeters()
@@ -345,7 +339,8 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /** @return Current wheel speeds based on encoder readings for future pose correction */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     // need to convert to meters
-    return new DifferentialDriveWheelSpeeds(this.getLeftVel(), this.getRightVel());
+    return new DifferentialDriveWheelSpeeds(
+        Units.feetToMeters(this.getLeftVel()), Units.feetToMeters(this.getRightVel()));
   }
   //
   //    /**
@@ -414,6 +409,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /** Updates all cached values with current ones. */
   @Override
   public void update() {
+    this.updateOdometry();
     this.cachedLeftVel = this.getLeftVel();
     this.cachedLeftPos = this.getLeftPos();
     this.cachedRightVel = this.getRightVel();

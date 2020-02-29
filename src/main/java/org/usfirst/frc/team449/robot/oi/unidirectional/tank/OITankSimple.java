@@ -34,9 +34,15 @@ public class OITankSimple extends OITank {
    */
   @JsonCreator
   public OITankSimple(
+<<<<<<< .merge_file_a03028
       @NotNull @JsonProperty(required = true) final Throttle leftThrottle,
       @NotNull @JsonProperty(required = true) final Throttle rightThrottle,
       final double commandingStraightTolerance) {
+=======
+      @NotNull @JsonProperty(required = true) Throttle leftThrottle,
+      @NotNull @JsonProperty(required = true) Throttle rightThrottle,
+      double commandingStraightTolerance) {
+>>>>>>> .merge_file_a01556
     this.leftThrottle = leftThrottle;
     this.rightThrottle = rightThrottle;
     this.commandingStraightTolerance = commandingStraightTolerance;

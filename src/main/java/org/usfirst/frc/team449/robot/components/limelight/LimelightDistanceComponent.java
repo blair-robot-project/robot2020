@@ -1,7 +1,7 @@
 package org.usfirst.frc.team449.robot.components.limelight;
 
-import com.fasterxml.jackson.annotation.*;
-
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.function.DoubleSupplier;
 
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +25,7 @@ public class LimelightDistanceComponent implements DoubleSupplier {
   /**
    * Default constructor
    *
+   * @param limelight the limelight that supplies the angles
    * @param limelightHeight The height of the Limelight
    * @param limelightAngleUp The angle of the Limelight, in degrees
    * @param targetHeight the height of the expected vision target, probably provided by the game

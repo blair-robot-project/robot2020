@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -11,6 +12,11 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.other.Clock;
+import org.yaml.snakeyaml.Yaml;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,10 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot.other.Clock;
-import org.yaml.snakeyaml.Yaml;
 
 /** The main class of the robot, constructs all the subsystems and initializes default commands. */
 public class Robot extends TimedRobot {
@@ -42,16 +44,13 @@ public class Robot extends TimedRobot {
    */
   @NotNull public static final String RESOURCES_PATH_SIMULATED = "./src/main/deploy/";
   /** The name of the map to read from. Should be overriden by a subclass to change the name. */
+  @NotNull public static final String mapName = "map.yml";
+  /** The filepath to the resources folder containing the config files. */
   @NotNull
-  public static final String mapName = "externalencoders.yml";
+  public static final String RESOURCES_PATH =
+      RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
   /**
-   * The filepath to the resources folder containing the config files.
-   */
-  @NotNull
-  public static final String RESOURCES_PATH = RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
-  /**
-   * The object constructed directly from the yaml map.
-   * Format for the reference chain (place in the map where the error occured) when a map error is
+   * Format for the reference chain (place in the map where the error occurred) when a map error is
    * printed.
    */
   private static final MapErrorFormat MAP_REF_CHAIN_FORMAT = MapErrorFormat.TABLE;
@@ -100,8 +99,8 @@ public class Robot extends TimedRobot {
   /**
    * Whether robot code is being unit tested. Note that this is NOT the same as test mode.
    *
-   * <p>The return value will never change observably. {@link Robot#notifyTesting()} will thus throw
-   * an exception if it is called after the first time that this method is called.
+   * <p>The return value will never change observably. {@link Robot#notifyTesting()} will thus
+   * throw an exception if it is first called after the first time that this method is called.
    *
    * @return whether the current run is a unit test
    */
@@ -115,16 +114,19 @@ public class Robot extends TimedRobot {
    *
    * @throws UnsupportedOperationException if the robot is not running in a simulation
    * @throws IllegalStateException if {@link Robot#isUnitTesting()} has already been called before
-   *     this method is called
+   * this method is first called
    */
   public static void notifyTesting() throws UnsupportedOperationException, IllegalStateException {
-    if (RobotBase.isReal())
+    if (RobotBase.isReal()) {
       throw new IllegalStateException(
           "Attempt to enable unit testing mode while not running in simulation");
+    }
 
     if (isUnitTesting) return;
-    if (isTestingHasBeenCalled)
+
+    if (isTestingHasBeenCalled) {
       throw new IllegalStateException("isTesting() has already been called at least once");
+    }
 
     System.out.println("ROBOT UNIT TESTING");
     isUnitTesting = true;
@@ -286,7 +288,8 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     // Run the auto startup command
-    if (this.robotMap.getAutoStartupCommands() != null) {
+    if (this.robotMap.getAutoStartupCommands() != null
+        && !DriverStation.getInstance().getGameSpecificMessage().isEmpty()) {
       this.robotMap.getAutoStartupCommands().forEachRemaining(Command::schedule);
     }
   }

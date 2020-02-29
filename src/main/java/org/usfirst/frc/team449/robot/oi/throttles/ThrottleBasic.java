@@ -34,9 +34,15 @@ public class ThrottleBasic implements Throttle {
    */
   @JsonCreator
   public ThrottleBasic(
+<<<<<<< .merge_file_a13356
       @NotNull @JsonProperty(required = true) final MappedJoystick stick,
       @JsonProperty(required = true) final int axis,
       final boolean inverted) {
+=======
+      @NotNull @JsonProperty(required = true) MappedJoystick stick,
+      @JsonProperty(required = true) int axis,
+      boolean inverted) {
+>>>>>>> .merge_file_a06708
     this.stick = stick;
     this.axis = axis;
     this.inverted = inverted;
@@ -48,7 +54,10 @@ public class ThrottleBasic implements Throttle {
    * @return The raw joystick output, on [-1, 1].
    */
   @Log
+<<<<<<< .merge_file_a13356
   @Override
+=======
+>>>>>>> .merge_file_a06708
   public double getValue() {
     return (inverted ? -1 : 1) * stick.getRawAxis(axis);
   }

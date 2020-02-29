@@ -11,10 +11,16 @@ public class Util {
    *
    * @param o the object to retrieve a prefix for
    * @return the prefix to be prepended to the message when the specified object logs
+<<<<<<< .merge_file_a13464
    * @implNote the prefix is the simple name of the type of the object within brackets
    */
   public static String getLogPrefix(@NotNull final Object o) {
     return getLogPrefix(o.getClass());
+=======
+   */
+  public static String getLogPrefix(@NotNull final Object o) {
+    return "[" + o.getClass().getSimpleName() + "] ";
+>>>>>>> .merge_file_a02168
   }
 
   /**
@@ -22,7 +28,10 @@ public class Util {
    *
    * @param clazz the type to retrieve a prefix for
    * @return the prefix to be prepended to the message when the specified type logs
+<<<<<<< .merge_file_a13464
    * @implNote the prefix is the simple name of the type within brackets
+=======
+>>>>>>> .merge_file_a02168
    */
   public static String getLogPrefix(final Class<?> clazz) {
     return "[" + clazz.getSimpleName() + "] ";

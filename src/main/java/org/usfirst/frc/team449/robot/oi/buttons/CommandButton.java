@@ -12,7 +12,11 @@ import org.jetbrains.annotations.NotNull;
 public class CommandButton implements Loggable {
 
   /** The command mapped to the button. Field to allow logging. */
+<<<<<<< .merge_file_a08848
   @Log.Include private final Command command;
+=======
+  private final Command command;
+>>>>>>> .merge_file_a02704
 
   /**
    * Default constructor.
@@ -47,6 +51,14 @@ public class CommandButton implements Loggable {
     }
   }
 
+<<<<<<< .merge_file_a08848
+=======
+  @Override
+  public boolean skipLayout() {
+    return true;
+  }
+
+>>>>>>> .merge_file_a02704
   /** The possible actions for the button to do to the command. */
   enum Action {
     WHEN_PRESSED,

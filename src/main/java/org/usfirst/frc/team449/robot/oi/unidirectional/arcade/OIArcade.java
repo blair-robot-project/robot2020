@@ -28,7 +28,11 @@ public abstract class OIArcade implements OIUnidirectional {
    *     1. Defaults to false.
    */
   @JsonCreator
+<<<<<<< .merge_file_a13004
   public OIArcade(final boolean rescaleOutputs) {
+=======
+  public OIArcade(boolean rescaleOutputs) {
+>>>>>>> .merge_file_a12484
     this.rescaleOutputs = rescaleOutputs;
   }
 
@@ -49,14 +53,22 @@ public abstract class OIArcade implements OIUnidirectional {
    * @return An array of length 2, where the 1st element is the output for the left and the second
    *     for the right, both from [-1, 1].
    */
+<<<<<<< .merge_file_a13004
   @Override
+=======
+>>>>>>> .merge_file_a12484
   @NotNull
   public double[] getLeftRightOutput() {
     fwdRotOutputCached = getFwdRotOutput();
 
     // Unscaled, unclipped values for left and right output.
+<<<<<<< .merge_file_a13004
     final double tmpLeft = fwdRotOutputCached[0] + fwdRotOutputCached[1];
     final double tmpRight = fwdRotOutputCached[0] - fwdRotOutputCached[1];
+=======
+    double tmpLeft = fwdRotOutputCached[0] + fwdRotOutputCached[1];
+    double tmpRight = fwdRotOutputCached[0] - fwdRotOutputCached[1];
+>>>>>>> .merge_file_a12484
 
     // If left is too large
     if (Math.abs(tmpLeft) > 1) {
@@ -87,7 +99,10 @@ public abstract class OIArcade implements OIUnidirectional {
    * @return An array of length 2, where the 1st element is the output for the left and the second
    *     for the right, both from [-1, 1].
    */
+<<<<<<< .merge_file_a13004
   @Override
+=======
+>>>>>>> .merge_file_a12484
   @NotNull
   public double[] getLeftRightOutputCached() {
     return leftRightOutputCached != null

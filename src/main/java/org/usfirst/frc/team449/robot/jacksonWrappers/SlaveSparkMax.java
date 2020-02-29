@@ -20,6 +20,7 @@ public class SlaveSparkMax implements SlaveMotor, Loggable {
 
   @JsonCreator
   public SlaveSparkMax(
+<<<<<<< .merge_file_a06480
       @JsonProperty(required = true) final int port,
       @Nullable final Boolean inverted,
       @Nullable final PDP PDP) {
@@ -27,6 +28,13 @@ public class SlaveSparkMax implements SlaveMotor, Loggable {
     this.slaveSpark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
 
     this.inverted = inverted == null ? false : inverted;
+=======
+      @JsonProperty(required = true) int port, @Nullable Boolean invert, @Nullable PDP PDP) {
+
+    this.slaveSpark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+    this.inverted = invert == null ? false : invert;
+>>>>>>> .merge_file_a09872
 
     this.slaveSpark
         .getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen)

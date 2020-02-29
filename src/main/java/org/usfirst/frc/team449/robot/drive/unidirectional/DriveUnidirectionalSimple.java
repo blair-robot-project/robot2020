@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
@@ -29,8 +30,8 @@ public class DriveUnidirectionalSimple extends SubsystemBase
    */
   @JsonCreator
   public DriveUnidirectionalSimple(
-      @NotNull @JsonProperty(required = true) final SimpleMotor leftMotor,
-      @NotNull @JsonProperty(required = true) final SimpleMotor rightMotor) {
+      @NotNull @JsonProperty(required = true) SimpleMotor leftMotor,
+      @NotNull @JsonProperty(required = true) SimpleMotor rightMotor) {
     this.leftMotor = leftMotor;
     this.rightMotor = rightMotor;
   }
@@ -42,7 +43,7 @@ public class DriveUnidirectionalSimple extends SubsystemBase
    * @param right the output for the right side of the drive, from [-1, 1]
    */
   @Override
-  public void setOutput(final double left, final double right) {
+  public void setOutput(double left, double right) {
     leftMotor.setVelocity(left);
     rightMotor.setVelocity(right);
   }
@@ -54,6 +55,7 @@ public class DriveUnidirectionalSimple extends SubsystemBase
    */
   @Nullable
   @Override
+  @Log
   public Double getLeftVel() {
     return null;
   }
@@ -65,6 +67,7 @@ public class DriveUnidirectionalSimple extends SubsystemBase
    */
   @Nullable
   @Override
+  @Log
   public Double getRightVel() {
     return null;
   }
@@ -76,6 +79,7 @@ public class DriveUnidirectionalSimple extends SubsystemBase
    */
   @Nullable
   @Override
+  @Log
   public Double getLeftPos() {
     return null;
   }
@@ -87,6 +91,7 @@ public class DriveUnidirectionalSimple extends SubsystemBase
    */
   @Nullable
   @Override
+  @Log
   public Double getRightPos() {
     return null;
   }
@@ -98,6 +103,7 @@ public class DriveUnidirectionalSimple extends SubsystemBase
    */
   @Nullable
   @Override
+  @Log
   public Double getLeftVelCached() {
     return null;
   }
@@ -109,6 +115,7 @@ public class DriveUnidirectionalSimple extends SubsystemBase
    */
   @Nullable
   @Override
+  @Log
   public Double getRightVelCached() {
     return null;
   }
@@ -120,6 +127,7 @@ public class DriveUnidirectionalSimple extends SubsystemBase
    */
   @Nullable
   @Override
+  @Log
   public Double getLeftPosCached() {
     return null;
   }
@@ -131,6 +139,7 @@ public class DriveUnidirectionalSimple extends SubsystemBase
    */
   @Nullable
   @Override
+  @Log
   public Double getRightPosCached() {
     return null;
   }

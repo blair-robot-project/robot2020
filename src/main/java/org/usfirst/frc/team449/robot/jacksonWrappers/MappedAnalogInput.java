@@ -27,9 +27,7 @@ public class MappedAnalogInput extends AnalogInput implements Updatable, Loggabl
    */
   @JsonCreator
   public MappedAnalogInput(
-      @JsonProperty(required = true) final int port,
-      final int oversampleBits,
-      final int averageBits) {
+      @JsonProperty(required = true) int port, int oversampleBits, int averageBits) {
     super(port);
     setOversampleBits(oversampleBits);
     setAverageBits(averageBits);

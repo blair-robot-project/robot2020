@@ -33,7 +33,11 @@ public class PDP implements Loggable, Updatable {
    * @param canID CAN ID of the PDP. Defaults to 0.
    */
   @JsonCreator
+<<<<<<< .merge_file_a11404
   public PDP(final int canID, @Nullable final RunningLinRegComponent voltagePerCurrentLinReg) {
+=======
+  public PDP(int canID, @Nullable RunningLinRegComponent voltagePerCurrentLinReg) {
+>>>>>>> .merge_file_a02756
     this.PDP = new PowerDistributionPanel(canID);
     this.voltagePerCurrentLinReg = voltagePerCurrentLinReg;
     this.voltage = 0;

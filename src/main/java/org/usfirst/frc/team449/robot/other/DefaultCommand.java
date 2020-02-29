@@ -13,7 +13,11 @@ import org.jetbrains.annotations.NotNull;
 public class DefaultCommand implements Loggable {
 
   /** The command of this defaultCommand; field to allow logging */
+<<<<<<< .merge_file_a09564
   @Log.Include private final Command command;
+=======
+  private Command command;
+>>>>>>> .merge_file_a07192
 
   /**
    * Sets the given command as the default command for the given subsystem.
@@ -23,8 +27,13 @@ public class DefaultCommand implements Loggable {
    */
   @JsonCreator
   public DefaultCommand(
+<<<<<<< .merge_file_a09564
       @NotNull @JsonProperty(required = true) final Subsystem subsystem,
       @NotNull @JsonProperty(required = true) final Command command) {
+=======
+      @NotNull @JsonProperty(required = true) Subsystem subsystem,
+      @NotNull @JsonProperty(required = true) Command command) {
+>>>>>>> .merge_file_a07192
     // Check if it's an instant command and warn the user if it is
     if (InstantCommand.class.isAssignableFrom(command.getClass())) {
       System.out.println(
@@ -36,4 +45,12 @@ public class DefaultCommand implements Loggable {
     subsystem.setDefaultCommand(command);
     this.command = command;
   }
+<<<<<<< .merge_file_a09564
+=======
+
+  @Override
+  public boolean skipLayout() {
+    return true;
+  }
+>>>>>>> .merge_file_a07192
 }

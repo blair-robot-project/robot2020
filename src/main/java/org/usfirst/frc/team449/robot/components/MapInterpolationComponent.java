@@ -16,7 +16,6 @@ public class MapInterpolationComponent {
   private TreeMap<Double, Double> LUT;
   private Map.Entry<Double, Double> upper;
   private Map.Entry<Double, Double> lower;
-
   @JsonCreator
   public MapInterpolationComponent(
       @JsonProperty(required = true) InterpolationMethod method,

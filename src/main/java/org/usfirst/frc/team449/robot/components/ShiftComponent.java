@@ -10,6 +10,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDoubleSolenoid;
 
 /** A component that a subsystem can use to handle shifting gears. */
 @JsonTypeInfo(
@@ -23,7 +24,7 @@ public class ShiftComponent {
   @NotNull protected final List<Shiftable> otherShiftables;
 
   /** The piston that shifts. */
-  @NotNull private final DoubleSolenoid piston;
+  @NotNull private final MappedDoubleSolenoid piston;
 
   /** The gear this component is currently in. */
   protected int currentGear;
@@ -39,7 +40,7 @@ public class ShiftComponent {
   @JsonCreator
   public ShiftComponent(
       @NotNull @JsonProperty(required = true) final List<Shiftable> otherShiftables,
-      @NotNull @JsonProperty(required = true) final DoubleSolenoid piston,
+      @NotNull @JsonProperty(required = true) final MappedDoubleSolenoid piston,
       @Nullable final Shiftable.gear startingGear) {
     this.otherShiftables = otherShiftables;
     this.piston = piston;
