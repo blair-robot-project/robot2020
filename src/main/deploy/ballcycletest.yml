@@ -346,8 +346,8 @@ useCameraServer: false
           '@id': intakeStartButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              '@id': mechanismsJoystick
-              port: *mechanismsJoystickPort
+              '@id': driveJoystick
+              port: *driveJoystickPort
           buttonNumber: *intakeStartButtonNumber
       command:
         edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
@@ -380,7 +380,7 @@ useCameraServer: false
           '@id': intakeStopButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
+              driveJoystick
           buttonNumber: *intakeStopButtonNumber
       command:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
@@ -404,7 +404,8 @@ useCameraServer: false
           '@id': intakePistonToggleButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
+              '@id': mechanismsJoystick
+              port: *mechanismsJoystickPort
           buttonNumber: *intakePistonToggleButtonNumber
       command:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.ToggleSolenoid:
@@ -580,8 +581,7 @@ useCameraServer: false
               '@id': oi
               gamepad:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                  '@id': driveJoystick
-                  port: *driveJoystickPort
+                  driveJoystick
               rotThrottle:
                 org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
                   &rotThrottle
