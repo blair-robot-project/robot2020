@@ -6,9 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PerpetualCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Runs another command in perpetuity, ignoring that command's end conditions and reinitializing it
@@ -23,16 +21,13 @@ public class PerpetualCommandReinitializing extends PerpetualCommand {
    * end conditions, unless this command itself is interrupted.
    *
    * @param command the command to run perpetually
-   * @param requiredSubsystems the list of subsystems that this command requires
    */
   @JsonCreator
   public PerpetualCommandReinitializing(
-      @NotNull @JsonProperty(required = true) final Command command,
-      @Nullable final Subsystem[] requiredSubsystems) {
+      @NotNull @JsonProperty(required = true) final Command command) {
     // TODO: We should requireNonNull all @Nullable parameters because map errors can cause them to
-    // be null and result in weird Jackson exceptions.
+    //   be null, resulting in weird Jackson exceptions.
     super(command);
-    if (requiredSubsystems != null) this.addRequirements(requiredSubsystems);
   }
 
   @Override
