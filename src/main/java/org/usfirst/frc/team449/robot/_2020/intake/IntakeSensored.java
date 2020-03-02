@@ -8,11 +8,17 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
+import org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemConditional;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput;
 
-/** A decorator to make an intake with a digital input. */
+/**
+ * A decorator to make an intake with a digital input.
+ *
+ * @deprecated Use separate instances of {@link IntakeSimple} and {@link DigitalInput} instead.
+ */
+@Deprecated(forRemoval = true)
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class IntakeSensored implements Subsystem, SubsystemIntake, SubsystemConditional, Loggable {
 
