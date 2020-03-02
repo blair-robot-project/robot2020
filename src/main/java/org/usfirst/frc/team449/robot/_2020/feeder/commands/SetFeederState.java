@@ -15,13 +15,13 @@ public class SetFeederState extends InstantCommand {
 
     @JsonCreator
     public SetFeederState(@JsonProperty(required = true) FeederCounting feeder,
-                          @JsonProperty(required = true) FeederCounting.FeederState feederState){
+                          @JsonProperty(required = true) FeederCounting.FeederState feederState) {
         this.feeder = feeder;
         this.feederState = feederState;
     }
 
     @Override
-    public void execute(){
+    public void execute() {
         feeder.setState(feederState);
     }
 

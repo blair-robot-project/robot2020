@@ -19,9 +19,7 @@ public class FeederStateController extends CommandBase {
     FeederCounting feeder;
 
     @JsonCreator
-    public FeederStateController(@JsonProperty(required = true) FeederCounting feeder){
-//        @JsonProperty(required = true) IntakeSimple intake,
-//        @JsonProperty(required = true) FeederCounting feeder
+    public FeederStateController(@JsonProperty(required = true) FeederCounting feeder) {
         this.feeder = feeder;
 //        this.intake = intake;
 //        this.flywheel = flywheel;
@@ -29,16 +27,16 @@ public class FeederStateController extends CommandBase {
     }
 
     @Override
-    public void execute(){
-        if(flywheel.getFlywheelState() == SubsystemFlywheel.FlywheelState.SHOOTING){
+    public void execute() {
+        if (flywheel.getFlywheelState() == SubsystemFlywheel.FlywheelState.SHOOTING) {
             new FeederShootingSequence(feeder, flywheel).schedule();
         }
 
-        if(intake.getMode() == SubsystemIntake.IntakeMode.IN_FAST) {
-            new FeederIntakeOverride(feeder).schedule();
+        if (intake.getMode() == SubsystemIntake.IntakeMode.IN_FAST) {
+            new FeederIntakeOverride(feeder, intake).schedule();
         }
 
-        if(feeder.sensorsTripped()){
+        if (feeder.getBallPresent()) {
             feeder.setState(FeederCounting.FeederState.INTAKECOMPLETE);
         } else {
             feeder.setState(FeederCounting.FeederState.NEUTRAL);
@@ -46,13 +44,13 @@ public class FeederStateController extends CommandBase {
     }
 
     @Override
-    public boolean isFinished(){
+    public boolean isFinished() {
         return false;
     }
 
     @Override
-    public void end(boolean interrupted){
-        if(!interrupted){
+    public void end(boolean interrupted) {
+        if (!interrupted) {
             feeder.setState(FeederCounting.FeederState.NEUTRAL);
         }
     }
