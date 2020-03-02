@@ -12,6 +12,7 @@ import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemConditional;
+import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemFlywheel;
 
 /**
  * A cluster of flywheels that acts as a single flywheel. Use for systems with separate physical
@@ -59,7 +60,7 @@ public class FlywheelCluster extends SubsystemBase implements SubsystemFlywheel,
   @Override
   public void setFlywheelState(@NotNull final FlywheelState state) {
     this.state = state;
-    this.flywheels.forEach(x -> x.setFlywheelState(state));
+    this.flywheels.forEach(flywheel -> flywheel.setFlywheelState(state));
   }
 
   /** @return Longest spin-up time of any flywheel in the cluster. */

@@ -1,4 +1,4 @@
-package org.usfirst.frc.team449.robot._2020.shooter;
+package org.usfirst.frc.team449.robot._2020.multiSubsystem;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemConditional;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.other.DebouncerEx;

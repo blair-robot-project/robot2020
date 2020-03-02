@@ -1,0 +1,190 @@
+---
+
+# IntelliJ supports Ctrl+clicking anchors to find usages and declarations... so, hyperlinks! Yooooooooo!
+# Basically a table of contents; Ctrl+click on a heading in UPPER_SNAKE_CASE to jump back and forth between the
+# table of contents and actual location in the map.
+NAVIGATION:
+  # The anchors that replace map key values must have the values of the keys that they replace.
+  - &PDP pdp
+  # This works magically because the anchor refers to the key of the mapping only, which is the string "subsystems".
+  - &SUBSYSTEMS subsystems:
+      # Other anchors, like these, become null list items and are explicitly ignored using @JsonInclude
+      - &DRIVE_SUBSYSTEM
+      - &INTAKE_SUBSYSTEM
+      - &FEEDER_SUBSYSTEM
+      - &SHOOTER_SUBSYSTEM
+  - &COMMANDS commands:
+      - &BUTTONS buttons:
+          - &INTAKE_COMMANDS
+          - &FEEDER_COMMANDS
+          - &SHOOTER_COMMANDS
+      - &DEFAULT_COMMANDS defaultCommands:
+          - &DRIVE_DEFAULT_COMMAND
+          - &FEEDER_DEFAULT_COMMAND
+  - &UPDATER updater
+
+# Anchors for transclusion into the rest of the map.
+# Ignored by Jackson (so is NAVIGATION); can contain any valid YAML suitable for organizational purposes.
+# Make sure there aren't any colons after the anchors; Jackson gives "Null key for a Map not allowed in JSON"
+CONSTANTS:
+  - MotorPorts:
+      - &leftMasterPort 1
+      - &leftMasterSlave1Port 3
+      - &leftMasterSlave2Port 5
+      - &rightMasterPort 2
+      - &rightMasterSlave1Port 4
+      - &rightMasterSlave2Port 6
+      # Digestive system
+      - &intakeBumperMotorPort 7
+      - &intakeTransitionWheelMotorPort 8
+      - &feederMotorPort 9
+      - &shooterLeftMotorPort 10
+      - &shooterRightMotorPort 11
+      - &kickerMotorPort 12
+  - SolenoidPorts:
+      - &intakeSolenoidForward 2
+      - &intakeSolenoidReverse 3
+  - DIOPorts:
+      - &rightMasterEncoder1Port 0
+      - &rightMasterEncoder2Port 1
+      - &leftMasterEncoder1Port 2
+      - &leftMasterEncoder2Port 3
+      - &feederSensor1Port 8
+      - &feederSensor2Port 9
+  - JoystickPorts:
+      - &mechanismsJoystickPort 0
+      - &driveJoystickPort 1
+  - ButtonNumbers:
+      - &intakeStartButtonNumber 1
+      - &intakeStopButtonNumber 2
+      - &shooterStartButtonNumber 3
+      - &shooterStopButtonNumber 4
+      - &intakePistonToggleButtonNumber 9
+      - &feederCoughButtonNumber 10 #TODO Should coughing be an actual back-and-forth motion?
+  - MotorSpeeds:
+      - &intakeBumperIntakingVel 1
+      - &intakeTransitionWheelIntakingVel 0.3
+      - &feederIntakingVel 0.35
+      - &feederShootingVel 0.35 # TODO Was at 0.65, but apparently that's less reliable than 0.35.
+      - &feederCoughingVel -0.4
+      - &intakeTransitionWheelCoughingVel -0.1
+      - &shooterMaxSpeed 90.5
+      - &shooterThrottle 0.50
+      - &shooterMinShootingSpeed 44
+      - &shooterMaxShootingSpeedDifference 5
+      - &kickerThrottle -0.7
+  - Other:
+      - &feederIndexingTimeoutSecs 0.3
+      - &flywheelSpinUpTimeoutSecs 4
+      - &flywheelKP 0.00001
+
+# WHETHER TO USE THE CAMERA SERVER
+useCameraServer: false
+
+########################################################################################################################
+*PDP:
+  org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
+    '@id': PDP
+    canID: 0
+    voltagePerCurrentLinReg:
+      bufferSize: 250
+      rSquaredThreshhold: 0.75
+
+
+########################################################################################################################
+*SUBSYSTEMS:
+  #***********************************************************************************************************************
+  - *FEEDER_SUBSYSTEM
+  - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+      '@id': feeder
+      velocities: !!map
+        IN_FAST: *feederIntakingVel
+        OUT_SLOW: *feederCoughingVel
+        OUT_FAST: *feederShootingVel
+      motor:
+        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+          '@id': feederMotor
+          type: SPARK
+          port: *feederMotorPort
+          name: feederMotor
+          reverseOutput: false
+          enableBrakeMode: false
+          PDP: PDP
+          currentLimit: 30
+          reverseSensor: false
+
+*COMMANDS:
+  ########################################################################################################################
+  *BUTTONS:
+    #***********************************************************************************************************************
+    - *FEEDER_COMMANDS
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': coughButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *feederCoughButtonNumber
+      command:
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+          '@id': coughCommandSequence
+          commands:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': feederStartCommand_coughing
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                    feeder
+                mode: OUT_SLOW
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': intakeTransitionWheelStartCommand_coughing
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                    intakeTransitionWheel
+                mode: OUT_SLOW
+      action: WHILE_HELD
+
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          coughButton
+      command:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+          '@id': feederStopCommand_coughingend
+          subsystem:
+            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+              feeder
+          mode: "OFF"
+      action: WHEN_RELEASED
+
+  ########################################################################################################################
+  *DEFAULT_COMMANDS:
+    - *FEEDER_DEFAULT_COMMAND
+    - subsystem:
+        org.usfirst.frc.team449.robot._2020.feeder.FeederCounting:
+          feeder
+      command:
+        org.usfirst.frc.team449.robot._2020.feeder.commands.DefaultFeederCommand:
+          requiredSubsystems:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                feeder
+          runMode: IN_FAST
+          timeout: *feederIndexingTimeoutSecs
+          subsystem:
+            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+              feeder
+          sensor1:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+              '@id': feederSensor1
+              channel: *feederSensor1Port
+          sensor2:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+              '@id': feederSensor2
+              channel: *feederSensor2Port
+
+
+
+########################################################################################################################
+*UPDATER:
+  org.usfirst.frc.team449.robot.other.Updater:
+    '@id': updater
+    updatables:
+      - org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
