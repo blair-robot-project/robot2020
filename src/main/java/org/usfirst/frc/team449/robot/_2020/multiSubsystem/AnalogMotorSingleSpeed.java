@@ -9,6 +9,10 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Adapts a {@link SubsystemAnalogMotor} to be a {@link SubsystemBinaryMotor} by running at a
+ * constructor-specified speed.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class AnalogMotorSingleSpeed extends SubsystemBase
     implements SubsystemBinaryMotor, Loggable {

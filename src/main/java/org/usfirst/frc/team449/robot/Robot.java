@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
   @NotNull public static final String RESOURCES_PATH_SIMULATED = "./src/main/deploy/";
   /** The name of the map to read from. Should be overriden by a subclass to change the name. */
   @NotNull
-  public static final String mapName = "mapSimpleDrive.yml";
+  public static final String mapName = "internalencodersclimb.yml";
   /**
    * The filepath to the resources folder containing the config files.
    */
