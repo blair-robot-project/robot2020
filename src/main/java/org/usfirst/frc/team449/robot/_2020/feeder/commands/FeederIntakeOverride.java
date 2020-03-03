@@ -23,7 +23,7 @@ public class FeederIntakeOverride extends CommandBase {
 
     @Override
     public void execute() {
-        if (feeder.sensorsTripped()) {
+        if (feeder.getBallPresent()) {
             feeder.setState(FeederCounting.FeederState.INTAKECOMPLETE);
         } else {
             feeder.setState(FeederCounting.FeederState.INTAKEOVERRIDE);

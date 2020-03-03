@@ -29,7 +29,7 @@ public class FeederCounting extends SubsystemBase implements Loggable {
 
     private double preShootingReverseDelay = 0;
 
-    private int ballCount = 0;
+    @Log private int ballCount = 0;
     private boolean ballWasPresent;
     private Debouncer sensorDebouncer;
 
