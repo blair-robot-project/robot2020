@@ -20,12 +20,10 @@ public class MapInterpolationComponent {
   @JsonCreator
   public MapInterpolationComponent(
       @JsonProperty(required = true) InterpolationMethod method,
-      @JsonProperty(required = true) List<Map.Entry<Double, Double>> entries) {
+      @JsonProperty(required = true) Map<Double, Double> entries) {
     currentMethod = method;
     LUT = new TreeMap<>();
-    for (Map.Entry<Double, Double> entry : entries) {
-      LUT.put(entry.getKey(), entry.getValue());
-    }
+    LUT.putAll(entries);
   }
 
   public void updateMethod(InterpolationMethod method) {

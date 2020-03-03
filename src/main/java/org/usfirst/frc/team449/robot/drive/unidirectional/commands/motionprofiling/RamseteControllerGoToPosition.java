@@ -1,13 +1,12 @@
 package org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
@@ -17,15 +16,16 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import io.github.oblarg.oblog.Loggable;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.usfirst.frc.team449.robot.auto.commands.AutonomousCommand;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CLASS,
     include = JsonTypeInfo.As.WRAPPER_OBJECT,
     property = "@class")
-public class RamseteControllerGoToPosition extends CommandBase implements Loggable {
+public class RamseteControllerGoToPosition extends CommandBase implements Loggable, AutonomousCommand {
 
   private DriveUnidirectionalWithGyro drivetrain;
   private MappedPIDController leftPidController;
@@ -34,6 +34,7 @@ public class RamseteControllerGoToPosition extends CommandBase implements Loggab
   private List<Translation2d> translations;
   private RamseteCommand wrappedCommand;
   private TrajectoryConfig config;
+  private Trajectory trajectory;
 
   @JsonCreator
   public RamseteControllerGoToPosition(
@@ -68,13 +69,14 @@ public class RamseteControllerGoToPosition extends CommandBase implements Loggab
 
   @Override
   public void initialize() {
+    trajectory = TrajectoryGenerator.generateTrajectory(
+            drivetrain.getCurrentPose(),
+            translations == null ? new ArrayList<>() : translations,
+            endingPose,
+            config);
+
     wrappedCommand =
-        new RamseteCommand(
-            TrajectoryGenerator.generateTrajectory(
-                drivetrain.getCurrentPose(),
-                translations == null ? new ArrayList<>() : translations,
-                endingPose,
-                config),
+        new RamseteCommand(trajectory,
             drivetrain::getCurrentPose,
             new RamseteController(),
             drivetrain.getLeftFeedforwardCalculator(),
@@ -99,5 +101,10 @@ public class RamseteControllerGoToPosition extends CommandBase implements Loggab
   @Override
   public boolean isFinished() {
     return wrappedCommand.isFinished();
+  }
+
+  @Override
+  public double getRunTimeSeconds() {
+    return trajectory.getTotalTimeSeconds();
   }
 }

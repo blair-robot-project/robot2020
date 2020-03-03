@@ -28,7 +28,7 @@ public class FlywheelSimple extends SubsystemBase
   @NotNull private final SmartMotor shooterMotor;
 
   /** Throttle at which to run the multiSubsystem, from [-1, 1] */
-  private final double shooterThrottle;
+  private double shooterThrottle;
 
   /** Time from giving the multiSubsystem voltage to being ready to fire, in seconds. */
   private final double spinUpTimeoutSecs;
@@ -77,6 +77,10 @@ public class FlywheelSimple extends SubsystemBase
       // Bless me, Father, for I have sinned.
       this.sim_manualStates = this.sim_isAtSpeed = this.sim_isTimedOut = null;
     }
+  }
+
+  public void changeShootingSpeed(double newThrottle){
+    shooterThrottle = (newThrottle > 1 || newThrottle < -1) ? Math.signum(newThrottle) : newThrottle;
   }
 
   /** Turn the multiSubsystem on to a map-specified speed. */
