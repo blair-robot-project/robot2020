@@ -4,65 +4,39 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 import org.usfirst.frc.team449.robot._2020.shooter.SubsystemFlywheel;
 
 /**
- * Turn on the flywheel and feeder (but not the kicker) in order to give the flywheel time to get up
- * to speed.
+ * Signals the flywheel to turn on and optionally forces the specified subsystem that feeds the
+ * flywheel to the off state.
  */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SpinUpFlywheel extends InstantCommand {
 
-  /** The subsystem to execute this command on. */
   @NotNull @Log.Exclude private final SubsystemFlywheel flywheel;
 
-  @Nullable @Log.Exclude private final SubsystemIntake feeder;
+  private final double targetSpeed;
 
   /**
    * Default constructor
    *
    * @param flywheel The subsystem to execute this command on.
+   * @param targetSpeed The target speed in arbitrary units at which to run the flywheel.
    */
   @JsonCreator
   public SpinUpFlywheel(
       @NotNull @JsonProperty(required = true) final SubsystemFlywheel flywheel,
-      @Nullable @JsonProperty(required = true) final SubsystemIntake feeder) {
+      @JsonProperty(required = true) final double targetSpeed) {
     this.flywheel = flywheel;
-    this.feeder = feeder;
-  }
-
-  /** Log when this command is initialized */
-  @Override
-  public void initialize() {
-    Shuffleboard.addEventMarker(
-        "SpinUpFlywheel init.", this.getClass().getSimpleName(), EventImportance.kNormal);
-    // Logger.addEvent("SpinUpFlywheel init.", this.getClass());
+    this.targetSpeed = targetSpeed;
   }
 
   /** Turn the feeder off and the flywheel on. */
   @Override
   public void execute() {
-    if (feeder != null) feeder.setMode(SubsystemIntake.IntakeMode.OFF); // Turn feeder off.
-    //    flywheel.turnFeederOn(); // Turn kicker on.
-    flywheel.turnFlywheelOn();
-    flywheel.setFlywheelState(SubsystemFlywheel.FlywheelState.SPINNING_UP); // Turn flywheel on.
-  }
-
-  /** Log when this command ends */
-  @Override
-  public void end(final boolean interrupted) {
-    if (interrupted) {
-      Shuffleboard.addEventMarker(
-          "SpinUpFlywheel Interrupted!", this.getClass().getSimpleName(), EventImportance.kNormal);
-    }
-    Shuffleboard.addEventMarker(
-        "SpinUpFlywheel end.", this.getClass().getSimpleName(), EventImportance.kNormal);
+    flywheel.turnFlywheelOn(targetSpeed);
   }
 }

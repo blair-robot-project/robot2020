@@ -7,110 +7,113 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.hal.SimBoolean;
 import edu.wpi.first.hal.SimDevice;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemConditional;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
-import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.other.DebouncerEx;
 import org.usfirst.frc.team449.robot.other.SimUtil;
-
-import java.util.Optional;
 
 /** A flywheel multiSubsystem with a single flywheel and a single-motor feeder system. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class FlywheelSimple extends SubsystemBase
-    implements SubsystemFlywheel, SubsystemConditional, io.github.oblarg.oblog.Loggable {
+    implements SubsystemFlywheel, SubsystemConditional, Loggable {
 
-  final int SPEED_CONDITION_BUFFER_SIZE = 30;
+  private static final int SPEED_CONDITION_BUFFER_SIZE = 30;
 
   /** The flywheel's motor */
   @NotNull private final SmartMotor shooterMotor;
 
-  /** Throttle at which to run the multiSubsystem, from [-1, 1] */
-  private final double shooterThrottle;
+  /**
+   * Throttle at which to run the multiSubsystem; also whether the flywheel is currently commanded
+   * to spin
+   */
+  @Log private double targetSpeed = Double.NaN;
 
-  /** Time from giving the multiSubsystem voltage to being ready to fire, in seconds. */
+  @Nullable private final Double maxAbsSpeedError;
+  @Nullable private final Double maxRelSpeedError;
   private final double spinUpTimeoutSecs;
 
-  @Nullable private final Double minShootingSpeed;
   @Nullable @Log.Exclude private final SimDevice simDevice;
-  @Nullable private final SimBoolean sim_manualStates, sim_isAtSpeed, sim_isTimedOut;
+  @Nullable private final SimBoolean sim_manualStates, sim_isAtSpeed;
   @NotNull private final DebouncerEx speedConditionDebouncer = new DebouncerEx(SPEED_CONDITION_BUFFER_SIZE);
-  /** Whether the flywheel is currently commanded to spin */
-  @NotNull @Log.ToString private SubsystemFlywheel.FlywheelState state;
+
   /** Whether the condition was met last time caching was done. */
   private boolean conditionMetCached;
-  @Log private double lastSpinUpTimeMS;
 
   /**
    * Default constructor
    *
-   * @param shooterMotor The motor controlling the flywheel.
-   * @param shooterThrottle The throttle, from [-1, 1], at which to run the multiSubsystem.
-   * @param spinUpTimeoutSecs The amount of time that the flywheel will wait for the nominal
-   * shooting condition to be reached before signalling that it is ready to shoot regardless.
-   * @param minShootingSpeed The minimum speed at which the flywheel will signal that it is ready to
-   * shoot. Null means that the flywheel will always behave according to the timeout specified by
-   * {@code spinUpTimeoutSecs}.
+   * @param motor The motor controlling the flywheel.
+   * @param maxAbsSpeedError The maximum difference from the target speed at which the flywheel will
+   * signal that it is ready to shoot. Null means that the flywheel will always behave according to
+   * the timeout specified by {@code spinUpTimeoutSecs}.
+   * @param maxRelSpeedError Similar to {@code maxAbsSpeedDeviation}, but specified as a fraction of
+   * the target speed. At most one of these two arguments can be non-null.
    */
   @JsonCreator
   public FlywheelSimple(
-      @NotNull @JsonProperty(required = true) final SmartMotor shooterMotor,
-      @JsonProperty(required = true) final double shooterThrottle,
+      @NotNull @JsonProperty(required = true) final SmartMotor motor,
       @JsonProperty(required = true) final double spinUpTimeoutSecs,
-      @Nullable final Double minShootingSpeed) {
+      @Nullable final Double maxAbsSpeedError,
+      @Nullable final Double maxRelSpeedError) {
 
-    this.shooterMotor = shooterMotor;
-    this.shooterThrottle = shooterThrottle;
+    if (maxAbsSpeedError != null && maxRelSpeedError != null)
+      throw new IllegalArgumentException("Can't specify both absolute and relative max speed range");
+
+    this.shooterMotor = motor;
     this.spinUpTimeoutSecs = spinUpTimeoutSecs;
-    this.minShootingSpeed = minShootingSpeed;
+    this.maxAbsSpeedError = maxAbsSpeedError;
+    this.maxRelSpeedError = maxRelSpeedError;
 
-    this.state = FlywheelState.OFF;
-
-    simDevice = SimDevice.create(this.getClass().getSimpleName(), shooterMotor.getPort());
+    // Register variables with the WPILib simulation GUI.
+    simDevice = SimDevice.create(this.getClass().getSimpleName(), motor.getPort());
     if (simDevice != null) {
       sim_manualStates = simDevice.createBoolean("ManualStates", false, false);
       sim_isAtSpeed = simDevice.createBoolean("IsAtSpeed", false, false);
-      sim_isTimedOut = simDevice.createBoolean("IsTimedOut", false, false);
     } else {
-      // Bless me, Father, for I have sinned.
-      this.sim_manualStates = this.sim_isAtSpeed = this.sim_isTimedOut = null;
+      // Nothing to see here.
+      this.sim_manualStates = this.sim_isAtSpeed = null;
     }
   }
 
-  /** Turn the multiSubsystem on to a map-specified speed. */
+  /** Turn the flywheel on to the specified speed. */
   @Override
-  public void turnFlywheelOn() {
+  public void turnFlywheelOn(final double speed) {
+    this.targetSpeed = speed;
+
     this.shooterMotor.enable();
-    this.shooterMotor.setVelocity(this.shooterThrottle);
+    this.shooterMotor.setVelocityUPS(this.targetSpeed);
   }
 
-  /** Turn the multiSubsystem off. */
+  /** Turn the flywheel off. */
   @Override
   public void turnFlywheelOff() {
+    this.targetSpeed = Double.NaN;
+
     this.shooterMotor.disable();
   }
 
-  /** @return The current state of the multiSubsystem. */
-  @NotNull
-  @Override
-  public SubsystemFlywheel.FlywheelState getFlywheelState() {
-    return this.state;
-  }
-
-  /** @param state The state to switch the multiSubsystem to. */
-  @Override
-  public void setFlywheelState(@NotNull final SubsystemFlywheel.FlywheelState state) {
-    if (this.state != FlywheelState.SPINNING_UP && state == FlywheelState.SPINNING_UP)
-      this.lastSpinUpTimeMS = Clock.currentTimeMillis();
-    this.state = state;
-  }
+//  /** @return The current state of the flywheel. */
+//  @NotNull
+//  @Override
+//  public SubsystemFlywheel.FlywheelState getFlywheelState() {
+//    return this.state;
+//  }
+//
+//  /** @param state The state to switch the flywheel to. */
+//  @Override
+//  public void setFlywheelState(@NotNull final SubsystemFlywheel.FlywheelState state) {
+//    if (this.state != FlywheelState.SPINNING_UP && state == FlywheelState.SPINNING_UP)
+//      this.lastSpinUpTimeMS = Clock.currentTimeMillis();
+//    this.state = state;
+//  }
 
   /**
-   * @return Expected time from giving the multiSubsystem voltage to being ready to fire, in
-   * seconds.
+   * @return Expected time from setting a shooting state to being ready to fire, in seconds.
    */
   @Override
   @Log
@@ -121,8 +124,8 @@ public class FlywheelSimple extends SubsystemBase
   @Override
   @Log
   public boolean isReadyToShoot() {
-    if (this.state == FlywheelState.OFF) return false;
-    return this.speedConditionDebouncer.get() || this.spinUpHasTimedOut();
+    if (Double.isNaN(this.targetSpeed)) return false;
+    return this.speedConditionDebouncer.get();
   }
 
   @Log
@@ -132,30 +135,17 @@ public class FlywheelSimple extends SubsystemBase
         true,
         this.sim_isAtSpeed,
         () -> {
-          if (this.minShootingSpeed == null) return false;
+          if (this.maxAbsSpeedError == null && this.maxRelSpeedError == null) return false;
 
           final double actualVelocity = this.shooterMotor.getVelocity();
+          final double absSpeedDifference = Math.abs(Math.abs(actualVelocity) - this.targetSpeed);
+
           // TODO: Should we be looking at velocity or speed?
-          return !Double.isNaN(actualVelocity) && Math.abs(actualVelocity) >= this.minShootingSpeed;
+          if (this.maxAbsSpeedError != null)
+            return absSpeedDifference <= this.maxAbsSpeedError;
+          else
+            return absSpeedDifference / targetSpeed <= this.maxRelSpeedError;
         });
-  }
-
-  @Log
-  private boolean spinUpHasTimedOut() {
-    return SimUtil.getWithSimHelper(
-        this.sim_manualStates != null && this.sim_manualStates.get(),
-        true,
-        this.sim_isTimedOut,
-        () -> {
-          final double timeSinceLastSpinUp = Clock.currentTimeMillis() - this.lastSpinUpTimeMS;
-          return timeSinceLastSpinUp > 1000 * this.spinUpTimeoutSecs;
-        });
-  }
-
-  /** @return true if the condition is met, false otherwise */
-  @Override
-  public boolean isConditionTrue() {
-    return this.isReadyToShoot();
   }
 
   /** @return true if the condition was met when cached, false otherwise */
@@ -169,6 +159,7 @@ public class FlywheelSimple extends SubsystemBase
   @Override
   public void update() {
     this.speedConditionDebouncer.update(this.isAtShootingSpeed());
+
     this.conditionMetCached = this.isConditionTrue();
   }
 
