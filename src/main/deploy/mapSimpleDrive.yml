@@ -89,10 +89,22 @@ CONSTANTS:
   - Other:
       - &feederIndexingTimeoutSecs 0.3
       - &flywheelSpinUpTimeoutSecs 4
-      - &flywheelKP 0.1 # 0.00001
+      - &flywheelKP 0.00001
+
+
+#Outright move the joystick classes up here so we don't have to keep figuring out where the first
+#usage is whenever we change the commands.
+joysticks:
+  - org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+      '@id': mechanismsJoystick
+      port: *mechanismsJoystickPort
+  - org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+      '@id': driveJoystick
+      port: *driveJoystickPort
 
 # WHETHER TO USE THE CAMERA SERVER
 useCameraServer: false
+
 
 ########################################################################################################################
 *PDP:
@@ -361,8 +373,7 @@ useCameraServer: false
           '@id': intakeStartButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              '@id': mechanismsJoystick
-              port: *mechanismsJoystickPort
+              driveJoystick
           buttonNumber: *intakeStartButtonNumber
       command:
         edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
@@ -652,8 +663,7 @@ useCameraServer: false
               '@id': oi
               gamepad:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                  '@id': driveJoystick
-                  port: *driveJoystickPort
+                  driveJoystick
               rotThrottle:
                 org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
                   &rotThrottle
