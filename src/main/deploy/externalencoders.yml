@@ -148,20 +148,20 @@ useCameraServer: false
           port: kMXP
           invertYaw: true
       trackWidthMeters: 0.61755
-#      shiftComponent:
-#        org.usfirst.frc.team449.robot.components.ShiftComponent:
-#          '@id': driveShiftComponent
-#          otherShiftables:
-#            - org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
-#                leftMaster
-#            - org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
-#                rightMaster
-#          piston:
-#            '@id': driveShifter
-#            module: 0
-#            forward: 0
-#            reverse: 1
-#          startingGear: LOW
+      shiftComponent:
+        org.usfirst.frc.team449.robot.components.ShiftComponent:
+          '@id': driveShiftComponent
+          otherShiftables:
+            - org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
+                leftMaster
+            - org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
+                rightMaster
+          piston:
+            '@id': driveShifter
+            module: 0
+            forward: 0
+            reverse: 1
+          startingGear: LOW
 
 *COMMANDS:
   ########################################################################################################################

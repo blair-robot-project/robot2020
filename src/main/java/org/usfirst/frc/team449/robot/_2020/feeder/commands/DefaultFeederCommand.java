@@ -60,8 +60,7 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
     this.sensor1.update(currentTime);
     this.sensor2.update(currentTime);
 
-    final var targetMode = this.shouldBeRunning() ? this.runMode : SubsystemIntake.IntakeMode.OFF;
-    if (this.feeder.getMode() != targetMode) this.feeder.setMode(targetMode);
+    this.feeder.setMode(this.shouldBeRunning() ? this.runMode : SubsystemIntake.IntakeMode.OFF);
   }
 
   public boolean shouldBeRunning() {
