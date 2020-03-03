@@ -158,7 +158,7 @@ useCameraServer: false
           startingGear: LOW
   #***********************************************************************************************************************
   - *CLIMBER_SUBSYSTEM
-  - org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
+  - org.usfirst.frc.team449.robot._2020.climber.ClimberWinchingWithArm:
       '@id': climber
       motorSubsystem:
         org.usfirst.frc.team449.robot._2020.climber.ClimberCurrentLimited:
@@ -200,7 +200,7 @@ useCameraServer: false
         org.usfirst.frc.team449.robot._2020.climber.commands.SetClimberWithArmState:
           '@id': climberRaiseCommand
           subsystem:
-            org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
+            org.usfirst.frc.team449.robot._2020.climber.ClimberWinchingWithArm:
               climber
           state: "RAISE"
       action: WHEN_PRESSED
@@ -215,7 +215,7 @@ useCameraServer: false
         org.usfirst.frc.team449.robot._2020.climber.commands.StartClimber:
           '@id': climberWinchCommand
           climber:
-            org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
+            org.usfirst.frc.team449.robot._2020.climber.ClimberWinchingWithArm:
               climber
       action: WHEN_PRESSED
     - button:
@@ -229,7 +229,7 @@ useCameraServer: false
         org.usfirst.frc.team449.robot._2020.climber.commands.SetClimberWithArmState:
           '@id': climberLowerCommand
           subsystem:
-            org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
+            org.usfirst.frc.team449.robot._2020.climber.ClimberWinchingWithArm:
               climber
           state: "LOWER"
       action: WHEN_PRESSED
@@ -244,7 +244,7 @@ useCameraServer: false
         org.usfirst.frc.team449.robot._2020.climber.commands.SetClimberWithArmState:
           '@id': climberOffCommand
           subsystem:
-            org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
+            org.usfirst.frc.team449.robot._2020.climber.ClimberWinchingWithArm:
               climber
           state: "OFF"
       action: WHEN_PRESSED
@@ -361,4 +361,4 @@ useCameraServer: false
       - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
       - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS: navX
       - org.usfirst.frc.team449.robot._2020.climber.ClimberCurrentLimited: climberCurrentLimitSystem
-      - org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber: climber
+      - org.usfirst.frc.team449.robot._2020.climber.ClimberWinchingWithArm: climber
