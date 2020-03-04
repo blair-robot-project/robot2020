@@ -13,18 +13,18 @@ import org.usfirst.frc.team449.robot._2020.feeder.FeederCounting;
 public class SetFeederState extends InstantCommand {
 
     FeederCounting feeder;
-    FeederCounting.FeederState feederState;
+    FeederCounting.FeederState state;
 
     @JsonCreator
     public SetFeederState(@JsonProperty(required = true) FeederCounting feeder,
-                          @JsonProperty(required = true) FeederCounting.FeederState feederState) {
+                          @JsonProperty(required = true) FeederCounting.FeederState state) {
         this.feeder = feeder;
-        this.feederState = feederState;
+        this.state = state;
     }
 
     @Override
     public void execute() {
-        feeder.setState(feederState);
+        feeder.setState(state);
     }
 
 }

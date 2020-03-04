@@ -3,6 +3,7 @@ package org.usfirst.frc.team449.robot._2020.feeder.commands;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.usfirst.frc.team449.robot._2020.feeder.FeederCounting;
@@ -10,7 +11,10 @@ import org.usfirst.frc.team449.robot._2020.intake.IntakeDeployed;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 import org.usfirst.frc.team449.robot._2020.shooter.DualFlywheel;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.CLASS,
+    include = JsonTypeInfo.As.WRAPPER_OBJECT,
+    property = "@class")
 public class FeederStateController extends CommandBase {
 
     DualFlywheel flywheel;

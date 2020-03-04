@@ -1,5 +1,6 @@
 package org.usfirst.frc.team449.robot._2020.shooter;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -32,6 +33,7 @@ public class DualFlywheel extends SubsystemBase implements Loggable {
     @Log
     double kickerSpeed;
 
+    @JsonCreator
     public DualFlywheel(@JsonProperty(required = true) FlywheelSimple leftWheel,
                         @JsonProperty(required = true) FlywheelSimple rightWheel,
                         @JsonProperty(required = true) SimpleMotor kicker,
@@ -48,6 +50,8 @@ public class DualFlywheel extends SubsystemBase implements Loggable {
 
     @Override
     public void periodic() {
+        leftWheel.update();
+        rightWheel.update();
         if (currentState == DualFlywheelState.NEUTRAL) {
             leftWheel.turnFlywheelOff();
             rightWheel.turnFlywheelOff();

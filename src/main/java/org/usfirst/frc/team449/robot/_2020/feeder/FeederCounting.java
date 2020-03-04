@@ -72,7 +72,7 @@ public class FeederCounting extends SubsystemBase implements Loggable {
                 break;
             case SHOOTING:
                 resetBallCount();
-                transitionMotor.setVelocity(transitionVelocities.get(currentState));
+                transitionMotor.setVelocity(0);
                 mainMotor.setVelocity(mainVelocities.get(currentState));
             default:
                 transitionMotor.setVelocity(transitionVelocities.get(currentState));
