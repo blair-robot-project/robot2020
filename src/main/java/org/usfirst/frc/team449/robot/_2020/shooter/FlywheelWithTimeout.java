@@ -79,11 +79,6 @@ public class FlywheelWithTimeout extends SubsystemBase implements SubsystemFlywh
     SubsystemFlywheel.super.update();
   }
 
-  @Override
-  public String configureLogName() {
-    return this.implementation.configureLogName();
-  }
-
   @Log
   private boolean spinUpHasTimedOut() {
     return this.speedConditionTimer.hasBeenTrueForAtLeast(this.timeout);
