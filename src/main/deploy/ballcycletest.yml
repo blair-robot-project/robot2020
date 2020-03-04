@@ -515,20 +515,33 @@ useCameraServer: false
                 mode: "OFF"
       action: WHEN_PRESSED
 
-#    - button:
-#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-#          '@id': intakePistonToggleButton
-#          joystick:
-#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-#              mechanismsJoystick
-#          buttonNumber: *intakePistonToggleButtonNumber
-#      command:
-#        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.ToggleSolenoid:
-#          '@id': intakePistonToggleCommand
-#          subsystem:
-#            org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
-#              intakeSolenoid
-#      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': intakeReverseButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              driveJoystick
+          buttonNumber: *driverIntakeRev
+      command:
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+          '@id': intakeReverseCommandGroup
+          requiredSubsystems:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                intakeTransitionWheel
+          commands:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': intakeBumperReverseCommand
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                    intakeBumper
+                mode: OUT_SLOW
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': intakeTransitionReverseCommand
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                    intakeTransitionWheel
+                mode: OUT_SLOW
+      action: WHEN_PRESSED
 
     #***********************************************************************************************************************
     - *FEEDER_COMMANDS
@@ -615,7 +628,7 @@ useCameraServer: false
                               feeder
                           mode: "OFF"
                       - edu.wpi.first.wpilibj2.command.PrintCommand:
-                          "NOT SHOOTING"
+                          NOT SHOOTING
                 afterBecomingTrue:
                   edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
                     '@id': startShootingCommandSequence
@@ -627,7 +640,7 @@ useCameraServer: false
                               feeder
                           mode: OUT_FAST
                       - edu.wpi.first.wpilibj2.command.PrintCommand:
-                          "SHOOTING"
+                          SHOOTING
       action: WHEN_PRESSED
 
     - button:
