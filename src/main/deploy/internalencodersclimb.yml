@@ -46,7 +46,7 @@ CONSTANTS:
       - &climberOffButtonNumber 4
       - &climberLowerButtonNumber 5
       - &climberRaiseButtonNumber 6
-      - &climberWinchButtonNumber 3
+      - &climberWinchButtonNumber 8
 
 
 # WHETHER TO USE THE CAMERA SERVER

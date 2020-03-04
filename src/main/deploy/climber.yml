@@ -11,6 +11,7 @@ NAVIGATION:
       # Other anchors, like these, become null list items and are explicitly ignored using @JsonInclude
       - &CLIMBER_SUBSYSTEM
   - &COMMANDS commands:
+      -
       - &BUTTONS buttons:
           - &CLIMBER_COMMANDS
   - &UPDATER updater
@@ -25,8 +26,8 @@ CONSTANTS:
   - JoystickPorts:
       - &mechanismsJoystickPort 0
   - SolenoidPorts:
-      - &climberSolenoidForward 6
-      - &climberSolenoidReverse 7
+      - &climberSolenoidForward 4
+      - &climberSolenoidReverse 5
   - ButtonNumbers:
       - &climberLowerButtonNumber 5
       - &climberRaiseButtonNumber 6
