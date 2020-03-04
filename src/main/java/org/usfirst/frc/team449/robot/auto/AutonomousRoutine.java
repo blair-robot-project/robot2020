@@ -19,8 +19,8 @@ public class AutonomousRoutine extends SequentialCommandGroup {
     @JsonCreator
     public AutonomousRoutine(List<AutonomousCommand> commandList){
         for(AutonomousCommand command : commandList){
-            addCommands(command.getTimedCommand());
-            executionTime += command.getRunTimeSeconds();
+            addCommands(command.getAutoCommand());
+            executionTime += command.getRunTimeSeconds() == null ? 0 : command.getRunTimeSeconds();
         }
         if(executionTime >= 15){
             DriverStation.reportWarning("The selected autonomous routine exceeds an execution time of 15 seconds" +
