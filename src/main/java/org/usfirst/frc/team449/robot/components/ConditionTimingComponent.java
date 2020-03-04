@@ -3,6 +3,7 @@ package org.usfirst.frc.team449.robot.components;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
+import org.usfirst.frc.team449.robot.other.RegistrationOrderIDUtil;
 
 /**
  * Utility class that records and provides methods for examining the times at which a condition
@@ -19,6 +20,8 @@ public abstract class ConditionTimingComponent implements Loggable {
 
   public ConditionTimingComponent(final boolean initialValue) {
     this.current = initialValue;
+
+    RegistrationOrderIDUtil.registerInstance(this);
   }
 
   /**
@@ -174,10 +177,9 @@ public abstract class ConditionTimingComponent implements Loggable {
     return this.current;
   }
 
-  // TODO This is not a good permanent solution because the hash may change between runs.
   @Override
   @Contract(pure = true)
   public String configureLogName() {
-    return this.toString();
+    return this.getClass().getSimpleName() + RegistrationOrderIDUtil.getExistingID(this);
   }
 }
