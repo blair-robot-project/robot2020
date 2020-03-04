@@ -12,7 +12,10 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemSolenoid;
 
-/** A command that toggles the position of a piston. */
+/**
+ * A command that toggles the position of a piston.
+ * DO NOT USE IN COMPETITIONS!! Toggles are too hard for driver to track
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ToggleSolenoid extends InstantCommand {
 

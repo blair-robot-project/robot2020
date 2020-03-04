@@ -60,10 +60,12 @@ CONSTANTS:
       - &shooterFar 4
       - &mechsIntakeStop 5
       - &mechsIntakeStart 6
-      - &mechsIntakeStartDPad 90
+      - &mechsIntakeOutDPad 90
       - &mechsIntakeInDPad 135
-      - &driverIntakeStart 1
-      - &driverIntakeStop 2
+      - &driverIntakeOutOn 1
+      - &driverIntakeOff 2
+      - &driverIntakeRev 3
+      - &driverIntakeInOff 4
       - &shooterStartButtonNumber 3
       - &shooterStopThrottle 3
       - &intakePistonToggleButtonNumber 9
@@ -355,6 +357,10 @@ useCameraServer: false
                 org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
                   '@id': limelight
                   driverPipeline: 0
+              offset: 0
+          limelight:
+            org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
+              limelight
           driverPipe: 0
       action: WHEN_PRESSED
     #***********************************************************************************************************************
@@ -366,14 +372,22 @@ useCameraServer: false
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               '@id': driveJoystick
               port: *driveJoystickPort
-          buttonNumber: *driverIntakeStart
+          buttonNumber: *driverIntakeOutOn
       command:
         edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
           '@id': runBumperAndTransitionWheel
           requiredSubsystems:
             - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
                 intakeTransitionWheel
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
+                intakeSolenoid
           commands:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetSolenoidPose:
+                '@id': intakePistonOutGrouped
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
+                    intakeSolenoid
+                value: kForward
             - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
                 '@id': intakeBumperStartCommand
                 subsystem:
@@ -411,7 +425,7 @@ useCameraServer: false
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               driveJoystick
-          buttonNumber: *driverIntakeStop
+          buttonNumber: *driverIntakeOff
       command:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
           '@id': intakeStopCommand
@@ -434,19 +448,86 @@ useCameraServer: false
       action: CANCEL_WHEN_PRESSED
 
     - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': intakePistonToggleButton
+        org.usfirst.frc.team449.robot.oi.buttons.dPadButton:
+          '@id': mechsIntakePistonOutButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               mechanismsJoystick
-          buttonNumber: *intakePistonToggleButtonNumber
+          angle: *mechsIntakeOutDPad
       command:
-        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.ToggleSolenoid:
-          '@id': intakePistonToggleCommand
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetSolenoidPose:
+          '@id': intakePistonOut
           subsystem:
             org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
               intakeSolenoid
+          value: kForward
       action: WHEN_PRESSED
+
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.dPadButton:
+          '@id': mechsIntakePistonInButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          angle: *mechsIntakeInDPad
+      command:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetSolenoidPose:
+          '@id': intakePistonIn
+          subsystem:
+            org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
+              intakeSolenoid
+          value: kReverse
+      action: WHEN_PRESSED
+
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': driverIntakeInOffButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              driverJoystick
+          buttonNumber: *driverIntakeInOff
+        command:
+          edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+            '@id': intakePistonInOffGroup
+            requiredSubsystems:
+              - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                  intakeTransitionWheel
+              - org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
+                  intakeSolenoid
+            commands:
+              - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetSolenoidPose:
+                  '@id': intakePistonInGrouped
+                  subsystem:
+                    org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
+                      intakeSolenoid
+                  value: kReverse
+              - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                  '@id': intakeBumperStopCommand
+                  subsystem:
+                    org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                      intakeBumper
+                  mode: OFF
+              - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                  '@id': intakeTransitionWheelStopCommand
+                  subsystem:
+                    org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                      intakeTransitionWheel
+                  mode: "OFF"
+
+#    - button:
+#        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+#          '@id': intakePistonToggleButton
+#          joystick:
+#            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+#              mechanismsJoystick
+#          buttonNumber: *intakePistonToggleButtonNumber
+#      command:
+#        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.ToggleSolenoid:
+#          '@id': intakePistonToggleCommand
+#          subsystem:
+#            org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
+#              intakeSolenoid
+#      action: WHEN_PRESSED
 
     #***********************************************************************************************************************
     - *FEEDER_COMMANDS
