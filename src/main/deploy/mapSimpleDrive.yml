@@ -67,9 +67,8 @@ CONSTANTS:
       - &intakeStopButtonNumber 2
       - &shooterStartButtonNumber 3
       - &shooterStopButtonNumber 4
-      - &climberOffButtonNumber 5
-      - &climberLowerButtonNumber 6
-      - &climberRaiseButtonNumber 7
+      - &climberLowerButtonNumber 5
+      - &climberRaiseButtonNumber 6
       - &climberWinchButtonNumber 8
       - &intakePistonToggleButtonNumber 9
       - &feederCoughButtonNumber 10 #TODO Should coughing be an actual back-and-forth motion?
@@ -278,22 +277,19 @@ useCameraServer: false
 
   #***********************************************************************************************************************
   - *CLIMBER_SUBSYSTEM
-  - org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
+  - org.usfirst.frc.team449.robot._2020.climber.UnsafeWinchingClimber:
       '@id': climber
       motorSubsystem:
-        org.usfirst.frc.team449.robot._2020.climber.ClimberCurrentLimited:
-          '@id': climberCurrentLimitSystem
-          smartMotor:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
+          '@id': climberMotorSubsystem
+          speed: 1.0
+          motor:
             org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
               '@id': climberMotor
               name: climberMotor
               type: SPARK
               port: *climberMotorPort
               enableBrakeMode: false
-          maxPower: 100000
-          powerLimitTimer:
-            '@id': climberPowerLimitTimer
-            bufferTimeSeconds: 1
       solenoidSubsystem:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
           '@id': climberSolenoidSystem
@@ -590,23 +586,9 @@ useCameraServer: false
         org.usfirst.frc.team449.robot._2020.climber.commands.SetClimberWithArmState:
           '@id': climberRaiseCommand
           subsystem:
-            org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
+            org.usfirst.frc.team449.robot._2020.climber.UnsafeWinchingClimber:
               climber
           state: "RAISE"
-      action: WHEN_PRESSED
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': climberWinchButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: *climberWinchButtonNumber
-      command:
-        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
-          '@id': climberWinchCommand
-          subsystem:
-            org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
-              climber
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -619,25 +601,38 @@ useCameraServer: false
         org.usfirst.frc.team449.robot._2020.climber.commands.SetClimberWithArmState:
           '@id': climberLowerCommand
           subsystem:
-            org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
+            org.usfirst.frc.team449.robot._2020.climber.UnsafeWinchingClimber:
               climber
           state: "LOWER"
       action: WHEN_PRESSED
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': climberOffButton
+          '@id': climberWinchButton_press
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               mechanismsJoystick
-          buttonNumber: *climberOffButtonNumber
+          buttonNumber: *climberWinchButtonNumber
       command:
-        org.usfirst.frc.team449.robot._2020.climber.commands.SetClimberWithArmState:
-          '@id': climberOffCommand
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
+          '@id': climberWinchCommand_press
           subsystem:
-            org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber:
+            org.usfirst.frc.team449.robot._2020.climber.UnsafeWinchingClimber:
               climber
-          state: "OFF"
       action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': climberWinchButton_release
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *climberWinchButtonNumber
+      command:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOff:
+          '@id': climberWinchCommand_release
+          subsystem:
+            org.usfirst.frc.team449.robot._2020.climber.UnsafeWinchingClimber:
+              climber
+      action: WHEN_RELEASED
 
   ########################################################################################################################
   *DEFAULT_COMMANDS:
@@ -769,6 +764,5 @@ useCameraServer: false
       - org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
       - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalSimple: drive
       - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
-      - org.usfirst.frc.team449.robot._2020.climber.ClimberCurrentLimited: climberCurrentLimitSystem
-      - org.usfirst.frc.team449.robot._2020.climber.SafeWinchingClimber: climber
+      - org.usfirst.frc.team449.robot._2020.climber.UnsafeWinchingClimber: climber
       - org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster: shooterFlywheels
