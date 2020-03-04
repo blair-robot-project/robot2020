@@ -9,7 +9,6 @@ import java.util.function.BooleanSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 import org.usfirst.frc.team449.robot.components.ConditionTimingComponentDecorator;
-import org.usfirst.frc.team449.robot.components.ConditionTimingComponentObserver;
 import org.usfirst.frc.team449.robot.other.Clock;
 
 /**
@@ -19,7 +18,7 @@ import org.usfirst.frc.team449.robot.other.Clock;
 public class DefaultFeederCommand extends CommandBase implements Loggable {
   @NotNull private final SubsystemIntake feeder;
   @NotNull private final SubsystemIntake.IntakeMode runMode;
-  @NotNull private final ConditionTimingComponentObserver feederIsOn;
+  @NotNull private final ConditionTimingComponentDecorator shouldBeRunning;
   @Log.Exclude  // TODO Figure out why this is necessary to prevent logging duplicate members
   @NotNull private final ConditionTimingComponentDecorator sensor1;
   @Log.Exclude
@@ -45,7 +44,7 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
       @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode runMode,
       @Deprecated final double timeout) {
     this.feeder = subsystem;
-    this.feederIsOn = new ConditionTimingComponentObserver(false);
+    this.shouldBeRunning = new ConditionTimingComponentDecorator(this::shouldBeRunning, false);
     this.sensor1 = new ConditionTimingComponentDecorator(sensor1, false);
     this.sensor2 = new ConditionTimingComponentDecorator(sensor2, false);
     this.runMode = runMode;
@@ -56,12 +55,12 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
   public void execute() {
     final double currentTime = Clock.currentTimeSeconds();
 
-    this.feederIsOn.update(currentTime, this.feeder.getMode() != SubsystemIntake.IntakeMode.OFF);
     this.sensor1.update(currentTime);
     this.sensor2.update(currentTime);
 
-    final var targetMode = this.shouldBeRunning() ? this.runMode : SubsystemIntake.IntakeMode.OFF;
-    if (this.feeder.getMode() != targetMode) this.feeder.setMode(targetMode);
+    this.shouldBeRunning.update(currentTime);
+    if (this.shouldBeRunning.justBecameTrue()) this.feeder.setMode(this.runMode);
+    if (this.shouldBeRunning.justBecameFalse()) this.feeder.setMode(SubsystemIntake.IntakeMode.OFF);
   }
 
   public boolean shouldBeRunning() {
