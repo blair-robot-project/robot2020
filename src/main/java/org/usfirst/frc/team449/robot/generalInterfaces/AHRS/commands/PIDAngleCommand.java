@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +17,7 @@ import org.usfirst.frc.team449.robot.other.Debouncer;
     use = JsonTypeInfo.Id.CLASS,
     include = JsonTypeInfo.As.WRAPPER_OBJECT,
     property = "@class")
-public abstract class PIDAngleCommand extends CommandBase implements Loggable {
+public abstract class PIDAngleCommand extends CommandBase { //implements Loggable { TODO Logging causes the drive subsystem to be logged twice according to Oblog.
 
   /** The subsystem to execute this command on. */
   @NotNull @Log.Exclude protected final SubsystemAHRS subsystem;
