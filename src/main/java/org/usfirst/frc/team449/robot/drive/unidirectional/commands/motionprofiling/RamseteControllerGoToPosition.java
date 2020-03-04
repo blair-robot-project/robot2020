@@ -53,15 +53,12 @@ public class RamseteControllerGoToPosition extends CommandBase implements Loggab
     this.endingPose = endingPose;
     this.translations = translations;
 
-    TrajectoryConstraint voltageConstraint =
-        new DifferentialDriveVoltageConstraint(
-            drivetrain.getLeftFeedforwardCalculator(), drivetrain.getDriveKinematics(), 12);
 
     // Create config for trajectory
     config =
         new TrajectoryConfig(maxSpeedMeters, maxAccelMeters)
             .setKinematics(drivetrain.getDriveKinematics())
-            .addConstraint(voltageConstraint)
+            .addConstraint(drivetrain.getVoltageConstraint())
             .setReversed(reversed);
 
     addRequirements(drivetrain);
@@ -104,7 +101,7 @@ public class RamseteControllerGoToPosition extends CommandBase implements Loggab
   }
 
   @Override
-  public double getRunTimeSeconds() {
+  public Double getRunTimeSeconds() {
     return trajectory.getTotalTimeSeconds();
   }
 }

@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -346,6 +348,10 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     // need to convert to meters
     return new DifferentialDriveWheelSpeeds(this.getLeftVel(), this.getRightVel());
+  }
+
+  public TrajectoryConstraint getVoltageConstraint(){
+    return new DifferentialDriveVoltageConstraint(getLeftFeedforwardCalculator(), getDriveKinematics(), 12);
   }
   //
   //    /**

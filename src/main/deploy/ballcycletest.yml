@@ -230,7 +230,7 @@ useCameraServer: false
           '@id': feederMotor
           type: SPARK
           port: *feederMotorPort
-          name: feederMotor
+          name: feederMainMotor
           reverseOutput: false
           enableBrakeMode: false
           PDP: PDP
@@ -241,7 +241,7 @@ useCameraServer: false
           '@id': bumperTransition
           type: SPARK
           port: *feederTransitionWheelMotorPort
-          name: feederMotor
+          name: feederTransitionMotor
           reverseOutput: false
           enableBrakeMode: false
           PDP: PDP
