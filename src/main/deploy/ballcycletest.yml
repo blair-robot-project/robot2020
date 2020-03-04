@@ -367,7 +367,7 @@ useCameraServer: false
     - *INTAKE_COMMANDS
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': driverIntakeStartButton
+          '@id': driveIntakeStartButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               '@id': driveJoystick
@@ -414,14 +414,14 @@ useCameraServer: false
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               mechanismsJoystick
           buttonNumber: *mechsIntakeStart
-        command:
-          edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-            runBumperAndTransitionWheel
-        action: WHEN_PRESSED
+      command:
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+          runBumperAndTransitionWheel
+      action: WHEN_PRESSED
 
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': driverIntakeStopButton
+          '@id': driveIntakeStopButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               driveJoystick
@@ -481,38 +481,39 @@ useCameraServer: false
 
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': driverIntakeInOffButton
+          '@id': driveIntakeInOffButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              driverJoystick
+              driveJoystick
           buttonNumber: *driverIntakeInOff
-        command:
-          edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-            '@id': intakePistonInOffGroup
-            requiredSubsystems:
-              - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                  intakeTransitionWheel
-              - org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
-                  intakeSolenoid
-            commands:
-              - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetSolenoidPose:
-                  '@id': intakePistonInGrouped
-                  subsystem:
-                    org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
-                      intakeSolenoid
-                  value: kReverse
-              - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-                  '@id': intakeBumperStopCommand
-                  subsystem:
-                    org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                      intakeBumper
-                  mode: OFF
-              - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-                  '@id': intakeTransitionWheelStopCommand
-                  subsystem:
-                    org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                      intakeTransitionWheel
-                  mode: "OFF"
+      command:
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+          '@id': intakePistonInOffGroup
+          requiredSubsystems:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                intakeTransitionWheel
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
+                intakeSolenoid
+          commands:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetSolenoidPose:
+                '@id': intakePistonInGrouped
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple:
+                    intakeSolenoid
+                value: kReverse
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': intakeBumperStopCommand
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                    intakeBumper
+                mode: "OFF"
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': intakeTransitionWheelStopCommand
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                    intakeTransitionWheel
+                mode: "OFF"
+      action: WHEN_PRESSED
 
 #    - button:
 #        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
@@ -587,9 +588,7 @@ useCameraServer: false
                 flywheel:
                   org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
                     shooterFlywheels
-                feeder:
-                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                    feeder
+                subsystem: feeder
             - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
                 '@id': kickerStartCommand
                 subsystem:
@@ -616,7 +615,7 @@ useCameraServer: false
                               feeder
                           mode: "OFF"
                       - edu.wpi.first.wpilibj2.command.PrintCommand:
-                          NOT SHOOTING
+                          "NOT SHOOTING"
                 afterBecomingTrue:
                   edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
                     '@id': startShootingCommandSequence
@@ -628,7 +627,7 @@ useCameraServer: false
                               feeder
                           mode: OUT_FAST
                       - edu.wpi.first.wpilibj2.command.PrintCommand:
-                          SHOOTING
+                          "SHOOTING"
       action: WHEN_PRESSED
 
     - button:
@@ -647,7 +646,7 @@ useCameraServer: false
         edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
           '@id': shooterStopCommandSequence
           commands:
-            - org.usfirst.frc.team449.robot._2020.shooter.commands.TurnAllOffWithRequires:
+            - org.usfirst.frc.team449.robot._2020.shooter.commands.TurnAllOff:
                 '@id': shooterStopCommand
                 subsystem:
                   org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
