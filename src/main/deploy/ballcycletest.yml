@@ -55,12 +55,19 @@ CONSTANTS:
       - &mechanismsJoystickPort 0
       - &driveJoystickPort 1
   - ButtonNumbers:
-      - &intakeStartButtonNumber 1
-      - &intakeStopButtonNumber 2
+      - &shooterClose 1
+      - &shooterMid 3
+      - &shooterFar 4
+      - &mechsIntakeStop 5
+      - &mechsIntakeStart 6
+      - &mechsIntakeStartDPad 90
+      - &mechsIntakeInDPad 135
+      - &driverIntakeStart 1
+      - &driverIntakeStop 2
       - &shooterStartButtonNumber 3
-      - &shooterStopButtonNumber 4
+      - &shooterStopThrottle 3
       - &intakePistonToggleButtonNumber 9
-      - &feederCoughButtonNumber 10 #TODO Should coughing be an actual back-and-forth motion?
+      - &feederCoughButtonNumber 10
   - MotorSpeeds:
       - &intakeBumperIntakingVel 1
       - &intakeTransitionWheelIntakingVel 0.3
@@ -334,29 +341,34 @@ useCameraServer: false
               port: *mechanismsJoystickPort
           buttonNumber: 1 #shoulder right
       command:
-        org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleLimelight:
-          '@id': turnToAngleCommand
-          absoluteTolerance: 3
-          kP: .001
-          drive:
-            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-              drive
-          timeout: 100
-          limelight:
-            org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
-              '@id': limelight
-              driverPipeline: 0
+        org.usfirst.frc.team449.robot.generalInterfaces.limelight.commands.ScanThenTurn:
+          '@id': scanThenTurnCommand
+          scannerPipe: 1
+          turnCommand:
+            org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleLimelight:
+              '@id': turnToAngleCommand
+              absoluteTolerance: 3
+              kP: .001
+              drive:
+                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                  drive
+              timeout: 100
+              limelight:
+                org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
+                  '@id': limelight
+                  driverPipeline: 0
+          driverPipe: 0
       action: WHEN_PRESSED
     #***********************************************************************************************************************
     - *INTAKE_COMMANDS
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': intakeStartButton
+          '@id': driverIntakeStartButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               '@id': driveJoystick
               port: *driveJoystickPort
-          buttonNumber: *intakeStartButtonNumber
+          buttonNumber: *driverIntakeStart
       command:
         edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
           '@id': runBumperAndTransitionWheel
@@ -385,11 +397,23 @@ useCameraServer: false
 
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': intakeStopButton
+          '@id': mechsIntakeStartButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *mechsIntakeStart
+        command:
+          edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+            runBumperAndTransitionWheel
+        action: WHEN_PRESSED
+
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': driverIntakeStopButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               driveJoystick
-          buttonNumber: *intakeStopButtonNumber
+          buttonNumber: *driverIntakeStop
       command:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
           '@id': intakeStopCommand
@@ -401,7 +425,11 @@ useCameraServer: false
 
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          intakeStopButton
+          '@id': mechsIntakeStopButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *mechsIntakeStop
       command:
         edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
           runBumperAndTransitionWheel
@@ -525,12 +553,17 @@ useCameraServer: false
       action: WHEN_PRESSED
 
     - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+        org.usfirst.frc.team449.robot.oi.buttons.TriggerButton:
           '@id': shooterStopButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
-          buttonNumber: *shooterStopButtonNumber
+          throttle:
+            org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic:
+              '@id': stopShooterThrottle
+              stick:
+                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                  mechanismsJoystick
+              axis: 3
+              inverted: false
+          triggerAt: *shooterStopThrottle
       command:
         edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
           '@id': shooterStopCommandSequence
