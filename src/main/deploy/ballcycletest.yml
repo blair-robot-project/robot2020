@@ -55,25 +55,24 @@ CONSTANTS:
   - JoystickPorts:
       - &mechanismsJoystickPort 0
       - &driveJoystickPort 1
-  - DriveButtonNumbers:
+  - DriverButtonNumbers:
       - &driverIntakeOutOn 1 #intakeForward
       - &driverIntakeOff 2 #intakeNeutralDeployed
       - &driverIntakeRev 3 #intakeReverse
       - &driverIntakeInOff 4 #intakeNeutral
+      - &fineAdjustLeft 5
+      - &fineAdjustRight 6
+  - MechsButtonNumbers:
+      - &shooterStartClose 1
       - &shooterStartFar 4
       - &shooterStartMid 3
-      - &shooterStartClose 1
-      - &shooterStop 4
-      - &cough 10 #TODO Should coughing be an actual back-and-forth motion?
-      - &fineAdjustRight 999
-      - &fineAdjustLeft 999
-      - &shooterStopButtonNumber 3
+      - &shooterStop 3 # Actually an axis.
       - &shooterStopThrottle 3
-  - MechsButtonNumbers:
+      - &mechsIntakeInDPad 135
+      - &mechsIntakeOutDPad 90
       - &mechsIntakeStop 5
       - &mechsIntakeStart 6
-      - &mechsIntakeOutDPad 90
-      - &mechsIntakeInDPad 135
+      - &cough 10 # TODO Should coughing be an actual back-and-forth motion?
   - MotorSpeeds:
       - &intakeBumperIntakingVel 1
       - &intakeTransitionWheelIntakingVel 0.3
@@ -81,10 +80,9 @@ CONSTANTS:
       - &feederShootingVel 0.35 # TODO Was at 0.65, but apparently that's less reliable than 0.35.
       - &feederCoughingVel -0.4
       - &intakeTransitionWheelCoughingVel -0.1
-      - &shooterMaxSpeed 90.5
-      - &shooterThrottle 800 # 45.25 # 0.5 * 90.5
-      - &shooterThrottleFar 100
-      - &shooterThrottleMid 10
+      - &shooterMaxSpeed 90.5 # Unused.
+      - &shooterThrottleFar 45.25 # 0.5 * 90.5
+      - &shooterThrottleMid 20
       - &shooterThrottleClose 10
       - &shooterErrorType maxAbsSpeedError
       - &shooterMaxSpeedError 1.25 # (45.25 - 44) / 90.5
@@ -631,23 +629,71 @@ useCameraServer: false
     - *SHOOTER_COMMANDS
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': shooterStartFarButton
+          '@id': shooterStartButton_far
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               mechanismsJoystick
           buttonNumber: *shooterStartFar
       command:
         edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-          '@id': spinUpFlywheelCommandSequence
+          '@id': shooterStartCommandSequence_far
           commands:
             - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
-                '@id': spinUpFlywheelCommand
+                '@id': spinUpFlywheelCommand_far
                 targetSpeed: *shooterThrottleFar
                 flywheel:
                   org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
                     shooterFlywheels
             - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
-                '@id': kickerStartCommand
+                '@id': kickerStartCommand_far
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
+                    kicker
+      action: WHEN_PRESSED
+
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': shooterStartButton_mid
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *shooterStartMid
+      command:
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+          '@id': shooterStartCommandSequence_mid
+          commands:
+            - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
+                '@id': spinUpFlywheelCommand_mid
+                targetSpeed: *shooterThrottleMid
+                flywheel:
+                  org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
+                    shooterFlywheels
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
+                '@id': kickerStartCommand_mid
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
+                    kicker
+      action: WHEN_PRESSED
+
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': shooterStartButton_close
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *shooterStartClose
+      command:
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+          '@id': shooterStartCommandSequence_close
+          commands:
+            - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
+                '@id': spinUpFlywheelCommand_close
+                targetSpeed: *shooterThrottleClose
+                flywheel:
+                  org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
+                    shooterFlywheels
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
+                '@id': kickerStartCommand_close
                 subsystem:
                   org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
                     kicker
@@ -662,7 +708,7 @@ useCameraServer: false
               stick:
                 org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
                   mechanismsJoystick
-              axis: *shooterStopButtonNumber
+              axis: *shooterStop
               inverted: false
           triggerAt: *shooterStopThrottle
       command:
