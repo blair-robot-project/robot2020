@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -99,15 +100,16 @@ public class SafeWinchingClimber extends SubsystemBase
    */
   @Override
   public void turnMotorOn() {
-    this.motorSubsystem.turnMotorOn();
 //    if (this.armIsUp()) {
 //      if (!this.reallySure) {
 //        this.reallySure = true;
 //      } else {
-//        this.setSolenoid(DoubleSolenoid.Value.kReverse);
 //        this.enableArm = false;
 //      }
 //    }
+    this.setSolenoid(DoubleSolenoid.Value.kReverse);
+    Timer.delay(3.);
+    this.motorSubsystem.turnMotorOn();
   }
 
   @Log

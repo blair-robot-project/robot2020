@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.components.limelight.LimelightDistanceComponent;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.generalInterfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight;
@@ -53,6 +54,7 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
       @Nullable final Integer loopTimeMillis,
       final double deadband,
       final boolean inverted,
+      final double offset,
       final double kP,
       final double kI,
       final double kD,
@@ -70,7 +72,7 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
         kP,
         kI,
         kD,
-        0, // setpoint
+        offset, // setpoint
         drive,
         timeout);
     this.limelight = limelight;
@@ -85,12 +87,10 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
         "NavXTurnToAngleLimelight init.", this.getClass().getSimpleName(), EventImportance.kNormal);
     // Logger.addEvent("NavXRelativeTurnToAngle init.", this.getClass());
     // Do math to setup the setpoint.
-    this.setSetpoint(clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() - limelight.getX()));
+    this.setSetpoint(clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() + limelight.getX()));
     //System.out.println("Current setpoint = " + limelight.getX());
-    System.out.println("Heading = " + ((SubsystemAHRS) subsystem).getHeading());
-//    this.setpoint = clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() + limelight.getX());
-    System.out.println("Output = " + getOutput());
-    System.out.println("Setpoint: " + pidController.getSetpoint() + " (Limelight X = " + limelight.getX() + ")");
+    final LimelightDistanceComponent distanceComponent = new LimelightDistanceComponent(limelight, 20 / 12., 36, 7.5);
+    System.out.println(distanceComponent.getAsDouble());
   }
 
   @Override

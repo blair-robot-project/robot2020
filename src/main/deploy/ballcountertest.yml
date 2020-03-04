@@ -688,102 +688,102 @@ useCameraServer: false
   ########################################################################################################################
   *DEFAULT_COMMANDS:
     #***********************************************************************************************************************
-    - *DRIVE_DEFAULT_COMMAND
-    - subsystem:
-        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-          drive
-      command:
-        org.usfirst.frc.team449.robot.drive.unidirectional.commands.UnidirectionalNavXShiftingDefaultDrive:
-          '@id': defaultDriveCommand
-          kP: 0.003
-          kI: 0.0
-          kD: 0.05
-          maximumOutput: 1
-          absoluteTolerance: 0
-          deadband: 2
-          maxAngularVelToEnterLoop: 3
-          inverted: false
-          highGearAngularCoefficient: 3
-          rampComponent:
-            org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent:
-              maxIncreasePerSecond: 3
-              maxDecreasePerSecond: 1.5
-          driveStraightLoopEntryTimer:
-            '@id': driveStraightLoopEntryTimer
-            bufferTimeSeconds: 0.15
-          subsystem:
-            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-              drive
-          oi:
-            org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad:
-              '@id': oi
-              gamepad:
-                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-                  driveJoystick
-              rotThrottle:
-                org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
-                  &rotThrottle
-                  '@id': rotThrottle
-                  stick: driveJoystick
-                  axis: 0
-                  smoothingTimeSecs: 0.04
-                  deadband: 0.08
-                  inverted: false
-                  polynomial:
-                    org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
-                      '@id': rotPoly
-                      powerToCoefficientMap: !!map
-                        1: .5
-                        3: .5
-                  scale: .7
-              fwdThrottle:
-                org.usfirst.frc.team449.robot.oi.throttles.ThrottleSum:
-                  '@id': fwdThrottle
-                  throttles:
-                    - org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
-                        <<: *rotThrottle
-                        '@id': posThrottle
-                        axis: 3
-                        inverted: false
-                        deadband: 0.05
-                        polynomial:
-                          org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
-                            '@id': posPoly
-                            powerToCoefficientMap: !!map
-                              1: 2
-                              3: 1
-                    - org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
-                        <<: *rotThrottle
-                        '@id': negThrottle
-                        axis: 2
-                        inverted: true
-                        deadband: 0.05
-                        polynomial:
-                          org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
-                            '@id': negPoly
-                            powerToCoefficientMap: !!map
-                              1: 2
-                              3: 1
-              invertDPad: false
-              dPadShift: 0.1
-              turnInPlaceRotScale: 1
-              rescaleOutputs: true
-              scaleRotByFwdPoly:
-                org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
-                  '@id': scaleRotByFwdPoly
-                  powerToCoefficientMap: !!map
-                    0.5: 0.4
-                    0: 0.2
-                    #1 : 0.25
-                    #2: 0.25
-          autoshiftComponent:
-            '@id': autoshiftComponent
-            upshiftSpeed: 1.5
-            downshiftSpeed: 1
-            upshiftDebouncer:
-              '@id': upshiftDebouncer
-              bufferTimeSeconds: 0.06
-            upshiftFwdThresh: 0.4
+    #    - *DRIVE_DEFAULT_COMMAND
+    #    - subsystem:
+    #        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+    #          drive
+    #      command:
+    #        org.usfirst.frc.team449.robot.drive.unidirectional.commands.UnidirectionalNavXShiftingDefaultDrive:
+    #          '@id': defaultDriveCommand
+    #          kP: 0.003
+    #          kI: 0.0
+    #          kD: 0.05
+    #          maximumOutput: 1
+    #          absoluteTolerance: 0
+    #          deadband: 2
+    #          maxAngularVelToEnterLoop: 3
+    #          inverted: false
+    #          highGearAngularCoefficient: 3
+    #          rampComponent:
+    #            org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent:
+    #              maxIncreasePerSecond: 3
+    #              maxDecreasePerSecond: 1.5
+    #          driveStraightLoopEntryTimer:
+    #            '@id': driveStraightLoopEntryTimer
+    #            bufferTimeSeconds: 0.15
+    #          subsystem:
+    #            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+    #              drive
+    #          oi:
+    #            org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad:
+    #              '@id': oi
+    #              gamepad:
+    #                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+    #                  driveJoystick
+    #              rotThrottle:
+    #                org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
+    #                  &rotThrottle
+    #                  '@id': rotThrottle
+    #                  stick: driveJoystick
+    #                  axis: 0
+    #                  smoothingTimeSecs: 0.04
+    #                  deadband: 0.08
+    #                  inverted: false
+    #                  polynomial:
+    #                    org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
+    #                      '@id': rotPoly
+    #                      powerToCoefficientMap: !!map
+    #                        1: .5
+    #                        3: .5
+    #                  scale: .7
+    #              fwdThrottle:
+    #                org.usfirst.frc.team449.robot.oi.throttles.ThrottleSum:
+    #                  '@id': fwdThrottle
+    #                  throttles:
+    #                    - org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
+    #                        <<: *rotThrottle
+    #                        '@id': posThrottle
+    #                        axis: 3
+    #                        inverted: false
+    #                        deadband: 0.05
+    #                        polynomial:
+    #                          org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
+    #                            '@id': posPoly
+    #                            powerToCoefficientMap: !!map
+    #                              1: 2
+    #                              3: 1
+    #                    - org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
+    #                        <<: *rotThrottle
+    #                        '@id': negThrottle
+    #                        axis: 2
+    #                        inverted: true
+    #                        deadband: 0.05
+    #                        polynomial:
+    #                          org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
+    #                            '@id': negPoly
+    #                            powerToCoefficientMap: !!map
+    #                              1: 2
+    #                              3: 1
+    #              invertDPad: false
+    #              dPadShift: 0.1
+    #              turnInPlaceRotScale: 1
+    #              rescaleOutputs: true
+    #              scaleRotByFwdPoly:
+    #                org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
+    #                  '@id': scaleRotByFwdPoly
+    #                  powerToCoefficientMap: !!map
+    #                    0.5: 0.4
+    #                    0: 0.2
+    #                    #1 : 0.25
+    #                    #2: 0.25
+    #          autoshiftComponent:
+    #            '@id': autoshiftComponent
+    #            upshiftSpeed: 1.5
+    #            downshiftSpeed: 1
+    #            upshiftDebouncer:
+    #              '@id': upshiftDebouncer
+    #              bufferTimeSeconds: 0.06
+    #            upshiftFwdThresh: 0.4
 
     #***********************************************************************************************************************
     - *FEEDER_DEFAULT_COMMAND

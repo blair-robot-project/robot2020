@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.Loggable;
 import java.util.function.BooleanSupplier;
+
+import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake.IntakeMode;
@@ -27,7 +29,7 @@ public class BallCountingFeederCommand extends CommandBase implements Loggable {
   /** The previous values from the IR sensors */
   private boolean sensor1Cached, sensor2Cached, flywheelStoppedCached;
   /** The current number of balls inside the robot */
-  private int numBalls;
+  @Log private int numBalls;
 
   private long lastTime;
 
