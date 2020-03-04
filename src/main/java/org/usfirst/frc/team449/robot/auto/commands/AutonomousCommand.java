@@ -10,7 +10,7 @@ public interface AutonomousCommand extends Command {
     default double getRunTimeSeconds(){ return 0; }
 
     default Command getTimedCommand(){
-        return this.deadlineWith(new WaitCommand(getRunTimeSeconds()));
+        return new WaitCommand(getRunTimeSeconds()).deadlineWith(this);
     }
 
 

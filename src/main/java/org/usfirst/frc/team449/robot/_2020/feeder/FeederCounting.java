@@ -1,9 +1,6 @@
 package org.usfirst.frc.team449.robot._2020.feeder;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
@@ -13,6 +10,10 @@ import org.usfirst.frc.team449.robot.other.Debouncer;
 
 import java.util.Map;
 
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.CLASS,
+        include = JsonTypeInfo.As.WRAPPER_OBJECT,
+        property = "@class")
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class FeederCounting extends SubsystemBase implements Loggable {
 
@@ -21,7 +22,7 @@ public class FeederCounting extends SubsystemBase implements Loggable {
 
     private MappedDigitalInput ballSensor;
 
-    @Log
+    @Log.ToString
     private FeederState currentState;
 
     private Map<FeederState, Double> transitionVelocities;
@@ -29,7 +30,8 @@ public class FeederCounting extends SubsystemBase implements Loggable {
 
     private double preShootingReverseDelay = 0;
 
-    @Log private int ballCount = 0;
+    @Log
+    private int ballCount = 0;
     private boolean ballWasPresent;
     private Debouncer sensorDebouncer;
 
@@ -86,22 +88,22 @@ public class FeederCounting extends SubsystemBase implements Loggable {
         currentState = state;
     }
 
-    public boolean getBallPresent(){
+    public boolean getBallPresent() {
         return sensorDebouncer.get(ballSensor.get());
     }
 
     public void updateBallCount() {
-        if(ballWasPresent && !getBallPresent()){
+        if (ballWasPresent && !getBallPresent()) {
             ballCount++;
         }
         ballWasPresent = getBallPresent();
     }
 
-    public int getBallCount(){
+    public int getBallCount() {
         return ballCount;
     }
 
-    public void resetBallCount(){
+    public void resetBallCount() {
         ballCount = 0;
     }
 

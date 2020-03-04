@@ -3,15 +3,14 @@ package org.usfirst.frc.team449.robot._2020.feeder.commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.usfirst.frc.team449.robot._2020.feeder.FeederCounting;
-import org.usfirst.frc.team449.robot._2020.multiSubsystem.FlywheelSimple;
-import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemFlywheel;
+import org.usfirst.frc.team449.robot._2020.shooter.DualFlywheel;
 
 public class FeederShootingSequence extends SequentialCommandGroup {
 
-    FlywheelSimple flywheel;
+    DualFlywheel flywheel;
     FeederCounting feeder;
 
-    public FeederShootingSequence(FeederCounting feeder, FlywheelSimple flywheel) {
+    public FeederShootingSequence(FeederCounting feeder, DualFlywheel flywheel) {
         this.feeder = feeder;
         this.flywheel = flywheel;
         addRequirements(feeder);
@@ -22,7 +21,7 @@ public class FeederShootingSequence extends SequentialCommandGroup {
 
     @Override
     public boolean isFinished() {
-        return flywheel.getFlywheelState() == SubsystemFlywheel.FlywheelState.OFF;
+        return flywheel.getCurrentState() == DualFlywheel.DualFlywheelState.NEUTRAL;
     }
 
 }

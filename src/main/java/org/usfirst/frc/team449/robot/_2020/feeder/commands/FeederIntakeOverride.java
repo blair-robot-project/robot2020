@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.usfirst.frc.team449.robot._2020.feeder.FeederCounting;
+import org.usfirst.frc.team449.robot._2020.intake.IntakeDeployed;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 
@@ -13,11 +14,12 @@ import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 public class FeederIntakeOverride extends CommandBase {
 
     FeederCounting feeder;
-    IntakeSimple intake;
+    IntakeDeployed intake;
 
     @JsonCreator
-    public FeederIntakeOverride(@JsonProperty(required = true) FeederCounting feeder, IntakeSimple intake) {
+    public FeederIntakeOverride(@JsonProperty(required = true) FeederCounting feeder, IntakeDeployed intake) {
         this.feeder = feeder;
+        this.intake = intake;
         addRequirements(feeder);
     }
 
@@ -32,7 +34,7 @@ public class FeederIntakeOverride extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return intake.getMode() == SubsystemIntake.IntakeMode.OFF;
+        return intake.getCurrentState() != IntakeDeployed.IntakeState.FORWARD;
     }
 
 }

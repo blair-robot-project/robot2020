@@ -1,13 +1,15 @@
 package org.usfirst.frc.team449.robot._2020.feeder.commands;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.usfirst.frc.team449.robot._2020.feeder.FeederCounting;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.CLASS,
+        include = JsonTypeInfo.As.WRAPPER_OBJECT,
+        property = "@class")
 public class SetFeederState extends InstantCommand {
 
     FeederCounting feeder;
