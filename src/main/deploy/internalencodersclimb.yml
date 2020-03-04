@@ -49,6 +49,8 @@ CONSTANTS:
       - &climberWinchButtonNumber 8
   - Other:
       - &winchSpeed 1.0
+      - &winchSpeed_reversed -1.0
+      - &climberWinchButtonNumber_reversed 7
 
 
 # WHETHER TO USE THE CAMERA SERVER
@@ -250,6 +252,40 @@ useCameraServer: false
           subsystem:
             org.usfirst.frc.team449.robot._2020.climber.UnsafeWinchingClimber:
               climber
+      action: WHEN_RELEASED
+
+    ## TEST COMMANDS
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': climberWinchButton_reversed_press
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *climberWinchButtonNumber_reversed
+      command:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
+          '@id': climberWinchCommand_reversed_press
+          subsystem:
+            org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
+              '@id': climberMotorReversed
+              speed: *winchSpeed_reversed
+              motor:
+                org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
+                  climberMotor
+      action: WHEN_PRESSED
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': climberWinchButton_reversed_release
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              mechanismsJoystick
+          buttonNumber: *climberWinchButtonNumber_reversed
+      command:
+        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOff:
+          '@id': climberWinchCommand_reversed_release
+          subsystem:
+            org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
+              climberMotorReversed
       action: WHEN_RELEASED
 
   ########################################################################################################################
