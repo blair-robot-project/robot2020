@@ -50,8 +50,7 @@ public class Robot extends TimedRobot {
   @NotNull
   public static final String RESOURCES_PATH = RobotBase.isReal() ? RESOURCES_PATH_REAL : RESOURCES_PATH_SIMULATED;
   /**
-   * The object constructed directly from the yaml map.
-   * Format for the reference chain (place in the map where the error occured) when a map error is
+   * Format for the reference chain (place in the map where the error occurred) when a map error is
    * printed.
    */
   private static final MapErrorFormat MAP_REF_CHAIN_FORMAT = MapErrorFormat.TABLE;
@@ -100,8 +99,8 @@ public class Robot extends TimedRobot {
   /**
    * Whether robot code is being unit tested. Note that this is NOT the same as test mode.
    *
-   * <p>The return value will never change observably. {@link Robot#notifyTesting()} will thus throw
-   * an exception if it is called after the first time that this method is called.
+   * <p>The return value will never change observably. {@link Robot#notifyTesting()} will thus
+   * throw an exception if it is called after the first time that this method is called.
    *
    * @return whether the current run is a unit test
    */
@@ -115,7 +114,7 @@ public class Robot extends TimedRobot {
    *
    * @throws UnsupportedOperationException if the robot is not running in a simulation
    * @throws IllegalStateException if {@link Robot#isUnitTesting()} has already been called before
-   *     this method is called
+   * this method is called
    */
   public static void notifyTesting() throws UnsupportedOperationException, IllegalStateException {
     if (RobotBase.isReal())

@@ -67,21 +67,23 @@ CONSTANTS:
       - &shooterStartButtonNumber 3
       - &shooterStopThrottle 3
       - &intakePistonToggleButtonNumber 9
-      - &feederCoughButtonNumber 10
+      - &feederCoughButtonNumber 10 #TODO Should coughing be an actual back-and-forth motion?
   - MotorSpeeds:
       - &intakeBumperIntakingVel 1
       - &intakeTransitionWheelIntakingVel 0.3
-      - &feederIntakingVel 0.3
-      - &feederShootingVel 0.5 # TODO Was at 0.65, but apparently that's less reliable than 0.35.
+      - &feederIntakingVel 0.35
+      - &feederShootingVel 0.35 # TODO Was at 0.65, but apparently that's less reliable than 0.35.
       - &feederCoughingVel -0.4
       - &intakeTransitionWheelCoughingVel -0.1
       - &shooterMaxSpeed 90.5
-      - &shooterThrottle 0.43
-      - &shooterMinShootingSpeed 38
+      - &shooterThrottle 0.50
+      - &shooterErrorType maxAbsSpeedError
+      - &shooterMaxSpeedError 1.25 # To match the original min shooting speed of 44
+      - &shooterMaxSpeedDifferenceType maxRelSpeedRange
       - &shooterMaxShootingSpeedDifference 0.5
       - &kickerThrottle -0.7
   - Other:
-      - &feederIndexingTimeoutSecs 1
+      - &feederIndexingTimeoutSecs 0.3
       - &flywheelSpinUpTimeoutSecs 4
       - &flywheelKP 0.00001
 
@@ -126,7 +128,7 @@ useCameraServer: false
               gear: LOW
               postEncoderGearing: 0.0488998
               maxSpeed: 2.3
-              kP: 0
+              kP: 0.03
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                   kS: 0.128
@@ -136,7 +138,7 @@ useCameraServer: false
               gear: HIGH
               postEncoderGearing: 0.12936611
               maxSpeed: 5.2
-              kP: 0
+              kP: 0.03
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                   kS: 0.156
@@ -260,14 +262,13 @@ useCameraServer: false
   - *SHOOTER_SUBSYSTEM
   - org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
       '@id': shooterFlywheels
-      maximumSpeedRange: *shooterMaxShootingSpeedDifference
+      *shooterMaxSpeedDifferenceType: *shooterMaxShootingSpeedDifference
       flywheels:
         - org.usfirst.frc.team449.robot._2020.shooter.FlywheelSimple:
             '@id': shooterFlywheelLeft
-            shooterThrottle: *shooterThrottle
             spinUpTimeoutSecs: *flywheelSpinUpTimeoutSecs
-            minShootingSpeed: *shooterMinShootingSpeed
-            shooterMotor:
+            *shooterErrorType: *shooterMaxSpeedError
+            motor:
               org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
                 &Shooter_Right_Motor
                 '@id': shooterRightMotor
@@ -281,7 +282,6 @@ useCameraServer: false
                 enableVoltageComp: true
                 perGearSettings:
                   - gearNum: 0
-                    maxSpeed: *shooterMaxSpeed
                     rampRate: 10
                     kP: *flywheelKP
                     feedForwardCalculator:
@@ -291,10 +291,9 @@ useCameraServer: false
                         kA: 0.0284
         - org.usfirst.frc.team449.robot._2020.shooter.FlywheelSimple:
             '@id': shooterFlywheelRight
-            shooterThrottle: *shooterThrottle
             spinUpTimeoutSecs: *flywheelSpinUpTimeoutSecs
-            minShootingSpeed: *shooterMinShootingSpeed
-            shooterMotor:
+            *shooterErrorType: *shooterMaxSpeedError
+            motor:
               org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
                 <<: *Shooter_Right_Motor
                 '@id': shooterLeftMotor
@@ -304,7 +303,6 @@ useCameraServer: false
                 reverseOutput: false
                 perGearSettings:
                   - gearNum: 0
-                    maxSpeed: *shooterMaxSpeed
                     rampRate: 10
                     kP: *flywheelKP
                     feedForwardCalculator:
@@ -503,19 +501,21 @@ useCameraServer: false
           '@id': spinUpFlywheelCommandSequence
           commands:
             - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
-                &Spin_Up_Flywheel_Command
-                '@id': spinUpFlywheelCommand_initial
+                '@id': spinUpFlywheelCommand
+                targetSpeed: *shooterThrottle
                 flywheel:
                   org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
                     shooterFlywheels
                 feeder:
                   org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
                     feeder
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
+                '@id': kickerStartCommand
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
+                    kicker
             - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.ConditionalPerpetualCommandChangeBased:
-                '@id': startShootingOrSpinUpFlywheelCommmand
-                requiredSubsystems:
-                  - org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
-                      shooterFlywheels
+                '@id': startStopFeeder
                 booleanSupplier:
                   org.usfirst.frc.team449.robot._2020.multiSubsystem.BooleanSupplierUpdatable:
                     source:
@@ -525,23 +525,21 @@ useCameraServer: false
                             shooterFlywheels
                         useCached: true
                 afterBecomingFalse:
-                  org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
-                    <<: *Spin_Up_Flywheel_Command
-                    '@id': spinUpFlywheelCommand_whenNotReadyToShoot
+                  edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+                    '@id': stopShootingCommandSequence
+                    commands:
+                      - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                          '@id': feederStopCommand_shooting
+                          subsystem:
+                            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                              feeder
+                          mode: "OFF"
+                      - edu.wpi.first.wpilibj2.command.PrintCommand:
+                          NOT SHOOTING
                 afterBecomingTrue:
                   edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
                     '@id': startShootingCommandSequence
                     commands:
-                      - org.usfirst.frc.team449.robot._2020.shooter.commands.TurnAllOn:
-                          '@id': setFlywheelShootingCommand
-                          subsystem:
-                            org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
-                              shooterFlywheels
-                      - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
-                          '@id': kickerStartCommand
-                          subsystem:
-                            org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
-                              kicker
                       - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
                           '@id': feederStartCommand_shooting
                           subsystem:

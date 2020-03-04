@@ -8,15 +8,15 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
+import org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple;
+import org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemSolenoid;
 
 /**
  * A decorator to make an intake that goes up and down with a piston.
  *
- * @deprecated Use a separate {@link
- *     org.usfirst.frc.team449.robot._2020.multiSubsystem.SolenoidSimple} and {@link
- *     org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple} instead.
+ * @deprecated Use separate instances of {@link IntakeSimple} and {@link SolenoidSimple} instead.
  */
 @Deprecated(forRemoval = true)
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

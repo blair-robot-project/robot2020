@@ -20,98 +20,109 @@ import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemConditional;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class FlywheelCluster extends SubsystemBase implements SubsystemFlywheel, Loggable {
   @NotNull private final List<SubsystemFlywheel> flywheels;
-  @Nullable private final Double maximumSpeedRange;
-  @NotNull @Log.ToString private FlywheelState state = FlywheelState.OFF;
+  @Nullable private final Double maxAbsSpeedRange;
+  @Nullable private final Double maxRelSpeedRange;
+  @Log private double targetSpeed;
   private boolean conditionMetCached;
 
   /**
    * @param flywheels the flywheels that make up this cluster
-   * @param maximumSpeedRange threshold of range of speeds within cluster for readiness to shoot;
-   *     {@code null} to not impose such a requirement
+   * @param maxAbsSpeedRange max range of speeds of flywheels in cluster (in the units of {@link
+   * SubsystemFlywheel#getSpeed()}) at which the cluster is ready to shoot; {@code null} to not
+   * impose such a requirement
+   * @param maxRelSpeedRange Similar to {@code maxAbsSpeedRange}, but specified as a fraction of the
+   * mean speed. At most one of these two argumrelatients can be non-null.
    */
   @JsonCreator
   public FlywheelCluster(
       @NotNull @JsonProperty(required = true) final SubsystemFlywheel[] flywheels,
-      @Nullable final Double maximumSpeedRange) {
+      @Nullable final Double maxAbsSpeedRange,
+      @Nullable final Double maxRelSpeedRange) {
+
+    if (maxAbsSpeedRange != null && maxRelSpeedRange != null)
+      throw new IllegalArgumentException("Can't specify both absolute and relative max speed range.");
+
     this.flywheels = List.of(flywheels);
-    this.maximumSpeedRange = maximumSpeedRange;
+    this.maxAbsSpeedRange = maxAbsSpeedRange;
+    this.maxRelSpeedRange = maxRelSpeedRange;
   }
 
   /** Turn on each flywheel in the cluster to the speed passed to the constructor. */
   @Override
-  public void turnFlywheelOn() {
-    this.flywheels.forEach(SubsystemFlywheel::turnFlywheelOn);
+  public void turnFlywheelOn(final double speed) {
+    this.targetSpeed = speed;
+
+    this.flywheels.forEach(x -> x.turnFlywheelOn(speed));
   }
 
   /** Turn each flywheel in the cluster off. */
   @Override
   public void turnFlywheelOff() {
+    this.targetSpeed = Double.NaN;
+
     this.flywheels.forEach(SubsystemFlywheel::turnFlywheelOff);
   }
 
-  /** @return The current state of the cluster. */
-  @Override
-  public @NotNull FlywheelState getFlywheelState() {
-    return this.state;
-  }
-
-  /** @param state The state to switch the cluster to. */
-  @Override
-  public void setFlywheelState(@NotNull final FlywheelState state) {
-    this.state = state;
-    this.flywheels.forEach(x -> x.setFlywheelState(state));
-  }
+//  /** @return The current state of the cluster. */
+//  @Override
+//  public @NotNull FlywheelState getFlywheelState() {
+//    return this.state;
+//  }
+//
+//  /** @param state The state to switch the cluster to. */
+//  @Override
+//  public void setFlywheelState(@NotNull final FlywheelState state) {
+//    this.state = state;
+//    this.flywheels.forEach(x -> x.setFlywheelState(state));
+//  }
 
   /** @return Longest spin-up time of any flywheel in the cluster. */
   @Override
   public double getSpinUpTimeSecs() {
-    //noinspection OptionalGetWithoutIsPresent
     return this.flywheels.stream()
         .mapToDouble(SubsystemFlywheel::getSpinUpTimeSecs)
         .max()
-        .getAsDouble();
+        .orElse(0);
   }
 
   /**
    * @return Whether all flywheels in the cluster individually are ready to shoot and the speed
-   *     range requirement of the cluster, if active, is met.
+   * range requirement of the cluster, if active, is met.
    */
   @Override
   @Log
   public boolean isReadyToShoot() {
     if (!this.flywheels.stream().allMatch(SubsystemFlywheel::isReadyToShoot)) return false;
-    return speedRangeRequirementMet();
+    return this.speedRangeRequirementMet();
   }
 
   @Log
   public boolean speedRangeRequirementMet() {
-    if (this.maximumSpeedRange == null) return true;
+    if (this.maxRelSpeedRange == null && this.maxAbsSpeedRange == null) return true;
 
-    double max = Double.NEGATIVE_INFINITY, min = Double.POSITIVE_INFINITY;
+    double max = Double.NEGATIVE_INFINITY;
+    double min = Double.POSITIVE_INFINITY;
+    double sum = 0;
+    int count = 0;
 
     for (final SubsystemFlywheel flywheel : this.flywheels) {
       final Optional<Double> speed = flywheel.getSpeed();
       if (speed.isPresent()) {
         final double value = speed.get();
+        count++;
+        sum += value;
         if (value > max) max = value;
         if (value < min) min = value;
       }
     }
 
-    return max - min <= this.maximumSpeedRange;
-  }
-
-  /** @return true if the condition is met, false otherwise */
-  @Override
-  public boolean isConditionTrue() {
-    return this.isReadyToShoot();
-  }
-
-  /** @return true if the condition was met when cached, false otherwise */
-  @Override
-  @Log
-  public boolean isConditionTrueCached() {
-    return this.conditionMetCached;
+    final double speedRange = max - min;
+    if (this.maxAbsSpeedRange != null) {
+      return speedRange <= this.maxAbsSpeedRange;
+    } else {
+      final double averageSpeed = sum / count;
+      return speedRange / averageSpeed <= this.maxRelSpeedRange;
+    }
   }
 
   /**
@@ -121,7 +132,8 @@ public class FlywheelCluster extends SubsystemBase implements SubsystemFlywheel,
    */
   @Override
   public @NotNull Optional<Double> getSpeed() {
-    double sum = 0, count = 0;
+    double sum = 0;
+    int count = 0;
     for (final SubsystemFlywheel flywheel : this.flywheels) {
       final Optional<Double> speed = flywheel.getSpeed();
       if (speed.isPresent()) {
@@ -132,8 +144,17 @@ public class FlywheelCluster extends SubsystemBase implements SubsystemFlywheel,
     return Optional.of(sum / count);
   }
 
+  @Override
+  public boolean isConditionTrue() {
+    return this.isReadyToShoot();
+  }
 
-  /** Updates all cached values with current ones. */
+  @Override
+  @Log
+  public boolean isConditionTrueCached() {
+    return this.conditionMetCached;
+  }
+
   @Override
   public void update() {
     this.flywheels.forEach(SubsystemConditional::update);
