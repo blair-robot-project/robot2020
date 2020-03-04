@@ -61,6 +61,12 @@ public class RamseteControllerGoToPosition extends CommandBase implements Loggab
             .addConstraint(drivetrain.getVoltageConstraint())
             .setReversed(reversed);
 
+    trajectory = TrajectoryGenerator.generateTrajectory(
+            drivetrain.getCurrentPose(),
+            translations == null ? new ArrayList<>() : translations,
+            endingPose,
+            config);
+
     addRequirements(drivetrain);
   }
 
@@ -71,7 +77,6 @@ public class RamseteControllerGoToPosition extends CommandBase implements Loggab
             translations == null ? new ArrayList<>() : translations,
             endingPose,
             config);
-
     wrappedCommand =
         new RamseteCommand(trajectory,
             drivetrain::getCurrentPose,

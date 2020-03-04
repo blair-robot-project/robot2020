@@ -21,6 +21,8 @@ NAVIGATION:
       - &DEFAULT_COMMANDS defaultCommands:
           - &DRIVE_DEFAULT_COMMAND
           - &FEEDER_DEFAULT_COMMAND
+      - &AUTO_COMMANDS autoStartupCommand:
+          - &TRAJ_TEST_COMMAND
   - &UPDATER updater
 
 # Anchors for transclusion into the rest of the map.
@@ -230,7 +232,7 @@ useCameraServer: false
           '@id': feederMotor
           type: SPARK
           port: *feederMotorPort
-          name: feederMotor
+          name: feederMainMotor
           reverseOutput: false
           enableBrakeMode: false
           PDP: PDP
@@ -241,7 +243,7 @@ useCameraServer: false
           '@id': bumperTransition
           type: SPARK
           port: *feederTransitionWheelMotorPort
-          name: feederMotor
+          name: feederTransitionMotor
           reverseOutput: false
           enableBrakeMode: false
           PDP: PDP
@@ -622,6 +624,53 @@ useCameraServer: false
           intake:
             org.usfirst.frc.team449.robot._2020.intake.IntakeDeployed:
               intakeBumper
+
+  *AUTO_COMMANDS:
+    - *TRAJ_TEST_COMMAND
+    - org.usfirst.frc.team449.robot.auto.AutonomousRoutine:
+        '@id': "trajsettest"
+        commandList:
+          - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
+              &driveconfig
+              drivetrain:
+                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                  drive
+              leftPidController:
+                org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+                  Kp: 5
+                  name: "left"
+              rightPidController:
+                org.usfirst.frc.team449.robot.jacksonWrappers.MappedPIDController:
+                  Kp: 5
+                  name: "right"
+              maxSpeedMeters: 1.5
+              maxAccelMeters: 1
+              maxCentripetalAcceleration: 1
+              endingPose:
+                translation:
+                  x: 2
+                  y: -1
+                rotation:
+                  radians: -1.571
+              reversed: false
+          - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
+              <<: *driveconfig
+              endingPose:
+                translation:
+                  x: 2.5
+                  y: -0.5
+                rotation:
+                  radians: -3.14
+              reversed: true
+          - org.usfirst.frc.team449.robot.drive.unidirectional.commands.motionprofiling.RamseteControllerGoToPosition:
+              <<: *driveconfig
+              endingPose:
+                translation:
+                  x: 0
+                  y: -1
+                rotation:
+                  radians: -3.14
+              reversed: false
 
 ########################################################################################################################
 *UPDATER:
