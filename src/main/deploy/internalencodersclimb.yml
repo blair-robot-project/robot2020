@@ -47,6 +47,8 @@ CONSTANTS:
       - &climberLowerButtonNumber 5
       - &climberRaiseButtonNumber 6
       - &climberWinchButtonNumber 8
+  - Other:
+      - &winchSpeed 1.0
 
 
 # WHETHER TO USE THE CAMERA SERVER
@@ -168,7 +170,7 @@ useCameraServer: false
       motorSubsystem:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
           '@id': climberMotorSubsystem
-          speed: 1.0
+          speed: *winchSpeed
           motor:
             org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
               '@id': climberMotor
