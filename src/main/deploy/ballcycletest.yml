@@ -80,13 +80,13 @@ CONSTANTS:
       - &feederCoughingVel -0.4
       - &intakeTransitionWheelCoughingVel -0.1
       - &shooterMaxSpeed 90.5 # Unused.
-      - &shooterThrottleFar 45.25 # 0.5 * 90.5
-      - &shooterThrottleMid 20
-      - &shooterThrottleClose 10
+      - &shooterSpeedFar 45.25 # 0.5 * 90.5
+      - &shooterSpeedMid 41.36
+      - &shooterSpeedClose 10
       - &shooterErrorType maxAbsSpeedError
-      - &shooterMaxSpeedError 1.25 # (45.25 - 44) / 90.5
-      - &shooterMaxSpeedDifferenceType maxRelSpeedRange
-      - &shooterMaxShootingSpeedDifference 0.5
+      - &shooterMaxSpeedError 1 # In RPS.
+      - &shooterMaxSpeedDifferenceType maxAbsSpeedRange
+      - &shooterMaxShootingSpeedDifference 0.5 # In RPS.
       - &kickerThrottle -0.7
   - Other:
       - &feederIndexingTimeoutSecs 0.3
@@ -639,7 +639,7 @@ useCameraServer: false
           commands:
             - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
                 '@id': spinUpFlywheelCommand_far
-                targetSpeed: *shooterThrottleFar
+                targetSpeed: *shooterSpeedFar
                 flywheel:
                   org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
                     shooterFlywheels
@@ -663,7 +663,7 @@ useCameraServer: false
           commands:
             - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
                 '@id': spinUpFlywheelCommand_mid
-                targetSpeed: *shooterThrottleMid
+                targetSpeed: *shooterSpeedMid
                 flywheel:
                   org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
                     shooterFlywheels
@@ -687,7 +687,7 @@ useCameraServer: false
           commands:
             - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
                 '@id': spinUpFlywheelCommand_close
-                targetSpeed: *shooterThrottleClose
+                targetSpeed: *shooterSpeedClose
                 flywheel:
                   org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
                     shooterFlywheels
