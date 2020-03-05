@@ -20,17 +20,14 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
   @NotNull private final SubsystemIntake.IntakeMode runMode;
   @NotNull private final ConditionTimingComponentDecorator shouldBeRunning;
   @Log.Exclude  // TODO Figure out why this is necessary to prevent logging duplicate members
-  @NotNull private final ConditionTimingComponentDecorator sensor1;
-  @Log.Exclude
-  @NotNull private final ConditionTimingComponentDecorator sensor2;
+  @NotNull private final ConditionTimingComponentDecorator sensor;
   private final double timeout;
 
   /**
    * Default constructor
    *
    * @param subsystem the feeder subsystem to operate on
-   * @param sensor1 the first sensor of the transition from intake to feeder
-   * @param sensor2 the second sensor of the transition from intake to feeder
+   * @param sensor the first sensor of the transition from intake to feeder
    * @param runMode the {@link org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake.IntakeMode}
    * to run the feeder at when
    * @param timeout maximum duration for which to keep running the feeder if the sensors remain
@@ -39,14 +36,12 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
   @JsonCreator
   public DefaultFeederCommand(
       @NotNull @JsonProperty(required = true) final SubsystemIntake subsystem,
-      @NotNull @JsonProperty(required = true) final BooleanSupplier sensor1,
-      @NotNull @JsonProperty(required = true) final BooleanSupplier sensor2,
+      @NotNull @JsonProperty(required = true) final BooleanSupplier sensor,
       @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode runMode,
       @Deprecated final double timeout) {
     this.feeder = subsystem;
     this.shouldBeRunning = new ConditionTimingComponentDecorator(this::shouldBeRunning, false);
-    this.sensor1 = new ConditionTimingComponentDecorator(sensor1, false);
-    this.sensor2 = new ConditionTimingComponentDecorator(sensor2, false);
+    this.sensor = new ConditionTimingComponentDecorator(sensor, false);
     this.runMode = runMode;
     this.timeout = timeout;
   }
@@ -55,8 +50,7 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
   public void execute() {
     final double currentTime = Clock.currentTimeSeconds();
 
-    this.sensor1.update(currentTime);
-    this.sensor2.update(currentTime);
+    this.sensor.update(currentTime);
 
     this.shouldBeRunning.update(currentTime);
     if (this.shouldBeRunning.justBecameTrue()) this.feeder.setMode(this.runMode);
@@ -67,11 +61,11 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
     // Give up if it's been long enough after either sensor last activated and there's still something
     // activating one of them. This specifically will continue giving up even if one of the sensors
     // deactivates but the other still surpasses the timeout.
-    if (Math.min(this.sensor1.timeSinceLastBecameTrue(), this.sensor2.timeSinceLastBecameTrue()) > this.timeout) {
+    if (this.sensor.timeSinceLastBecameTrue() > this.timeout) {
       return false;
     }
 
     // Run when either sensor is being actively tripped.
-    return this.sensor1.isTrue() || this.sensor2.isTrue();
+    return this.sensor.isTrue();
   }
 }

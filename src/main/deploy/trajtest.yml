@@ -25,10 +25,10 @@ CONSTANTS:
   - MotorPorts:
       # Spinnyboiz
       - &leftMasterPort 1
-      - &leftMasterSlave1Port 2
-      - &leftMasterSlave2Port 3
-      - &rightMasterPort 4
-      - &rightMasterSlave1Port 12
+      - &leftMasterSlave1Port 3
+      - &leftMasterSlave2Port 5
+      - &rightMasterPort 2
+      - &rightMasterSlave1Port 4
       - &rightMasterSlave2Port 6
   - JoystickPorts:
       - &driveJoystickPort 1
@@ -58,85 +58,80 @@ useCameraServer: false
         org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
           &Left_Master
           '@id': leftMaster
-          type: TALON
+          type: SPARK
           name: left
           port: *leftMasterPort
           PDP:
             org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
-          voltagePerCurrentLinReg:
-            bufferSize: 250
-            rSquaredThreshhold: 0.75
           reverseOutput: true
-          reverseSensor: false
           enableBrakeMode: true
-          postEncoderGearing: 0.13333333333
-          unitPerRotation: 0.4787787 #meters per rotation
-          currentLimit: 35
+          #          postEncoderGearing: 0.13333333333
+          unitPerRotation: 0.47877872 #meters per rotation
+          currentLimit: 50
           enableVoltageComp: true
-          feedbackDevice: QuadEncoder
           encoderCPR: 256
           startingGear: LOW
           perGearSettings:
             - &Low_Gear
               gear: LOW
-              maxSpeed: 2.2
-              kP: 0.2
+              postEncoderGearing: 0.0488998
+              maxSpeed: 2.3
+              kP: 0
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 1.2
-                  kV: 4.59
-                  kA: 0.599
+                  kS: 0.128
+                  kV: 5.23
+                  kA: 0.0698
             - &High_Gear
               gear: HIGH
-              maxSpeed: 5
-              kP: 0.6
+              postEncoderGearing: 0.12936611
+              maxSpeed: 5.2
+              kP: 0
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  #these constants need to be redone
-                  kS: 1.11
-                  kV: 2.04
-                  kA: 0.637
-          updaterProcessPeriodSecs: 0.005
-          statusFrameRatesMillis: !!map
-            Status_4_AinTempVbat: 15
-          slaveVictors:
+                  kS: 0.156
+                  kV: 2.01
+                  kA: 0.154
+          slaveSparks:
             - port: *leftMasterSlave1Port
-              invertType: FollowMaster
+              inverted: false
             - port: *leftMasterSlave2Port
-              invertType: FollowMaster
+              inverted: false
       rightMaster:
         org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
           <<: *Left_Master
           '@id': rightMaster
+          type: SPARK
           name: right
           port: *rightMasterPort
           reverseOutput: false
-          reverseSensor: false
           perGearSettings:
             - <<: *Low_Gear
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 1.21
-                  kV: 4.68
-                  kA: 0.708
+                  kS: 0.139
+                  kV: 5.17
+                  kA: 0.0554
             - <<: *High_Gear
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
-                  kS: 1.15
-                  kV: 2.05
-                  kA: 0.788
-          slaveVictors:
+                  kS: 0.165
+                  kV: 2.01
+                  kA: 0.155
+          slaveSparks:
             - port: *rightMasterSlave1Port
-              #inverted: false
+              PDP: PDP
+              inverted: false
             - port: *rightMasterSlave2Port
-              #inverted: false
+              PDP: PDP
+              inverted: false
       startingOverrideAutoshift: false
       ahrs:
         org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS:
           '@id': navX
           port: kMXP
           invertYaw: true
-      trackWidthMeters: 0.646523339274361
+      trackWidthMeters: 0.61755
       shiftComponent:
         org.usfirst.frc.team449.robot.components.ShiftComponent:
           '@id': driveShiftComponent
@@ -148,8 +143,8 @@ useCameraServer: false
           piston:
             '@id': driveShifter
             module: 0
-            forward: 1
-            reverse: 0
+            forward: 0
+            reverse: 1
           startingGear: LOW
 
   #***********************************************************************************************************************
@@ -266,32 +261,18 @@ useCameraServer: false
               port: *mechanismsJoystickPort
           buttonNumber: 1 #shoulder right
       command:
-        org.usfirst.frc.team449.robot.generalInterfaces.limelight.commands.ScanThenTurn:
-          '@id': scanThenTurnCommand
-          scannerPipe: 1
-          turnCommand:
-            org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleLimelight:
-              '@id': turnToAngleCommand
-              absoluteTolerance: 3
-              kP: .01
-              drive:
-                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-                  drive
-              timeout: 100
-              limelight:
-                org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
-                  '@id': limelight
-                  driverPipeline: 1
-          driverPipe: 0
-#        org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleRelative:
-#          '@id': turnToAngleCommand
-#          absoluteTolerance: 3
-#          kP: 0.01
-#          drive:
-#            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-#              drive
-#          timeout: 100
-#          setpoint: 40
+        org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleLimelight:
+          '@id': turnToAngleCommand
+          absoluteTolerance: 3
+          kP: .001
+          drive:
+            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+              drive
+          timeout: 100
+          limelight:
+            org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight:
+              '@id': limelight
+              driverPipeline: 0
       action: WHEN_PRESSED
 
   *AUTO_COMMANDS:

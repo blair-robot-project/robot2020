@@ -51,7 +51,6 @@ CONSTANTS:
       - &leftMasterEncoder1Port 2
       - &leftMasterEncoder2Port 3
       - &feederSensor1Port 8
-      - &feederSensor2Port 9
   - JoystickPorts:
       - &mechanismsJoystickPort 0
       - &driveJoystickPort 1
@@ -854,14 +853,10 @@ useCameraServer: false
                               feeder
                           - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
                               intakeTransitionWheel
-                    sensor1:
+                    sensor:
                       org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
                         '@id': feederSensor1
                         channel: *feederSensor1Port
-                    sensor2:
-                      org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-                        '@id': feederSensor2
-                        channel: *feederSensor2Port
                 - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.ConditionalPerpetualCommandChangeBased:
                     '@id': startStopFeeder
                     booleanSupplier:
