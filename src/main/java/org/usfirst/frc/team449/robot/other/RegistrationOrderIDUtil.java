@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Associates object instances ID based on order of registration.
  *
- * @implNote ID increments by {@code 1} beginning at {@code 1}.
+ * @implNote ID begins at {@code 1} and increments by {@code 1}.
  */
 public final class RegistrationOrderIDUtil {
   private RegistrationOrderIDUtil() { throw new AssertionError("Utility class."); }
@@ -33,14 +33,16 @@ public final class RegistrationOrderIDUtil {
   /**
    * Gets the ID associated with the specified object.
    *
-   * @param instance the object instance to register
+   * @param instance the object instance to retrieve the ID of
    * @return the ID associated with the object
    *
    * @throws IllegalStateException if the specified object has never been registered
    */
   public static int getExistingID(final Object instance) throws IllegalStateException {
     final Integer result = IDs.get(instance);
-    if (result == null) { throw new IllegalStateException("Specified object not registered.");}
+    if (result == null) {
+      throw new IllegalStateException("Specified object not registered.");
+    }
     return result;
   }
 }
