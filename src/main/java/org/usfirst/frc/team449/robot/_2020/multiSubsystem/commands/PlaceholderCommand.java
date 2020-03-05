@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Set;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * A command that does nothing when run. Used if a command is required somewhere but no side effects
@@ -12,7 +13,8 @@ import java.util.Set;
  * <p>For a command that prints something to the console every time that it is run, use {@link
  * edu.wpi.first.wpilibj2.command.PrintCommand}
  */
-public class PlaceholderCommand implements Command {
+@Immutable
+public final class PlaceholderCommand implements Command {
   /** The singleton instance. */
   private static final PlaceholderCommand instance = new PlaceholderCommand();
 
@@ -58,5 +60,10 @@ public class PlaceholderCommand implements Command {
   @Override
   public boolean equals(final Object obj) {
     return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }
