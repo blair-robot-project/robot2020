@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import io.github.oblarg.oblog.annotations.Log;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -17,9 +19,9 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
 /** The Jackson-compatible object representing the entire robot. */
 @JsonIgnoreProperties({"CONSTANTS", "NAVIGATION"})
 public class RobotMap {
-  @NotNull private final List<Subsystem> subsystems;
+  @NotNull @Log.Include private final List<Subsystem> subsystems;
 
-  @NotNull private final MotorContainer motors = MotorContainer.getInstance();
+  @NotNull @Log.Include private final MotorContainer motors = MotorContainer.getInstance();
 
   //    /**
   //     * The logger for recording events and telemetry data.
@@ -32,7 +34,7 @@ public class RobotMap {
 
   @NotNull private final CommandContainer commands;
 
-  @NotNull private final PDP pdp;
+  @NotNull @Log.Include private final PDP pdp;
 
   /** Whether the camera server should be run. */
   private final boolean useCameraServer;
@@ -57,52 +59,31 @@ public class RobotMap {
     this.updater = updater;
     this.pdp = pdp;
     this.useCameraServer = useCameraServer;
-    this.subsystems = subsystems;
+    this.subsystems = Collections.unmodifiableList(subsystems);
     this.commands = commands;
-
   }
 
-  //    /**
-  //     * @return The logger for recording events and telemetry data.
-  //     */
-  //    @NotNull
-  //    public Logger getLogger() {
-  //        return logger;
-  //    }
-
   /** @return The commands to be run when first enabled in autonomous mode. */
-  @Nullable
+  @NotNull
   public Iterator<Command> getAutoStartupCommands() {
-    if (this.commands.getAutoStartupCommand() == null) {
-      return null;
-    }
-    return this.commands.getAutoStartupCommand().iterator();
+    return this.commands.getAutoStartupCommands();
   }
 
   /** @return The commands to be run when first enabled in teleoperated mode. */
-  @Nullable
+  @NotNull
   public Iterator<Command> getTeleopStartupCommands() {
-    if (this.commands.getTeleopStartupCommand() == null) {
-      return null;
-    }
-    return this.commands.getTeleopStartupCommand().iterator();
+    return this.commands.getTeleopStartupCommands();
   }
 
-  @Nullable
+  @NotNull
   public Iterator<Command> getTestStartupCommands() {
-    if (this.commands.getTestStartupCommand() == null) {
-      return null;
-    }
-    return this.commands.getTestStartupCommand().iterator();
+    return this.commands.getTestStartupCommands();
   }
 
   /** @return The commands to be run when first enabled. */
-  @Nullable
+  @NotNull
   public Iterator<Command> getRobotStartupCommands() {
-    if (this.commands.getRobotStartupCommand() == null) {
-      return null;
-    }
-    return this.commands.getRobotStartupCommand().iterator();
+    return this.commands.getRobotStartupCommands();
   }
 
   /** @return A runnable that updates cached variables. */

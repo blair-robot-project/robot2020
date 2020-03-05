@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  * @implNote ID begins at {@code 1} and increments by {@code 1}.
  */
 public final class RegistrationOrderIDUtil {
-  private RegistrationOrderIDUtil() { throw new AssertionError("Utility class."); }
+  private RegistrationOrderIDUtil() { Util.throwFromUtilityClassConstructor(); }
 
   private static int CURRENT_ID = 0;
   @NotNull private static final IdentityHashMap<Object, Integer> IDs = new IdentityHashMap<>();

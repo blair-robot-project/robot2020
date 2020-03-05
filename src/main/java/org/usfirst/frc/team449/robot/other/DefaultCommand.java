@@ -25,6 +25,7 @@ public class DefaultCommand implements Loggable {
   public DefaultCommand(
       @NotNull @JsonProperty(required = true) final Subsystem subsystem,
       @NotNull @JsonProperty(required = true) final Command command) {
+
     // Check if it's an instant command and warn the user if it is
     if (InstantCommand.class.isAssignableFrom(command.getClass())) {
       System.out.println(
@@ -33,7 +34,13 @@ public class DefaultCommand implements Loggable {
       System.out.println("Subsystem: " + subsystem.getClass().toString());
       System.out.println("Command: " + command.getClass().toString());
     }
-    subsystem.setDefaultCommand(command);
+
     this.command = command;
+
+    // Initialize the command so command groups will report accurately whether they are finished in
+    // order to pass the check in edu.wpi.first.wpilibj2.command.CommandScheduler.setDefaultCommand.
+    command.initialize();
+
+    subsystem.setDefaultCommand(command);
   }
 }

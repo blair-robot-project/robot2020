@@ -6,8 +6,11 @@ import com.fasterxml.jackson.annotation.Nulls;
 import edu.wpi.first.wpilibj2.command.Command;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import org.jetbrains.annotations.Nullable;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.oi.buttons.CommandButton;
 import org.usfirst.frc.team449.robot.other.DefaultCommand;
 
@@ -19,45 +22,43 @@ public class CommandContainer implements Loggable {
   @Log.Include private final List<DefaultCommand> defaultCommands;
   @Log.Include private final List<CommandButton> buttons;
 
-  private final List<Command> robotStartupCommand;
-
-  private final List<Command> autoStartupCommand;
-
-  private final List<Command> teleopStartupCommand;
-
-  private final List<Command> testStartupCommand;
+  private final @NotNull List<Command> robotStartupCommand;
+  private final @NotNull List<Command> autoStartupCommand;
+  private final @NotNull List<Command> teleopStartupCommand;
+  private final @NotNull List<Command> testStartupCommand;
 
   @JsonCreator
   public CommandContainer(
-      // TODO Figure out why this doesn't work @JsonInclude(JsonInclude.Include.NON_NULL)
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<DefaultCommand> defaultCommands,
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<CommandButton> buttons,
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> robotStartupCommand,
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> autoStartupCommand,
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> teleopStartupCommand,
-      @Nullable @JsonSetter(contentNulls = Nulls.SKIP) final List<Command> testStartupCommand) {
-    this.defaultCommands = defaultCommands;
-    this.buttons = buttons;
-    this.robotStartupCommand = robotStartupCommand;
-    this.autoStartupCommand = autoStartupCommand;
-    this.teleopStartupCommand = teleopStartupCommand;
-    this.testStartupCommand = testStartupCommand;
+      // TODO Figure out why @JsonInclude(JsonInclude.Include.NON_NULL) doesn't work.
+      @NotNull @JsonSetter(contentNulls = Nulls.SKIP, nulls = Nulls.AS_EMPTY) final List<DefaultCommand> defaultCommands,
+      @NotNull @JsonSetter(contentNulls = Nulls.SKIP, nulls = Nulls.AS_EMPTY) final List<CommandButton> buttons,
+      @NotNull @JsonSetter(contentNulls = Nulls.SKIP, nulls = Nulls.AS_EMPTY) final List<Command> robotStartupCommand,
+      @NotNull @JsonSetter(contentNulls = Nulls.SKIP, nulls = Nulls.AS_EMPTY) final List<Command> autoStartupCommand,
+      @NotNull @JsonSetter(contentNulls = Nulls.SKIP, nulls = Nulls.AS_EMPTY) final List<Command> teleopStartupCommand,
+      @NotNull @JsonSetter(contentNulls = Nulls.SKIP, nulls = Nulls.AS_EMPTY) final List<Command> testStartupCommand) {
+
+    this.defaultCommands = Collections.unmodifiableList(Objects.requireNonNull(defaultCommands));
+    this.buttons = Collections.unmodifiableList(Objects.requireNonNull(buttons));
+    this.robotStartupCommand = Collections.unmodifiableList(Objects.requireNonNull(robotStartupCommand));
+    this.autoStartupCommand = Collections.unmodifiableList(Objects.requireNonNull(autoStartupCommand));
+    this.teleopStartupCommand = Collections.unmodifiableList(Objects.requireNonNull(teleopStartupCommand));
+    this.testStartupCommand = Collections.unmodifiableList(Objects.requireNonNull(testStartupCommand));
   }
 
-  public List<Command> getRobotStartupCommand() {
-    return this.robotStartupCommand;
+  public @NotNull Iterator<Command> getRobotStartupCommands() {
+    return this.robotStartupCommand.iterator();
   }
 
-  public List<Command> getAutoStartupCommand() {
-    return this.autoStartupCommand;
+  public @NotNull Iterator<Command> getAutoStartupCommands() {
+    return this.autoStartupCommand.iterator();
   }
 
-  public List<Command> getTeleopStartupCommand() {
-    return this.teleopStartupCommand;
+  public @NotNull Iterator<Command> getTeleopStartupCommands() {
+    return this.teleopStartupCommand.iterator();
   }
 
-  public List<Command> getTestStartupCommand() {
-    return this.testStartupCommand;
+  public @NotNull Iterator<Command> getTestStartupCommands() {
+    return this.testStartupCommand.iterator();
   }
 
   @Override

@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
   @NotNull public static final String RESOURCES_PATH_SIMULATED = "./src/main/deploy/";
   /** The name of the map to read from. Should be overriden by a subclass to change the name. */
   @NotNull
-  public static final String mapName = "mapSimpleDrive.yml";
+  public static final String mapName = "ballcycletest.yml";
   /**
    * The filepath to the resources folder containing the config files.
    */
@@ -250,9 +250,7 @@ public class Robot extends TimedRobot {
     Shuffleboard.startRecording();
 
     // start systems
-    if (this.robotMap.getRobotStartupCommands() != null) {
-      this.robotMap.getRobotStartupCommands().forEachRemaining(Command::schedule);
-    }
+    this.robotMap.getRobotStartupCommands().forEachRemaining(Command::schedule);
   }
 
   @Override
@@ -271,32 +269,24 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     // cancel remaining auto commands
-    if (this.robotMap.getAutoStartupCommands() != null) {
-      this.robotMap.getAutoStartupCommands().forEachRemaining(Command::cancel);
-    }
+    this.robotMap.getAutoStartupCommands().forEachRemaining(Command::cancel);
 
     // Run teleop startup commands
-    if (this.robotMap.getTeleopStartupCommands() != null) {
-      this.robotMap.getTeleopStartupCommands().forEachRemaining(Command::schedule);
-    }
+    this.robotMap.getTeleopStartupCommands().forEachRemaining(Command::schedule);
   }
 
   /** Run when we first enable in autonomous */
   @Override
   public void autonomousInit() {
     // Run the auto startup command
-    if (this.robotMap.getAutoStartupCommands() != null) {
-      this.robotMap.getAutoStartupCommands().forEachRemaining(Command::schedule);
-    }
+    this.robotMap.getAutoStartupCommands().forEachRemaining(Command::schedule);
   }
 
   /** Run when we first enable in test mode. */
   @Override
   public void testInit() {
     // Run startup command if we start in test mode.
-    if (this.robotMap.getTestStartupCommands() != null) {
-      this.robotMap.getTestStartupCommands().forEachRemaining(Command::schedule);
-    }
+    this.robotMap.getTestStartupCommands().forEachRemaining(Command::schedule);
   }
 
   /** Formatting for map reference chain of exception caused by map error. */
