@@ -834,68 +834,68 @@ useCameraServer: false
         org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
           feeder
       command:
-        edu.wpi.first.wpilibj2.command.PerpetualCommand:
-          '@id': feederPerpetuallizer
-          command:
-            edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-              '@id': feederDefaultCommand
-              requiredSubsystems:
-                - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                    feeder
-              commands:
-                - org.usfirst.frc.team449.robot._2020.feeder.commands.DefaultFeederCommand:
-                    runMode: IN_FAST
-                    timeout: *feederIndexingTimeoutSecs
-                    subsystem:
-                      org.usfirst.frc.team449.robot._2020.intake.IntakeCluster:
-                        '@id': feederAndTransitionWheel
-                        intakes:
-                          - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+        #        edu.wpi.first.wpilibj2.command.PerpetualCommand:
+        #          '@id': feederDefaultCommandWrapper
+        #          command:
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+          '@id': feederDefaultCommand
+          requiredSubsystems:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                feeder
+          commands:
+            - org.usfirst.frc.team449.robot._2020.feeder.commands.DefaultFeederCommand:
+                runMode: IN_FAST
+                timeout: *feederIndexingTimeoutSecs
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.intake.IntakeCluster:
+                    '@id': feederAndTransitionWheel
+                    intakes:
+                      - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                          feeder
+                      - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                          intakeTransitionWheel
+                sensor1:
+                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+                    '@id': feederSensor1
+                    channel: *feederSensor1Port
+                sensor2:
+                  org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+                    '@id': feederSensor2
+                    channel: *feederSensor2Port
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.ConditionalPerpetualCommandChangeBased:
+                '@id': startStopFeeder
+                booleanSupplier:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.BooleanSupplierUpdatable:
+                    source:
+                      org.usfirst.frc.team449.robot._2020.multiSubsystem.BooleanSupplierSubsystemBased:
+                        subsystem:
+                          org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
+                            shooterFlywheels
+                        useCached: true
+                afterBecomingFalse:
+                  edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+                    '@id': stopShootingCommandSequence
+                    commands:
+                      - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                          '@id': feederStopCommand_shooting
+                          subsystem:
+                            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
                               feeder
-                          - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                              intakeTransitionWheel
-                    sensor1:
-                      org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-                        '@id': feederSensor1
-                        channel: *feederSensor1Port
-                    sensor2:
-                      org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-                        '@id': feederSensor2
-                        channel: *feederSensor2Port
-                - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.ConditionalPerpetualCommandChangeBased:
-                    '@id': startStopFeeder
-                    booleanSupplier:
-                      org.usfirst.frc.team449.robot._2020.multiSubsystem.BooleanSupplierUpdatable:
-                        source:
-                          org.usfirst.frc.team449.robot._2020.multiSubsystem.BooleanSupplierSubsystemBased:
-                            subsystem:
-                              org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
-                                shooterFlywheels
-                            useCached: true
-                    afterBecomingFalse:
-                      edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-                        '@id': stopShootingCommandSequence
-                        commands:
-                          - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-                              '@id': feederStopCommand_shooting
-                              subsystem:
-                                org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                                  feeder
-                              mode: "OFF"
-                          - edu.wpi.first.wpilibj2.command.PrintCommand:
-                              NOT SHOOTING
-                    afterBecomingTrue:
-                      edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
-                        '@id': startShootingCommandSequence
-                        commands:
-                          - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-                              '@id': feederStartCommand_shooting
-                              subsystem:
-                                org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                                  feeder
-                              mode: OUT_FAST
-                          - edu.wpi.first.wpilibj2.command.PrintCommand:
-                              SHOOTING
+                          mode: "OFF"
+                      - edu.wpi.first.wpilibj2.command.PrintCommand:
+                          NOT SHOOTING
+                afterBecomingTrue:
+                  edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+                    '@id': startShootingCommandSequence
+                    commands:
+                      - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                          '@id': feederStartCommand_shooting
+                          subsystem:
+                            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                              feeder
+                          mode: OUT_FAST
+                      - edu.wpi.first.wpilibj2.command.PrintCommand:
+                          SHOOTING
 
 
 ########################################################################################################################
