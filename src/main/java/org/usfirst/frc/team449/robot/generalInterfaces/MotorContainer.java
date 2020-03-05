@@ -7,10 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
-public class MotorContainer implements Loggable {
+@SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
+public final class MotorContainer implements Loggable {
   @NotNull @Log.Exclude private static final MotorContainer instance = new MotorContainer();
 
-  @NotNull private final List<SmartMotor> motors = new ArrayList<>();
+  @NotNull @Log.Include private final List<SmartMotor> motors = new ArrayList<>();
 
   private MotorContainer() {
     Logger.setCycleWarningsEnabled(false);

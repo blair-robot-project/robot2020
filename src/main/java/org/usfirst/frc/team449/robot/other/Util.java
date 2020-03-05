@@ -1,16 +1,18 @@
 package org.usfirst.frc.team449.robot.other;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /** Stuff that doesn't fit anywhere else */
-public class Util {
-  private Util() {}
+public final class Util {
+  private Util() { throwFromUtilityClassConstructor(); }
 
   /**
    * Gets the prefix for the specified object instance when logging.
    *
    * @param o the object to retrieve a prefix for
    * @return the prefix to be prepended to the message when the specified object logs
+   *
    * @implNote the prefix is the simple name of the type of the object within brackets
    */
   public static String getLogPrefix(@NotNull final Object o) {
@@ -22,11 +24,14 @@ public class Util {
    *
    * @param clazz the type to retrieve a prefix for
    * @return the prefix to be prepended to the message when the specified type logs
+   *
    * @implNote the prefix is the simple name of the type within brackets
    */
   public static String getLogPrefix(final Class<?> clazz) {
     return "[" + clazz.getSimpleName() + "] ";
   }
+
+  // TODO clamp() is called constrain() in the Arduino standard library; should we rename?
 
   /**
    * Clamps the specified value to be within the specified bounds by returning the nearer bound if
@@ -40,6 +45,7 @@ public class Util {
   public static double clamp(final double value, final double lBound, final double uBound) {
     if (uBound < lBound) throw new IllegalArgumentException("uBound < lBound");
     if (value > uBound) return uBound;
+    //noinspection ManualMinMaxCalculation
     if (value < lBound) return lBound;
     return value;
   }
@@ -63,5 +69,28 @@ public class Util {
    */
   public static double clamp(final double value) {
     return clamp(value, 1);
+  }
+
+  /**
+   * Called by the constructors of utility classes (and other classes not meant to be instantiated)
+   * to establish a unified point from which this exception is thrown.
+   *
+   * @throws AssertionError with the message "Utility class."
+   */
+  @Contract(" -> fail")
+  public static void throwFromUtilityClassConstructor() throws AssertionError {
+    throw new AssertionError("Utility class.");
+  }
+
+  /**
+   * Called by the constructors of utility classes (and other classes not meant to be instantiated)
+   * to establish a unified point from which this exception is thrown.
+   *
+   * @param message the detail message for the exception to be thrown
+   * @throws AssertionError with the specified message
+   */
+  @Contract("_ -> fail")
+  public static void throwFromUtilityClassConstructor(final String message) throws AssertionError {
+    throw new AssertionError(message);
   }
 }
