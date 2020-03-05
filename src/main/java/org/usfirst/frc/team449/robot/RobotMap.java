@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import io.github.oblarg.oblog.annotations.Log;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -18,9 +19,9 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
 /** The Jackson-compatible object representing the entire robot. */
 @JsonIgnoreProperties({"CONSTANTS", "NAVIGATION"})
 public class RobotMap {
-  @NotNull private final List<Subsystem> subsystems;
+  @NotNull @Log.Include private final List<Subsystem> subsystems;
 
-  @NotNull private final MotorContainer motors = MotorContainer.getInstance();
+  @NotNull @Log.Include private final MotorContainer motors = MotorContainer.getInstance();
 
   //    /**
   //     * The logger for recording events and telemetry data.
@@ -33,7 +34,7 @@ public class RobotMap {
 
   @NotNull private final CommandContainer commands;
 
-  @NotNull private final PDP pdp;
+  @NotNull @Log.Include private final PDP pdp;
 
   /** Whether the camera server should be run. */
   private final boolean useCameraServer;
