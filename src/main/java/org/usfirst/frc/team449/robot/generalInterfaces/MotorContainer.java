@@ -7,10 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Holds all motors that register themselves in order to provide a view of all of them together when
+ * logging.
+ */
 @SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
 public final class MotorContainer implements Loggable {
   @NotNull @Log.Exclude private static final MotorContainer instance = new MotorContainer();
 
+  // (uncertain) It appears that this field must belong to an instance to be recognized by Oblog.
   @NotNull @Log.Include private final List<SmartMotor> motors = new ArrayList<>();
 
   private MotorContainer() {
@@ -29,7 +34,7 @@ public final class MotorContainer implements Loggable {
   /**
    * Gets the singleton instance.
    *
-   * @return the single instantiated instance of the class
+   * @return the single instance of the class
    */
   @NotNull
   public static MotorContainer getInstance() {
