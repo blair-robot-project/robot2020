@@ -8,6 +8,10 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
@@ -20,11 +24,6 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
 import org.usfirst.frc.team449.robot.other.Clock;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 import static org.usfirst.frc.team449.robot.other.Util.clamp;
 import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
@@ -42,7 +41,7 @@ public class SimulatedSmartMotor extends SmartMotorLoggingBase implements Updata
   private static final double MAX_INTEGRAL = 100;
   @NotNull
   private final String name;
-  private final Type controllerType;
+  private final @Log.Include Type controllerType;
   private final int port;
   private final boolean reverseOutput;
   private final double unitPerRotation;
@@ -52,6 +51,7 @@ public class SimulatedSmartMotor extends SmartMotorLoggingBase implements Updata
   @Log
   private double setpoint;
 
+  private final boolean enableVoltageComp;
   @Log.ToString
   @NotNull
   private ControlMode controlMode = ControlMode.Disabled;
@@ -108,6 +108,7 @@ public class SimulatedSmartMotor extends SmartMotorLoggingBase implements Updata
     this.port = port;
     this.reverseOutput = reverseOutput;
     this.unitPerRotation = Objects.requireNonNullElse(unitPerRotation, 1.0);
+    this.enableVoltageComp = enableVoltageComp;
     this.name =
         name != null
             ? name
@@ -119,6 +120,7 @@ public class SimulatedSmartMotor extends SmartMotorLoggingBase implements Updata
             port);
 
     this.controller = new PIDController(0, 0, 0);
+    this.controller.setIntegratorRange(-MAX_INTEGRAL, MAX_INTEGRAL);
 
     //Most of the constructor is stolen from FPSSparkMax.
 
@@ -340,15 +342,19 @@ public class SimulatedSmartMotor extends SmartMotorLoggingBase implements Updata
   }
 
   /** @return Raw velocity units for debugging purposes */
-  @Override
   @Log
+  @Override
   public double encoderVelocity() {
     return this.motor.getVelocity();
   }
 
   @Override
   public void setVoltage(final double volts) {
-    // uh
+    this.setControlModeAndSetpoint(
+        ControlMode.PercentOutput,
+        this.enableVoltageComp
+            ? volts / this.getBatteryVoltage()
+            : volts / SimulatedMotorSimple.DefaultConstants.NOMINAL_VOLTAGE);
   }
 
   /**
@@ -356,8 +362,9 @@ public class SimulatedSmartMotor extends SmartMotorLoggingBase implements Updata
    *
    * @return The controller's velocity in FPS, or null if no encoder CPR was given.
    */
+  @Log
   @Override
-  public Double getVelocity() {
+  public double getVelocity() {
     return this.encoderToUPS(this.encoderVelocity());
   }
 
@@ -415,15 +422,14 @@ public class SimulatedSmartMotor extends SmartMotorLoggingBase implements Updata
    * @return The setpoint in sensible units for the current control mode.
    */
   @Override
-  @Nullable
-  public Double getSetpoint() {
+  public double getSetpoint() {
     switch (this.controlMode) {
       case Velocity:
         return this.encoderToUPS(this.setpoint);
       case Position:
         return this.encoderToUnit(this.setpoint);
       default:
-        return null;
+        return Double.NaN;
     }
   }
 
@@ -433,6 +439,7 @@ public class SimulatedSmartMotor extends SmartMotorLoggingBase implements Updata
    * @return Voltage in volts.
    */
   @Override
+  @Log
   public double getOutputVoltage() {
     return this.getBatteryVoltage() * this.percentOutput;
   }
@@ -507,7 +514,7 @@ public class SimulatedSmartMotor extends SmartMotorLoggingBase implements Updata
 
   /** @return the position of the talon in feet, or null of inches per rotation wasn't given. */
   @Override
-  public Double getPositionUnits() {
+  public double getPositionUnits() {
     return this.encoderToUnit(this.encoderPosition());
   }
 
@@ -565,7 +572,7 @@ public class SimulatedSmartMotor extends SmartMotorLoggingBase implements Updata
    * @param gear Which gear to shift to.
    */
   @Override
-  public void setGear(final int gear) {
+  public final void setGear(final int gear) {
     // Set the current gear
     this.currentGearSettings = this.perGearSettings.get(gear);
   }

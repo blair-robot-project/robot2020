@@ -165,17 +165,17 @@ public class SlaveTalon implements SlaveMotor, Loggable {
   //    }
 
   @Log
-public double getOutputCurrent() {
+  public double getOutputCurrent() {
     return this.talonSRX.getSupplyCurrent();
   }
 
   @Log
-public double getMotorOutputVoltage() {
+  public double getMotorOutputVoltage() {
     return this.talonSRX.getMotorOutputVoltage();
   }
 
   @Log
-public Double getResistance() {
+  public Double getResistance() {
     return (this.linRegComponent != null && this.PDP != null)
         ? -this.linRegComponent.getSlope()
         : Double.NaN;

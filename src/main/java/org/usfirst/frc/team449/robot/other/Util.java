@@ -1,7 +1,5 @@
 package org.usfirst.frc.team449.robot.other;
 
-import edu.wpi.first.wpiutil.math.MathUtil;
-import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
 /** Contains miscellaneous utility methods. */
@@ -13,7 +11,6 @@ public class Util {
    *
    * @param o the object to retrieve a prefix for
    * @return the prefix to be prepended to the message when the specified object logs
-   *
    * @implNote the prefix is the simple name of the type of the object within brackets
    */
   public static String getLogPrefix(@NotNull final Object o) {
@@ -25,7 +22,6 @@ public class Util {
    *
    * @param clazz the type to retrieve a prefix for
    * @return the prefix to be prepended to the message when the specified type logs
-   *
    * @implNote the prefix is the simple name of the type within brackets
    */
   public static String getLogPrefix(final Class<?> clazz) {
@@ -67,13 +63,5 @@ public class Util {
    */
   public static double clamp(final double value) {
     return clamp(value, 1);
-  }
-
-  /**
-   * Holds constants for common class or member names for uses such as providing values to {@link
-   * Log#methodName()}.
-   */
-  public static class WellKnownNames {
-    public static final String GET_AS_DOUBLE = "getAsDouble";
   }
 }

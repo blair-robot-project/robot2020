@@ -3,29 +3,25 @@ package org.usfirst.frc.team449.robot.components;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
+import org.usfirst.frc.team449.robot.other.RegistrationOrderIDUtil;
 
 /**
- * Utility class that records and provides methods for examining the  times at which a condition
- * becomes true or false. The class is abstract and follows the observer patten. Subclasses must
- * update the condition with calls to {@link ConditionTimingComponent#update(double, boolean)}. Time
- * units are in seconds.
+ * Utility class that records and provides methods for examining the times at which a condition
+ * becomes true or false. The class is an abstract observer to allow subclasses to provide custom
+ * implementations for updating the condition. This class is unit-agnostic.
  *
- * <p>
- * Behavior may be unexpected if object is updated more frequently than values are examined.
- * </p>
+ * <p>Behavior may be unexpected if object is updated more frequently than values are examined.
  */
 public abstract class ConditionTimingComponent implements Loggable {
-  @Log
-  private boolean current;
-  @Log
-  private double now = Double.NaN;
-  @Log
-  private double lastBecameTrue = Double.NaN;
-  @Log
-  private double lastBecameFalse = Double.NaN;
+  @Log private boolean current;
+  @Log.ToString private double now = Double.NaN;
+  @Log.ToString private double lastBecameTrue = Double.NaN;
+  @Log.ToString private double lastBecameFalse = Double.NaN;
 
   public ConditionTimingComponent(final boolean initialValue) {
     this.current = initialValue;
+
+    RegistrationOrderIDUtil.registerInstance(this);
   }
 
   /**
@@ -62,9 +58,7 @@ public abstract class ConditionTimingComponent implements Loggable {
   /**
    * Gets the time at which the condition last became true.
    *
-   * <p>
-   * Returns {@link Double#NaN} if the condition has never become true.
-   * </p>
+   * <p>Returns {@link Double#NaN} if the condition has never become true.
    *
    * @return the time supplied to the most recent call to {@link ConditionTimingComponent#update(double,
    * boolean)} where the value supplied to the method was true and the previous state of the
@@ -75,12 +69,16 @@ public abstract class ConditionTimingComponent implements Loggable {
     return this.lastBecameTrue;
   }
 
+  @Contract(pure = true)
+  public double becameTrueTime() {
+    if (!this.current) return Double.NaN;
+    return this.lastBecameTrueTime();
+  }
+
   /**
    * Gets the time at which the condition last became false.
    *
-   * <p>
-   * Returns {@link Double#NaN} if the condition has never become false.
-   * </p>
+   * <p>Returns {@link Double#NaN} if the condition has never become false.
    *
    * @return the time supplied to the most recent call to {@link ConditionTimingComponent#update(double,
    * boolean)} where the value supplied to the method was false and the previous state of the
@@ -91,42 +89,77 @@ public abstract class ConditionTimingComponent implements Loggable {
     return this.lastBecameFalse;
   }
 
-  public double timeSinceLastBecameTrue() {
-    if (!this.current) return Double.NaN;
-    return this.now - this.lastBecameTrue;
-  }
-
-  public double timeSinceLastBecameFalse() {
+  @Contract(pure = true)
+  public double becameFalseTime() {
     if (this.current) return Double.NaN;
-    return this.now - this.lastBecameFalse;
+    return this.lastBecameFalseTime();
   }
 
   /**
-   * @implNote returns min(lastBecameTrue(), lastBecameFalse())
+   * <p>
+   * Returns {@link Double#NaN} if not currently true.
+   * </p>
+   */
+  @Contract(pure = true)
+  public double timeSinceBecameTrue() {
+    if (!this.current) return Double.NaN;
+    return this.timeSinceLastBecameTrue();
+  }
+
+  /**
+   * <p>
+   * Returns {@link Double#NaN} if not currently false.
+   * </p>
+   */
+  @Contract(pure = true)
+  public double timeSinceBecameFalse() {
+    if (this.current) return Double.NaN;
+    return this.timeSinceLastBecameFalse();
+  }
+
+  @Contract(pure = true)
+  public double timeSinceLastBecameTrue() {
+    return this.now - this.lastBecameTrue;
+  }
+
+  @Contract(pure = true)
+  public double timeSinceLastBecameFalse() {
+    return this.now - this.lastBecameFalse;
+  }
+
+  /** @implNote returns min(lastBecameTrue(), lastBecameFalse()) */
+  @Contract(pure = true)
+  public double lastUpdateTime() {
+    return this.now;
+  }
+
+  /**
+   * @implNote returns max(lastBecameTrue(), lastBecameFalse())
    */
   @Contract(pure = true)
   public double lastChangeTime() {
-    return Math.min(this.lastBecameFalse, this.lastBecameTrue);
+    // Should be max, as time increases over time.
+    return Math.max(this.lastBecameFalse, this.lastBecameTrue);
   }
 
   @Contract(pure = true)
-  public boolean hasBeenFalseForAtLeast(final double seconds) {
-    return this.timeSinceLastBecameFalse() >= seconds;
+  public boolean hasBeenFalseForAtLeast(final double duration) {
+    return this.timeSinceBecameFalse() >= duration;
   }
 
   @Contract(pure = true)
-  public boolean hasBeenTrueForAtLeast(final double seconds) {
-    return this.timeSinceLastBecameTrue() >= seconds;
+  public boolean hasBeenTrueForAtLeast(final double duration) {
+    return this.timeSinceBecameTrue() >= duration;
   }
 
   @Contract(pure = true)
-  public boolean hasBeenFalseForAtMost(final double seconds) {
-    return this.timeSinceLastBecameFalse() <= seconds;
+  public boolean hasBeenFalseForAtMost(final double duration) {
+    return this.timeSinceBecameFalse() <= duration;
   }
 
   @Contract(pure = true)
-  public boolean hasBeenTrueForAtMost(final double seconds) {
-    return this.timeSinceLastBecameTrue() <= seconds;
+  public boolean hasBeenTrueForAtMost(final double duration) {
+    return this.timeSinceBecameTrue() <= duration;
   }
 
   @Contract(pure = true)
@@ -143,5 +176,10 @@ public abstract class ConditionTimingComponent implements Loggable {
   public boolean isTrue() {
     return this.current;
   }
-}
 
+  @Override
+  @Contract(pure = true)
+  public String configureLogName() {
+    return this.getClass().getSimpleName() + RegistrationOrderIDUtil.getExistingID(this);
+  }
+}

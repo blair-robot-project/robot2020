@@ -7,13 +7,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.Iterator;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.MotorContainer;
+import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
-
-import java.util.Iterator;
-import java.util.List;
 
 /** The Jackson-compatible object representing the entire robot. */
 @JsonIgnoreProperties({"CONSTANTS", "NAVIGATION"})
@@ -54,25 +54,19 @@ public class RobotMap {
    * @param useCameraServer Whether the camera server should be run. Defaults to false.
    */
   @JsonCreator
-  public RobotMap(@NotNull @JsonInclude(content = JsonInclude.Include.NON_NULL) final List<Subsystem> subsystems,
-                  @NotNull @JsonProperty(required = true) final PDP pdp,
-                  @NotNull final Runnable updater,
-                  @NotNull final CommandContainer commands,
-                  final boolean useCameraServer) {
+  public RobotMap(
+      @NotNull @JsonProperty(required = true) @JsonInclude(content = JsonInclude.Include.NON_NULL) final List<Subsystem> subsystems,
+      @NotNull @JsonProperty(required = true) final PDP pdp,
+      @NotNull @JsonProperty(required = true) final Runnable updater,
+      @NotNull @JsonProperty(required = true) final CommandContainer commands,
+      @Nullable final List<MappedJoystick> joysticks,
+      final boolean useCameraServer) {
     this.updater = updater;
     this.pdp = pdp;
     this.useCameraServer = useCameraServer;
     this.subsystems = subsystems;
     this.commands = commands;
   }
-
-  //    /**
-  //     * @return The logger for recording events and telemetry data.
-  //     */
-  //    @NotNull
-  //    public Logger getLogger() {
-  //        return logger;
-  //    }
 
   /** @return The commands to be run when first enabled in autonomous mode. */
   @Nullable

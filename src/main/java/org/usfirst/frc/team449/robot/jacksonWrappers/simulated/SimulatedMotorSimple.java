@@ -1,9 +1,8 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers.simulated;
 
 import io.github.oblarg.oblog.annotations.Log;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Objects;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A simulated motor without inductance and the hysteresis it introduces.
@@ -18,6 +17,7 @@ import java.util.Objects;
  */
 public class SimulatedMotorSimple implements SimulatedMotor {
   // Default motor parameters.
+  @SuppressWarnings("NonFinalUtilityClass")
   public static class DefaultConstants {
     protected DefaultConstants() {
     }
@@ -33,6 +33,9 @@ public class SimulatedMotorSimple implements SimulatedMotor {
     /** (N*m / (rev/s)) Torque per RPS due to motor internal friction. */
     public static final double FRICTION_COEFF = -10;
   }
+
+  /** The smallest value that each variable of this motor can have. */
+  private static final double EPSILON = 0.0001;
 
   /**
    * The maximum speed that the simulation will by nature allow this motor to sustain at its nominal
@@ -98,6 +101,10 @@ public class SimulatedMotorSimple implements SimulatedMotor {
     this.position += this.velocity * deltaSecs;
     this.velocity += angularAcceleration * deltaSecs;
     this.current = voltage / this.resistance;
+
+    if (Math.abs(this.current) < EPSILON) this.current = 0;
+    if (Math.abs(this.velocity) < EPSILON) this.velocity = 0;
+    if (Math.abs(this.position) < EPSILON) this.position = 0;
   }
 
   /**

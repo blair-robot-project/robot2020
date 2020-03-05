@@ -24,20 +24,21 @@ public class LimelightDistanceComponent implements DoubleSupplier {
   /**
    * Default constructor
    *
+   * @param limelight the limelight that supplies the angles
    * @param limelightHeight The height of the Limelight
-   * @param limelightAngleDown The angle of the Limelight, in degrees
+   * @param limelightAngleUp The angle of the Limelight, in degrees
    * @param targetHeight the height of the expected vision target, probably provided by the game
    *     manual
    */
   @JsonCreator
   public LimelightDistanceComponent(
-      @NotNull @JsonProperty(required = true) Limelight limelight,
-      @JsonProperty(required = true) double limelightHeight,
-      @JsonProperty(required = true) double limelightAngleDown,
-      @JsonProperty(required = true) double targetHeight) {
+      @NotNull @JsonProperty(required = true) final Limelight limelight,
+      @JsonProperty(required = true) final double limelightHeight,
+      final double limelightAngleUp,
+      @JsonProperty(required = true) final double targetHeight) {
     this.limelight = limelight;
     this.limelightHeight = limelightHeight;
-    this.limelightAngle = limelightAngleDown;
+    this.limelightAngle = limelightAngleUp;
     this.targetHeight = targetHeight;
   }
 
@@ -45,6 +46,6 @@ public class LimelightDistanceComponent implements DoubleSupplier {
   @Override
   public double getAsDouble() {
     return (targetHeight - limelightHeight)
-        * Math.tan(Math.toRadians(limelightAngle + limelight.getY()));
+        / Math.tan(Math.toRadians(limelightAngle + limelight.getY()));
   }
 }

@@ -11,13 +11,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.generalInterfaces.AHRS.SubsystemAHRS;
-import org.usfirst.frc.team449.robot.other.Debouncer;
 import org.usfirst.frc.team449.robot.other.Clock;
+import org.usfirst.frc.team449.robot.other.Debouncer;
 
 /** Turn a certain number of degrees from the current heading. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
-    extends NavXTurnToAngle {
+    extends NavXTurnToAngle<T> {
 
   /**
    * Default constructor.
@@ -44,19 +44,19 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
    */
   @JsonCreator
   public NavXTurnToAngleRelative(
-      @JsonProperty(required = true) double absoluteTolerance,
-      @Nullable Debouncer onTargetBuffer,
-      double minimumOutput,
-      @Nullable Double maximumOutput,
-      @Nullable Integer loopTimeMillis,
-      double deadband,
-      boolean inverted,
-      double kP,
-      double kI,
-      double kD,
-      @JsonProperty(required = true) double setpoint,
-      @NotNull @JsonProperty(required = true) T drive,
-      @JsonProperty(required = true) double timeout) {
+      @JsonProperty(required = true) final double absoluteTolerance,
+      @Nullable final Debouncer onTargetBuffer,
+      final double minimumOutput,
+      @Nullable final Double maximumOutput,
+      @Nullable final Integer loopTimeMillis,
+      final double deadband,
+      final boolean inverted,
+      final double kP,
+      final double kI,
+      final double kD,
+      @JsonProperty(required = true) final double setpoint,
+      @NotNull @JsonProperty(required = true) final T drive,
+      @JsonProperty(required = true) final double timeout) {
     super(
         absoluteTolerance,
         onTargetBuffer,
@@ -87,12 +87,12 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
         "NavXTurnToAngleRelative init.", getClass().getSimpleName(), EventImportance.kNormal);
     // Logger.addEvent("NavXRelativeTurnToAngle init.", this.getClass());
     // Do math to setup the setpoint.
-    setSetpoint(clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() + setpoint));
+    setSetpoint(clipTo180(subsystem.getHeadingCached() + setpoint));
   }
 
   /** Log when the command ends. */
   @Override
-  public void end(boolean interrupted) {
+  public void end(final boolean interrupted) {
     if (interrupted) {
       Shuffleboard.addEventMarker(
           "NavXTurnToAngleRelative interrupted!",

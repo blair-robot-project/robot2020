@@ -3,7 +3,6 @@ package org.usfirst.frc.team449.robot._2020.multiSubsystem.commands;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-
 import java.util.Set;
 
 /**
@@ -17,13 +16,12 @@ public class PlaceholderCommand implements Command {
   /** The singleton instance. */
   private static final PlaceholderCommand instance = new PlaceholderCommand();
 
-  @JsonCreator
   private PlaceholderCommand() {}
 
   /**
-   * Returns a default instance that does nothing when executed.
+   * Returns the singleton instance, which does nothing when executed.
    *
-   * @return a default instance
+   * @return the singleton instance
    */
   @JsonCreator
   public static PlaceholderCommand getInstance() {
@@ -31,10 +29,9 @@ public class PlaceholderCommand implements Command {
   }
 
   /**
-   * Whether the command has finished. Once a command finishes, the scheduler will call its end()
-   * method and un-schedule it.
+   * Returns {@code true}
    *
-   * @return whether the command has finished.
+   * @return {@code true}
    */
   @Override
   public boolean isFinished() {
@@ -42,15 +39,9 @@ public class PlaceholderCommand implements Command {
   }
 
   /**
-   * Specifies the set of subsystems used by this command. Two commands cannot use the same
-   * subsystem at the same time. If the command is scheduled as interruptible and another command is
-   * scheduled that shares a requirement, the command will be interrupted. Else, the command will
-   * not be scheduled. If no subsystems are required, return an empty set.
+   * Returns an empty set.
    *
-   * <p>Note: it is recommended that user implementations contain the requirements as a field, and
-   * return that field here, rather than allocating a new set every time this is called.
-   *
-   * @return the set of subsystems that are required
+   * @return an empty set
    */
   @Override
   public Set<Subsystem> getRequirements() {
@@ -62,7 +53,7 @@ public class PlaceholderCommand implements Command {
    * object.
    *
    * @param obj the reference object with which to compare
-   * @return {@literal false}
+   * @return {@code false}
    */
   @Override
   public boolean equals(final Object obj) {

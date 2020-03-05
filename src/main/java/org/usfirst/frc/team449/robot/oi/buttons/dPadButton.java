@@ -13,7 +13,10 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class dPadButton extends Button {
 
-  /** The angle that the D-pad must be pushed to to trigger this button. */
+  /**
+   * The angle that the D-pad must be pushed to to trigger this button. 0 degrees is probably
+   * straight right.
+   */
   private final int angle;
 
   /** The joystick with the relevant D-pad on it. */

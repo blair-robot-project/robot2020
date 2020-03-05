@@ -82,7 +82,7 @@ public class JoystickSimulated extends MappedJoystick {
    */
   @Override
   public double getRawAxis(final int axis) {
-    return 0;
+    return this.keyStates.getOrDefault("0", false) ? 10 : 0;
   }
 
   /**

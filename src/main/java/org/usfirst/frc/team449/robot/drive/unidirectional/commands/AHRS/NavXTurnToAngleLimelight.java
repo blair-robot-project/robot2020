@@ -9,16 +9,17 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.usfirst.frc.team449.robot.components.limelight.LimelightDistanceComponent;
 import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
 import org.usfirst.frc.team449.robot.generalInterfaces.AHRS.SubsystemAHRS;
 import org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight;
-import org.usfirst.frc.team449.robot.other.Debouncer;
 import org.usfirst.frc.team449.robot.other.Clock;
+import org.usfirst.frc.team449.robot.other.Debouncer;
 
 /** Turn a certain number of degrees from the current heading, based on input from the limelight */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
-    extends NavXTurnToAngleRelative {
+    extends NavXTurnToAngleRelative<T> {
 
   private final Limelight limelight;
 
@@ -46,19 +47,20 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
    */
   @JsonCreator
   public NavXTurnToAngleLimelight(
-      @JsonProperty(required = true) double absoluteTolerance,
-      @Nullable Debouncer onTargetBuffer,
-      double minimumOutput,
-      @Nullable Double maximumOutput,
-      @Nullable Integer loopTimeMillis,
-      double deadband,
-      boolean inverted,
-      double kP,
-      double kI,
-      double kD,
-      @NotNull @JsonProperty(required = true) Limelight limelight,
-      @NotNull @JsonProperty(required = true) T drive,
-      @JsonProperty(required = true) double timeout) {
+      @JsonProperty(required = true) final double absoluteTolerance,
+      @Nullable final Debouncer onTargetBuffer,
+      final double minimumOutput,
+      @Nullable final Double maximumOutput,
+      @Nullable final Integer loopTimeMillis,
+      final double deadband,
+      final boolean inverted,
+      final double offset,
+      final double kP,
+      final double kI,
+      final double kD,
+      @NotNull @JsonProperty(required = true) final Limelight limelight,
+      @NotNull @JsonProperty(required = true) final T drive,
+      @JsonProperty(required = true) final double timeout) {
     super(
         absoluteTolerance,
         onTargetBuffer,
@@ -70,7 +72,7 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
         kP,
         kI,
         kD,
-        limelight.getX(), // setpoint
+        offset, // setpoint
         drive,
         timeout);
     this.limelight = limelight;
@@ -85,20 +87,23 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
         "NavXTurnToAngleLimelight init.", this.getClass().getSimpleName(), EventImportance.kNormal);
     // Logger.addEvent("NavXRelativeTurnToAngle init.", this.getClass());
     // Do math to setup the setpoint.
-    this.setSetpoint(clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() + super.setpoint));
+    this.setSetpoint(clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() + limelight.getX()));
+    //System.out.println("Current setpoint = " + limelight.getX());
+    final LimelightDistanceComponent distanceComponent = new LimelightDistanceComponent(limelight, 20 / 12., 36, 7.5);
+    System.out.println(distanceComponent.getAsDouble());
   }
 
   @Override
   public void execute() {
     super.execute();
-    System.out.println(getOutput());
-    System.out.println(((SubsystemAHRS) subsystem).getHeading());
-    System.out.println("Setpoint: " + setpoint);
+    //System.out.println(getOutput());
+    //System.out.println("Heading = " + ((SubsystemAHRS) subsystem).getHeading());
+    //System.out.println("Setpoint: " + setpoint);
   }
 
   /** Log when the command ends. */
   @Override
-  public void end(boolean interrupted) {
+  public void end(final boolean interrupted) {
     if (interrupted) {
       Shuffleboard.addEventMarker(
           "NavXTurnToAngleLimelight interrupted!",

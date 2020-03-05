@@ -57,25 +57,17 @@ useCameraServer: false
       '@id': drive
       #Wheelbase: 2.14
       leftMaster:
-        org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
+        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
           &Left_Master
           '@id': leftMaster
+          type: SPARK
           name: left
           port: *leftMasterPort
-          encoderDIO1:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-              '@id': leftMasterEncoder1
-              channel: *leftMasterEncoder1Port
-          encoderDIO2:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-              '@id': leftMasterEncoder2
-              channel: *leftMasterEncoder2Port
           PDP:
             org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
           reverseOutput: true
-          reverseSensor: false
           enableBrakeMode: true
-          postEncoderGearing: 0.13333333333
+          #          postEncoderGearing: 0.13333333333
           unitPerRotation: 0.47877872 #meters per rotation
           currentLimit: 50
           enableVoltageComp: true
@@ -84,8 +76,9 @@ useCameraServer: false
           perGearSettings:
             - &Low_Gear
               gear: LOW
+              postEncoderGearing: 0.0488998
               maxSpeed: 2.3
-              kP: 0.03
+              kP: 0
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                   kS: 0.128
@@ -93,8 +86,9 @@ useCameraServer: false
                   kA: 0.0698
             - &High_Gear
               gear: HIGH
+              postEncoderGearing: 0.12936611
               maxSpeed: 5.2
-              kP: 0.03
+              kP: 0
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                   kS: 0.156
@@ -106,21 +100,13 @@ useCameraServer: false
             - port: *leftMasterSlave2Port
               inverted: false
       rightMaster:
-        org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
+        org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
           <<: *Left_Master
           '@id': rightMaster
+          type: SPARK
           name: right
           port: *rightMasterPort
-          encoderDIO1:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-              '@id': rightMasterEncoder1
-              channel: *rightMasterEncoder1Port
-          encoderDIO2:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
-              '@id': rightMasterEncoder2
-              channel: *rightMasterEncoder2Port
           reverseOutput: false
-          reverseSensor: true
           perGearSettings:
             - <<: *Low_Gear
               feedForwardCalculator:

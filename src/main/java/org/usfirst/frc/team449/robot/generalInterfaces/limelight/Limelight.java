@@ -46,9 +46,9 @@ public class Limelight extends SubsystemBase implements Loggable {
   private final NetworkTableEntry camtran;
 
   /** pipeline for driver camera */
-  private int driverPipeline;
+  private final int driverPipeline;
 
-  //Cached values for the most recent state of the limelight while it was on
+  // Cached values for the most recent state of the limelight while it was on
   private double validTarget;
   private double x;
   private double y;
@@ -81,9 +81,9 @@ public class Limelight extends SubsystemBase implements Loggable {
    * @param driverPipeline the pipeline for the driver camera
    */
   @JsonCreator
-  public Limelight(int driverPipeline) {
+  public Limelight(final int driverPipeline) {
     this.driverPipeline = driverPipeline;
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    final NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     validTargetTable = table.getEntry("tv");
     xTable = table.getEntry("tx");
     yTable = table.getEntry("ty");
@@ -104,9 +104,10 @@ public class Limelight extends SubsystemBase implements Loggable {
   public void periodic() {
     pipeIndex = (int) pipeTable.getDouble(driverPipeline);
     validTarget = validTargetTable.getDouble(-1);
-    if (pipeIndex != driverPipeline) {
+    if (true/*pipeIndex != driverPipeline*/) {
       x = xTable.getDouble(0);
       y = yTable.getDouble(0);
+      //System.out.println("X = " + x + ", y = " + y);
       //            area = areaTable.getDouble(0);
       //            skew = skewTable.getDouble(0);
       //            latency = latencyTable.getDouble(0);
@@ -180,7 +181,7 @@ public class Limelight extends SubsystemBase implements Loggable {
   }
 
   @Log
-  public void setPipeline(int index) {
+  public void setPipeline(final int index) {
     pipelineSet.setNumber(index);
   }
 

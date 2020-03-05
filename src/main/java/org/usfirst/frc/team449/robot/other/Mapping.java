@@ -3,11 +3,6 @@ package org.usfirst.frc.team449.robot.other;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import org.jetbrains.annotations.NotNull;
-import org.usfirst.frc.team449.robot.JavaModule;
-import org.usfirst.frc.team449.robot.WPIModule;
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,19 +14,26 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
+import org.usfirst.frc.team449.robot.JavaModule;
+import org.usfirst.frc.team449.robot.WPIModule;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * Facade around Jackson API.
  */
-public class Mapping {
+public final class Mapping {
   /**
    * Format for the reference chain (place in the map where the error occured) when a map error is
    * printed.
    */
   private static final MapErrorFormat MAP_REF_CHAIN_FORMAT = MapErrorFormat.TABLE;
 
+  // TODO Use Util.throwFromUtilityClassConstructor() after merge
+  private Mapping() { throw new AssertionError("Utility class."); }
+
   /**
-   * Formatting for map reference chain of exception caused by map error.
+   * Formatting for map reference chains in exceptions caused by map errors.
    */
   private enum MapErrorFormat {
     /**

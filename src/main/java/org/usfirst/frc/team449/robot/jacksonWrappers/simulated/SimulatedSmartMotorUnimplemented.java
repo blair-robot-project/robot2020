@@ -7,6 +7,10 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.components.RunningLinRegComponent;
@@ -16,11 +20,6 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.PDP;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveSparkMax;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveTalon;
 import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Class that implements {@link SmartMotor} without relying on the existence of actual hardware.
@@ -173,7 +172,7 @@ public class SimulatedSmartMotorUnimplemented implements SmartMotor, Loggable {
   @Override
   @Log
   public double encoderPosition() {
-    return 0;
+    return Double.NaN;
   }
 
   /**
@@ -189,7 +188,7 @@ public class SimulatedSmartMotorUnimplemented implements SmartMotor, Loggable {
   @Override
   @Log
   public double encoderVelocity() {
-    return 0;
+    return Double.NaN;
   }
 
   /**
@@ -208,8 +207,8 @@ public class SimulatedSmartMotorUnimplemented implements SmartMotor, Loggable {
    * @return The controller's velocity in FPS, or null if no encoder CPR was given.
    */
   @Override
-  public Double getVelocity() {
-    return null;
+  public double getVelocity() {
+    return Double.NaN;
   }
 
   /**
@@ -253,7 +252,7 @@ public class SimulatedSmartMotorUnimplemented implements SmartMotor, Loggable {
    */
   @Override
   public double getError() {
-    return 0;
+    return Double.NaN;
   }
 
   /**
@@ -262,9 +261,8 @@ public class SimulatedSmartMotorUnimplemented implements SmartMotor, Loggable {
    * @return The setpoint in sensible units for the current control mode.
    */
   @Override
-  @Nullable
-  public Double getSetpoint() {
-    return null;
+  public double getSetpoint() {
+    return Double.NaN;
   }
 
   /**
@@ -275,7 +273,7 @@ public class SimulatedSmartMotorUnimplemented implements SmartMotor, Loggable {
   @Override
   @Log
   public double getOutputVoltage() {
-    return 0;
+    return Double.NaN;
   }
 
   /**
@@ -286,7 +284,7 @@ public class SimulatedSmartMotorUnimplemented implements SmartMotor, Loggable {
   @Override
   @Log
   public double getBatteryVoltage() {
-    return 0;
+    return Double.NaN;
   }
 
   /**
@@ -297,7 +295,7 @@ public class SimulatedSmartMotorUnimplemented implements SmartMotor, Loggable {
   @Override
   @Log
   public double getOutputCurrent() {
-    return 0;
+    return Double.NaN;
   }
 
   /**
@@ -347,8 +345,8 @@ public class SimulatedSmartMotorUnimplemented implements SmartMotor, Loggable {
    * @return the position of the talon in feet, or null of inches per rotation wasn't given.
    */
   @Override
-  public Double getPositionUnits() {
-    return null;
+  public double getPositionUnits() {
+    return Double.NaN;
   }
 
   /**
@@ -398,7 +396,7 @@ public class SimulatedSmartMotorUnimplemented implements SmartMotor, Loggable {
    */
   @Override
   public int getGear() {
-    return 0;
+    return -1;
   }
 
   /**

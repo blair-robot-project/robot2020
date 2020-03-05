@@ -14,15 +14,14 @@ import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import io.github.oblarg.oblog.annotations.Log;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotorLoggingBase;
 import org.usfirst.frc.team449.robot.generalInterfaces.shiftable.Shiftable;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedSparkMax extends SmartMotorLoggingBase {
@@ -34,7 +33,7 @@ public class MappedSparkMax extends SmartMotorLoggingBase {
    * The coefficient the output changes by after being measured by the encoder, e.g. this would be
    * 1/70 if there was a 70:1 gearing between the encoder and the final output.
    */
-  private final double postEncoderGearing;
+  @Log private double postEncoderGearing;
   /**
    * The number of feet travelled per rotation of the motor this is attached to, or null if there is
    * no encoder.
@@ -50,14 +49,14 @@ public class MappedSparkMax extends SmartMotorLoggingBase {
   @NotNull private final String name;
   /** Whether the forwards or reverse limit switches are normally open or closed, respectively. */
   private final boolean fwdLimitSwitchNormallyOpen, revLimitSwitchNormallyOpen;
-  /** The settings currently being used by this Spark. */
-  @NotNull protected PerGearSettings currentGearSettings;
   /** REV brushless controller object */
   private final CANSparkMax spark;
   /** REV provided encoder object */
   private final CANEncoder canEncoder;
   /** REV provided PID Controller */
   private final CANPIDController pidController;
+  /** The settings currently being used by this Spark. */
+  @NotNull protected PerGearSettings currentGearSettings;
   /** The control mode of the motor */
   private ControlType currentControlMode;
   /** The most recently set setpoint. */
@@ -122,7 +121,7 @@ public class MappedSparkMax extends SmartMotorLoggingBase {
       @Nullable final List<PerGearSettings> perGearSettings,
       @Nullable final Shiftable.gear startingGear,
       @Nullable final Integer startingGearNum,
-      @Nullable final Map<CANSparkMax.PeriodicFrame, Integer> statusFrameRatesMillis,
+      @Nullable final Map<CANSparkMaxLowLevel.PeriodicFrame, Integer> statusFrameRatesMillis,
       @Nullable final Integer controlFrameRateMillis,
       @Nullable final List<SlaveSparkMax> slaveSparks) {
     this.spark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -302,6 +301,10 @@ public class MappedSparkMax extends SmartMotorLoggingBase {
       this.spark.setOpenLoopRampRate(0);
     }
 
+    if (this.currentGearSettings.postEncoderGearing != null) {
+      this.postEncoderGearing = currentGearSettings.postEncoderGearing;
+    }
+
     this.pidController.setP(this.currentGearSettings.kP, 0);
     this.pidController.setI(this.currentGearSettings.kI, 0);
     this.pidController.setD(this.currentGearSettings.kD, 0);
@@ -428,7 +431,7 @@ public class MappedSparkMax extends SmartMotorLoggingBase {
    */
   @Override
   @Log
-  public Double getVelocity() {
+  public double getVelocity() {
     return this.encoderToUPS(canEncoder.getVelocity());
   }
 
@@ -468,15 +471,12 @@ public class MappedSparkMax extends SmartMotorLoggingBase {
   @Override
   @Log
   public double getError() {
-    final Double setpoint = this.getSetpoint();
-    if (setpoint == null) return Double.NaN;
-    return setpoint - this.getVelocity();
+    return this.getSetpoint() - this.getVelocity();
   }
 
-  @Nullable
   @Override
   @Log
-  public Double getSetpoint() {
+  public double getSetpoint() {
     return this.setpoint;
   }
 
@@ -524,7 +524,7 @@ public class MappedSparkMax extends SmartMotorLoggingBase {
   }
 
   @Override
-  public Double getPositionUnits() {
+  public double getPositionUnits() {
     return encoderToUnit(canEncoder.getPosition());
   }
 

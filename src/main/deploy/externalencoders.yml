@@ -1,0 +1,276 @@
+---
+
+# IntelliJ supports Ctrl+clicking anchors to find usages and declarations... so, hyperlinks! Yooooooooo!
+# Basically a table of contents; Ctrl+click on a heading in UPPER_SNAKE_CASE to jump back and forth between the
+# table of contents and actual location in the map.
+NAVIGATION:
+  # The anchors that replace map key values must have the values of the keys that they replace.
+  - &PDP pdp
+  # This works magically because the anchor refers to the key of the mapping only, which is the string "subsystems".
+  - &SUBSYSTEMS subsystems:
+      # Other anchors, like these, become null list items and are explicitly ignored using @JsonInclude
+      - &DRIVE_SUBSYSTEM
+  - &COMMANDS commands:
+      - &DEFAULT_COMMANDS defaultCommands:
+          - &DRIVE_DEFAULT_COMMAND
+  - &UPDATER updater
+
+# Anchors for transclusion into the rest of the map.
+# Ignored by Jackson (so is NAVIGATION); can contain any valid YAML suitable for organizational purposes.
+# Make sure there aren't any colons after the anchors; Jackson gives "Null key for a Map not allowed in JSON"
+CONSTANTS:
+  - MotorPorts:
+      # Spinnyboiz
+      - &leftMasterPort 1
+      - &leftMasterSlave1Port 3
+      - &leftMasterSlave2Port 5
+      - &rightMasterPort 2
+      - &rightMasterSlave1Port 4
+      - &rightMasterSlave2Port 6
+  - DIOPorts:
+      - &leftMasterEncoder1Port 2
+      - &leftMasterEncoder2Port 3
+      - &rightMasterEncoder1Port 0
+      - &rightMasterEncoder2Port 1
+  - JoystickPorts:
+      - &driveJoystickPort 1
+
+
+# WHETHER TO USE THE CAMERA SERVER
+useCameraServer: false
+
+########################################################################################################################
+*PDP:
+  org.usfirst.frc.team449.robot.jacksonWrappers.PDP:
+    '@id': PDP
+    canID: 0
+    voltagePerCurrentLinReg:
+      bufferSize: 250
+      rSquaredThreshhold: 0.75
+
+
+########################################################################################################################
+*SUBSYSTEMS:
+  #***********************************************************************************************************************
+  - *DRIVE_SUBSYSTEM
+  - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyro:
+      '@id': drive
+      #Wheelbase: 2.14
+      leftMaster:
+        org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
+          &Left_Master
+          '@id': leftMaster
+          name: left
+          port: *leftMasterPort
+          encoderDIO1:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+              '@id': leftMasterEncoder1
+              channel: *leftMasterEncoder1Port
+          encoderDIO2:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+              '@id': leftMasterEncoder2
+              channel: *leftMasterEncoder2Port
+          PDP:
+            org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
+          reverseOutput: true
+          reverseSensor: false
+          enableBrakeMode: true
+          postEncoderGearing: 0.13333333333
+          unitPerRotation: 0.47877872 #meters per rotation
+          currentLimit: 50
+          enableVoltageComp: true
+          encoderCPR: 256
+          startingGear: LOW
+          perGearSettings:
+            - &Low_Gear
+              gear: LOW
+              maxSpeed: 2.3
+              kP: 0.03
+              feedForwardCalculator:
+                org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
+                  kS: 0.128
+                  kV: 5.23
+                  kA: 0.0698
+            - &High_Gear
+              gear: HIGH
+              maxSpeed: 5.2
+              kP: 0.03
+              feedForwardCalculator:
+                org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
+                  kS: 0.156
+                  kV: 2.01
+                  kA: 0.154
+          slaveSparks:
+            - port: *leftMasterSlave1Port
+              inverted: false
+            - port: *leftMasterSlave2Port
+              inverted: false
+      rightMaster:
+        org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
+          <<: *Left_Master
+          '@id': rightMaster
+          name: right
+          port: *rightMasterPort
+          encoderDIO1:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+              '@id': rightMasterEncoder1
+              channel: *rightMasterEncoder1Port
+          encoderDIO2:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
+              '@id': rightMasterEncoder2
+              channel: *rightMasterEncoder2Port
+          reverseOutput: false
+          reverseSensor: true
+          perGearSettings:
+            - <<: *Low_Gear
+              feedForwardCalculator:
+                org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
+                  kS: 0.139
+                  kV: 5.17
+                  kA: 0.0554
+            - <<: *High_Gear
+              feedForwardCalculator:
+                org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
+                  kS: 0.165
+                  kV: 2.01
+                  kA: 0.155
+          slaveSparks:
+            - port: *rightMasterSlave1Port
+              PDP: PDP
+              inverted: false
+            - port: *rightMasterSlave2Port
+              PDP: PDP
+              inverted: false
+      startingOverrideAutoshift: false
+      ahrs:
+        org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS:
+          '@id': navX
+          port: kMXP
+          invertYaw: true
+      trackWidthMeters: 0.61755
+      shiftComponent:
+        org.usfirst.frc.team449.robot.components.ShiftComponent:
+          '@id': driveShiftComponent
+          otherShiftables:
+            - org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
+                leftMaster
+            - org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
+                rightMaster
+          piston:
+            '@id': driveShifter
+            module: 0
+            forward: 0
+            reverse: 1
+          startingGear: LOW
+
+*COMMANDS:
+  ########################################################################################################################
+  *DEFAULT_COMMANDS:
+    #***********************************************************************************************************************
+    - *DRIVE_DEFAULT_COMMAND
+    - subsystem:
+        org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+          drive
+      command:
+        org.usfirst.frc.team449.robot.drive.unidirectional.commands.UnidirectionalNavXShiftingDefaultDrive:
+          '@id': defaultDriveCommand
+          kP: 0.0
+          kI: 0.0
+          kD: 0.0
+          maximumOutput: 1
+          absoluteTolerance: 0
+          deadband: 2
+          maxAngularVelToEnterLoop: 3
+          inverted: false
+          highGearAngularCoefficient: 3
+          rampComponent:
+            org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent:
+              maxIncreasePerSecond: 2
+              maxDecreasePerSecond: 1
+          driveStraightLoopEntryTimer:
+            '@id': driveStraightLoopEntryTimer
+            bufferTimeSeconds: 0.15
+          subsystem:
+            org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+              drive
+          oi:
+            org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad:
+              '@id': oi
+              gamepad:
+                org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+                  '@id': driveJoystick
+                  port: *driveJoystickPort
+              rotThrottle:
+                org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
+                  &rotThrottle
+                  '@id': rotThrottle
+                  stick: driveJoystick
+                  axis: 0
+                  smoothingTimeSecs: 0.04
+                  deadband: 0.08
+                  inverted: false
+                  polynomial:
+                    org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
+                      '@id': rotPoly
+                      powerToCoefficientMap: !!map
+                        1: .5
+                        3: .5
+                  scale: .7
+              fwdThrottle:
+                org.usfirst.frc.team449.robot.oi.throttles.ThrottleSum:
+                  '@id': fwdThrottle
+                  throttles:
+                    - org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
+                        <<: *rotThrottle
+                        '@id': posThrottle
+                        axis: 3
+                        inverted: false
+                        deadband: 0.05
+                        polynomial:
+                          org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
+                            '@id': posPoly
+                            powerToCoefficientMap: !!map
+                              1: 2
+                              3: 1
+                    - org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
+                        <<: *rotThrottle
+                        '@id': negThrottle
+                        axis: 2
+                        inverted: true
+                        deadband: 0.05
+                        polynomial:
+                          org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
+                            '@id': negPoly
+                            powerToCoefficientMap: !!map
+                              1: 2
+                              3: 1
+              invertDPad: false
+              dPadShift: 0.1
+              turnInPlaceRotScale: 1
+              rescaleOutputs: true
+              scaleRotByFwdPoly:
+                org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.Polynomial:
+                  '@id': scaleRotByFwdPoly
+                  powerToCoefficientMap: !!map
+                    0.5: 0.4
+                    0: 0.2
+                    #1 : 0.25
+                    #2: 0.25
+          autoshiftComponent:
+            '@id': autoshiftComponent
+            upshiftSpeed: 1.6
+            downshiftSpeed: 1
+            upshiftDebouncer:
+              '@id': upshiftDebouncer
+              bufferTimeSeconds: 0.06
+            upshiftFwdThresh: 0.4
+
+########################################################################################################################
+*UPDATER:
+  org.usfirst.frc.team449.robot.other.Updater:
+    '@id': updater
+    updatables:
+      - org.usfirst.frc.team449.robot.jacksonWrappers.PDP: PDP
+      - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable: drive
+      - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
+      - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS: navX
