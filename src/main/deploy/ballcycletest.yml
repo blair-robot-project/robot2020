@@ -22,6 +22,8 @@ NAVIGATION:
       - &DEFAULT_COMMANDS defaultCommands:
           - &DRIVE_DEFAULT_COMMAND
           - &FEEDER_DEFAULT_COMMAND
+      - &AUTONOMOUS_COMMANDS autoStartupCommand:
+          - &SIMPLE_ROUTINE
   - &UPDATER updater
 
 # Anchors for transclusion into the rest of the map.
@@ -93,6 +95,8 @@ CONSTANTS:
       - &feederIndexingTimeoutSecs 0.3
       - &flywheelSpinUpTimeoutSecs 4
       - &flywheelKP 0.00001
+      - &basicAutoDriveBackSpeed -0.5
+      - &basicAutoDriveBackTimeSeconds 1
 
 
 #Outright move the joystick classes up here so we don't have to keep figuring out where the first
@@ -907,6 +911,52 @@ useCameraServer: false
                           - edu.wpi.first.wpilibj2.command.PrintCommand:
                               SHOOTING
 
+  *AUTONOMOUS_COMMANDS:
+    - *SIMPLE_ROUTINE
+    - edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
+        '@id': basicRoutine
+        requiredSubsystems:
+          - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+              drive
+          - org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
+              shooterFlywheels
+        commands:
+          - edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+              '@id': shooterInitLineShoot
+              commands:
+                - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
+                    '@id': startFlywheelAuto
+                    targetSpeed: *shooterThrottleClose
+                    flywheel:
+                      org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
+                        shooterFlywheels
+                - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
+                    '@id': startKickerAuto
+                    subsystem:
+                      org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
+                        kicker
+          - edu.wpi.first.wpilibj2.command.WaitCommand:
+              seconds: 4.5
+          - org.usfirst.frc.team449.robot.drive.unidirectional.commands.DriveAtSpeed:
+              '@id': drivebackauto
+              subsystem:
+                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                  drive
+              velocity: *basicAutoDriveBackSpeed
+              seconds: *basicAutoDriveBackTimeSeconds
+          - edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+              '@id': shooterStopAuto
+              commands:
+                - org.usfirst.frc.team449.robot._2020.shooter.commands.TurnAllOff:
+                    '@id': shooterStopAutoCommand
+                    subsystem:
+                      org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
+                        shooterFlywheels
+                - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOff:
+                    '@id': kickerStopAutoCommand
+                    subsystem:
+                      org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
+                        kicker
 
 ########################################################################################################################
 *UPDATER:
@@ -918,3 +968,4 @@ useCameraServer: false
       - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
       - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS: navX
       - org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster: shooterFlywheels
+      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic: stopShooterThrottle
