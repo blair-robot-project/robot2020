@@ -85,9 +85,9 @@ CONSTANTS:
       - &shooterThrottleMid 41.63
       - &shooterThrottleClose 38.9
       - &shooterErrorType maxAbsSpeedError
-      - &shooterMaxSpeedError 1.25 # (45.25 - 44) / 90.5
-      - &shooterMaxSpeedDifferenceType maxRelSpeedRange
-      - &shooterMaxShootingSpeedDifference 0.5
+      - &shooterMaxSpeedError 1.25 # In RPS.
+      - &shooterMaxSpeedDifferenceType maxAbsSpeedRange
+      - &shooterMaxShootingSpeedDifference 0.5 # In RPS.
       - &kickerThrottle -0.7
   - Other:
       - &feederIndexingTimeoutSecs 0.3
@@ -207,9 +207,9 @@ useCameraServer: false
         org.usfirst.frc.team449.robot.components.ShiftComponent:
           '@id': driveShiftComponent
           otherShiftables:
-            - org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
+            - org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
                 leftMaster
-            - org.usfirst.frc.team449.robot.jacksonWrappers.MappedSparkMaxExternalEncoder:
+            - org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
                 rightMaster
           piston:
             '@id': driveShifter
