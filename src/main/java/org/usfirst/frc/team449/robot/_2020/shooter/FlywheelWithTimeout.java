@@ -26,7 +26,7 @@ public class FlywheelWithTimeout extends SubsystemBase implements SubsystemFlywh
 
   /** Time from giving the multiSubsystem voltage to being ready to fire, in seconds. */
   private final double timeout;
-  private boolean enabled;
+  private boolean isFlywheelOn;
 
   /**
    * @param implementation
@@ -45,14 +45,18 @@ public class FlywheelWithTimeout extends SubsystemBase implements SubsystemFlywh
 
   @Override
   public void turnFlywheelOn(final double speed) {
-    this.enabled = true;
+    this.isFlywheelOn = true;
     this.implementation.turnFlywheelOn(speed);
   }
 
   @Override
   public void turnFlywheelOff() {
-    this.enabled = false;
+    this.isFlywheelOn = false;
     this.implementation.turnFlywheelOff();
+  }
+
+  public boolean isFlywheelOn() {
+    return this.isFlywheelOn;
   }
 
   @Override
@@ -74,7 +78,7 @@ public class FlywheelWithTimeout extends SubsystemBase implements SubsystemFlywh
   @Override
   public void update() {
     this.implementation.update();
-    this.speedConditionTimer.update(Clock.currentTimeSeconds(), this.enabled && !this.implementation.isConditionTrueCached());
+    this.speedConditionTimer.update(Clock.currentTimeSeconds(), this.isFlywheelOn && !this.implementation.isConditionTrueCached());
 
     SubsystemFlywheel.super.update();
   }
