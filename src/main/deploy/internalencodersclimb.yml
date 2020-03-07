@@ -43,14 +43,13 @@ CONSTANTS:
       - &climberSolenoidForward 4
       - &climberSolenoidReverse 5
   - ButtonNumbers:
-      - &climberOffButtonNumber 4
+      - &climberWinchButtonNumber_reversed 7
       - &climberLowerButtonNumber 5
       - &climberRaiseButtonNumber 6
       - &climberWinchButtonNumber 8
   - Other:
       - &winchSpeed 1.0
       - &winchSpeed_reversed -1.0
-      - &climberWinchButtonNumber_reversed 7
 
 
 # WHETHER TO USE THE CAMERA SERVER

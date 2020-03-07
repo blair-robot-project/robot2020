@@ -22,6 +22,8 @@ NAVIGATION:
       - &DEFAULT_COMMANDS defaultCommands:
           - &DRIVE_DEFAULT_COMMAND
           - &FEEDER_DEFAULT_COMMAND
+      - &AUTONOMOUS_COMMANDS autoStartupCommand:
+          - &SIMPLE_ROUTINE
   - &UPDATER updater
 
 # Anchors for transclusion into the rest of the map.
@@ -67,24 +69,25 @@ CONSTANTS:
       - &shooterStartMid 3
       - &shooterStop 3 # Actually an axis.
       - &shooterStopThrottle 3
-      - &mechsIntakeInDPad 135
-      - &mechsIntakeOutDPad 90
+      - &mechsIntakeInDPad 180
+      - &mechsIntakeOutDPad 0
       - &mechsIntakeStop 5
       - &mechsIntakeStart 6
       - &cough 10 # TODO Should coughing be an actual back-and-forth motion?
   - MotorSpeeds:
       - &intakeBumperIntakingVel 1
+      - &intakeBumperOutVel -1
       - &intakeTransitionWheelIntakingVel 0.3
       - &feederIntakingVel 0.35
       - &feederShootingVel 0.35 # TODO Was at 0.65, but apparently that's less reliable than 0.35.
       - &feederCoughingVel -0.4
       - &intakeTransitionWheelCoughingVel -0.1
       - &shooterMaxSpeed 90.5 # Unused.
-      - &shooterSpeedFar 45.25 # 0.5 * 90.5
-      - &shooterSpeedMid 41.36
-      - &shooterSpeedClose 10
+      - &shooterThrottleFar 45.25 # 0.5 * 90.5
+      - &shooterThrottleMid 41.63
+      - &shooterThrottleClose 38.9
       - &shooterErrorType maxAbsSpeedError
-      - &shooterMaxSpeedError 1 # In RPS.
+      - &shooterMaxSpeedError 1.25 # In RPS.
       - &shooterMaxSpeedDifferenceType maxAbsSpeedRange
       - &shooterMaxShootingSpeedDifference 0.5 # In RPS.
       - &kickerThrottle -0.7
@@ -92,6 +95,8 @@ CONSTANTS:
       - &feederIndexingTimeoutSecs 0.3
       - &flywheelSpinUpTimeoutSecs 4
       - &flywheelKP 0.00001
+      - &basicAutoDriveBackSpeed -0.5
+      - &basicAutoDriveBackTimeSeconds 1
 
 
 #Outright move the joystick classes up here so we don't have to keep figuring out where the first
@@ -146,7 +151,7 @@ useCameraServer: false
               gear: LOW
               postEncoderGearing: 0.0488998
               maxSpeed: 2.3
-              kP: 0.03
+              kP: 0
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                   kS: 0.128
@@ -156,7 +161,7 @@ useCameraServer: false
               gear: HIGH
               postEncoderGearing: 0.12936611
               maxSpeed: 5.2
-              kP: 0.03
+              kP: 0.000001
               feedForwardCalculator:
                 org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
                   kS: 0.156
@@ -230,6 +235,7 @@ useCameraServer: false
       '@id': intakeBumper
       velocities: !!map
         IN_FAST: *intakeBumperIntakingVel
+        OUT_SLOW: *intakeBumperOutVel
       motor:
         org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor:
           '@id': intakeBumperMotor
@@ -372,11 +378,13 @@ useCameraServer: false
           &Fine_Adjust_Right_Command
           '@id': fineAdjustRightCommand
           absoluteTolerance: 0
-          setpoint: 0.005
+          kP: -0.001
+          setpoint: -5.
           drive:
             org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
               drive
           timeout: 1
+          inverted: true
       action: WHEN_PRESSED
 
     - button:
@@ -390,7 +398,9 @@ useCameraServer: false
         org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleRelative:
           <<: *Fine_Adjust_Right_Command
           '@id': fineAdjustLeftCommand
-          inverted: true
+          kP: 0.001
+          setpoint: 5.
+          inverted: false
       action: WHEN_PRESSED
 
     - button:
@@ -399,7 +409,7 @@ useCameraServer: false
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
               mechanismsJoystick
-          buttonNumber: 1 #shoulder right
+          buttonNumber: 7 #shoulder right
       command:
         org.usfirst.frc.team449.robot.generalInterfaces.limelight.commands.ScanThenTurn:
           '@id': scanThenTurnCommand
@@ -408,7 +418,7 @@ useCameraServer: false
             org.usfirst.frc.team449.robot.drive.unidirectional.commands.AHRS.NavXTurnToAngleLimelight:
               '@id': turnToAngleCommand
               absoluteTolerance: 3
-              kP: .001
+              kP: .009
               drive:
                 org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
                   drive
@@ -459,6 +469,31 @@ useCameraServer: false
 
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
+          '@id': driveIntakeStopButton
+          joystick:
+            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
+              driveJoystick
+          buttonNumber: *driverIntakeOff
+      command:
+        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+          '@id': intakeOffGroup
+          commands:
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': intakeBumperOff
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                    intakeBumper
+                mode: "OFF"
+            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                '@id': intakeTransitionWheelOff
+                subsystem:
+                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                    intakeTransitionWheel
+                mode: "OFF"
+      action: WHEN_PRESSED
+
+    - button:
+        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': mechsIntakeStartButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
@@ -471,22 +506,6 @@ useCameraServer: false
 
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          '@id': driveIntakeStopButton
-          joystick:
-            org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              driveJoystick
-          buttonNumber: *driverIntakeOff
-      command:
-        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-          '@id': intakeStopCommand
-          subsystem:
-            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-              intakeBumper
-          mode: "OFF"
-      action: WHEN_PRESSED
-
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
           '@id': mechsIntakeStopButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
@@ -494,8 +513,8 @@ useCameraServer: false
           buttonNumber: *mechsIntakeStop
       command:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-          intakeStopCommand
-      action: CANCEL_WHEN_PRESSED
+          intakeOffGroup
+      action: WHEN_PRESSED
 
     - button:
         org.usfirst.frc.team449.robot.oi.buttons.dPadButton:
@@ -639,7 +658,7 @@ useCameraServer: false
           commands:
             - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
                 '@id': spinUpFlywheelCommand_far
-                targetSpeed: *shooterSpeedFar
+                targetSpeed: *shooterThrottleFar
                 flywheel:
                   org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
                     shooterFlywheels
@@ -663,7 +682,7 @@ useCameraServer: false
           commands:
             - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
                 '@id': spinUpFlywheelCommand_mid
-                targetSpeed: *shooterSpeedMid
+                targetSpeed: *shooterThrottleMid
                 flywheel:
                   org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
                     shooterFlywheels
@@ -687,7 +706,7 @@ useCameraServer: false
           commands:
             - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
                 '@id': spinUpFlywheelCommand_close
-                targetSpeed: *shooterSpeedClose
+                targetSpeed: *shooterThrottleClose
                 flywheel:
                   org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
                     shooterFlywheels
@@ -892,6 +911,52 @@ useCameraServer: false
                           - edu.wpi.first.wpilibj2.command.PrintCommand:
                               SHOOTING
 
+  *AUTONOMOUS_COMMANDS:
+    - *SIMPLE_ROUTINE
+    - edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
+        '@id': basicRoutine
+        requiredSubsystems:
+          - org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+              drive
+          - org.usfirst.frc.team449.robot._2020.shooter.FlywheelWithTimeout:
+              shooterFlywheels
+        commands:
+          - edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+              '@id': shooterInitLineShoot
+              commands:
+                - org.usfirst.frc.team449.robot._2020.shooter.commands.SpinUpFlywheel:
+                    '@id': startFlywheelAuto
+                    targetSpeed: *shooterThrottleClose
+                    flywheel:
+                      org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
+                        shooterFlywheels
+                - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
+                    '@id': startKickerAuto
+                    subsystem:
+                      org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
+                        kicker
+          - edu.wpi.first.wpilibj2.command.WaitCommand:
+              seconds: 4.5
+          - org.usfirst.frc.team449.robot.drive.unidirectional.commands.DriveAtSpeed:
+              '@id': drivebackauto
+              subsystem:
+                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                  drive
+              velocity: *basicAutoDriveBackSpeed
+              seconds: *basicAutoDriveBackTimeSeconds
+          - edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+              '@id': shooterStopAuto
+              commands:
+                - org.usfirst.frc.team449.robot._2020.shooter.commands.TurnAllOff:
+                    '@id': shooterStopAutoCommand
+                    subsystem:
+                      org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster:
+                        shooterFlywheels
+                - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOff:
+                    '@id': kickerStopAutoCommand
+                    subsystem:
+                      org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
+                        kicker
 
 ########################################################################################################################
 *UPDATER:
@@ -903,3 +968,4 @@ useCameraServer: false
       - org.usfirst.frc.team449.robot.oi.unidirectional.arcade.OIArcadeWithDPad: oi
       - org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS: navX
       - org.usfirst.frc.team449.robot._2020.shooter.FlywheelCluster: shooterFlywheels
+      - org.usfirst.frc.team449.robot.oi.throttles.ThrottleBasic: stopShooterThrottle
