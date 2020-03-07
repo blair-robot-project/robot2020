@@ -1,16 +1,18 @@
 package org.usfirst.frc.team449.robot._2020.multiSubsystem;
 
-import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
+import org.usfirst.frc.team449.robot.other.InjectiveDependencyHelper;
+
+import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /** A simple intake subsystem that relies on a single motor to rotate some part of it. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
@@ -34,12 +36,15 @@ public class IntakeSimple extends SubsystemBase
    *
    * @param motor The motor this subsystem controls.
    * @param velocities The velocity for the motor to go at for each {@link IntakeMode}, on the
-   *     interval [-1, 1]. Modes can be missing to indicate that this intake doesn't have/use them.
+   * interval [-1, 1]. Modes can be missing to indicate that this intake doesn't have/use them.
    */
   @JsonCreator
   public IntakeSimple(
       @NotNull @JsonProperty(required = true) final SimpleMotor motor,
       @NotNull @JsonProperty(required = true) final Map<IntakeMode, Double> velocities) {
+
+    InjectiveDependencyHelper.assertInjective(this, motor);
+
     this.motor = motor;
     this.velocities = velocities;
 
@@ -65,12 +70,12 @@ public class IntakeSimple extends SubsystemBase
     return this.mode;
   }
 
-  // TODO Should we have a guard clause that just returns if this.mode == mode?
-  //  This sort of situation appears in a bunch of places.
-
   /** @param mode The mode to switch the intake to. */
   @Override
   public void setMode(@NotNull final SubsystemIntake.IntakeMode mode) {
+    //  This guard means intake instances should not share motors.
+    if (this.getMode() == mode) return;
+
     if (mode == IntakeMode.OFF) {
       this.mode = IntakeMode.OFF;
       motor.setVelocity(0);
@@ -80,7 +85,13 @@ public class IntakeSimple extends SubsystemBase
       this.motor.enable();
       this.motor.setVelocity(this.velocities.get(mode));
     } else {
-      System.err.println(getLogPrefix(this) + "Warning: use of undefined mode " + mode);
+//      System.err.println(getLogPrefix(this) + "Warning: use of undefined mode " + mode);
+//      Shuffleboard.addEventMarker(
+//          "Undefined " + getLogPrefix(this) + "mode used",
+//          "mode: " + mode,
+//          EventImportance.kCritical);
+
+      DriverStation.reportError("Mode not defined for instance: " + mode, false);
     }
   }
 
