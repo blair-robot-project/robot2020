@@ -74,16 +74,16 @@ CONSTANTS:
       - &shooterStartFar 4
       - &shooterStartMid 3
       - &shooterStop 3 # Actually an axis.
-      - &shooterStopThrottle 3
+      - &shooterStopThrottle 0.8
       - &mechsIntakeInDPad 180
       - &mechsIntakeOutDPad 0
       - &mechsIntakeStop 5
       - &mechsIntakeStart 6
       - &cough 10 # TODO Should coughing be an actual back-and-forth motion?
-      - &climberWinchButtonNumber_reversed 7
+      - &climberWinchButtonNumber_reversed 2
       - &climberLowerButtonNumber 5
       - &climberRaiseButtonNumber 6
-      - &climberWinchButtonNumber 8
+      - &climberWinchButtonNumber 1
   - MotorSpeeds:
       - &intakeBumperIntakingVel 1
       - &intakeBumperOutVel -1
@@ -332,7 +332,7 @@ useCameraServer: false
                     enableVoltageComp: true
                     perGearSettings:
                       - gearNum: 0
-                        rampRate: 10
+#                        rampRate: 1
                         kP: *flywheelKP
                         feedForwardCalculator:
                           org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
@@ -353,7 +353,7 @@ useCameraServer: false
                     reverseOutput: false
                     perGearSettings:
                       - gearNum: 0
-                        rampRate: 1
+#                        rampRate: 1
                         kP: *flywheelKP
                         feedForwardCalculator:
                           org.usfirst.frc.team449.robot.jacksonWrappers.FeedForwardCalculators.MappedFeedForwardCalculator:
@@ -802,7 +802,7 @@ useCameraServer: false
           '@id': climberLowerButton
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
+              climberJoystick
           buttonNumber: *climberLowerButtonNumber
       command:
         org.usfirst.frc.team449.robot._2020.climber.commands.SetClimberWithArmState:
@@ -817,7 +817,7 @@ useCameraServer: false
           '@id': climberWinchButton_press
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
+              climberJoystick
           buttonNumber: *climberWinchButtonNumber
       command:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
@@ -831,7 +831,7 @@ useCameraServer: false
           '@id': climberWinchButton_release
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
+              climberJoystick
           buttonNumber: *climberWinchButtonNumber
       command:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOff:
@@ -845,7 +845,7 @@ useCameraServer: false
           '@id': climberWinchButton_reversed_press
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
+              climberJoystick
           buttonNumber: *climberWinchButtonNumber_reversed
       command:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOn:
@@ -863,7 +863,7 @@ useCameraServer: false
           '@id': climberWinchButton_reversed_release
           joystick:
             org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick:
-              mechanismsJoystick
+              climberJoystick
           buttonNumber: *climberWinchButtonNumber_reversed
       command:
         org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.TurnMotorOff:
