@@ -16,7 +16,7 @@ public class SimulatedMotor implements Loggable {
   /** (Ohms) Used to calculate output current. */
   private static final double RESISTANCE = 1;
   /** (N*m / V) Torque per volt due to force of motor. */
-  private static final double TORQUE_COEFF = 4500000;
+  private static final double TORQUE_COEFF = 450000;
   /** (N*m / (R/s)) Torque per RPS due to motor internal friction. */
   private static final double FRICTION_COEFF = -10;
   /**
