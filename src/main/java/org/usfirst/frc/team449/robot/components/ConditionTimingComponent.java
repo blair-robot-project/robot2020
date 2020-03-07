@@ -31,7 +31,7 @@ public abstract class ConditionTimingComponent implements Loggable {
    * @param value the current value
    */
   @Contract(pure = false)
-  protected void update(final double now, final boolean value) {
+  public void update(final double now, final boolean value) {
     this.now = now;
     if (value != this.current) this.forceUpdate(now, value);
   }
@@ -43,7 +43,7 @@ public abstract class ConditionTimingComponent implements Loggable {
    * @param now the current time
    */
   @Contract(pure = false)
-  protected void forceUpdate(final double now, final boolean value) {
+  public void forceUpdate(final double now, final boolean value) {
     this.now = now;
 
     if (value) {
