@@ -7,6 +7,7 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.BooleanSupplier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake;
 import org.usfirst.frc.team449.robot.components.ConditionTimingComponentDecorator;
 import org.usfirst.frc.team449.robot.other.Clock;
@@ -16,6 +17,7 @@ import org.usfirst.frc.team449.robot.other.Clock;
  * sensors.
  */
 public class DefaultFeederCommand extends CommandBase implements Loggable {
+  @Nullable private final SubsystemIntake transition;
   @NotNull private final SubsystemIntake feeder;
   @NotNull private final SubsystemIntake.IntakeMode runMode;
   @NotNull private final ConditionTimingComponentDecorator shouldBeRunning;
@@ -26,7 +28,8 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
   /**
    * Default constructor
    *
-   * @param subsystem the feeder subsystem to operate on
+   * @param transition the transition wheel that gets turned on but not off by this command
+   * @param feeder the feeder subsystem to operate on
    * @param sensor the first sensor of the transition from intake to feeder
    * @param runMode the {@link org.usfirst.frc.team449.robot._2020.multiSubsystem.SubsystemIntake.IntakeMode}
    * to run the feeder at when
@@ -35,11 +38,13 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
    */
   @JsonCreator
   public DefaultFeederCommand(
-      @NotNull @JsonProperty(required = true) final SubsystemIntake subsystem,
+      @Nullable final SubsystemIntake transition,
+      @NotNull @JsonProperty(required = true) final SubsystemIntake feeder,
       @NotNull @JsonProperty(required = true) final BooleanSupplier sensor,
       @NotNull @JsonProperty(required = true) final SubsystemIntake.IntakeMode runMode,
       @Deprecated final double timeout) {
-    this.feeder = subsystem;
+    this.transition = transition;
+    this.feeder = feeder;
     this.shouldBeRunning = new ConditionTimingComponentDecorator(this::shouldBeRunning, false);
     this.sensor = new ConditionTimingComponentDecorator(sensor, false);
     this.runMode = runMode;
@@ -53,7 +58,10 @@ public class DefaultFeederCommand extends CommandBase implements Loggable {
     this.sensor.update(currentTime);
 
     this.shouldBeRunning.update(currentTime);
-    if (this.shouldBeRunning.justBecameTrue()) this.feeder.setMode(this.runMode);
+    if (this.shouldBeRunning.justBecameTrue()) {
+      this.feeder.setMode(this.runMode);
+      if(transition != null) this.transition.setMode(this.runMode);
+    }
     if (this.shouldBeRunning.justBecameFalse()) this.feeder.setMode(SubsystemIntake.IntakeMode.OFF);
   }
 

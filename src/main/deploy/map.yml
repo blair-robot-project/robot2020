@@ -87,15 +87,15 @@ CONSTANTS:
   - MotorSpeeds:
       - &intakeBumperIntakingVel 1
       - &intakeBumperOutVel -1
-      - &intakeTransitionWheelIntakingVel 0.3
-      - &feederIntakingVel 0.35
-      - &feederShootingVel 0.35 # TODO Was at 0.65, but apparently that's less reliable than 0.35.
+      - &intakeTransitionWheelIntakingVel 0.5
+      - &feederIntakingVel 0.6
+      - &feederShootingVel 0.3 # TODO Was at 0.65, but apparently that's less reliable than 0.35.
       - &feederCoughingVel -0.4
       - &intakeTransitionWheelCoughingVel -0.1
       - &shooterMaxSpeed 90.5 # Unused.
       - &shooterThrottleFar 45.25 # 0.5 * 90.5
       - &shooterThrottleMid 41.63
-      - &shooterThrottleClose 38.9
+      - &shooterThrottleClose 41.63
       - &shooterErrorType maxAbsSpeedError
       - &shooterMaxSpeedError 1.25 # In RPS.
       - &shooterMaxSpeedDifferenceType maxAbsSpeedRange
@@ -104,11 +104,12 @@ CONSTANTS:
       - &winchSpeed 1.0
       - &winchSpeed_reversed -1.0
   - Other:
-      - &feederIndexingTimeoutSecs 0.3
+      - &feederIndexingTimeoutSecs 60
       - &flywheelSpinUpTimeoutSecs 4
       - &flywheelKP 0.00001
-      - &basicAutoDriveBackSpeed -0.5
-      - &basicAutoDriveBackTimeSeconds 1
+      - &basicAutoDriveBackSpeed -0.3
+      - &basicAutoDriveBackTimeSeconds 2
+      - &coughDurationSeconds 0.1
 
 
 #Outright move the joystick classes up here so we don't have to keep figuring out where the first
@@ -651,34 +652,42 @@ useCameraServer: false
               mechanismsJoystick
           buttonNumber: *cough
       command:
-        edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+        edu.wpi.first.wpilibj2.command.SequentialCommandGroup:
           '@id': coughCommandSequence
           commands:
-            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-                '@id': feederStartCommand_coughing
-                subsystem:
-                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                    feeder
-                mode: OUT_SLOW
-            - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-                '@id': intakeTransitionWheelStartCommand_coughing
-                subsystem:
-                  org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                    intakeTransitionWheel
-                mode: OUT_SLOW
-      action: WHILE_HELD
-
-    - button:
-        org.usfirst.frc.team449.robot.oi.buttons.SimpleButton:
-          coughButton
-      command:
-        org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
-          '@id': feederStopCommand_coughingend
-          subsystem:
-            org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-              feeder
-          mode: "OFF"
-      action: WHEN_RELEASED
+            - edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+                '@id': coughCommandSequenceStart
+                commands:
+                  - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                      '@id': feederStartCommand_coughing
+                      subsystem:
+                        org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                          feeder
+                      mode: OUT_SLOW
+                  - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                      '@id': intakeTransitionWheelStartCommand_coughing
+                      subsystem:
+                        org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                          intakeTransitionWheel
+                      mode: "OFF"
+            - edu.wpi.first.wpilibj2.command.WaitCommand:
+                seconds: *coughDurationSeconds
+            - edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
+                '@id': coughCommandSequenceEnd
+                commands:
+                  - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+                      '@id': feederStartCommand_coughingend
+                      subsystem:
+                        org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                          feeder
+                      mode: "OFF"
+#                  - org.usfirst.frc.team449.robot._2020.multiSubsystem.commands.SetIntakeMode:
+#                      '@id': intakeTransitionWheelStartCommand_coughingend
+#                      subsystem:
+#                        org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+#                          intakeTransitionWheel
+#                      mode: "OFF"
+      action: WHEN_PRESSED
 
     #***********************************************************************************************************************
     - *SHOOTER_COMMANDS
@@ -894,8 +903,8 @@ useCameraServer: false
           highGearAngularCoefficient: 3
           rampComponent:
             org.usfirst.frc.team449.robot.generalInterfaces.doubleUnaryOperator.RampComponent:
-              maxIncreasePerSecond: 2
-              maxDecreasePerSecond: 1
+              maxIncreasePerSecond: 3
+              maxDecreasePerSecond: 3
           driveStraightLoopEntryTimer:
             '@id': driveStraightLoopEntryTimer
             bufferTimeSeconds: 0.15
@@ -922,7 +931,7 @@ useCameraServer: false
                       '@id': rotPoly
                       powerToCoefficientMap: !!map
                         1: .5
-                        3: .5
+#                        3: .5
                   scale: .7
               fwdThrottle:
                 org.usfirst.frc.team449.robot.oi.throttles.ThrottleSum:
@@ -939,7 +948,7 @@ useCameraServer: false
                             '@id': posPoly
                             powerToCoefficientMap: !!map
                               1: 2
-                              3: 1
+                              2: 1
                     - org.usfirst.frc.team449.robot.oi.throttles.ThrottlePolynomial:
                         <<: *rotThrottle
                         '@id': negThrottle
@@ -951,7 +960,7 @@ useCameraServer: false
                             '@id': negPoly
                             powerToCoefficientMap: !!map
                               1: 2
-                              3: 1
+                              2: 1
               invertDPad: false
               dPadShift: 0.1
               turnInPlaceRotScale: 1
@@ -966,7 +975,7 @@ useCameraServer: false
                     #2: 0.25
           autoshiftComponent:
             '@id': autoshiftComponent
-            upshiftSpeed: 1.6
+            upshiftSpeed: 3
             downshiftSpeed: 1
             upshiftDebouncer:
               '@id': upshiftDebouncer
@@ -991,14 +1000,12 @@ useCameraServer: false
                 - org.usfirst.frc.team449.robot._2020.feeder.commands.DefaultFeederCommand:
                     runMode: IN_FAST
                     timeout: *feederIndexingTimeoutSecs
-                    subsystem:
-                      org.usfirst.frc.team449.robot._2020.intake.IntakeCluster:
-                        '@id': feederAndTransitionWheel
-                        intakes:
-                          - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                              feeder
-                          - org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
-                              intakeTransitionWheel
+                    feeder:
+                      org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                        feeder
+                    transition:
+                      org.usfirst.frc.team449.robot._2020.multiSubsystem.IntakeSimple:
+                        intakeTransitionWheel
                     sensor:
                       org.usfirst.frc.team449.robot.jacksonWrappers.MappedDigitalInput:
                         '@id': feederSensor1
@@ -1063,14 +1070,7 @@ useCameraServer: false
                       org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
                         kicker
           - edu.wpi.first.wpilibj2.command.WaitCommand:
-              seconds: 4.5
-          - org.usfirst.frc.team449.robot.drive.unidirectional.commands.DriveAtSpeed:
-              '@id': drivebackauto
-              subsystem:
-                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
-                  drive
-              velocity: *basicAutoDriveBackSpeed
-              seconds: *basicAutoDriveBackTimeSeconds
+              seconds: 10
           - edu.wpi.first.wpilibj2.command.ParallelCommandGroup:
               '@id': shooterStopAuto
               commands:
@@ -1084,6 +1084,13 @@ useCameraServer: false
                     subsystem:
                       org.usfirst.frc.team449.robot._2020.multiSubsystem.AnalogMotorSingleSpeed:
                         kicker
+          - org.usfirst.frc.team449.robot.drive.unidirectional.commands.DriveAtSpeed:
+              '@id': drivebackauto
+              subsystem:
+                org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWithGyroShiftable:
+                  drive
+              velocity: *basicAutoDriveBackSpeed
+              seconds: *basicAutoDriveBackTimeSeconds
 
 ########################################################################################################################
 *UPDATER:
