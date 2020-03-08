@@ -16,7 +16,6 @@ import org.usfirst.frc.team449.robot.generalInterfaces.limelight.Limelight;
  * 2: FarDistance same but with 2x zoom for being farther away.
  * 3: N/A 4: N/A 5: N/A 6: N/A 7: N/A 8: N/A 9: N/A
  */
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class SetPipeline extends InstantCommand {
 
   /**
