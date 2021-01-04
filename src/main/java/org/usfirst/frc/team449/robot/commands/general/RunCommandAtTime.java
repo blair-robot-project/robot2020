@@ -9,14 +9,16 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import org.jetbrains.annotations.NotNull;
 
-/** Runs a given command at a given in-game time. */
+/**
+ * Runs a given command at a given in-game time.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class RunCommandAtTime extends SequentialCommandGroup {
 
   /**
    * Default command.
    *
-   * @param time The time, in seconds before the current period ends, to run the command at.
+   * @param time    The time, in seconds before the current period ends, to run the command at.
    * @param command The command to run.
    */
   @JsonCreator

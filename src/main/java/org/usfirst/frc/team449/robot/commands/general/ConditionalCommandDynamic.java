@@ -7,10 +7,11 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import java.util.Objects;
-import java.util.function.BooleanSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+import java.util.function.BooleanSupplier;
 
 /**
  * A ConditionalCommand that takes a lambda for determining which command to run and that checks its
@@ -21,8 +22,8 @@ public class ConditionalCommandDynamic extends ConditionalCommand {
   /**
    * Default constructor
    *
-   * @param onTrue The Command to execute if BooleanSupplier returns true.
-   * @param onFalse The Command to execute if BooleanSupplier returns false.
+   * @param onTrue          The Command to execute if BooleanSupplier returns true.
+   * @param onFalse         The Command to execute if BooleanSupplier returns false.
    * @param booleanSupplier A method for determining which command to run.
    */
   @JsonCreator

@@ -22,7 +22,7 @@ public class PerpetualCommandReinitializing extends PerpetualCommand {
    * Creates a new PerpetualCommand. Will run another command in perpetuity, ignoring that command's
    * end conditions, unless this command itself is interrupted.
    *
-   * @param command the command to run perpetually
+   * @param command            the command to run perpetually
    * @param requiredSubsystems the list of subsystems that this command requires
    */
   @JsonCreator

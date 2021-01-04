@@ -2,15 +2,18 @@ package org.usfirst.frc.team449.robot.commands.general;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Objects;
-import java.util.function.BooleanSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 
-/** Wraps a {@link BooleanSupplier} and only updates its result when told to. */
+import java.util.function.BooleanSupplier;
+
+/**
+ * Wraps a {@link BooleanSupplier} and only updates its result when told to.
+ */
 public class BooleanSupplierUpdatable implements BooleanSupplier, Updatable {
-  @NotNull private final BooleanSupplier source;
+  @NotNull
+  private final BooleanSupplier source;
   private boolean cachedValue;
 
   /**
@@ -23,7 +26,7 @@ public class BooleanSupplierUpdatable implements BooleanSupplier, Updatable {
       @NotNull @JsonProperty(required = true) final BooleanSupplier source,
       @Nullable final Boolean initialValue) {
     this.source = source;
-    this.cachedValue = Objects.requireNonNullElseGet(initialValue, source::getAsBoolean);
+    this.cachedValue = initialValue != null ? initialValue : source.getAsBoolean();
   }
 
   /**
@@ -36,7 +39,9 @@ public class BooleanSupplierUpdatable implements BooleanSupplier, Updatable {
     return this.cachedValue;
   }
 
-  /** Updates the cached value of the supplier. */
+  /**
+   * Updates the cached value of the supplier.
+   */
   @Override
   public void update() {
     this.cachedValue = this.source.getAsBoolean();

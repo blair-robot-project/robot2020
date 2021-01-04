@@ -38,15 +38,11 @@ public class LEDComponent {
     Shuffleboard.addEventMarker("LED Controller", "LED's off!", EventImportance.kNormal);
   }
 
-  public void setSpecificRangeHSV(int lowerBound, int upperBound, int h, int s, int v) {
-    int checkedLowerBound;
-    int checkedUpperBound;
+  public void setSpecificRangeRGB(int lowerBound, int upperBound, int r, int g, int b) {
+    //TODO check if the same logic used for setSpecificRangeHSB works for RGB
 
-    if (lowerBound < 0) {
-      checkedLowerBound = 0;
-    } else {
-      checkedLowerBound = lowerBound;
-    }
+    int checkedLowerBound = Math.max(lowerBound, 0);
+    int checkedUpperBound;
 
     if (upperBound < buffer.getLength()) {
       Shuffleboard.addEventMarker(
@@ -59,7 +55,7 @@ public class LEDComponent {
     }
 
     for (int i = checkedLowerBound; i < checkedUpperBound; i++) {
-      buffer.setHSV(i, h, s, v);
+      buffer.setRGB(i, r, g, b);
     }
   }
 
@@ -68,21 +64,6 @@ public class LEDComponent {
   }
 
   public void setStripRGB(int r, int g, int b) {
-    int[] HSVConversion = RGBtoHSV(r, g, b);
-    setStripHSV(HSVConversion[0], HSVConversion[1], HSVConversion[2]);
-  }
-
-  public void setStripHSV(int h, int s, int v) {
-    setSpecificRangeHSV(0, buffer.getLength(), h, s, v);
-  }
-
-  public int[] RGBtoHSV(int r, int g, int b) {
-    int[] storage = new int[3];
-    // todo this
-    storage[0] = r;
-    storage[1] = g;
-    storage[2] = b;
-
-    return storage;
+    setSpecificRangeRGB(0, buffer.getLength(), r, g, b);
   }
 }

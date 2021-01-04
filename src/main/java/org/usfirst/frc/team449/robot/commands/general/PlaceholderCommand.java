@@ -3,6 +3,8 @@ package org.usfirst.frc.team449.robot.commands.general;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Set;
 
 /**
@@ -13,11 +15,14 @@ import java.util.Set;
  * edu.wpi.first.wpilibj2.command.PrintCommand}
  */
 public class PlaceholderCommand implements Command {
-  /** The singleton instance. */
+  /**
+   * The singleton instance.
+   */
   private static final PlaceholderCommand instance = new PlaceholderCommand();
 
   @JsonCreator
-  private PlaceholderCommand() {}
+  private PlaceholderCommand() {
+  }
 
   /**
    * Returns a default instance that does nothing when executed.
@@ -27,6 +32,19 @@ public class PlaceholderCommand implements Command {
   @JsonCreator
   public static PlaceholderCommand getInstance() {
     return instance;
+  }
+
+  /**
+   * If the given command is null, returns its default instance.
+   * Otherwise, it just gives the command back.
+   *
+   * @param command A command that may or may not be null
+   * @return <code>command</code> if it's not null, otherwise the
+   * the default instance of PlaceholderCommand
+   */
+  @NotNull
+  public static Command getInstanceIfNull(Command command) {
+    return command != null ? command : instance;
   }
 
   /**

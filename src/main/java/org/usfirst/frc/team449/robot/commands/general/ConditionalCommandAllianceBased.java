@@ -9,14 +9,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import org.jetbrains.annotations.NotNull;
 
-/** A ConditionalCommand that chooses which command to run based off of alliance. */
+/**
+ * A ConditionalCommand that chooses which command to run based off of alliance.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ConditionalCommandAllianceBased extends ConditionalCommand {
 
   /**
    * Default constructor.
    *
-   * @param redCommand The Command to execute if the robot is on the red alliance
+   * @param redCommand  The Command to execute if the robot is on the red alliance
    * @param blueCommand The Command to execute if the robot is on the blue alliance
    */
   @JsonCreator

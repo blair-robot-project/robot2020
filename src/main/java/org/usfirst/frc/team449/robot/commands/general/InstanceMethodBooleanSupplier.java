@@ -3,11 +3,11 @@ package org.usfirst.frc.team449.robot.commands.general;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+
 import java.lang.reflect.Method;
 import java.util.function.BooleanSupplier;
 
-/** @param <T> */
-public class InstanceMethodBooleanSupplier<T> implements BooleanSupplier {
+public class InstanceMethodBooleanSupplier implements BooleanSupplier {
   private final BooleanSupplier invoke;
 
   @JsonCreator

@@ -18,7 +18,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 /** Turn a certain number of degrees from the current heading, based on input from the limelight */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
-    extends NavXTurnToAngleRelative {
+    extends NavXTurnToAngleRelative<T> {
 
   /**
    * Default constructor.
@@ -81,7 +81,7 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
         "NavXTurnToAngleLimelight init.", this.getClass().getSimpleName(), EventImportance.kNormal);
     // Logger.addEvent("NavXRelativeTurnToAngle init.", this.getClass());
     // Do math to setup the setpoint.
-    this.setSetpoint(clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() + setpoint));
+    this.setSetpoint(clipTo180(subsystem.getHeadingCached() + setpoint));
   }
 
   @Override
@@ -90,7 +90,7 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
     System.out.println(getSetpoint());
     System.out.println(
         pidController.calculate(
-            ((SubsystemAHRS) subsystem).getHeadingCached(), pidController.getSetpoint()));
+            subsystem.getHeadingCached(), pidController.getSetpoint()));
     System.out.println("system output: " + getOutput());
   }
 

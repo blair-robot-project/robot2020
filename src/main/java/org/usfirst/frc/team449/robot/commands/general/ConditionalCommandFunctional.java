@@ -7,18 +7,21 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import java.util.function.BooleanSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/** A generic ConditionalCommand that takes a lambda for determining which command to run. */
+import java.util.function.BooleanSupplier;
+
+/**
+ * A generic ConditionalCommand that takes a lambda for determining which command to run.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ConditionalCommandFunctional extends ConditionalCommand {
   /**
    * Default constructor
    *
-   * @param onTrue The Command to execute if BooleanSupplier returns true
-   * @param onFalse The Command to execute if BooleanSupplier returns false.
+   * @param onTrue          The Command to execute if BooleanSupplier returns true
+   * @param onFalse         The Command to execute if BooleanSupplier returns false.
    * @param booleanSupplier A method for determining which command to run.
    */
   @JsonCreator

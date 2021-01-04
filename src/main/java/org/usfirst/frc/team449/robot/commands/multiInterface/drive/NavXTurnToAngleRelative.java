@@ -17,7 +17,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 /** Turn a certain number of degrees from the current heading. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
-    extends NavXTurnToAngle {
+    extends NavXTurnToAngle<T> {
 
   /**
    * Default constructor.
@@ -87,7 +87,7 @@ public class NavXTurnToAngleRelative<T extends Subsystem & DriveUnidirectional &
         "NavXTurnToAngleRelative init.", this.getClass().getSimpleName(), EventImportance.kNormal);
     // Logger.addEvent("NavXRelativeTurnToAngle init.", this.getClass());
     // Do math to setup the setpoint.
-    this.setSetpoint(clipTo180(((SubsystemAHRS) subsystem).getHeadingCached() + setpoint));
+    this.setSetpoint(clipTo180(subsystem.getHeadingCached() + setpoint));
   }
 
   /** Log when the command ends. */
