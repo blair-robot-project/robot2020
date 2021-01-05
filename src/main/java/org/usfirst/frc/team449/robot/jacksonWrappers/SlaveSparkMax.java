@@ -24,7 +24,7 @@ public class SlaveSparkMax implements SlaveMotor, Loggable {
 
     this.slaveSpark = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-    this.inverted = invert == null ? false : invert;
+    this.inverted = invert != null && invert;
 
     this.slaveSpark
         .getForwardLimitSwitch(CANDigitalInput.LimitSwitchPolarity.kNormallyOpen)

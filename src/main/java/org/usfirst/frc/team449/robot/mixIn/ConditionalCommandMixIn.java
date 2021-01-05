@@ -8,7 +8,7 @@ import java.util.function.BooleanSupplier;
 
 /**
  * A mix-in for {@link edu.wpi.first.wpilibj2.command.Command} that annotates its constructor for
- * use with Jackson. Don't make sublasses of this.
+ * use with Jackson. Don't make subclasses of this.
  */
 public abstract class ConditionalCommandMixIn {
   /**

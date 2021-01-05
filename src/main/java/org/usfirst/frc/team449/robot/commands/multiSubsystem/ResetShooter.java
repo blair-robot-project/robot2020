@@ -32,7 +32,7 @@ public class ResetShooter<T extends Subsystem & SubsystemIntake & SubsystemSolen
     if (subsystemIntake != null) {
       addCommands(
           new SolenoidReverse(subsystemIntake),
-          new SetIntakeMode(subsystemIntake, SubsystemIntake.IntakeMode.OFF));
+          new SetIntakeMode<>(subsystemIntake, SubsystemIntake.IntakeMode.OFF));
     }
   }
 }

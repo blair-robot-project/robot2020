@@ -4,16 +4,19 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.commands.limelight.SetPipeline;
 import org.usfirst.frc.team449.robot.commands.multiInterface.drive.UnidirectionalNavXDefaultDrive;
 import org.usfirst.frc.team449.robot.components.limelight.LimelightComponent;
+import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectional;
+import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
 /**
  * Turns on the limelight LEDs and starts scanning for a target When one is found, it overrides the
  * default drive command and turns to that target
  */
-public class ScanThenTurn extends SequentialCommandGroup {
+public class ScanThenTurn<T extends Subsystem & DriveUnidirectional & SubsystemAHRS> extends SequentialCommandGroup {
 
   /**
    * Default constructor
@@ -28,7 +31,7 @@ public class ScanThenTurn extends SequentialCommandGroup {
   @JsonCreator
   public ScanThenTurn(
       @JsonProperty(required = true) int scannerPipe,
-      @NotNull @JsonProperty(required = true) UnidirectionalNavXDefaultDrive driveCommand,
+      @NotNull @JsonProperty(required = true) UnidirectionalNavXDefaultDrive<T> driveCommand,
       @NotNull @JsonProperty(required = true) Command limelightCommand,
       @JsonProperty(required = true) int driverPipe) {
     addCommands(

@@ -20,7 +20,7 @@ public class GoToPosition<T extends Subsystem & SubsystemPosition> extends Comma
   @NotNull @Log.Exclude private final T subsystem;
 
   /** The position to go to, in feet. */
-  private double setpoint;
+  private final double setpoint;
 
   /**
    * Default constructor

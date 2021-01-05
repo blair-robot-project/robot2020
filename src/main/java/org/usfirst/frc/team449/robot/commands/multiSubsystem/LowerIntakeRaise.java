@@ -63,10 +63,10 @@ public class LowerIntakeRaise<
     addCommands(
         new SetSolenoid(actuatedIntake, intakeSolenoidPos),
         new GoToPosition<>(elevator, elevatorIntakePos),
-        new SetIntakeMode(actuatedIntake, actuatedIntakeMode),
-        new SetIntakeMode(carriage, carriageIntakeMode),
+        new SetIntakeMode<>(actuatedIntake, actuatedIntakeMode),
+        new SetIntakeMode<>(carriage, carriageIntakeMode),
         new IntakeUntilConditionMet<>(carriage, carriageIntakeMode, carriageHoldMode),
-        new SetIntakeMode(actuatedIntake, SubsystemIntake.IntakeMode.OFF),
+        new SetIntakeMode<>(actuatedIntake, SubsystemIntake.IntakeMode.OFF),
         new GoToPosition<>(elevator, elevatorUpPos));
     // Retract the intake by setting the piston to the opposite
     if (raiseIntake != null && raiseIntake) {

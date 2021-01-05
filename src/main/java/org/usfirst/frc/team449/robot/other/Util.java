@@ -38,8 +38,7 @@ public class Util {
   public static double clamp(final double value, final double lBound, final double uBound) {
     if (uBound < lBound) throw new IllegalArgumentException("uBound < lBound");
     if (value > uBound) return uBound;
-    if (value < lBound) return lBound;
-    return value;
+    return Math.max(value, lBound);
   }
 
   /**

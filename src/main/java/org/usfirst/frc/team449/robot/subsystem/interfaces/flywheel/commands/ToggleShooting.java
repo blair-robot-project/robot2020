@@ -31,7 +31,7 @@ public final class ToggleShooting<T extends Subsystem & SubsystemFlywheel>
 
           switch (subsystem.getFlywheelState()) {
             case OFF:
-              commandToSchedule = new SpinUpThenShoot(subsystem, feeder);
+              commandToSchedule = new SpinUpThenShoot<>(subsystem, feeder);
               break;
             case SHOOTING:
             case SPINNING_UP:

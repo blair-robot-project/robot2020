@@ -40,7 +40,7 @@ public class ClimberCurrentLimited extends SubsystemBase
   /** Whether the condition was met last time caching was done. */
   private boolean conditionMetCached;
 
-  private double percentVoltage;
+  private final double percentVoltage;
 
   /**
    * Default constructor

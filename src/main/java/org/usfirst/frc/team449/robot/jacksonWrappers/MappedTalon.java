@@ -363,8 +363,6 @@ public class MappedTalon implements SmartMotor {
           "WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage,
           this.getClass().getSimpleName(),
           EventImportance.kNormal);
-      // Logger.addEvent("WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage,
-      // this.getClass());
       percentVoltage = Math.signum(percentVoltage);
     }
 

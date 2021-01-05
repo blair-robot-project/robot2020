@@ -9,27 +9,38 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 
-/** A class representing a single axis on a joystick. */
+/**
+ * A class representing a single axis on a joystick.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ThrottleBasic implements Throttle {
 
-  /** The stick we're using */
-  @NotNull protected final Joystick stick;
+  /**
+   * The stick we're using
+   */
+  @NotNull
+  protected final Joystick stick;
 
-  /** The axis on the joystick we care about. */
+  /**
+   * The axis on the joystick we care about.
+   */
   private final int axis;
 
-  /** Whether or not the controls should be inverted */
+  /**
+   * Whether or not the controls should be inverted
+   */
   private final boolean inverted;
 
-  /** The cached value of the output. */
+  /**
+   * The cached value of the output.
+   */
   protected double cachedOutput;
 
   /**
    * Default constructor.
    *
-   * @param stick The Joystick object being used
-   * @param axis The axis being used. 0 is X, 1 is Y, 2 is Z.
+   * @param stick    The Joystick object being used
+   * @param axis     The axis being used. 0 is X, 1 is Y, 2 is Z.
    * @param inverted Whether or not to invert the joystick input. Defaults to false.
    */
   @JsonCreator
@@ -63,7 +74,9 @@ public class ThrottleBasic implements Throttle {
     return cachedOutput;
   }
 
-  /** Updates all cached values with current ones. */
+  /**
+   * Updates all cached values with current ones.
+   */
   @Override
   public void update() {
     cachedOutput = getValue();
@@ -84,41 +97,4 @@ public class ThrottleBasic implements Throttle {
     return "Throttle " + stick.getName() + " axis " + axis;
   }
 
-  //    /**
-  //     * Get the headers for the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of String labels for data, where N is the length of the
-  // Object[] returned by getData().
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public String[] getHeader() {
-  //        return new String[]{
-  //                "value"
-  //        };
-  //    }
-  //
-  //    /**
-  //     * Get the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public Object[] getData() {
-  //        return new Object[]{
-  //                getValueCached()
-  //        };
-  //    }
-  //
-  //    /**
-  //     * Get the name of this object.
-  //     *
-  //     * @return A string that will identify this object in the log file.
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public String getLogName() {
-  //        return "Stick_" + stick.getPort() + "_Axis_" + axis;
-  //    }
 }

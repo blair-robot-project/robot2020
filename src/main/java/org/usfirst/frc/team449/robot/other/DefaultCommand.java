@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class DefaultCommand implements Loggable {
 
   /** The command of this defaultCommand; field to allow logging */
-  private Command command;
+  private final Command command;
 
   /**
    * Sets the given command as the default command for the given subsystem.

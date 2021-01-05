@@ -176,7 +176,7 @@ public class UnidirectionalNavXDefaultDrive<
     this.rightOutput = this.oi.getLeftRightOutputCached()[1];
 
     // Ramp if it exists
-    if (this.leftRamp != null) {
+    if (this.leftRamp != null && this.rightRamp != null) {
       this.leftOutput = this.leftRamp.applyAsDouble(this.leftOutput);
       this.rightOutput = this.rightRamp.applyAsDouble(this.rightOutput);
     }
@@ -233,53 +233,6 @@ public class UnidirectionalNavXDefaultDrive<
         EventImportance.kNormal);
     // Logger.addEvent("UnidirectionalNavXArcadeDrive End.", this.getClass());
   }
-
-  //    /**
-  //     * Get the headers for the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of String labels for data, where N is the length of the
-  // Object[] returned by getData().
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public String[] getHeader() {
-  //        return new String[]{
-  //                "drivingStraight",
-  //                "running",
-  //                "raw_output",
-  //                "processed_output",
-  //                "final_output"
-  //        };
-  //    }
-  //
-  //    /**
-  //     * Get the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public Object[] getData() {
-  //        return new Object[]{
-  //                drivingStraight,
-  //                this.isRunning(),
-  //                rawOutput,
-  //                processedOutput,
-  //                finalOutput
-  //        };
-  //    }
-  //
-  //    /**
-  //     * Get the name of this object.
-  //     *
-  //     * @return A string that will identify this object in the log file.
-  //     */
-  //    @Override
-  //    @NotNull
-  //    @Contract(pure = true)
-  //    public String getLogName() {
-  //        return "UnidirectionalNavXDefaultDrive";
-  //    }
 
   @Log
   public boolean isDrivingStraight() {

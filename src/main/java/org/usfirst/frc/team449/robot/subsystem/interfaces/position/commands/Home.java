@@ -20,10 +20,10 @@ public class Home<T extends Subsystem & SubsystemPosition> extends CommandBase {
   @NotNull @Log.Exclude private final T subsystem;
 
   /** The speed to go at, on [0, 1]. */
-  private double speed;
+  private final double speed;
 
   /** Whether to use the forward or reverse limit switch. */
-  private boolean useForward;
+  private final boolean useForward;
 
   /**
    * Default constructor

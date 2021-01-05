@@ -27,7 +27,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class FieldOrientedUnidirectionalDriveCommandShifting<
         T extends Subsystem & DriveUnidirectional & SubsystemAHRS & DriveShiftable>
-    extends FieldOrientedUnidirectionalDriveCommand {
+    extends FieldOrientedUnidirectionalDriveCommand<T> {
 
   /** The drive to execute this command on. */
   @NotNull protected final T subsystem;
@@ -119,7 +119,7 @@ public class FieldOrientedUnidirectionalDriveCommandShifting<
           this.oi.getVelCached(),
           this.subsystem.getLeftVelCached(),
           this.subsystem.getRightVelCached(),
-          gear -> this.subsystem.setGear(gear));
+          this.subsystem::setGear);
     }
 
     // Gain schedule the loop if we shifted

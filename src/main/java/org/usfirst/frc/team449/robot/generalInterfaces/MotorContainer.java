@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public class MotorContainer implements Loggable {
   @NotNull @Log.Exclude private static final MotorContainer instance = new MotorContainer();
 
+  //TODO this field is never accessed
   @NotNull private final List<SmartMotor> motors = new ArrayList<>();
 
   private MotorContainer() {

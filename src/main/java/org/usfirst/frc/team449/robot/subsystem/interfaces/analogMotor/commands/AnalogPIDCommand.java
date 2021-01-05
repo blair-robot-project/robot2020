@@ -42,7 +42,7 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
   /** The time this command was initiated */
   protected long startTime;
   /** Supplies the setpoint */
-  @NotNull private DoubleSupplier setpointSupplier;
+  @NotNull private final DoubleSupplier setpointSupplier;
 
   /**
    * @param onTargetBuffer A buffer timer for having the loop be on target before it stops running.
@@ -110,11 +110,7 @@ public class AnalogPIDCommand<T extends Subsystem & SubsystemAnalogMotor> extend
     this.minimumOutput = minimumOutput;
 
     // Supplying a setpoint, in degrees from 180 to -180.
-    if (setpointSupplier == null) {
-      this.setpointSupplier = () -> setpoint;
-    } else {
-      this.setpointSupplier = setpointSupplier;
-    }
+    this.setpointSupplier = setpointSupplier != null ? setpointSupplier : () -> setpoint;
 
     // Make the processVariableSupplier equal the setpoint
     this.processVariableSupplier = processVariableSupplier;

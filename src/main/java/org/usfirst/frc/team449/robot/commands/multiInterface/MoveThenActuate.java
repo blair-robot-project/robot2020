@@ -23,7 +23,7 @@ public class MoveThenActuate<T extends Subsystem & SubsystemPosition & Subsystem
   /** The value to set the piston to once the subsystem reaches its destination. */
   private final DoubleSolenoid.Value setPistonTo;
   /** The position to go to, in feet. */
-  private double setpoint;
+  private final double setpoint;
 
   /**
    * Default constructor

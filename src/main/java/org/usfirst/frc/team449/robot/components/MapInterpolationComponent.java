@@ -13,7 +13,7 @@ import java.util.TreeMap;
 public class MapInterpolationComponent {
 
   private InterpolationMethod currentMethod;
-  private TreeMap<Double, Double> LUT;
+  private final TreeMap<Double, Double> LUT;
   private Map.Entry<Double, Double> upper;
   private Map.Entry<Double, Double> lower;
   @JsonCreator

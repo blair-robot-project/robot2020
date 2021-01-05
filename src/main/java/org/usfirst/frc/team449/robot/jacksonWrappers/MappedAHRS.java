@@ -1,7 +1,5 @@
 package org.usfirst.frc.team449.robot.jacksonWrappers;
 
-import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,23 +12,37 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.Contract;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 
-/** A Jackson-compatible, invertible wrapper for the NavX. */
+import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
+
+/**
+ * A Jackson-compatible, invertible wrapper for the NavX.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedAHRS implements Updatable, Loggable {
 
-  /** The AHRS this class is a wrapper on. */
+  /**
+   * The AHRS this class is a wrapper on.
+   */
   protected final AHRS ahrs;
 
-  /** A multiplier for the yaw angle. -1 to invert, 1 to not. */
+  /**
+   * A multiplier for the yaw angle. -1 to invert, 1 to not.
+   */
   protected final int invertYaw;
 
-  /** The angle, in degrees, to offset the output of getHeading by. */
+  /**
+   * The angle, in degrees, to offset the output of getHeading by.
+   */
   protected double offsetAngle;
 
-  /** The 9-axis heading value to return. Field to avoid garbage collection. */
+  /**
+   * The 9-axis heading value to return. Field to avoid garbage collection.
+   */
   private double toRet;
 
-  /** Cached values. */
+  /**
+   * Cached values.
+   */
   private double cachedHeading,
       cachedAngularDisplacement,
       cachedAngularVel,
@@ -41,8 +53,8 @@ public class MappedAHRS implements Updatable, Loggable {
   /**
    * Default constructor.
    *
-   * @param port The port the NavX is plugged into. It seems like only kMXP (the port on the RIO)
-   *     works.
+   * @param port      The port the NavX is plugged into. It seems like only kMXP (the port on the RIO)
+   *                  works.
    * @param invertYaw Whether or not to invert the yaw axis. Defaults to true.
    */
   @JsonCreator
@@ -205,55 +217,9 @@ public class MappedAHRS implements Updatable, Loggable {
     return cachedPitch;
   }
 
-  //    /**
-  //     * Get the headers for the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of String labels for data, where N is the length of the
-  // Object[] returned by getData().
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public String[] getHeader() {
-  //        return new String[]{
-  //                "heading",
-  //                "angular_displacement",
-  //                "angular_vel",
-  //                "x_accel",
-  //                "y_accel",
-  //                "pitch"
-  //        };
-  //    }
-  //
-  //    /**
-  //     * Get the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public Object[] getData() {
-  //        return new Object[]{
-  //                getCachedHeading(),
-  //                getCachedAngularDisplacement(),
-  //                getCachedAngularVelocity(),
-  //                getCachedXAccel(),
-  //                getCachedYAccel(),
-  //                getCachedPitch()
-  //        };
-  //    }
-  //
-  //    /**
-  //     * Get the name of this object.
-  //     *
-  //     * @return A string that will identify this object in the log file.
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public String getLogName() {
-  //        return "AHRS";
-  //    }
-
-  /** Updates all cached values with current ones. */
+  /**
+   * Updates all cached values with current ones.
+   */
   @Override
   public void update() {
     cachedHeading = getHeading();

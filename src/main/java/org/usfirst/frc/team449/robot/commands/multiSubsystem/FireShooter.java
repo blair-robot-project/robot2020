@@ -30,7 +30,7 @@ public class FireShooter<T extends Subsystem & SubsystemIntake> extends Parallel
       addCommands(new TurnAllOn(subsystemFlywheel));
     }
     if (subsystemIntake != null) {
-      addCommands(new SetIntakeMode(subsystemIntake, SubsystemIntake.IntakeMode.IN_SLOW));
+      addCommands(new SetIntakeMode<>(subsystemIntake, SubsystemIntake.IntakeMode.IN_SLOW));
     }
   }
 }

@@ -46,8 +46,6 @@ public class ChangeCam extends InstantCommand {
           "You're trying to switch cameras, but your robot only has one camera!",
           this.getClass().getSimpleName(),
           EventImportance.kNormal);
-      // Logger.addEvent("You're trying to switch cameras, but your robot only has one camera!",
-      // this.getClass());
     } else {
       subsystem.setCamNum((subsystem.getCamNum() + 1) % subsystem.getCameras().size());
     }

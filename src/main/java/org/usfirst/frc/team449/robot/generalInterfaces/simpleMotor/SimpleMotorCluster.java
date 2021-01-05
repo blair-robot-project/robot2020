@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class SimpleMotorCluster implements SimpleMotor {
 
   /** The motors in this cluster. Contains at least 1 element. */
-  @NotNull private List<SimpleMotor> motors;
+  @NotNull private final List<SimpleMotor> motors;
 
   /**
    * Default constructor

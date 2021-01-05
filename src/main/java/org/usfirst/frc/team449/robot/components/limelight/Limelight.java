@@ -10,7 +10,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class Limelight {
 
   /** The network table to get the values from */
-  private static NetworkTable netTable;
+  private static final NetworkTable netTable;
 
   static {
     netTable = NetworkTableInstance.getDefault().getTable("limelight");

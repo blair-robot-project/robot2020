@@ -27,8 +27,8 @@ public class LimelightHeightComponent implements DoubleSupplier {
    */
   @JsonCreator
   public LimelightHeightComponent(
-      @JsonProperty(required = true) DoubleSupplier angularInput,
-      @JsonProperty(required = true) DoubleSupplier distanceToTarget) {
+      @NotNull @JsonProperty(required = true) DoubleSupplier angularInput,
+      @NotNull @JsonProperty(required = true) DoubleSupplier distanceToTarget) {
     this.angularInput = angularInput;
     this.distanceToTarget = distanceToTarget;
   }

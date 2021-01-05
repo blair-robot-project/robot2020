@@ -101,36 +101,4 @@ public class DriveUnidirectionalWithGyroShiftable extends DriveUnidirectionalWit
   public void setGear(final int gear) {
     this.shiftComponent.shiftToGear(gear);
   }
-
-  //    /**
-  //     * Get the headers for the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of String labels for data, where N is the length of the
-  // Object[] returned by getData().
-  //     */
-  //    @Override
-  //    @NotNull
-  //    @Contract(pure = true)
-  //    public String[] getHeader() {
-  //        return new String[]{
-  //                "override_gyro",
-  //                "override_autoshift",
-  //                "gear"
-  //        };
-  //    }
-  //
-  //    /**
-  //     * Get the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-  //     */
-  //    @Override
-  //    @NotNull
-  //    public Object[] getData() {
-  //        return new Object[]{
-  //                getOverrideGyro(),
-  //                getOverrideAutoshift(),
-  //                getGear()
-  //        };
-  //    }
 }

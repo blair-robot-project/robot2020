@@ -7,17 +7,26 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-/** A Throttle that sums any number of other Throttles. */
+/**
+ * A Throttle that sums any number of other Throttles.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ThrottleSum implements Throttle {
 
-  /** The throttles to sum. */
-  @NotNull protected final Throttle[] throttles;
+  /**
+   * The throttles to sum.
+   */
+  @NotNull
+  protected final Throttle[] throttles;
 
-  /** The cached output. */
+  /**
+   * The cached output.
+   */
   protected double cachedValue;
 
-  /** The sum. Field to avoid garbage collection. */
+  /**
+   * The sum. Field to avoid garbage collection.
+   */
   private double sum;
 
   /**
@@ -64,51 +73,11 @@ public class ThrottleSum implements Throttle {
     return cachedValue;
   }
 
-  /** Updates all cached values with current ones. */
+  /**
+   * Updates all cached values with current ones.
+   */
   @Override
   public void update() {
     cachedValue = getValue();
   }
-
-  //    /**
-  //     * Get the headers for the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of String labels for data, where N is the length of the
-  // Object[] returned by getData().
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public String[] getHeader() {
-  //        return new String[]{
-  //                "Value"
-  //        };
-  //    }
-  //
-  //    /**
-  //     * Get the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public Object[] getData() {
-  //        return new Object[]{
-  //                getValueCached()
-  //        };
-  //    }
-  //
-  //    /**
-  //     * Get the name of this object.
-  //     *
-  //     * @return A string that will identify this object in the log file.
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public String getLogName() {
-  //        StringBuilder toRet = new StringBuilder();
-  //        for (Throttle throttle : throttles) {
-  //            toRet.append(throttle.getLogName()).append("+");
-  //        }
-  //        return toRet.toString();
-  //    }
 }

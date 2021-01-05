@@ -52,11 +52,11 @@ public class MappedSparkMax implements SmartMotor {
   /** The settings currently being used by this Spark. */
   @NotNull protected PerGearSettings currentGearSettings;
   /** REV brushless controller object */
-  private CANSparkMax spark;
+  private final CANSparkMax spark;
   /** REV provided encoder object */
-  private CANEncoder canEncoder;
+  private final CANEncoder canEncoder;
   /** REV provided PID Controller */
-  private CANPIDController pidController;
+  private final CANPIDController pidController;
   /** The control mode of the motor */
   private ControlType currentControlMode;
   /** The most recently set setpoint. */
@@ -269,8 +269,6 @@ public class MappedSparkMax implements SmartMotor {
           "WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage,
           this.getClass().getSimpleName(),
           EventImportance.kNormal);
-      // Logger.addEvent("WARNING: YOU ARE CLIPPING MAX PERCENT VBUS AT " + percentVoltage,
-      // this.getClass());
       percentVoltage = Math.signum(percentVoltage);
     }
 

@@ -17,8 +17,8 @@ import org.usfirst.frc.team449.robot.drive.unidirectional.DriveUnidirectionalWit
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class RamseteControllerUnidirectionalDrive extends RamseteCommand implements Loggable {
 
-  private DriveUnidirectionalWithGyro driveTrain;
-  private NetworkTable falconDashboard;
+  private final DriveUnidirectionalWithGyro driveTrain;
+  private final NetworkTable falconDashboard;
 
   @JsonCreator
   public RamseteControllerUnidirectionalDrive(
