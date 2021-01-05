@@ -9,26 +9,23 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BooleanSupplier;
 
-/**
- * Runs a command while a condition is true, then runs another command.
- */
+/** Runs a command while a condition is true, then runs another command. */
 public class RunCommandWhile extends PerpetualCommand {
   private final Command runWhile;
   private final Command runAfter;
   private final BooleanSupplier condition;
 
   /**
-   * @param runWhile           The command to be run while the condition is true.
-   * @param runAfter           The command to be run after the condition becomes false.
-   * @param condition          The condition used to determine which command runs
+   * @param runWhile The command to be run while the condition is true.
+   * @param runAfter The command to be run after the condition becomes false.
+   * @param condition The condition used to determine which command runs
    * @param requiredSubsystems Required subsystems
    */
   public RunCommandWhile(
       @NotNull @JsonProperty(required = true) Command runWhile,
       @NotNull @JsonProperty(required = true) Command runAfter,
       @NotNull @JsonProperty(required = true) BooleanSupplier condition,
-      @Nullable Subsystem[] requiredSubsystems
-  ) {
+      @Nullable Subsystem[] requiredSubsystems) {
     super(runWhile);
     this.runWhile = runWhile;
     this.runAfter = runAfter;
@@ -45,7 +42,8 @@ public class RunCommandWhile extends PerpetualCommand {
       runWhile.end(true);
       runAfter.initialize();
       runAfter.execute();
-      while (!runAfter.isFinished()) ;
+      while (!runAfter.isFinished())
+        ;
       runAfter.end(false);
       super.end(false);
     }

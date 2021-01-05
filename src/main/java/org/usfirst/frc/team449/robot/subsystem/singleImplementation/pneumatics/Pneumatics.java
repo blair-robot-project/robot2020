@@ -19,22 +19,16 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.PressureSensor;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class Pneumatics extends SubsystemBase implements Loggable {
 
-  /**
-   * The compressor that provides pressure to the robot's pneumatics.
-   */
-  @NotNull
-  private final Compressor compressor;
+  /** The compressor that provides pressure to the robot's pneumatics. */
+  @NotNull private final Compressor compressor;
 
-  /**
-   * The pressure sensor that reads the pneumatic pressure.
-   */
-  @Nullable
-  private final PressureSensor pressureSensor;
+  /** The pressure sensor that reads the pneumatic pressure. */
+  @Nullable private final PressureSensor pressureSensor;
 
   /**
    * Default constructor
    *
-   * @param nodeID         The node ID of the compressor.
+   * @param nodeID The node ID of the compressor.
    * @param pressureSensor The pressure sensor attached to this pneumatics system. Can be null.
    */
   @JsonCreator
@@ -44,17 +38,13 @@ public class Pneumatics extends SubsystemBase implements Loggable {
     this.pressureSensor = pressureSensor;
   }
 
-  /**
-   * Start up the compressor in closed loop control mode.
-   */
+  /** Start up the compressor in closed loop control mode. */
   public void startCompressor() {
     compressor.setClosedLoopControl(true);
     compressor.start();
   }
 
-  /**
-   * Stop the compressor.
-   */
+  /** Stop the compressor. */
   public void stopCompressor() {
     compressor.setClosedLoopControl(false);
     compressor.stop();

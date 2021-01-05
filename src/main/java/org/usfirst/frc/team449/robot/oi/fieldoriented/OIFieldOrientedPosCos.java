@@ -16,35 +16,20 @@ import org.usfirst.frc.team449.robot.oi.throttles.Throttle;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class OIFieldOrientedPosCos extends OIFieldOriented {
 
-  /**
-   * The throttle for the X-axis, which points towards the opposing driver station.
-   */
-  @NotNull
-  private final Throttle xThrottle;
+  /** The throttle for the X-axis, which points towards the opposing driver station. */
+  @NotNull private final Throttle xThrottle;
 
-  /**
-   * The throttle for the Y-axis, which points towards the driver's left.
-   */
-  @NotNull
-  private final Throttle yThrottle;
+  /** The throttle for the Y-axis, which points towards the driver's left. */
+  @NotNull private final Throttle yThrottle;
 
-  /**
-   * The radius, from [0,1], within which the joystick is considered to be "at rest."
-   */
+  /** The radius, from [0,1], within which the joystick is considered to be "at rest." */
   private final double rDeadband;
-  /**
-   * The theta value calculated the last time calcValues was called.
-   */
-  @Nullable
-  private Double theta;
-  /**
-   * The velocity value calculated the last time calcValues was called.
-   */
+  /** The theta value calculated the last time calcValues was called. */
+  @Nullable private Double theta;
+  /** The velocity value calculated the last time calcValues was called. */
   private double vel;
 
-  /**
-   * Variables for the outputs of the x and y throttles. Fields to avoid garbage collection.
-   */
+  /** Variables for the outputs of the x and y throttles. Fields to avoid garbage collection. */
   private double x, y;
 
   /**
@@ -53,7 +38,7 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
    * @param xThrottle The throttle for the X-axis, which points towards the opposing driver station.
    * @param yThrottle The throttle for the Y-axis, which points towards the driver's left.
    * @param rDeadband The radius, from [0,1], within which the joystick is considered to be "at
-   *                  rest." Defaults to 0.
+   *     rest." Defaults to 0.
    */
   @JsonCreator
   public OIFieldOrientedPosCos(
@@ -95,8 +80,8 @@ public class OIFieldOrientedPosCos extends OIFieldOriented {
    * Get the absolute angle for the robot to move towards.
    *
    * @return An angular setpoint for the robot in degrees, where 0 is pointing at the other
-   * alliance's driver station and 90 is pointing at the left wall when looking out from the
-   * driver station.
+   *     alliance's driver station and 90 is pointing at the left wall when looking out from the
+   *     driver station.
    */
   @Override
   @Nullable

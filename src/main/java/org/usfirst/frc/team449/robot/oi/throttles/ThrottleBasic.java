@@ -9,38 +9,27 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedJoystick;
 
-/**
- * A class representing a single axis on a joystick.
- */
+/** A class representing a single axis on a joystick. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ThrottleBasic implements Throttle {
 
-  /**
-   * The stick we're using
-   */
-  @NotNull
-  protected final Joystick stick;
+  /** The stick we're using */
+  @NotNull protected final Joystick stick;
 
-  /**
-   * The axis on the joystick we care about.
-   */
+  /** The axis on the joystick we care about. */
   private final int axis;
 
-  /**
-   * Whether or not the controls should be inverted
-   */
+  /** Whether or not the controls should be inverted */
   private final boolean inverted;
 
-  /**
-   * The cached value of the output.
-   */
+  /** The cached value of the output. */
   protected double cachedOutput;
 
   /**
    * Default constructor.
    *
-   * @param stick    The Joystick object being used
-   * @param axis     The axis being used. 0 is X, 1 is Y, 2 is Z.
+   * @param stick The Joystick object being used
+   * @param axis The axis being used. 0 is X, 1 is Y, 2 is Z.
    * @param inverted Whether or not to invert the joystick input. Defaults to false.
    */
   @JsonCreator
@@ -74,9 +63,7 @@ public class ThrottleBasic implements Throttle {
     return cachedOutput;
   }
 
-  /**
-   * Updates all cached values with current ones.
-   */
+  /** Updates all cached values with current ones. */
   @Override
   public void update() {
     cachedOutput = getValue();
@@ -96,5 +83,4 @@ public class ThrottleBasic implements Throttle {
   public String configureLogName() {
     return "Throttle " + stick.getName() + " axis " + axis;
   }
-
 }

@@ -89,8 +89,7 @@ public class NavXTurnToAngleLimelight<T extends Subsystem & DriveUnidirectional 
     super.execute();
     System.out.println(getSetpoint());
     System.out.println(
-        pidController.calculate(
-            subsystem.getHeadingCached(), pidController.getSetpoint()));
+        pidController.calculate(subsystem.getHeadingCached(), pidController.getSetpoint()));
     System.out.println("system output: " + getOutput());
   }
 

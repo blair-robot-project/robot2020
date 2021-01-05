@@ -1,7 +1,5 @@
 package org.usfirst.frc.team449.robot.subsystem.interfaces.intake;
 
-import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,6 +9,8 @@ import io.github.oblarg.oblog.Loggable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.usfirst.frc.team449.robot.generalInterfaces.simpleMotor.SimpleMotor;
+
+import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /** A simple intake subsystem. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

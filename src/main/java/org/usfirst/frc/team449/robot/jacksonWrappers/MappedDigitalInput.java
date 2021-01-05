@@ -10,9 +10,7 @@ import io.github.oblarg.oblog.annotations.Log;
 
 import java.util.function.BooleanSupplier;
 
-/**
- * A roboRIO digital input pin.
- */
+/** A roboRIO digital input pin. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedDigitalInput extends DigitalInput implements Loggable, BooleanSupplier {
 

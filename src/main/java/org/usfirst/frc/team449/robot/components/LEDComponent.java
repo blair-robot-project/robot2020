@@ -39,7 +39,7 @@ public class LEDComponent {
   }
 
   public void setSpecificRangeRGB(int lowerBound, int upperBound, int r, int g, int b) {
-    //TODO check if the same logic used for setSpecificRangeHSB works for RGB
+    // TODO check if the same logic used for setSpecificRangeHSB works for RGB
 
     int checkedLowerBound = Math.max(lowerBound, 0);
     int checkedUpperBound;

@@ -8,16 +8,14 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.conditional.SubsystemC
 
 import java.util.Objects;
 
-/**
- * A condition based on the condition of a conditional subsystem.
- */
+/** A condition based on the condition of a conditional subsystem. */
 public class BooleanSupplierSubsystemBased extends BooleanSupplierBooleanSupplierBased {
   /**
    * Default constructor.
    *
    * @param subsystem The conditional subsystem on whose condition the condition depends.
-   * @param useCached If true or null, use {@link SubsystemConditional#isConditionTrueCached()}; otherwise,
-   *                  use {@link SubsystemConditional#isConditionTrue()}
+   * @param useCached If true or null, use {@link SubsystemConditional#isConditionTrueCached()};
+   *     otherwise, use {@link SubsystemConditional#isConditionTrue()}
    */
   @JsonCreator
   public BooleanSupplierSubsystemBased(

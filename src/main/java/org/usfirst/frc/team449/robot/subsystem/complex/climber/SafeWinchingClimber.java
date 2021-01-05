@@ -1,7 +1,5 @@
 package org.usfirst.frc.team449.robot.subsystem.complex.climber;
 
-import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,6 +14,8 @@ import org.usfirst.frc.team449.robot.other.Clock;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.binaryMotor.SubsystemBinaryMotor;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.climber.SubsystemClimberWithArm;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
+
+import static org.usfirst.frc.team449.robot.other.Util.getLogPrefix;
 
 /**
  * ClimberWinchingWithArm with safety features (stuff needs to be enabled to move)

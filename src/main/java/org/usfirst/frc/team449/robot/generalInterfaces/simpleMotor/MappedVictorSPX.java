@@ -15,28 +15,23 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.SlaveVictor;
 
 import java.util.List;
 
-/**
- * A simple wrapper on the {@link VictorSPX}.
- */
+/** A simple wrapper on the {@link VictorSPX}. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedVictorSPX implements SimpleMotor, Loggable {
 
-  /**
-   * The Victor SPX this object is a wrapper on.
-   */
-  @NotNull
-  private final VictorSPX victorSPX;
+  /** The Victor SPX this object is a wrapper on. */
+  @NotNull private final VictorSPX victorSPX;
 
   /**
    * Default constructor.
    *
-   * @param port               The CAN ID of this Victor SPX.
-   * @param brakeMode          Whether to have the Victor brake or coast when no voltage is applied.
-   * @param inverted           Whether or not to invert this Victor. Defaults to false.
-   * @param enableVoltageComp  Whether or not to enable voltage compensation. Defaults to false.
+   * @param port The CAN ID of this Victor SPX.
+   * @param brakeMode Whether to have the Victor brake or coast when no voltage is applied.
+   * @param inverted Whether or not to invert this Victor. Defaults to false.
+   * @param enableVoltageComp Whether or not to enable voltage compensation. Defaults to false.
    * @param voltageCompSamples The number of 1-millisecond samples to use for voltage compensation.
-   *                           Defaults to 32.
-   * @param slaveVictors       Any other Victor SPXs slaved to this one.
+   *     Defaults to 32.
+   * @param slaveVictors Any other Victor SPXs slaved to this one.
    */
   @JsonCreator
   public MappedVictorSPX(
@@ -79,17 +74,13 @@ public class MappedVictorSPX implements SimpleMotor, Loggable {
     victorSPX.set(ControlMode.PercentOutput, velocity);
   }
 
-  /**
-   * Enables the motor, if applicable.
-   */
+  /** Enables the motor, if applicable. */
   @Override
   public void enable() {
     // Do nothing
   }
 
-  /**
-   * Disables the motor, if applicable.
-   */
+  /** Disables the motor, if applicable. */
   @Override
   public void disable() {
     victorSPX.set(ControlMode.Disabled, 0);

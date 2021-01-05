@@ -13,19 +13,17 @@ import org.usfirst.frc.team449.robot.other.Clock;
 
 import java.util.function.BooleanSupplier;
 
-/**
- * Runs one of two commands the first tick on which the given condition becomes true.
- */
+/** Runs one of two commands the first tick on which the given condition becomes true. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ConditionalCommandDynamicChangeBased extends ConditionalCommandDynamic {
   /**
    * Default constructor
    *
-   * @param afterBecomingTrue  the Command to execute if BooleanSupplier returns begins returning
-   *                           true
+   * @param afterBecomingTrue the Command to execute if BooleanSupplier returns begins returning
+   *     true
    * @param afterBecomingFalse the Command to execute if BooleanSupplier returns begins returning
-   *                           false
-   * @param booleanSupplier    a method for determining which command to run
+   *     false
+   * @param booleanSupplier a method for determining which command to run
    */
   @JsonCreator
   public ConditionalCommandDynamicChangeBased(

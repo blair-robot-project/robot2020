@@ -2,8 +2,9 @@ package org.usfirst.frc.team449.robot.commands.jacksonWrappers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.function.BooleanSupplier;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.BooleanSupplier;
 
 /** Intended to be used as a base class. */
 public class BooleanSupplierBooleanSupplierBased implements BooleanSupplier {

@@ -10,17 +10,12 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * A command that runs any number of {@link Runnable} objects once or every tick.
- */
+/** A command that runs any number of {@link Runnable} objects once or every tick. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class RunRunnables extends CommandBase {
 
-  /**
-   * The runnables to run.
-   */
-  @NotNull
-  private final Runnable[] runnables;
+  /** The runnables to run. */
+  @NotNull private final Runnable[] runnables;
 
   private final boolean keepRunning;
 
@@ -28,7 +23,7 @@ public class RunRunnables extends CommandBase {
    * Default constructor
    *
    * @param keepRunning Whether to keep running after the first tick.
-   * @param runnables   The runnables to run.
+   * @param runnables The runnables to run.
    */
   @JsonCreator
   public RunRunnables(
@@ -38,18 +33,14 @@ public class RunRunnables extends CommandBase {
     this.keepRunning = keepRunning != null ? keepRunning : true;
   }
 
-  /**
-   * Log on init
-   */
+  /** Log on init */
   @Override
   public void initialize() {
     Shuffleboard.addEventMarker(
         "RunRunnables init", this.getClass().getSimpleName(), EventImportance.kNormal);
   }
 
-  /**
-   * Run all the runnables in the order they were given.
-   */
+  /** Run all the runnables in the order they were given. */
   @Override
   public void execute() {
     for (final Runnable runnable : this.runnables) {
@@ -68,9 +59,7 @@ public class RunRunnables extends CommandBase {
     return !this.keepRunning;
   }
 
-  /**
-   * Log on exit.
-   */
+  /** Log on exit. */
   @Override
   public void end(final boolean interrupted) {
     if (interrupted) {

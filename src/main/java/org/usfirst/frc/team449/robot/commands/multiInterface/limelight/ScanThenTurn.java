@@ -16,7 +16,8 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
  * Turns on the limelight LEDs and starts scanning for a target When one is found, it overrides the
  * default drive command and turns to that target
  */
-public class ScanThenTurn<T extends Subsystem & DriveUnidirectional & SubsystemAHRS> extends SequentialCommandGroup {
+public class ScanThenTurn<T extends Subsystem & DriveUnidirectional & SubsystemAHRS>
+    extends SequentialCommandGroup {
 
   /**
    * Default constructor

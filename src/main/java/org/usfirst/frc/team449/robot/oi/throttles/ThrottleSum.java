@@ -7,26 +7,17 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * A Throttle that sums any number of other Throttles.
- */
+/** A Throttle that sums any number of other Throttles. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class ThrottleSum implements Throttle {
 
-  /**
-   * The throttles to sum.
-   */
-  @NotNull
-  protected final Throttle[] throttles;
+  /** The throttles to sum. */
+  @NotNull protected final Throttle[] throttles;
 
-  /**
-   * The cached output.
-   */
+  /** The cached output. */
   protected double cachedValue;
 
-  /**
-   * The sum. Field to avoid garbage collection.
-   */
+  /** The sum. Field to avoid garbage collection. */
   private double sum;
 
   /**
@@ -73,9 +64,7 @@ public class ThrottleSum implements Throttle {
     return cachedValue;
   }
 
-  /**
-   * Updates all cached values with current ones.
-   */
+  /** Updates all cached values with current ones. */
   @Override
   public void update() {
     cachedValue = getValue();

@@ -1,22 +1,9 @@
 package org.usfirst.frc.team449.robot;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Button;
-import org.usfirst.frc.team449.robot.mixIn.CommandGroupMixIn;
-import org.usfirst.frc.team449.robot.mixIn.ConditionalCommandMixIn;
-import org.usfirst.frc.team449.robot.mixIn.PrintCommandMixIn;
-import org.usfirst.frc.team449.robot.mixIn.SubsystemMixIn;
-import org.usfirst.frc.team449.robot.mixIn.UseCLASSIncludeWRAPPER_OBJECTMixIn;
-import org.usfirst.frc.team449.robot.mixIn.WaitCommandMixIn;
-import org.usfirst.frc.team449.robot.mixIn.WaitUntilCommandMixIn;
+import org.usfirst.frc.team449.robot.mixIn.*;
 
 /**
  * A Jackson {@link com.fasterxml.jackson.databind.Module} for adding mix-in annotations to classes.

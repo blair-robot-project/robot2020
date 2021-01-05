@@ -8,23 +8,15 @@ import io.github.oblarg.oblog.annotations.Log;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.oi.throttles.Throttle;
 
-/**
- * A simple tank drive, where each joystick controls a side of the robot.
- */
+/** A simple tank drive, where each joystick controls a side of the robot. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class OITankSimple extends OITank {
 
-  /**
-   * The left throttle
-   */
-  @NotNull
-  private final Throttle leftThrottle;
+  /** The left throttle */
+  @NotNull private final Throttle leftThrottle;
 
-  /**
-   * The right throttle
-   */
-  @NotNull
-  private final Throttle rightThrottle;
+  /** The right throttle */
+  @NotNull private final Throttle rightThrottle;
 
   /**
    * The difference between left and right input within which the driver is considered to be trying
@@ -35,10 +27,10 @@ public class OITankSimple extends OITank {
   /**
    * Default constructor
    *
-   * @param leftThrottle                The throttle for controlling the velocity of the left side of the drive.
-   * @param rightThrottle               The throttle for controlling the velocity of the right side of the drive.
+   * @param leftThrottle The throttle for controlling the velocity of the left side of the drive.
+   * @param rightThrottle The throttle for controlling the velocity of the right side of the drive.
    * @param commandingStraightTolerance The difference between left and right input within which the
-   *                                    driver is considered to be trying to drive straight. Defaults to 0.
+   *     driver is considered to be trying to drive straight. Defaults to 0.
    */
   @JsonCreator
   public OITankSimple(

@@ -14,35 +14,23 @@ import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 
 import static com.kauailabs.navx.frc.AHRS.SerialDataType.kProcessedData;
 
-/**
- * A Jackson-compatible, invertible wrapper for the NavX.
- */
+/** A Jackson-compatible, invertible wrapper for the NavX. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedAHRS implements Updatable, Loggable {
 
-  /**
-   * The AHRS this class is a wrapper on.
-   */
+  /** The AHRS this class is a wrapper on. */
   protected final AHRS ahrs;
 
-  /**
-   * A multiplier for the yaw angle. -1 to invert, 1 to not.
-   */
+  /** A multiplier for the yaw angle. -1 to invert, 1 to not. */
   protected final int invertYaw;
 
-  /**
-   * The angle, in degrees, to offset the output of getHeading by.
-   */
+  /** The angle, in degrees, to offset the output of getHeading by. */
   protected double offsetAngle;
 
-  /**
-   * The 9-axis heading value to return. Field to avoid garbage collection.
-   */
+  /** The 9-axis heading value to return. Field to avoid garbage collection. */
   private double toRet;
 
-  /**
-   * Cached values.
-   */
+  /** Cached values. */
   private double cachedHeading,
       cachedAngularDisplacement,
       cachedAngularVel,
@@ -53,8 +41,8 @@ public class MappedAHRS implements Updatable, Loggable {
   /**
    * Default constructor.
    *
-   * @param port      The port the NavX is plugged into. It seems like only kMXP (the port on the RIO)
-   *                  works.
+   * @param port The port the NavX is plugged into. It seems like only kMXP (the port on the RIO)
+   *     works.
    * @param invertYaw Whether or not to invert the yaw axis. Defaults to true.
    */
   @JsonCreator
@@ -217,9 +205,7 @@ public class MappedAHRS implements Updatable, Loggable {
     return cachedPitch;
   }
 
-  /**
-   * Updates all cached values with current ones.
-   */
+  /** Updates all cached values with current ones. */
   @Override
   public void update() {
     cachedHeading = getHeading();

@@ -22,8 +22,8 @@ public class ConditionalCommandDynamic extends ConditionalCommand {
   /**
    * Default constructor
    *
-   * @param onTrue          The Command to execute if BooleanSupplier returns true.
-   * @param onFalse         The Command to execute if BooleanSupplier returns false.
+   * @param onTrue The Command to execute if BooleanSupplier returns true.
+   * @param onFalse The Command to execute if BooleanSupplier returns false.
    * @param booleanSupplier A method for determining which command to run.
    */
   @JsonCreator

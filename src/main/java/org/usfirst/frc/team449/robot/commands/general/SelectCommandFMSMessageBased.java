@@ -22,7 +22,7 @@ public class SelectCommandFMSMessageBased extends SelectCommand {
    * <p>Users of this constructor should also override selector().
    *
    * @param commands The map of selectors to the command that should be run if they're chosen via
-   *                 selector().
+   *     selector().
    */
   @JsonCreator
   public SelectCommandFMSMessageBased(

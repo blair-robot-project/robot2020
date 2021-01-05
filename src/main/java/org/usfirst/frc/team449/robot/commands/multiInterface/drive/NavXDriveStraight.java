@@ -102,7 +102,7 @@ public class NavXDriveStraight<T extends Subsystem & DriveUnidirectional & Subsy
     // Process the PID output with deadband, minimum output, etc.
     output = this.getOutput();
 
-    //TODO why is this an if statement? Both branches do the exact same thing.
+    // TODO why is this an if statement? Both branches do the exact same thing.
     // Set throttle to the specified stick.
     if (useLeft) {
       subsystem.setOutput(

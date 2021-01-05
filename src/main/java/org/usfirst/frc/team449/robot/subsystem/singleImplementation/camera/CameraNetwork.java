@@ -10,9 +10,10 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedUsbCamera;
+
+import java.util.List;
 
 /** Subsystem to initialize cameras and put video on Shuffleboard. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)

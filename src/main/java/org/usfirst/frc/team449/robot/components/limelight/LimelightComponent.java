@@ -1,15 +1,12 @@
 package org.usfirst.frc.team449.robot.components.limelight;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import java.util.function.DoubleSupplier;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.DoubleSupplier;
 
 /** The component that supplies distances from the limelight to a vision target */
 @JsonTypeInfo(
@@ -19,10 +16,10 @@ import org.jetbrains.annotations.NotNull;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class LimelightComponent implements DoubleSupplier {
 
-/** Whether the limelight has a valid target in sight. Will return 0 for no, 1 for yes */
+  /** Whether the limelight has a valid target in sight. Will return 0 for no, 1 for yes */
   private static final NetworkTableEntry tv =
       NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv");
-    /**
+  /**
    * Which value to ask from the limelight Can be: x: lateral offset from target, in degrees y:
    * vertical offset from target, in degrees area: area of the target (0% to 100% of the camera
    * screen) skew: rotation (-90 to 0, in degrees) of the target (as the limelight sees it) latency:
@@ -38,8 +35,7 @@ public class LimelightComponent implements DoubleSupplier {
   /** Added to the output double */
   private final double offset;
   /** The NetworkTableEntry that supplies the desired value Determined by the ReturnValue value */
-  @NotNull
-  final NetworkTableEntry entry;
+  @NotNull final NetworkTableEntry entry;
 
   /**
    * Default creator

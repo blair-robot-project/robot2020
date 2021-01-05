@@ -8,12 +8,9 @@ import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 
 import java.util.function.BooleanSupplier;
 
-/**
- * Wraps a {@link BooleanSupplier} and only updates its result when told to.
- */
+/** Wraps a {@link BooleanSupplier} and only updates its result when told to. */
 public class BooleanSupplierUpdatable implements BooleanSupplier, Updatable {
-  @NotNull
-  private final BooleanSupplier source;
+  @NotNull private final BooleanSupplier source;
   private boolean cachedValue;
 
   /**
@@ -39,9 +36,7 @@ public class BooleanSupplierUpdatable implements BooleanSupplier, Updatable {
     return this.cachedValue;
   }
 
-  /**
-   * Updates the cached value of the supplier.
-   */
+  /** Updates the cached value of the supplier. */
   @Override
   public void update() {
     this.cachedValue = this.source.getAsBoolean();

@@ -24,11 +24,11 @@ public class SpinUpFlywheelUntilIntakeStops extends SequentialCommandGroup
   Command x;
 
   /**
-   * @param timeToStart           how long the feeder waits to start. Not sure how necessary this is
+   * @param timeToStart how long the feeder waits to start. Not sure how necessary this is
    * @param spinUpFlywheelCommand
    * @param shooterFlywheel
-   * @param feeder                the feeder
-   * @param timeToStop            how long the feeder keeps running after feeder stops, in sec
+   * @param feeder the feeder
+   * @param timeToStop how long the feeder keeps running after feeder stops, in sec
    */
   @JsonCreator
   public SpinUpFlywheelUntilIntakeStops(
@@ -47,7 +47,6 @@ public class SpinUpFlywheelUntilIntakeStops extends SequentialCommandGroup
                 null),
             new WaitCommand(timeToStop == null ? 3.0 : timeToStop),
             () -> !feeder.getMode().equals(SubsystemIntake.IntakeMode.OFF),
-            null)
-    );
+            null));
   }
 }

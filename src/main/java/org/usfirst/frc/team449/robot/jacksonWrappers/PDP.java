@@ -18,21 +18,13 @@ import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class PDP implements Loggable, Updatable {
 
-  /**
-   * The WPILib PDP this is a wrapper on.
-   */
-  @NotNull
-  private final PowerDistributionPanel PDP;
+  /** The WPILib PDP this is a wrapper on. */
+  @NotNull private final PowerDistributionPanel PDP;
 
-  /**
-   * The component for doing linear regression to find the resistance.
-   */
-  @Nullable
-  private final RunningLinRegComponent voltagePerCurrentLinReg;
+  /** The component for doing linear regression to find the resistance. */
+  @Nullable private final RunningLinRegComponent voltagePerCurrentLinReg;
 
-  /**
-   * The cached values from the PDP object this wraps.
-   */
+  /** The cached values from the PDP object this wraps. */
   private double voltage, totalCurrent, temperature, resistance, unloadedVoltage;
 
   /**
@@ -96,7 +88,7 @@ public class PDP implements Loggable, Updatable {
    * Get the voltage at the PDP when there's no load on the battery.
    *
    * @return Voltage in volts when there's 0 amps of current draw, or null if not calculating
-   * resistance.
+   *     resistance.
    */
   @Nullable
   @Log
@@ -104,9 +96,7 @@ public class PDP implements Loggable, Updatable {
     return voltagePerCurrentLinReg == null ? null : unloadedVoltage;
   }
 
-  /**
-   * Updates all cached values with current ones.
-   */
+  /** Updates all cached values with current ones. */
   @Override
   public void update() {
     this.totalCurrent = PDP.getTotalCurrent();

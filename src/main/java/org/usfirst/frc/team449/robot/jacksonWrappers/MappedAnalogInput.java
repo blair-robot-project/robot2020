@@ -9,25 +9,21 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import org.usfirst.frc.team449.robot.generalInterfaces.updatable.Updatable;
 
-/**
- * A Jackson-friendly wrapper on WPILib's {@link AnalogInput}.
- */
+/** A Jackson-friendly wrapper on WPILib's {@link AnalogInput}. */
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class MappedAnalogInput extends AnalogInput implements Updatable, Loggable {
 
-  /**
-   * The value of analog input, as a percent.
-   */
+  /** The value of analog input, as a percent. */
   private double percentValueCached;
 
   /**
    * Default constructor.
    *
-   * @param port           The analog input port this object reads analog voltage from.
+   * @param port The analog input port this object reads analog voltage from.
    * @param oversampleBits The sensor will be oversampled by 2^oversampleBits bits. Oversampling is
-   *                       kinda confusing, so just read the wikipedia page on it. Defaults to 0.
-   * @param averageBits    The sensor output will be the average of 2^averageBits readings. Defaults to
-   *                       0.
+   *     kinda confusing, so just read the wikipedia page on it. Defaults to 0.
+   * @param averageBits The sensor output will be the average of 2^averageBits readings. Defaults to
+   *     0.
    */
   @JsonCreator
   public MappedAnalogInput(
