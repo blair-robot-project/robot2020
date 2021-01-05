@@ -12,9 +12,9 @@ import org.usfirst.frc.team449.robot.generalInterfaces.SlaveMotor;
 
 public class SlaveSparkMax implements SlaveMotor, Loggable {
 
-  CANSparkMax slaveSpark;
+  final CANSparkMax slaveSpark;
 
-  PDP PDP;
+  final PDP PDP;
 
   boolean inverted;
 

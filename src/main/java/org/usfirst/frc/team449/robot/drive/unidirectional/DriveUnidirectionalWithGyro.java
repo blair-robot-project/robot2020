@@ -1,10 +1,6 @@
 package org.usfirst.frc.team449.robot.drive.unidirectional;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -12,6 +8,8 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
@@ -22,7 +20,9 @@ import org.usfirst.frc.team449.robot.generalInterfaces.SmartMotor;
 import org.usfirst.frc.team449.robot.jacksonWrappers.MappedAHRS;
 import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 
-/** A drive with a cluster of any number of CANTalonSRX controlled motors on each side. */
+/**
+ * A drive with a cluster of any number of CANTalonSRX controlled motors on each side.
+ */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.CLASS,
     include = JsonTypeInfo.As.WRAPPER_OBJECT,
@@ -31,31 +31,49 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.AHRS.SubsystemAHRS;
 public class DriveUnidirectionalWithGyro extends SubsystemBase
     implements SubsystemAHRS, DriveUnidirectional, Loggable {
 
-  /** Right master Talon */
-  @NotNull protected final SmartMotor rightMaster;
+  /**
+   * Right master Talon
+   */
+  @NotNull
+  protected final SmartMotor rightMaster;
 
-  /** Left master Talon */
-  @NotNull protected final SmartMotor leftMaster;
+  /**
+   * Left master Talon
+   */
+  @NotNull
+  protected final SmartMotor leftMaster;
 
-  /** The NavX gyro */
-  @NotNull private final MappedAHRS ahrs;
+  /**
+   * The NavX gyro
+   */
+  @NotNull
+  private final MappedAHRS ahrs;
 
-  /** Drivetrain kinematics processor for measuring individual wheel speeds */
+  /**
+   * Drivetrain kinematics processor for measuring individual wheel speeds
+   */
   private final DifferentialDriveKinematics driveKinematics;
 
-  /** Drivetrain odometry tracker for tracking position */
+  /**
+   * Drivetrain odometry tracker for tracking position
+   */
   private final DifferentialDriveOdometry driveOdometry;
-  /** Whether or not to use the NavX for driving straight */
+  /**
+   * Whether or not to use the NavX for driving straight
+   */
   private boolean overrideGyro;
-  /** Cached values for various sensor readings. */
-  @Nullable private Double cachedLeftVel, cachedRightVel, cachedLeftPos, cachedRightPos;
+  /**
+   * Cached values for various sensor readings.
+   */
+  @Nullable
+  private Double cachedLeftVel, cachedRightVel, cachedLeftPos, cachedRightPos;
 
   /**
    * Default constructor.
    *
-   * @param leftMaster The master talon on the left side of the drive.
-   * @param rightMaster The master talon on the right side of the drive.
-   * @param ahrs The NavX gyro for calculating this drive's heading and angular velocity.
+   * @param leftMaster       The master talon on the left side of the drive.
+   * @param rightMaster      The master talon on the right side of the drive.
+   * @param ahrs             The NavX gyro for calculating this drive's heading and angular velocity.
    * @param trackWidthMeters The width between the left and right wheels in meters
    */
   @JsonCreator
@@ -77,7 +95,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /**
    * Set the output of each side of the drive.
    *
-   * @param left The output for the left side of the drive, from [-1, 1]
+   * @param left  The output for the left side of the drive, from [-1, 1]
    * @param right the output for the right side of the drive, from [-1, 1]
    */
   @Override
@@ -90,7 +108,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /**
    * Set voltage output raw
    *
-   * @param left The voltage output for the left side of the drive from [-12, 12]
+   * @param left  The voltage output for the left side of the drive from [-12, 12]
    * @param right The voltage output for the right side of the drive from [-12, 12]
    */
   public void setVoltage(final double left, final double right) {
@@ -186,24 +204,32 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
     return this.cachedRightPos;
   }
 
-  /** @return The feedforward calculator for left motors */
+  /**
+   * @return The feedforward calculator for left motors
+   */
   public SimpleMotorFeedforward getLeftFeedforwardCalculator() {
     return this.leftMaster.getCurrentGearFeedForward();
   }
 
-  /** @return The feedforward calculator for right motors */
+  /**
+   * @return The feedforward calculator for right motors
+   */
   public SimpleMotorFeedforward getRightFeedforwardCalculator() {
     return this.rightMaster.getCurrentGearFeedForward();
   }
 
-  /** Completely stop the robot by setting the voltage to each side to be 0. */
+  /**
+   * Completely stop the robot by setting the voltage to each side to be 0.
+   */
   @Override
   public void fullStop() {
     this.leftMaster.setPercentVoltage(0);
     this.rightMaster.setPercentVoltage(0);
   }
 
-  /** If this drive uses motors that can be disabled, enable them. */
+  /**
+   * If this drive uses motors that can be disabled, enable them.
+   */
   @Override
   public void enableMotors() {
     this.leftMaster.enable();
@@ -300,28 +326,50 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
     return this.ahrs.getCachedPitch();
   }
 
-  /** @return true if the NavX is currently overriden, false otherwise. */
+  /**
+   * @return true if the NavX is currently overriden, false otherwise.
+   */
   @Override
   @Log
   public boolean getOverrideGyro() {
     return this.overrideGyro;
   }
 
-  /** @param override true to override the NavX, false to un-override it. */
+  /**
+   * @param override true to override the NavX, false to un-override it.
+   */
   @Override
   public void setOverrideGyro(final boolean override) {
     this.overrideGyro = override;
   }
 
-  /** Reset odometry tracker to current robot pose */
+  /**
+   * Reset odometry tracker to current robot pose
+   */
   @Log
   public void resetOdometry(final Pose2d pose) {
     this.resetPosition();
     this.driveOdometry.resetPosition(pose, Rotation2d.fromDegrees(this.getHeading()));
   }
 
-  /** Update odometry tracker with current heading, and encoder readings */
+  /**
+   * Update odometry tracker with current heading, and encoder readings
+   */
   public void updateOdometry() {
+    if (this.getLeftPos() == null) {
+      Shuffleboard.addEventMarker(
+          "Attempted to use leftPos, which is null",
+          this.getClass().getSimpleName(),
+          EventImportance.kHigh);
+      return;
+    }
+    if (this.getRightPos() == null) {
+      Shuffleboard.addEventMarker(
+          "Attempted to use rightPos, which is null",
+          this.getClass().getSimpleName(),
+          EventImportance.kHigh);
+      return;
+    }
     // need to convert to meters
     this.driveOdometry.update(
         Rotation2d.fromDegrees(this.getHeading()),
@@ -329,26 +377,48 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
         Units.feetToMeters(this.getRightPos()));
   }
 
-  /** @return Current estimated pose based on odometry tracker data */
+  /**
+   * @return Current estimated pose based on odometry tracker data
+   */
   public Pose2d getCurrentPose() {
     return this.driveOdometry.getPoseMeters() != null
         ? this.driveOdometry.getPoseMeters()
         : new Pose2d(new Translation2d(0, 0), new Rotation2d(0));
   }
 
-  /** @return Current wheel speeds based on encoder readings for future pose correction */
+  /**
+   * @return Current wheel speeds based on encoder readings for future pose correction
+   */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    if (this.getLeftVel() == null) {
+      Shuffleboard.addEventMarker(
+          "Attempted to use getLeftVel(), which is null!",
+          this.getClass().getSimpleName(),
+          EventImportance.kHigh);
+      throw new RuntimeException("getLeftVel() is null!");
+    }
+    if (this.getRightVel() == null) {
+      Shuffleboard.addEventMarker(
+          "Attempted to use getRightVel(), which is null!",
+          this.getClass().getSimpleName(),
+          EventImportance.kHigh);
+      throw new RuntimeException("getRightVel() is null!");
+    }
     // need to convert to meters
     return new DifferentialDriveWheelSpeeds(
         Units.feetToMeters(this.getLeftVel()), Units.feetToMeters(this.getRightVel()));
   }
 
-  /** @return Kinematics processor for wheel speeds */
+  /**
+   * @return Kinematics processor for wheel speeds
+   */
   public DifferentialDriveKinematics getDriveKinematics() {
     return this.driveKinematics;
   }
 
-  /** Disable the motors. */
+  /**
+   * Disable the motors.
+   */
   public void disable() {
     this.leftMaster.disable();
     this.rightMaster.disable();
@@ -363,14 +433,18 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
     this.holdPosition(pos, pos);
   }
 
-  /** Reset the position of the drive if it has encoders. */
+  /**
+   * Reset the position of the drive if it has encoders.
+   */
   @Override
   public void resetPosition() {
     this.leftMaster.resetPosition();
     this.rightMaster.resetPosition();
   }
 
-  /** Updates all cached values with current ones. */
+  /**
+   * Updates all cached values with current ones.
+   */
   @Override
   public void update() {
     this.updateOdometry();
@@ -383,7 +457,7 @@ public class DriveUnidirectionalWithGyro extends SubsystemBase
   /**
    * Hold the current position.
    *
-   * @param leftPos the position to stop the left side at
+   * @param leftPos  the position to stop the left side at
    * @param rightPos the position to stop the right side at
    */
   public void holdPosition(final double leftPos, final double rightPos) {

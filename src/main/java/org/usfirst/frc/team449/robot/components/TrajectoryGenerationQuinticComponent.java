@@ -23,9 +23,9 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.MappedPose2d;
     property = "@class")
 public class TrajectoryGenerationQuinticComponent implements TrajectoryGenerationComponent {
 
-  TrajectoryConstraint constraint;
-  TrajectoryConfig configuration;
-  List<Pose2d> waypoints = new ArrayList<>();
+  final TrajectoryConstraint constraint;
+  final TrajectoryConfig configuration;
+  final List<Pose2d> waypoints = new ArrayList<>();
   Trajectory trajectory;
 
   @JsonCreator

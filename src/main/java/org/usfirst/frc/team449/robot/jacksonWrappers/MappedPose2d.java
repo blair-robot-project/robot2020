@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 // TODO Unmap
 public class MappedPose2d {
 
-  public Pose2d pose;
+  public final Pose2d pose;
 
   /**
    * Pose2d wrapper for Trajectory loading from map

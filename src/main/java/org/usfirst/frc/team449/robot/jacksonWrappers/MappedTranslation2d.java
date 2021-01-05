@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 // TODO Unmap
 public class MappedTranslation2d {
 
-  public Translation2d translation;
+  public final Translation2d translation;
 
   /**
    * Pose2d wrapper for Trajectory loading from map

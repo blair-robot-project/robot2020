@@ -119,51 +119,6 @@ public class SlaveTalon implements SlaveMotor, Loggable {
     this.linRegComponent = linRegComponent;
   }
 
-  //    /**
-  //     * Get the headers for the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of String labels for data, where N is the length of the
-  // Object[] returned by getData().
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public String[] getHeader() {
-  //        return new String[]{
-  //                "current",
-  //                "voltage",
-  //                "resistance"
-  //        };
-  //    }
-  //
-  //    /**
-  //     * Get the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-  //     */
-  //    @Nullable
-  //    @Override
-  //    public Object[] getData() {
-  //        if (linRegComponent != null && PDP != null) {
-  //            linRegComponent.addPoint(talonSRX.getOutputCurrent(), PDP.getVoltage() -
-  // talonSRX.getBusVoltage());
-  //        }
-  //        return new Object[]{
-  //                talonSRX.getOutputCurrent(),
-  //                talonSRX.getMotorOutputVoltage(),
-  //                (linRegComponent != null && PDP != null) ? -linRegComponent.getSlope() : null;
-  //        };
-  //    }
-  //
-  //    /**
-  //     * Get the name of this object.
-  //     *
-  //     * @return A string that will identify this object in the log file.
-  //     */
-  //    @Override
-  //    public @NotNull String getLogName() {
-  //        return "talon_" + talonSRX.getDeviceID();
-  //    }
-
   @Log
   public double getOutputCurrent() {
     return this.talonSRX.getSupplyCurrent();

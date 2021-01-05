@@ -18,7 +18,7 @@ import org.usfirst.frc.team449.robot.subsystem.interfaces.climber.SubsystemClimb
 import org.usfirst.frc.team449.robot.subsystem.interfaces.solenoid.SubsystemSolenoid;
 
 /**
- * Like {@link ClimberWinchingWithArm} with safety features (stuff needs to be enabled to move)
+ * ClimberWinchingWithArm with safety features (stuff needs to be enabled to move)
  *
  * @author Nathan
  */
@@ -138,28 +138,4 @@ public class SafeWinchingClimber extends SubsystemBase
       this.motorSubsystem.turnMotorOff();
     }
   }
-
-  //    /**
-  //     * @return true if the condition is met, false otherwise
-  //     */
-  //    @Override
-  //    public boolean isConditionTrue() {
-  //        return this.motorSubsystem.isConditionTrue();
-  //    }
-  //
-  //    /**
-  //     * @return true if the condition was met when cached, false otherwise
-  //     */
-  //    @Override
-  //    public boolean isConditionTrueCached() {
-  //        return this.motorSubsystem.isConditionTrueCached();
-  //    }
-  //
-  //    /**
-  //     * Updates all cached values with current ones.
-  //     */
-  //    @Override
-  //    public void update() {
-  //        this.motorSubsystem.update();
-  //    }
 }

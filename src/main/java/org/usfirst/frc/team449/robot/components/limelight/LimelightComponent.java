@@ -38,7 +38,8 @@ public class LimelightComponent implements DoubleSupplier {
   /** Added to the output double */
   private final double offset;
   /** The NetworkTableEntry that supplies the desired value Determined by the ReturnValue value */
-  @NotNull NetworkTableEntry entry;
+  @NotNull
+  final NetworkTableEntry entry;
 
   /**
    * Default creator
@@ -65,6 +66,7 @@ public class LimelightComponent implements DoubleSupplier {
         break;
       case latency:
         entry = table.getEntry("tl");
+        // TODO should this be this.offset? There is no point setting the parameter "offset"
         // Offset should be 0
         offset = 0;
         break;

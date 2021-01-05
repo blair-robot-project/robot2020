@@ -17,9 +17,9 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTranslationSet;
     property = "@class")
 public class TrajectoryGenerationCubicComponent implements TrajectoryGenerationComponent {
 
-  TrajectoryConstraint constraint;
-  TrajectoryConfig configuration;
-  MappedTranslationSet translations;
+  final TrajectoryConstraint constraint;
+  final TrajectoryConfig configuration;
+  final MappedTranslationSet translations;
   Trajectory trajectory;
 
   @JsonCreator

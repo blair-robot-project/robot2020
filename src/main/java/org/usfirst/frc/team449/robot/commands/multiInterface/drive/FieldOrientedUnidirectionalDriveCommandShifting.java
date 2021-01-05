@@ -114,6 +114,20 @@ public class FieldOrientedUnidirectionalDriveCommandShifting<
   /** Set PID setpoint to processed controller setpoint and autoshift. */
   @Override
   public void execute() {
+    if (this.subsystem.getLeftVelCached() == null) {
+      Shuffleboard.addEventMarker(
+          "Attempted to use subsystem.getLeftVelCached(), which is null!",
+          this.getClass().getSimpleName(),
+          EventImportance.kHigh);
+      return;
+    }
+    if (this.subsystem.getRightVelCached() == null) {
+      Shuffleboard.addEventMarker(
+          "Attempted to use subsystem.getRightVelCached(), which is null!",
+          this.getClass().getSimpleName(),
+          EventImportance.kHigh);
+      return;
+    }
     if (!this.subsystem.getOverrideAutoshift()) {
       this.autoshiftComponent.autoshift(
           this.oi.getVelCached(),

@@ -11,10 +11,10 @@ import org.usfirst.frc.team449.robot.jacksonWrappers.MappedTalon;
 @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class)
 public class TalonRumbleComponent implements Runnable {
 
-  MappedTalon talon;
-  Rumbleable joystick;
+  final MappedTalon talon;
+  final Rumbleable joystick;
   boolean inverted;
-  Double rumbleAmount;
+  double rumbleAmount;
 
   @JsonCreator
   public TalonRumbleComponent(

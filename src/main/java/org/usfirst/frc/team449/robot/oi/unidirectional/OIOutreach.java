@@ -133,44 +133,4 @@ public class OIOutreach implements OIUnidirectional {
     this.cachedLeftRightOutput = this.getLeftRightOutput();
     this.cachedFwdRotOutput = this.getFwdRotOutput();
   }
-
-  //    /**
-  //     * Get the headers for the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of String labels for data, where N is the length of the
-  // Object[] returned by getData().
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public String[] getHeader() {
-  //        String[] toRet = new String[overridenOI.getHeader().length +
-  // overridingOI.getHeader().length];
-  //        for (int i = 0; i < overridenOI.getHeader().length; i++) {
-  //            toRet[i] = "overriden." + overridenOI.getHeader()[i];
-  //        }
-  //
-  //        for (int i = 0; i < overridingOI.getHeader().length; i++) {
-  //            toRet[i + overridenOI.getHeader().length] = "overriding." +
-  // overridingOI.getHeader()[i];
-  //        }
-  //        return toRet;
-  //    }
-  //
-  //    /**
-  //     * Get the data this subsystem logs every loop.
-  //     *
-  //     * @return An N-length array of Objects, where N is the number of labels given by getHeader.
-  //     */
-  //    @NotNull
-  //    @Override
-  //    public Object[] getData() {
-  //        overridenData = overridenOI.getData();
-  //        overridingData = overridingOI.getData();
-  //        //Concatenate the arrays, overriden then overriding
-  //        loggingData = Arrays.copyOf(overridenData, overridenData.length +
-  // overridingData.length);
-  //        System.arraycopy(overridingData, 0, loggingData, overridenData.length,
-  // overridingData.length);
-  //        return loggingData;
-  //    }
 }

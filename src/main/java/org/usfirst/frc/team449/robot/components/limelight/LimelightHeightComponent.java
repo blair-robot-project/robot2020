@@ -12,12 +12,14 @@ public class LimelightHeightComponent implements DoubleSupplier {
    * The supplier that determines the angle of the target above or below the Limelight. Should be a
    * LimelightComponent with ReturnValue y.
    */
-  @NotNull DoubleSupplier angularInput;
+  @NotNull
+  final DoubleSupplier angularInput;
   /**
    * The supplier determining the distance to the vision target. Should be a
    * LimelightDistanceComponent.
    */
-  @NotNull DoubleSupplier distanceToTarget;
+  @NotNull
+  final DoubleSupplier distanceToTarget;
 
   /**
    * Default constructor

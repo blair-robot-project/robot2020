@@ -16,7 +16,7 @@ public class ThrottlePolynomial extends ThrottleDeadbanded {
   /** The polynomial that scales the throttle. */
   @NotNull protected final Polynomial polynomial;
 
-  protected double scale;
+  protected final double scale;
 
   /**
    * A basic constructor.

@@ -22,11 +22,11 @@ public abstract class OIArcade implements OIUnidirectional {
   /**
    * Cached forwards and rotational output.
    */
-  private double @NotNull [] fwdRotOutputCached;
+  private double[] fwdRotOutputCached;
   /**
    * Cached left-right output values
    */
-  private double @NotNull [] leftRightOutputCached;
+  private double[] leftRightOutputCached;
 
   /**
    * Default constructor.
@@ -93,9 +93,8 @@ public abstract class OIArcade implements OIUnidirectional {
    * for the right, both from [-1, 1].
    */
   public double @NotNull [] getLeftRightOutputCached() {
-    return leftRightOutputCached != null
-        ? leftRightOutputCached
-        : (leftRightOutputCached = getLeftRightOutput());
+    if (leftRightOutputCached == null) leftRightOutputCached = getLeftRightOutput();
+    return leftRightOutputCached;
   }
 
   /**
@@ -106,9 +105,8 @@ public abstract class OIArcade implements OIUnidirectional {
    */
   @Override
   public double @NotNull [] getFwdRotOutputCached() {
-    return fwdRotOutputCached != null
-        ? fwdRotOutputCached
-        : (fwdRotOutputCached = getFwdRotOutput());
+    if (fwdRotOutputCached == null) fwdRotOutputCached = getFwdRotOutput();
+    return fwdRotOutputCached;
   }
 
   /**

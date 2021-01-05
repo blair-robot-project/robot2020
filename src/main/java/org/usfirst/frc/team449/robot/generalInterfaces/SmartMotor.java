@@ -379,7 +379,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * post-encoder gearing.
    *
    * @param nativeUnits A distance native units as measured by the encoder.
-   * @return That distance in feet, or null if no encoder CPR was given.
+   * @return That distance in feet
    */
   double encoderToUnit(double nativeUnits);
 
@@ -388,8 +388,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * post-encoder gearing.
    *
    * @param feet A distance in feet.
-   * @return That distance in native units as measured by the encoder, or null if no encoder CPR was
-   *     given.
+   * @return That distance in native units as measured by the encoder
    */
   double unitToEncoder(double feet);
 
@@ -398,8 +397,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * shaft. Note this DOES account for post-encoder gearing.
    *
    * @param encoderReading The velocity read from the encoder with no conversions.
-   * @return The velocity of the output shaft, in FPS, when the encoder has that reading, or null if
-   *     no encoder CPR was given.
+   * @return The velocity of the output shaft, in FPS, when the encoder has that reading
    */
   double encoderToUPS(double encoderReading);
 
@@ -408,8 +406,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * would read at that velocity. Note this DOES account for post-encoder gearing.
    *
    * @param FPS The velocity of the output shaft, in FPS.
-   * @return What the raw encoder reading would be at that velocity, or null if no encoder CPR was
-   *     given.
+   * @return What the raw encoder reading would be at that velocity
    */
   double UPSToEncoder(double FPS);
 
@@ -427,7 +424,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * gearing.
    *
    * @param RPS The RPS velocity you want to convert.
-   * @return That velocity in native units, or null if no encoder CPR was given.
+   * @return That velocity in native units
    */
   double RPSToNative(double RPS);
 
@@ -465,7 +462,7 @@ public interface SmartMotor extends SimpleMotor, Shiftable, Loggable {
    * Get the current closed-loop velocity error in FPS. WARNING: will give garbage if not in
    * velocity mode.
    *
-   * @return The closed-loop error in FPS, or null if no encoder CPR was given.
+   * @return The closed-loop error in FPS
    */
   double getError();
 

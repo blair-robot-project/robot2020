@@ -460,6 +460,13 @@ public class MappedSparkMax implements SmartMotor {
   @Override
   @Log
   public double getError() {
+    if (this.getSetpoint() == null) {
+      Shuffleboard.addEventMarker(
+          "Attempted to use getSetpoint(), which is null!",
+          this.getClass().getSimpleName(),
+          EventImportance.kHigh);
+      throw new RuntimeException("getSetpoint() is null!");
+    }
     return this.getSetpoint() - this.getVelocity();
   }
 
